@@ -102,7 +102,7 @@
     "ts-morph": "^27.0.2",
     "tsc-files": "^1.1.4",
     "tsx": "^4.21.0",
-    "turbo": "^2.8.17",
+    "turbo": "^2.9.14",
     "vitest": "catalog:"
   },
   "pnpm": {
