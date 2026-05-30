@@ -3,8 +3,8 @@ import { basename, join, resolve } from "node:path";
 
 const EXPECTED_BUNDLE_EXECUTABLE = "radarboard-desktop";
 const EXPECTED_BUNDLE_PACKAGE_TYPE = "APPL";
-const SIDECAR_BINARY_NAME = "radarboard-server";
-const SIDECAR_APP_NAME = "radarboard-server.app";
+const SIDECAR_BINARY_NAME = "radarboard-helper";
+const SIDECAR_APP_NAME = "radarboard-helper.app";
 
 function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

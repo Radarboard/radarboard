@@ -40,7 +40,7 @@ echo "[build-sidecar] Node.js binary: $NODE_BIN ($(node --version))"
 
 # Step 3: Copy Node.js binary as sidecar
 mkdir -p "$SIDECAR_DIR"
-BINARY_NAME="radarboard-server-${TARGET_TRIPLE}"
+BINARY_NAME="radarboard-helper-${TARGET_TRIPLE}"
 cp "$NODE_BIN" "$SIDECAR_DIR/$BINARY_NAME"
 chmod +x "$SIDECAR_DIR/$BINARY_NAME"
 echo "[build-sidecar] Sidecar: $SIDECAR_DIR/$BINARY_NAME ($(du -sh "$SIDECAR_DIR/$BINARY_NAME" | cut -f1))"

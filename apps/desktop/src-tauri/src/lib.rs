@@ -390,7 +390,7 @@ fn is_radarboard_desktop_command(command: &str) -> bool {
 #[cfg(desktop)]
 fn is_radarboard_server_command(command: &str) -> bool {
     command_basename(command)
-        .is_some_and(|name| name == "radarboard-server" || name.starts_with("radarboard-server-"))
+        .is_some_and(|name| name == "radarboard-helper" || name.starts_with("radarboard-helper-"))
 }
 
 #[cfg(desktop)]
@@ -535,8 +535,8 @@ fn resolve_sidecar(app: &tauri::App) -> Result<std::path::PathBuf, String> {
     let exe_dir = exe_path.parent().unwrap_or(std::path::Path::new("."));
 
     let target = env!("TAURI_TARGET_TRIPLE");
-    let suffixed_name = format!("radarboard-server-{target}");
-    let plain_name = "radarboard-server";
+    let suffixed_name = format!("radarboard-helper-{target}");
+    let plain_name = "radarboard-helper";
 
     let resource_dir = app.path().resource_dir().ok();
 
@@ -1359,7 +1359,7 @@ mod tests {
         let processes = parse_ps_output(
             " 101 1 /Applications/Radarboard.app/Contents/MacOS/radarboard-desktop\n\
              invalid-row\n\
-             202 101 /Applications/Radarboard.app/Contents/MacOS/radarboard-server /launcher.mjs\n\
+             202 101 /Applications/Radarboard.app/Contents/MacOS/radarboard-helper /launcher.mjs\n\
              303 nope /usr/bin/node\n",
         );
 
@@ -1376,7 +1376,7 @@ mod tests {
                     pid: 202,
                     ppid: 101,
                     command:
-                        "/Applications/Radarboard.app/Contents/MacOS/radarboard-server /launcher.mjs"
+                        "/Applications/Radarboard.app/Contents/MacOS/radarboard-helper /launcher.mjs"
                             .to_string(),
                 },
             ]
@@ -1396,14 +1396,14 @@ mod tests {
                 pid: 401,
                 ppid: 400,
                 command:
-                    "/Applications/Radarboard.app/Contents/MacOS/radarboard-server /launcher.mjs"
+                    "/Applications/Radarboard.app/Contents/MacOS/radarboard-helper /launcher.mjs"
                         .to_string(),
             },
             ProcessInfo {
                 pid: 402,
                 ppid: 1,
                 command:
-                    "/Applications/Radarboard.app/Contents/MacOS/radarboard-server /launcher.mjs"
+                    "/Applications/Radarboard.app/Contents/MacOS/radarboard-helper /launcher.mjs"
                         .to_string(),
             },
             ProcessInfo {
@@ -1425,7 +1425,7 @@ mod tests {
         let metadata = SidecarRuntimeMetadata {
             pid: 512,
             started_at: 1_744_070_000,
-            binary_path: "/Applications/Radarboard.app/Contents/MacOS/radarboard-server"
+            binary_path: "/Applications/Radarboard.app/Contents/MacOS/radarboard-helper"
                 .to_string(),
             url: Some("http://127.0.0.1:4311".to_string()),
         };

@@ -38,7 +38,7 @@ function writeInfoPlist(
 }
 
 function writeSidecarBinary(appPath: string) {
-  const sidecarPath = join(appPath, "Contents", "MacOS", "radarboard-server");
+  const sidecarPath = join(appPath, "Contents", "MacOS", "radarboard-helper");
   mkdirSync(join(appPath, "Contents", "MacOS"), { recursive: true });
   writeFileSync(sidecarPath, "sidecar");
 }
@@ -77,11 +77,11 @@ describe("validate-macos-bundle", () => {
     ).not.toThrow();
   });
 
-  it("fails when a nested radarboard-server app bundle exists", () => {
+  it("fails when a nested radarboard-helper app bundle exists", () => {
     const sourceDir = uniqueTempDir("nested-sidecar-app");
     tempDirs.push(sourceDir);
     const appPath = createValidBundle(sourceDir);
-    createValidBundle(join(appPath, "Contents", "Resources"), "radarboard-server.app");
+    createValidBundle(join(appPath, "Contents", "Resources"), "radarboard-helper.app");
 
     expect(() => validateMacOsBundle({ appPath })).toThrow(/Nested app bundle detected/);
   });
@@ -105,7 +105,7 @@ describe("validate-macos-bundle", () => {
     const sourceDir = uniqueTempDir("wrong-executable");
     tempDirs.push(sourceDir);
     const appPath = join(sourceDir, "Radarboard.app");
-    writeInfoPlist(appPath, { executable: "radarboard-server" });
+    writeInfoPlist(appPath, { executable: "radarboard-helper" });
     writeSidecarBinary(appPath);
 
     expect(() => validateMacOsBundle({ appPath })).toThrow(/CFBundleExecutable/);
