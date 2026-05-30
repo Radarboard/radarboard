@@ -755,7 +755,7 @@ OAuth-specific config for providers that need the redirect flow.
 |----------|------|-------------|
 | `provider` | `string` | Provider key used in route paths (e.g., "github", "google"). |
 | `scopes` | `string[]` | Scopes to request during authorization. |
-| `setupInstructions?` | `string \| undefined` | Instructions for creating the OAuth app, shown above client credential fields. Use {origin} as placeholder. |
+| `setupInstructions?` | `string \| undefined` | Instructions for creating the OAuth app, shown above client credential fields. Use &#123;origin&#125; as placeholder. |
 | `normalizeOrigin?` | `boolean \| undefined` | Whether to normalize *.localhost subdomains to plain localhost when building the callback URL shown in setup instructions. Set true for Google (rejects custom subdomains), false/omit for GitHub (accepts *.localhost as-is). |
 
 ### `WidgetAuth`
@@ -769,7 +769,7 @@ How a widget authenticates with its external API.
 | `description?` | `string \| undefined` | Short description of this service shown on onboarding cards. |
 | `type` | `"none" \| "api_key" \| "oauth"` | Auth method: "api_key" = manual token entry, "oauth" = OAuth redirect flow, "none" = no auth. |
 | `fields?` | `WidgetAuthField[] \| undefined` | For api_key and oauth: fields to show in the credential input UI (client ID/secret for OAuth). |
-| `testEndpoint?` | `string \| undefined` | API route path to test credentials (POST with { key, values }). |
+| `testEndpoint?` | `string \| undefined` | API route path to test credentials (POST with &#123; key, values &#125;). |
 | `docsUrl?` | `string \| undefined` | URL to the service's docs for obtaining credentials. |
 | `oauth?` | `WidgetOAuthConfig \| undefined` | OAuth-specific config. Required when type === "oauth". |
 
@@ -876,7 +876,7 @@ Extends: `ExtensionMeta`
 | `defaultPollInterval?` | `number \| undefined` | Default polling interval in milliseconds. Shown in the widget header next to the refresh button. Individual widgets can override this via their SWR refreshInterval. Omit for widgets that don't poll (e.g. static data, logs with SSE). |
 | `polling?` | `WidgetPollingConfig<TConfig> \| undefined` | Optional refresh-interval settings metadata for standard polling widgets. |
 | `expandedSize?` | `ModalSize \| undefined` | Optional size override for the expanded overlay. Omit this to use the centralized widget default size ("md"). - "lg": full viewport − 16px margin - "md": centered, 90vw max-w-7xl × 80vh - "sm": centered, 75vw max-w-3xl × 65vh |
-| `expandAction?` | `WidgetExpandAction \| undefined` | Controls what happens when the user clicks the expand button. - `{ type: "expanded-view" }` (default): opens the in-place ExpandedPortal - `{ type: "open-plugin", pluginId }`: navigates to the plugin overlay instead |
+| `expandAction?` | `WidgetExpandAction \| undefined` | Controls what happens when the user clicks the expand button. - `&#123; type: "expanded-view" &#125;` (default): opens the in-place ExpandedPortal - `&#123; type: "open-plugin", pluginId &#125;`: navigates to the plugin overlay instead |
 
 ### `WidgetCapability`
 
@@ -1138,7 +1138,7 @@ tabs([
 ### `extractDataSources()`
 
 Extract all DataSource references from a section config tree.
-Returns a map of sourceId → Set<field>.
+Returns a map of sourceId → Set&lt;field&gt;.
 
 ```ts
 function extractDataSources(sections: SectionConfig[]): Map<string, Set<string>>

@@ -1,0 +1,51 @@
+---
+title: "Community Extensions"
+description: "Contribute integrations, plugins, and widgets through the community extensions repository."
+---
+
+# Community Extensions
+
+Community-maintained Radarboard extensions live in [`Radarboard/community-extensions`](https://github.com/Radarboard/community-extensions).
+
+Use this repository for extensions that are useful to Radarboard users but do not need to ship inside the core monorepo.
+
+## Repository structure
+
+```text
+integrations/                 Service connectors
+plugins/                      Product surfaces and tools
+widgets/                      Dashboard cards and panels
+radarboard.community.config.js
+scripts/generate-catalog.mjs
+scripts/validate-all.mjs
+```
+
+## Contribution flow
+
+<Steps>
+  <Step title="Fork the community repository">
+    Start from [`Radarboard/community-extensions`](https://github.com/Radarboard/community-extensions).
+  </Step>
+  <Step title="Add your extension">
+    Put integrations, plugins, and widgets in their matching top-level directories.
+  </Step>
+  <Step title="Validate locally">
+    ```bash
+    pnpm install
+    pnpm validate
+    pnpm catalog:generate
+    ```
+  </Step>
+  <Step title="Open a pull request">
+    CI validates package metadata and catalog generation before review.
+  </Step>
+</Steps>
+
+## Quality expectations
+
+- Keep each extension scoped to one product or workflow.
+- Include enough README content for users to configure credentials and understand limitations.
+- Prefer Radarboard SDK APIs over custom wiring.
+- Do not commit API keys, local environment files, signing material, or generated build output.
+
+Official extensions remain in [`Radarboard/radarboard`](https://github.com/Radarboard/radarboard). Community extensions can be promoted into the core repo once they are stable, broadly useful, and maintained by the core team.

@@ -134,6 +134,19 @@ function getJsDocText(jsDocs: JSDoc[]): string {
     .join("\n\n");
 }
 
+function formatMdxText(text: string): string {
+  return text
+    .replace(/\{@link\s+([^}\s]+)\s*\}/g, "`$1`")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\{/g, "&#123;")
+    .replace(/\}/g, "&#125;");
+}
+
+function formatMdxTableText(text: string): string {
+  return formatMdxText(text).replace(/\n/g, " ").replace(/\|/g, "\\|");
+}
+
 function getJsDocExample(jsDocs: JSDoc[]): string | null {
   for (const doc of jsDocs) {
     for (const tag of doc.getTags()) {
@@ -168,7 +181,7 @@ function generateInterface(decl: InterfaceDeclaration): string {
   const lines: string[] = [];
   lines.push(`### \`${name}\``);
   lines.push("");
-  if (desc) lines.push(desc);
+  if (desc) lines.push(formatMdxText(desc));
   if (extends_.length > 0) {
     lines.push("");
     lines.push(`Extends: ${extends_.map((e) => `\`${formatType(e)}\``).join(", ")}`);
@@ -184,7 +197,7 @@ function generateInterface(decl: InterfaceDeclaration): string {
       const optional = prop.hasQuestionToken() ? "?" : "";
       const propType = formatType(prop.getType().getText(prop));
       const propJsDocs = prop.getJsDocs();
-      const propDesc = getJsDocText(propJsDocs).replace(/\n/g, " ").replace(/\|/g, "\\|");
+      const propDesc = formatMdxTableText(getJsDocText(propJsDocs));
       lines.push(`| \`${propName}${optional}\` | \`${propType.replace(/\|/g, "\\|")}\` | ${propDesc} |`);
     }
     lines.push("");
@@ -210,7 +223,7 @@ function generateTypeAlias(decl: TypeAliasDeclaration): string {
   lines.push(`### \`${name}\``);
   lines.push("");
   if (desc) {
-    lines.push(desc);
+    lines.push(formatMdxText(desc));
     lines.push("");
   }
   lines.push("```ts");
@@ -239,7 +252,7 @@ function generateFunction(decl: FunctionDeclaration): string {
   lines.push(`### \`${name}()\``);
   lines.push("");
   if (desc) {
-    lines.push(desc);
+    lines.push(formatMdxText(desc));
     lines.push("");
   }
   lines.push("```ts");
@@ -272,7 +285,7 @@ function generateEnum(decl: EnumDeclaration): string {
   lines.push(`### \`${name}\``);
   lines.push("");
   if (desc) {
-    lines.push(desc);
+    lines.push(formatMdxText(desc));
     lines.push("");
   }
   lines.push("```ts");

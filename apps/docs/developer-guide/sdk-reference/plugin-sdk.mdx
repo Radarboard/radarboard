@@ -321,11 +321,11 @@ type PluginSettingType = "number" | "boolean" | "text" | "select"
 Describes one user-configurable option for a plugin.
 
 Each setting renders as a form field in the plugin's settings panel.
-Values are stored in the plugin DB under `_config:<key>`.
+Values are stored in the plugin DB under `_config:&lt;key&gt;`.
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `key` | `string` | Unique key for this setting, stored in plugin DB as `_config:<key>`. |
+| `key` | `string` | Unique key for this setting, stored in plugin DB as `_config:&lt;key&gt;`. |
 | `label` | `string` | Display label in the settings form. |
 | `description?` | `string \| undefined` | Optional description shown below the label. |
 | `type` | `PluginSettingType` | Input type. |
@@ -440,11 +440,11 @@ dataSources: [
 A dashboard widget contributed by a plugin.
 
 Plugins can embed widgets in the main grid. The widget is registered
-as `"<pluginId>__<widgetId>"` and uses the shared template engine.
+as `"&lt;pluginId&gt;__&lt;widgetId&gt;"` and uses the shared template engine.
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `widgetId` | `string` | Widget ID — automatically namespaced as `"<pluginId>__<widgetId>"` when registered into WIDGET_REGISTRY. |
+| `widgetId` | `string` | Widget ID — automatically namespaced as `"&lt;pluginId&gt;__&lt;widgetId&gt;"` when registered into WIDGET_REGISTRY. |
 | `name` | `string` | Display name in the slot picker. |
 | `description` | `string` | Short description for the slot picker. |
 | `defaultSlot?` | `GridSlot \| undefined` | Preferred default grid slot. |
@@ -470,7 +470,7 @@ widgets: [
 
 ### `PluginAPI`
 
-Runtime API injected into every plugin via {@link PluginRenderProps}.
+Runtime API injected into every plugin via `PluginRenderProps`.
 
 Provides scoped database access, notifications, hotkeys, event bus,
 cross-plugin communication (intents + RPC), and project data.
@@ -482,7 +482,7 @@ cross-plugin communication (intents + RPC), and project data.
 | `hotkeys` | `{ register: (key: string, handler: () => void) => () => void; }` | Register keyboard shortcuts scoped to this plugin.  Shortcuts are automatically cleaned up when the plugin unmounts. Returns a cleanup function for manual removal. |
 | `notify` | `(message: string, type?: "info" \| "success" \| "error") => void` | Fire a toast notification. |
 | `close` | `() => void` | Close the plugin overlay. |
-| `events` | `{ emit: (event: { type: string; severity: NotificationSeverity; title: string; body?: string \| null; metadata?: Record<string, unknown>; }) => void; on: (filter: { source?: string; type?: string; }, handler: (event: NotificationEventRow) => void) => () => void; }` | Notification event bus — emit events into the Radarboard notification pipeline and subscribe to events from other sources.  Emitted events are automatically sourced as `plugin:<pluginId>`. |
+| `events` | `{ emit: (event: { type: string; severity: NotificationSeverity; title: string; body?: string \| null; metadata?: Record<string, unknown>; }) => void; on: (filter: { source?: string; type?: string; }, handler: (event: NotificationEventRow) => void) => () => void; }` | Notification event bus — emit events into the Radarboard notification pipeline and subscribe to events from other sources.  Emitted events are automatically sourced as `plugin:&lt;pluginId&gt;`. |
 | `projects` | `{ list: () => Promise<Array<{ slug: string; name: string; color: string; }>>; }` | Access the app's project list (read-only). |
 | `searchParams` | `URLSearchParams` | Reactive URL search parameters from Next.js |
 | `intents` | `{ resolveTargets: (payload: IntentPayload) => ResolvedIntentTarget[]; sendTo: (targetPluginId: string, action: string, payload: IntentPayloadInput) => Promise<IntentResult>; sendToAssistant: (payload: IntentPayloadInput, promptHint?: string) => Promise<void>; }` | Cross-plugin intent system — send data to other plugins or the assistant. |
@@ -512,7 +512,7 @@ function MyPluginOverlay({ api }: PluginRenderProps) {
 Props passed to every plugin's main component.
 
 Your overlay component receives this as its only prop. Destructure `api`
-to access the full {@link PluginAPI}.
+to access the full `PluginAPI`.
 
 | Property | Type | Description |
 |----------|------|-------------|
@@ -530,12 +530,12 @@ export function MyPluginOverlay({ api }: PluginRenderProps) {
 
 Defines an MCP tool that the AI assistant can invoke on behalf of the user.
 
-Tools are automatically namespaced as `"<pluginId>__<name>"` when registered.
+Tools are automatically namespaced as `"&lt;pluginId&gt;__&lt;name&gt;"` when registered.
 The `execute` function receives Zod-validated params and the plugin's API.
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `name` | `string` | Tool name — automatically namespaced as `"<pluginId>__<name>"`. |
+| `name` | `string` | Tool name — automatically namespaced as `"&lt;pluginId&gt;__&lt;name&gt;"`. |
 | `description` | `string` | Description shown to LLMs — must be clear and accurate. |
 | `parameters` | `z.ZodType<unknown, unknown, z.core.$ZodTypeInternals<unknown, unknown>>` | Zod schema for validated input parameters. |
 | `execute` | `(params: unknown, api: PluginAPI) => Promise<unknown>` | Execute the tool with validated params and the plugin API. |
@@ -597,7 +597,7 @@ function getAllPlugins(): PluginDescriptor[]
 
 Create a typed CRUD helper scoped to a DB key prefix.
 
-The prefix is used as `"<prefix>:<id>"` for each item key. For example,
+The prefix is used as `"&lt;prefix&gt;:&lt;id&gt;"` for each item key. For example,
 `createCrudHelper(api, "task")` stores items as `"task:abc123"`.
 
 ```ts
@@ -673,7 +673,7 @@ Extends: `PluginAPI`
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `notifications` | `{ message: string; type?: string; }[]` | All `notify()` calls recorded as `{ message, type }`. |
+| `notifications` | `{ message: string; type?: string; }[]` | All `notify()` calls recorded as `&#123; message, type &#125;`. |
 | `closeCount` | `number` | Number of times `close()` was called. |
 | `emittedEvents` | `{ type: string; severity: string; title: string; body?: string \| null; metadata?: Record<string, unknown>; }[]` | All events emitted via `events.emit()`. |
 | `dbStore` | `Map<string, string>` | Direct access to the in-memory DB store for assertions. |

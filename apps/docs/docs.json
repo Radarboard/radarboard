@@ -36,7 +36,7 @@
         "groups": [
           {
             "group": "Introduction",
-            "pages": ["index", "quickstart"]
+            "pages": ["index", "quickstart", "desktop-beta"]
           }
         ]
       },
@@ -138,6 +138,7 @@
               "developer-guide/build-a-widget",
               "developer-guide/build-a-plugin",
               "developer-guide/extension-packages",
+              "developer-guide/community-extensions",
               "developer-guide/developer-mode",
               "developer-guide/mcp-extension-tutorial",
               "developer-guide/intent-bus-cookbook"
@@ -209,8 +210,8 @@
   "navbar": {
     "primary": {
       "type": "button",
-      "label": "Join Waitlist",
-      "href": "https://radarboard.app/#waitlist"
+      "label": "Download Beta",
+      "href": "https://github.com/Radarboard/radarboard/releases"
     },
     "links": [
       {

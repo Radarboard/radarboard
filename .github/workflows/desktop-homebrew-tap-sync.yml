@@ -150,12 +150,17 @@ jobs:
             --cask-name "${DESKTOP_CASK_NAME}" \
             --output "${GITHUB_WORKSPACE}/homebrew-tap/Casks/${DESKTOP_CASK_NAME}.rb"
 
-      - name: Commit and push tap update
+      - name: Commit and open tap update PR
         working-directory: homebrew-tap
+        env:
+          GH_TOKEN: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
         run: |
           set -euo pipefail
 
           CASK_PATH="Casks/${DESKTOP_CASK_NAME}.rb"
+          BRANCH_NAME="desktop-cask/${RELEASE_TAG}"
+
+          git checkout -B "${BRANCH_NAME}"
 
           git add "${CASK_PATH}"
 
@@ -167,4 +172,22 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "Update ${DESKTOP_CASK_NAME} cask for ${RELEASE_TAG}"
-          git push
+          git push --set-upstream origin "${BRANCH_NAME}"
+
+          existing_pr="$(gh pr list \
+            --repo "${TAP_REPOSITORY}" \
+            --head "${BRANCH_NAME}" \
+            --json number \
+            --jq '.[0].number // empty')"
+
+          if [ -n "${existing_pr}" ]; then
+            echo "Homebrew tap PR already exists: ${existing_pr}"
+            exit 0
+          fi
+
+          gh pr create \
+            --repo "${TAP_REPOSITORY}" \
+            --base main \
+            --head "${BRANCH_NAME}" \
+            --title "Update ${DESKTOP_CASK_NAME} cask for ${RELEASE_TAG}" \
+            --body "Updates the ${DESKTOP_CASK_NAME} cask for Radarboard desktop ${RELEASE_TAG}."
