@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - ".github/workflows/ci.yml"
+      - ".github/workflows/desktop-macos-release.yml"
+      - "README.md"
       - "apps/app/**"
       - "apps/docs/**"
       - "features/**"
@@ -23,6 +25,8 @@ on:
       - main
     paths:
       - ".github/workflows/ci.yml"
+      - ".github/workflows/desktop-macos-release.yml"
+      - "README.md"
       - "apps/app/**"
       - "apps/docs/**"
       - "features/**"
