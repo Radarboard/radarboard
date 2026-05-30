@@ -37,6 +37,9 @@ Out of scope:
 - [x] 2026-05-30: Corrected required ruleset status contexts to match GitHub's actual check names while keeping CI required.
 - [x] 2026-05-30: Set required `Radarboard/radarboard` release and Homebrew secrets from `.env.github` without printing values.
 - [x] 2026-05-30: Added the post-migration README, beta release docs, community extension docs, and Homebrew tap PR sync changes on `codex/complete-org-migration-launch`.
+- [x] 2026-05-30: Replaced placeholder Apple certificate secrets with the exported Desktop `.p12`; GitHub Actions successfully imported the Developer ID Application identity and signed the app.
+- [x] 2026-05-30: Scoped heavy pre-push `knip` and `react-doctor-strict` hooks so workflow-only pushes are not blocked by unrelated repo-wide scans.
+- [ ] Fix notarization auth so the desktop release workflow uses App Store Connect API-key credentials instead of stale Apple-ID credentials.
 - [ ] Merge the final launch-readiness PRs.
 - [ ] Publish `desktop-v0.1.1-beta.1` and verify the Homebrew beta cask PR.
 
@@ -56,6 +59,12 @@ Out of scope:
   Evidence: `gh pr merge` was blocked until `CI / quality` and `CI / test` were corrected to `Lint, Typecheck & Extension Quality` and `Tests`; `CI / validate` was corrected to `validate` for `community-extensions`.
 - Observation: `.env.github` is dotenv-like but not shell-sourceable because at least one private key spans multiple lines.
   Evidence: `source .env.github` failed with a parse error, so secrets were parsed and sent to `gh secret set` over stdin.
+- Observation: The Developer ID `.p12` exported from Desktop is valid in GitHub Actions.
+  Evidence: release run `26674852068` passed `Import Apple Developer certificate` and signed `Radarboard.app` with `Developer ID Application: David Dias`.
+- Observation: Notarization failed because the release step passed stale Apple-ID credentials alongside valid App Store Connect API-key credentials.
+  Evidence: release run `26674852068` failed during notarization with HTTP 401 and Apple's app-specific-password message after signing succeeded.
+- Observation: The pre-push hook was too broad for release workflow maintenance.
+  Evidence: a workflow/docs-only push spent about 10 minutes in repo-wide checks and failed on existing `react-doctor-strict` findings unrelated to the staged changes.
 
 ## Decision Log
 
@@ -76,6 +85,9 @@ Out of scope:
   Date/Author: 2026-05-30 / Codex.
 - Decision: Change Homebrew tap sync from direct `main` pushes to branch-and-PR updates.
   Rationale: The tap has protected `main`; release automation should produce reviewable cask PRs instead of depending on direct pushes.
+  Date/Author: 2026-05-30 / Codex.
+- Decision: Prefer App Store Connect API-key notarization whenever API-key secrets are present.
+  Rationale: The repository has valid ASC API-key secrets, while the Apple-ID/app-specific-password secrets are stale and caused Tauri notarization to fail with HTTP 401.
   Date/Author: 2026-05-30 / Codex.
 
 ## Outcomes & Retrospective

@@ -151,6 +151,7 @@ pre-push:
           - name: test
             run: pnpm turbo run test --affected
           - name: knip
+            glob: "{apps,features,integrations,packages,plugins,widgets,scripts}/**/*.{ts,tsx,js,jsx,json},package.json,pnpm-lock.yaml,tsconfig*.json"
             run: pnpm knip --no-progress
           - name: extension-quality
             run: pnpm check:extensions
@@ -179,4 +180,5 @@ pre-push:
           - name: jsdoc-coverage
             run: pnpm check:jsdoc
           - name: react-doctor-strict
+            glob: "{apps,features,packages,plugins,widgets}/**/*.{ts,tsx,js,jsx}"
             run: pnpm react-doctor --yes --offline --fail-on warning
