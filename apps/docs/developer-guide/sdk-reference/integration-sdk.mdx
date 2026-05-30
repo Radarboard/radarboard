@@ -321,7 +321,7 @@ Register data sources for virtual integrations that don't have a full
 IntegrationDescriptor (e.g. "shipping" aggregates Linear + GitHub + Vercel).
 
 ```ts
-function registerDataSources(integration: string, dataSources: DataSourceDescriptor<any, any>[]): void
+function registerDataSources(integration: string, dataSources: RegistryDataSourceDescriptor[]): void
 ```
 
 ### `findDataSource()`
@@ -329,7 +329,7 @@ function registerDataSources(integration: string, dataSources: DataSourceDescrip
 Look up a data source by integration ID and action slug.
 
 ```ts
-function findDataSource(integration: string, action: string): DataSourceDescriptor<any, any> | undefined
+function findDataSource(integration: string, action: string): RegistryDataSourceDescriptor | undefined
 ```
 
 ### `getIntegration()`
@@ -352,11 +352,15 @@ function getAllIntegrations(): IntegrationDescriptor[]
 
 ### `integrationRoute()`
 
+Build a typed API route for an integration action endpoint.
+
 ```ts
 function integrationRoute(integration: TIntegration, action: TAction): `/api/integrations/${TIntegration}/${TAction}`
 ```
 
 ### `pluginRoute()`
+
+Build a typed API route for a plugin action endpoint.
 
 ```ts
 function pluginRoute(plugin: TPlugin, action: TAction): `/api/plugins/${TPlugin}/${TAction}`

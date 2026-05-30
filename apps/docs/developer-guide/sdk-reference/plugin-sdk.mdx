@@ -470,7 +470,7 @@ widgets: [
 
 ### `PluginAPI`
 
-Runtime API injected into every plugin via `PluginRenderProps`.
+Runtime API injected into every plugin via {@link PluginRenderProps}.
 
 Provides scoped database access, notifications, hotkeys, event bus,
 cross-plugin communication (intents + RPC), and project data.
@@ -512,7 +512,7 @@ function MyPluginOverlay({ api }: PluginRenderProps) {
 Props passed to every plugin's main component.
 
 Your overlay component receives this as its only prop. Destructure `api`
-to access the full `PluginAPI`.
+to access the full {@link PluginAPI}.
 
 | Property | Type | Description |
 |----------|------|-------------|
