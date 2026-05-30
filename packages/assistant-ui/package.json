@@ -48,7 +48,7 @@
     "@tanstack/react-store": "^0.9.2",
     "ai": "^6.0.116",
     "lucide-react": "catalog:",
-    "mermaid": "^11.13.0",
+    "mermaid": "^11.15.0",
     "nuqs": "catalog:",
     "swr": "catalog:",
     "zod": "catalog:"
