@@ -359,5 +359,33 @@ rm -rf "$RESOURCES/standalone/node_modules/.pnpm"
 echo "[build-sidecar] Verifying standalone bundle..."
 node "$SCRIPT_DIR/verify-sidecar-bundle.mjs" "$RESOURCES/standalone"
 
+if [[ "$(uname -s)" == "Darwin" && -n "${APPLE_SIGNING_IDENTITY:-}" ]]; then
+  echo "[build-sidecar] Signing native resource binaries..."
+  native_binary_count=0
+  signed_native_binary_count=0
+
+  while IFS= read -r -d '' native_binary; do
+    if file "$native_binary" | grep -q "Mach-O"; then
+      native_binary_count=$((native_binary_count + 1))
+      codesign \
+        --force \
+        --options runtime \
+        --timestamp \
+        --sign "$APPLE_SIGNING_IDENTITY" \
+        "$native_binary"
+      signed_native_binary_count=$((signed_native_binary_count + 1))
+    fi
+  done < <(find "$RESOURCES" -type f \( -name "*.node" -o -name "*.dylib" \) -print0)
+
+  echo "[build-sidecar] Signed $signed_native_binary_count native resource binaries"
+  if [[ "$native_binary_count" -eq 0 ]]; then
+    echo "[build-sidecar] No Mach-O native resource binaries found"
+  fi
+elif [[ "$(uname -s)" == "Darwin" ]]; then
+  echo "[build-sidecar] Skipping native resource signing; APPLE_SIGNING_IDENTITY is not set"
+else
+  echo "[build-sidecar] Skipping native resource signing on non-macOS host"
+fi
+
 echo "[build-sidecar] Resources: $(du -sh "$RESOURCES" | cut -f1)"
 echo "[build-sidecar] Done"

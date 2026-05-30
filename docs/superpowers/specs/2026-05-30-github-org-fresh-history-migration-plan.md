@@ -39,7 +39,8 @@ Out of scope:
 - [x] 2026-05-30: Added the post-migration README, beta release docs, community extension docs, and Homebrew tap PR sync changes on `codex/complete-org-migration-launch`.
 - [x] 2026-05-30: Replaced placeholder Apple certificate secrets with the exported Desktop `.p12`; GitHub Actions successfully imported the Developer ID Application identity and signed the app.
 - [x] 2026-05-30: Scoped heavy pre-push `knip` and `react-doctor-strict` hooks so workflow-only pushes are not blocked by unrelated repo-wide scans.
-- [ ] Fix notarization auth so the desktop release workflow uses App Store Connect API-key credentials instead of stale Apple-ID credentials.
+- [x] 2026-05-30: Fixed notarization auth so the desktop release workflow uses App Store Connect API-key credentials instead of stale Apple-ID credentials.
+- [ ] Sign nested native Node resource binaries before notarization.
 - [ ] Merge the final launch-readiness PRs.
 - [ ] Publish `desktop-v0.1.1-beta.1` and verify the Homebrew beta cask PR.
 
@@ -65,6 +66,8 @@ Out of scope:
   Evidence: release run `26674852068` failed during notarization with HTTP 401 and Apple's app-specific-password message after signing succeeded.
 - Observation: The pre-push hook was too broad for release workflow maintenance.
   Evidence: a workflow/docs-only push spent about 10 minutes in repo-wide checks and failed on existing `react-doctor-strict` findings unrelated to the staged changes.
+- Observation: App Store Connect API-key notarization auth now works, but notarization rejects unsigned nested native resource binaries.
+  Evidence: release run `26675470958` used the `Build and Publish macOS Release (ASC API key)` path, submitted to notarization, and Apple returned `Invalid` for `@libsql/darwin-arm64/index.node`, `@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib`, and `@img/sharp-darwin-arm64/lib/sharp-darwin-arm64.node` because they lacked valid Developer ID signatures and secure timestamps.
 
 ## Decision Log
 
