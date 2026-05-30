@@ -91,6 +91,17 @@ jobs:
               break
             fi
           done
+          if [ "${has_certificate}" = "true" ]; then
+            CERT_CHECK_PATH="${RUNNER_TEMP}/radarboard-signing-cert-check.p12"
+            if ! printf '%s' "${APPLE_CERTIFICATE}" | tr -d '[:space:]' | base64 --decode > "${CERT_CHECK_PATH}" 2>/dev/null; then
+              echo "APPLE_CERTIFICATE is present but is not a base64-encoded .p12 certificate."
+              has_certificate=false
+            elif [ ! -s "${CERT_CHECK_PATH}" ]; then
+              echo "APPLE_CERTIFICATE decoded to an empty file."
+              has_certificate=false
+            fi
+            rm -f "${CERT_CHECK_PATH}"
+          fi
 
           has_apple_id_auth=true
           for required_secret in APPLE_ID APPLE_PASSWORD APPLE_TEAM_ID; do
@@ -146,16 +157,34 @@ jobs:
           CERT_PATH="${RUNNER_TEMP}/radarboard-signing-cert.p12"
           KEYCHAIN_PATH="${RUNNER_TEMP}/radarboard-signing.keychain-db"
 
-          echo "${APPLE_CERTIFICATE}" | base64 --decode > "${CERT_PATH}"
+          if ! printf '%s' "${APPLE_CERTIFICATE}" | tr -d '[:space:]' | base64 --decode > "${CERT_PATH}"; then
+            if [ "${RELEASE_IS_PRERELEASE}" = "true" ]; then
+              echo "Apple certificate could not be decoded; continuing prerelease as unsigned."
+              echo "APPLE_SIGNING_ENABLED=false" >> "$GITHUB_ENV"
+              echo "TAURI_BUILD_ARGS=--config src-tauri/tauri.conf.json --target aarch64-apple-darwin --ci --no-sign --bundles app,dmg" >> "$GITHUB_ENV"
+              exit 0
+            fi
+            echo "Apple certificate could not be decoded." >&2
+            exit 1
+          fi
 
           security create-keychain -p "${KEYCHAIN_PASSWORD}" "${KEYCHAIN_PATH}"
           security default-keychain -s "${KEYCHAIN_PATH}"
           security unlock-keychain -p "${KEYCHAIN_PASSWORD}" "${KEYCHAIN_PATH}"
           security set-keychain-settings -t 3600 -u "${KEYCHAIN_PATH}"
-          security import "${CERT_PATH}" \
+          if ! security import "${CERT_PATH}" \
             -k "${KEYCHAIN_PATH}" \
             -P "${APPLE_CERTIFICATE_PASSWORD}" \
-            -T /usr/bin/codesign
+            -T /usr/bin/codesign; then
+            if [ "${RELEASE_IS_PRERELEASE}" = "true" ]; then
+              echo "Apple certificate import failed; continuing prerelease as unsigned."
+              echo "APPLE_SIGNING_ENABLED=false" >> "$GITHUB_ENV"
+              echo "TAURI_BUILD_ARGS=--config src-tauri/tauri.conf.json --target aarch64-apple-darwin --ci --no-sign --bundles app,dmg" >> "$GITHUB_ENV"
+              exit 0
+            fi
+            echo "Apple certificate import failed." >&2
+            exit 1
+          fi
           security set-key-partition-list \
             -S apple-tool:,apple:,codesign: \
             -s \
@@ -164,6 +193,13 @@ jobs:
 
           CERT_IDENTITY="$(security find-identity -v -p codesigning "${KEYCHAIN_PATH}" | grep 'Developer ID Application' | head -n 1 | awk -F '\"' '{print $2}')"
           if [ -z "${CERT_IDENTITY:-}" ]; then
+            if [ "${RELEASE_IS_PRERELEASE}" = "true" ]; then
+              echo "No Developer ID Application identity was found; continuing prerelease as unsigned."
+              security find-identity -v -p codesigning "${KEYCHAIN_PATH}" || true
+              echo "APPLE_SIGNING_ENABLED=false" >> "$GITHUB_ENV"
+              echo "TAURI_BUILD_ARGS=--config src-tauri/tauri.conf.json --target aarch64-apple-darwin --ci --no-sign --bundles app,dmg" >> "$GITHUB_ENV"
+              exit 0
+            fi
             echo "Failed to locate a Developer ID Application signing identity in the imported keychain." >&2
             security find-identity -v -p codesigning "${KEYCHAIN_PATH}" || true
             exit 1
