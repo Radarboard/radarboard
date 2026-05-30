@@ -6,7 +6,6 @@
  */
 
 import { appStoreConnectDescriptor } from "@radarboard/integration-app-store-connect";
-import { astroDataSources } from "@radarboard/integration-astro/data-sources";
 import { betterstackDescriptor } from "@radarboard/integration-betterstack";
 import { githubDescriptor } from "@radarboard/integration-github";
 import { githubSponsorsDescriptor } from "@radarboard/integration-github-sponsors";
@@ -18,12 +17,13 @@ import { openpanelDescriptor } from "@radarboard/integration-openpanel";
 import { raindropDescriptor } from "@radarboard/integration-raindrop";
 import { resendDescriptor } from "@radarboard/integration-resend";
 import { revenuecatDescriptor } from "@radarboard/integration-revenuecat";
-import { registerDataSources, registerIntegration } from "@radarboard/integration-sdk/registry";
 import { sentryDescriptor } from "@radarboard/integration-sentry";
-import { shippingDataSources } from "@radarboard/integration-shipping/data-sources";
 import { slackDescriptor } from "@radarboard/integration-slack";
 import { stripeDescriptor } from "@radarboard/integration-stripe";
 import { vercelDescriptor } from "@radarboard/integration-vercel";
+import { shippingDataSources } from "@radarboard/integration-shipping/data-sources";
+import { astroDataSources } from "@radarboard/integration-astro/data-sources";
+import { registerDataSources, registerIntegration } from "@radarboard/integration-sdk/registry";
 
 const INTEGRATIONS_INIT_KEY = "__radarboardAppIntegrationsInitialized__";
 
@@ -57,6 +57,7 @@ export function initializeIntegrations(): void {
   // Virtual integrations — composite data sources with no IntegrationDescriptor.
   registerDataSources("shipping", shippingDataSources);
   registerDataSources("astro", astroDataSources);
+
 }
 
 initializeIntegrations();

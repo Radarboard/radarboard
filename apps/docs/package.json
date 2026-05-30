@@ -7,6 +7,6 @@
     "build": "mint validate"
   },
   "devDependencies": {
-    "mint": "^4.2.435"
+    "mint": "^4.2.587"
   }
 }

@@ -97,6 +97,24 @@ export function computeNextBetaVersion(currentVersion: string): string {
   });
 }
 
+export function computeNextAlphaVersion(currentVersion: string): string {
+  const current = parseDesktopVersion(currentVersion);
+
+  if (current.channel === "alpha") {
+    return formatDesktopVersion({
+      ...current,
+      prereleaseNumber: (current.prereleaseNumber ?? 0) + 1,
+    });
+  }
+
+  return formatDesktopVersion({
+    ...current,
+    patch: current.patch + 1,
+    channel: "alpha",
+    prereleaseNumber: 1,
+  });
+}
+
 export function computeStableVersion(currentVersion: string): string {
   const current = parseDesktopVersion(currentVersion);
 
@@ -234,7 +252,12 @@ function writeDesktopVersion(version: string) {
 function inferAction(): ReleaseChannel | "dry-run" {
   const positionalAction = process.argv[2];
 
-  if (positionalAction === "beta" || positionalAction === "stable" || positionalAction === "dry-run") {
+  if (
+    positionalAction === "alpha" ||
+    positionalAction === "beta" ||
+    positionalAction === "stable" ||
+    positionalAction === "dry-run"
+  ) {
     return positionalAction;
   }
 
@@ -243,7 +266,7 @@ function inferAction(): ReleaseChannel | "dry-run" {
     return legacyChannel;
   }
 
-  throw new Error("Expected beta, stable, or dry-run.");
+  throw new Error("Expected alpha, beta, stable, or dry-run.");
 }
 
 function main() {
@@ -255,7 +278,9 @@ function main() {
   const versionOverride = parseArg("--version");
   const version =
     versionOverride ??
-    (action === "beta"
+    (action === "alpha"
+      ? computeNextAlphaVersion(currentVersion)
+      : action === "beta"
       ? computeNextBetaVersion(currentVersion)
       : action === "stable"
         ? computeStableVersion(currentVersion)

@@ -14,7 +14,6 @@
     "./registry": "./src/registry.ts",
     "./resolution": "./src/resolution.ts"
   },
-  "dependencies": {},
   "devDependencies": {
     "@radarboard/tsconfig": "workspace:*",
     "@types/node": "catalog:",

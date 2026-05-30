@@ -8,7 +8,7 @@
     "test:e2e:ui": "playwright test --ui"
   },
   "devDependencies": {
-    "@playwright/test": "^1.53.1",
+    "@playwright/test": "^1.60.0",
     "@radarboard/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "typescript": "catalog:"

@@ -17,6 +17,7 @@ import { fileURLToPath } from "node:url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, "..");
 const WEB_LIB = join(ROOT, "apps/app/lib/extensions/runtime");
+const DEV_EXTENSIONS_MANIFEST = join(ROOT, ".radarboard/dev-extensions.json");
 const HEADER = "// @generated — do not edit manually. Run `pnpm generate:extensions` to regenerate.\n";
 
 // ---------------------------------------------------------------------------
@@ -37,9 +38,37 @@ type RadarboardConfig = {
   widgets: string[];
 };
 
+export function loadLocalDevExtensions(manifestPath = DEV_EXTENSIONS_MANIFEST): DevExtensionEntry[] {
+  if (!existsSync(manifestPath)) return [];
+
+  const raw = JSON.parse(readFileSync(manifestPath, "utf-8")) as {
+    devExtensions?: DevExtensionEntry[];
+  };
+
+  if (!Array.isArray(raw.devExtensions)) return [];
+
+  return raw.devExtensions.filter((entry) => {
+    if (!["integration", "plugin", "widget"].includes(entry.type)) return false;
+    return typeof entry.path === "string" && entry.path.length > 0;
+  });
+}
+
+export function mergeConfigWithLocalDevExtensions(
+  config: RadarboardConfig,
+  manifestPath = DEV_EXTENSIONS_MANIFEST
+): RadarboardConfig {
+  const localDevExtensions = loadLocalDevExtensions(manifestPath);
+  if (localDevExtensions.length === 0) return config;
+
+  return {
+    ...config,
+    devExtensions: [...(config.devExtensions ?? []), ...localDevExtensions],
+  };
+}
+
 async function loadConfig(): Promise<RadarboardConfig> {
   const mod = await import(join(ROOT, "radarboard.config.ts"));
-  return mod.default as RadarboardConfig;
+  return mergeConfigWithLocalDevExtensions(mod.default as RadarboardConfig);
 }
 
 // ---------------------------------------------------------------------------
@@ -565,7 +594,9 @@ async function main() {
   console.log("\nDone. Extension init files regenerated from radarboard.config.ts.");
 }
 
-main().catch((err) => {
-  console.error("Failed to generate extension init files:", err);
-  process.exit(1);
-});
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main().catch((err) => {
+    console.error("Failed to generate extension init files:", err);
+    process.exit(1);
+  });
+}

@@ -1,13 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
-  <rect width="32" height="32" rx="6" fill="#101010"/>
-  <!-- outer ring -->
-  <circle cx="16" cy="16" r="11" stroke="#5b8af5" stroke-width="2.5" fill="none" opacity="0.3"/>
-  <!-- middle ring -->
-  <circle cx="16" cy="16" r="7" stroke="#5b8af5" stroke-width="2" fill="none" opacity="0.5"/>
-  <!-- inner ring -->
-  <circle cx="16" cy="16" r="3" stroke="#5b8af5" stroke-width="1.5" fill="none" opacity="0.7"/>
-  <!-- sweep line -->
-  <line x1="16" y1="16" x2="16" y2="5" stroke="#5b8af5" stroke-width="2" stroke-linecap="round"/>
-  <!-- blip -->
-  <circle cx="16" cy="9" r="2" fill="#4ade80"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#101820"/><stop offset="1" stop-color="#1c1f35"/></linearGradient></defs><path fill="url(#bg)" d="M0 0h128v128H0z"/><path fill="#ebf5ff" d="M24 28h80v8H24zm0 64h80v8H24zm0-56h8v56h-8zm72 0h8v56h-8z"/><path fill="#36d399" d="M42 50h44v8H42z"/><path fill="#7dd3fc" d="M42 70h30v8H42z"/><path fill="#f8b542" d="M82 70h8v8h-8z"/></svg>

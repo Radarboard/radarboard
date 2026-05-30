@@ -11,10 +11,10 @@ import { mcpServersDescriptor } from "@radarboard/feature-mcp-servers";
 import { memoryDescriptor } from "@radarboard/feature-memory";
 import { notificationsDescriptor } from "@radarboard/feature-notifications";
 import { onboardingDescriptor } from "@radarboard/feature-onboarding";
-import { registerFeature } from "@radarboard/feature-sdk/registry";
-import type { FeatureDescriptor } from "@radarboard/feature-sdk/types";
 import { skillsDescriptor } from "@radarboard/feature-skills";
 import { workflowsDescriptor } from "@radarboard/feature-workflows";
+import { registerFeature } from "@radarboard/feature-sdk/registry";
+import type { FeatureDescriptor } from "@radarboard/feature-sdk/types";
 
 /** All feature descriptors from packages (user-tier). */
 export const featureDescriptors: FeatureDescriptor[] = [

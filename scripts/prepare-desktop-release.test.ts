@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  computeNextAlphaVersion,
   computeNextBetaVersion,
   computeStableVersion,
   formatDesktopVersion,
@@ -8,6 +9,14 @@ import {
 } from "./prepare-desktop-release";
 
 describe("prepare-desktop-release", () => {
+  it("creates the first alpha candidate from the current stable version", () => {
+    expect(computeNextAlphaVersion("0.1.0")).toBe("0.1.1-alpha.1");
+  });
+
+  it("increments an existing alpha candidate", () => {
+    expect(computeNextAlphaVersion("0.1.1-alpha.1")).toBe("0.1.1-alpha.2");
+  });
+
   it("creates the first beta candidate from the current stable version", () => {
     expect(computeNextBetaVersion("0.1.0")).toBe("0.1.1-beta.1");
   });

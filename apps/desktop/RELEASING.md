@@ -2,7 +2,7 @@
 
 This document is the canonical release playbook for the Radarboard desktop app.
 
-It covers four different states:
+It covers five different states:
 
 1. Alpha builds
 2. Beta releases
@@ -19,7 +19,7 @@ The macOS workflows referenced here live in:
 
 Today the repository supports three practical macOS paths:
 
-- unsigned CI builds for internal use, testers, and rapid iteration
+- unsigned CI builds and alpha prereleases for internal use, testers, and rapid iteration
 - signed + notarized GitHub prereleases for beta testers
 - signed + notarized GitHub releases for real direct-download distribution
 - custom Homebrew tap updates driven from published beta and stable desktop releases
@@ -32,7 +32,7 @@ Radarboard desktop releases use the version and tag to define the channel.
 
 | Channel | Version format | Tag format | GitHub release | Homebrew |
 | --- | --- | --- | --- | --- |
-| Alpha | `0.2.0-alpha.1` | `desktop-v0.2.0-alpha.1` | Not recommended; use CI artifacts | No cask update |
+| Alpha | `0.2.0-alpha.1` | `desktop-v0.2.0-alpha.1` | Draft prerelease or CI artifacts | No cask update |
 | Beta | `0.2.0-beta.1` | `desktop-v0.2.0-beta.1` | Prerelease | `radarboard-beta` |
 | Stable | `0.2.0` | `desktop-v0.2.0` | Normal release | `radarboard` |
 
@@ -50,18 +50,17 @@ Use this when:
 
 - you want fast artifacts for internal use
 - you want testers to validate the app before a public release
-- you do not need in-app updates yet
+- you do not need Homebrew or the stable updater channel
 
 What happens:
 
-- GitHub Actions runs `Desktop macOS CI`
-- the workflow builds an unsigned Apple Silicon `.app` and `.dmg`
-- artifacts are uploaded to the workflow run
+- for the fastest path, GitHub Actions runs `Desktop macOS CI` and uploads unsigned artifacts
+- for a tagged alpha, `pnpm release:desktop:alpha` prepares `desktop-v<version>-alpha.<n>` and the normal desktop release workflow creates a draft prerelease
 
 Tradeoffs:
 
-- Gatekeeper warnings are expected
-- testers may need to override macOS security to open the app
+- unsigned CI artifacts can trigger Gatekeeper warnings
+- tagged alpha prereleases follow the same release automation as beta and stable releases, but do not update Homebrew
 - this is not the right path for broad public distribution
 
 ### 2. Beta Releases
@@ -179,10 +178,40 @@ Choose a future Apple-backed workflow if:
 
 ## End-to-End Alpha Checklist
 
+Use the CI-artifact path when speed matters more than release metadata:
+
 1. Run the desktop CI workflow manually or open the latest `Desktop macOS CI` run from `main`.
 2. Download the `radarboard-macos-dmg` artifact.
 3. Share only with trusted internal testers.
 4. Do not publish a GitHub release and do not update Homebrew.
+
+Use the tagged alpha path when testers need a GitHub prerelease and the same release checks used by beta:
+
+1. Prepare the alpha version:
+
+   ```bash
+   pnpm release:desktop:alpha
+   ```
+
+   This computes the next alpha automatically. For example, `0.1.0` becomes
+   `0.1.1-alpha.1`, and `0.1.1-alpha.1` becomes `0.1.1-alpha.2`.
+   Use `pnpm release:desktop:alpha -- --version <version>` only when the automatic candidate is
+   not the version you want.
+
+2. Edit `release-notes/desktop-v<version>.md` until it contains real notes for internal testers.
+3. Dry-run the candidate:
+
+   ```bash
+   pnpm release:desktop:dry-run
+   ```
+
+4. Commit the version and release-note changes.
+5. Merge the commit to `main`. The `Changesets` workflow validates the candidate and creates
+   `desktop-v<version>` automatically.
+6. Wait for `Desktop macOS Release`.
+7. Inspect the draft prerelease, download the DMG, and test install.
+8. Publish only if the alpha should be visible as a GitHub prerelease.
+9. Do not expect a Homebrew cask update for alpha releases.
 
 ## End-to-End Beta Checklist
 
@@ -272,6 +301,23 @@ Choose a future Apple-backed workflow if:
     ```bash
     brew install --cask <tap>/radarboard
     ```
+
+## Release Automation Requirements
+
+The `Changesets` workflow owns the handoff from committed release candidate to desktop tag:
+
+1. `Changesets / validate` checks that workspace changes have release notes.
+2. `Changesets / release` creates or updates the `Version Packages` PR.
+3. `Changesets / desktop-tag` creates `desktop-v<version>` after the candidate lands on `main`.
+4. `Desktop macOS Release` creates the draft GitHub release from that tag.
+5. `Desktop Homebrew Tap Sync` updates the beta or stable cask after a maintainer publishes the release.
+
+For step 2, GitHub must allow the token used by Actions to create pull requests. Use one of these setups:
+
+- Enable the repository or organization setting `Allow GitHub Actions to create and approve pull requests`.
+- Or create a fine-grained release bot token with contents and pull request write access, then store it as `CHANGESETS_GITHUB_TOKEN`.
+
+The workflow uses `CHANGESETS_GITHUB_TOKEN` when present and falls back to the standard `GITHUB_TOKEN`.
 
 ## Public Direct-Download Setup Checklist
 

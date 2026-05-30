@@ -30,9 +30,9 @@
   "devDependencies": {
     "@radarboard/tsconfig": "workspace:*",
     "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
     "typescript": "catalog:",
-    "vitest": "catalog:",
-    "@types/react-dom": "catalog:"
+    "vitest": "catalog:"
   },
   "peerDependencies": {
     "react": "catalog:",

@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@radarboard/utils": "workspace:*",
-    "recharts": "^3.8.0"
+    "recharts": "^3.8.1"
   },
   "devDependencies": {
     "@radarboard/tsconfig": "workspace:*",

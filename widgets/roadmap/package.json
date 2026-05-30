@@ -9,22 +9,22 @@
     "./data-resolver": "./src/data-resolver.tsx"
   },
   "dependencies": {
-    "@radarboard/widget-engine": "workspace:*",
-    "@radarboard/widget-sdk": "workspace:*",
+    "@radarboard/hooks": "workspace:*",
     "@radarboard/types": "workspace:*",
     "@radarboard/ui": "workspace:*",
     "@radarboard/utils": "workspace:*",
-    "@radarboard/hooks": "workspace:*",
-    "react": "catalog:",
+    "@radarboard/widget-engine": "workspace:*",
+    "@radarboard/widget-sdk": "workspace:*",
     "lucide-react": "catalog:",
+    "react": "catalog:",
     "swr": "catalog:"
   },
   "devDependencies": {
+    "@radarboard/tsconfig": "workspace:*",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "vitest": "catalog:",
     "typescript": "catalog:",
-    "@radarboard/tsconfig": "workspace:*"
+    "vitest": "catalog:"
   },
   "scripts": {
     "test": "vitest run",

@@ -8,25 +8,25 @@
     "./data-resolver": "./src/data-resolver.tsx"
   },
   "dependencies": {
-    "@tanstack/react-table": "^8.21.3",
-    "motion": "catalog:",
-    "@radarboard/widget-engine": "workspace:*",
-    "@radarboard/widget-sdk": "workspace:*",
+    "@radarboard/hooks": "workspace:*",
     "@radarboard/types": "workspace:*",
     "@radarboard/ui": "workspace:*",
     "@radarboard/utils": "workspace:*",
-    "@radarboard/hooks": "workspace:*",
-    "react": "catalog:",
+    "@radarboard/widget-engine": "workspace:*",
+    "@radarboard/widget-sdk": "workspace:*",
+    "@tanstack/react-table": "^8.21.3",
     "lucide-react": "catalog:",
+    "motion": "catalog:",
+    "react": "catalog:",
     "swr": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@radarboard/tsconfig": "workspace:*",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "vitest": "catalog:",
     "typescript": "catalog:",
-    "@radarboard/tsconfig": "workspace:*"
+    "vitest": "catalog:"
   },
   "scripts": {
     "test": "vitest run",

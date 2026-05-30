@@ -59,11 +59,13 @@ jobs:
       - name: Create or Update Release PR
         uses: changesets/action@v1
         with:
+          github-token: ${{ secrets.CHANGESETS_GITHUB_TOKEN || github.token }}
           version: pnpm changeset:version
           commit: Version Packages
           title: Version Packages
+          commitMode: github-api
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.CHANGESETS_GITHUB_TOKEN || github.token }}
 
   desktop-tag:
     name: desktop-tag

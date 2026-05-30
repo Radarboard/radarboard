@@ -20,16 +20,16 @@
     "@radarboard/integration-sentry": "workspace:*",
     "@radarboard/integration-vercel": "workspace:*",
     "@radarboard/types": "workspace:*",
-    "@upstash/ratelimit": "^2.0.5",
-    "@upstash/redis": "^1.34.3",
-    "hono": "^4.7.11"
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.38.0",
+    "hono": "^4.12.23"
   },
   "devDependencies": {
-    "@hono/node-server": "^1.15.1",
+    "@hono/node-server": "^1.19.14",
     "@radarboard/tsconfig": "workspace:*",
     "@types/node": "catalog:",
-    "esbuild": "^0.27.4",
-    "tsx": "^4.21.0",
+    "esbuild": "^0.27.7",
+    "tsx": "^4.22.3",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }

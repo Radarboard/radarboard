@@ -7,23 +7,21 @@
 // ─── Widget descriptors ──────────────────────────────────────────────────────
 import { analyticsDescriptor } from "@radarboard/widget-analytics";
 import { initializeAnalyticsWidget } from "@radarboard/widget-analytics/init";
-import { appReviewsDescriptor } from "@radarboard/widget-app-reviews";
 import { asoKeywordsDescriptor } from "@radarboard/widget-aso-keywords";
 import { initializeAsoKeywordsWidget } from "@radarboard/widget-aso-keywords/init";
-import { bookmarksDescriptor } from "@radarboard/widget-bookmarks";
-import { initializeBookmarksWidget } from "@radarboard/widget-bookmarks/init";
 import { buildsDescriptor } from "@radarboard/widget-builds";
-import { deploymentsDescriptor } from "@radarboard/widget-deployments";
-import { registerWidget } from "@radarboard/widget-engine/widgets/registry";
 import { githubCommitsDescriptor } from "@radarboard/widget-github-commits";
-import { githubStarsDescriptor } from "@radarboard/widget-github-stars";
-import { initializeGithubStarsWidget } from "@radarboard/widget-github-stars/init";
-import { logsDescriptor } from "@radarboard/widget-logs";
+import { deploymentsDescriptor } from "@radarboard/widget-deployments";
+import { vercelDomainsDescriptor } from "@radarboard/widget-vercel-domains";
 import { npmDownloadsDescriptor } from "@radarboard/widget-npm-downloads";
+import { logsDescriptor } from "@radarboard/widget-logs";
 import { observabilityDescriptor } from "@radarboard/widget-observability";
 import { projectsDescriptor } from "@radarboard/widget-projects";
 import { pullsDescriptor } from "@radarboard/widget-pulls";
+import { bookmarksDescriptor } from "@radarboard/widget-bookmarks";
+import { initializeBookmarksWidget } from "@radarboard/widget-bookmarks/init";
 import { revenueDescriptor } from "@radarboard/widget-revenue";
+import { appReviewsDescriptor } from "@radarboard/widget-app-reviews";
 import { roadmapDescriptor } from "@radarboard/widget-roadmap";
 import { seoDescriptor } from "@radarboard/widget-seo";
 import { initializeSeoWidget } from "@radarboard/widget-seo/init";
@@ -31,7 +29,9 @@ import { shippingDescriptor } from "@radarboard/widget-shipping";
 import { initializeShippingWidget } from "@radarboard/widget-shipping/init";
 import { sponsorshipDescriptor } from "@radarboard/widget-sponsorship";
 import { initializeSponsorshipWidget } from "@radarboard/widget-sponsorship/init";
-import { vercelDomainsDescriptor } from "@radarboard/widget-vercel-domains";
+import { githubStarsDescriptor } from "@radarboard/widget-github-stars";
+import { initializeGithubStarsWidget } from "@radarboard/widget-github-stars/init";
+import { registerWidget } from "@radarboard/widget-engine/widgets/registry";
 
 // ─── Widget data resolvers (self-registering side effects) ────────────────────
 import "@radarboard/widget-analytics/data-resolver";

@@ -13,22 +13,22 @@
     "lint:fix": "biome check --write ."
   },
   "dependencies": {
-    "@openpanel/nextjs": "^1.4.0",
+    "@openpanel/nextjs": "^1.5.1",
     "@radarboard/emails": "workspace:*",
     "@radarboard/product": "workspace:*",
-    "geist": "^1.7.0",
-    "next": "^16.2.1",
+    "geist": "^1.7.1",
+    "next": "^16.2.6",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "resend": "^6.9.4",
+    "resend": "^6.12.4",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@radarboard/tsconfig": "workspace:*",
-    "@tailwindcss/postcss": "^4.2.1",
+    "@tailwindcss/postcss": "^4.3.0",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "tailwindcss": "^4.2.1",
+    "tailwindcss": "^4.3.0",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }
