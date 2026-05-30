@@ -1,0 +1,38 @@
+---
+title: "Desktop Beta"
+description: "Install and test the public Radarboard desktop beta."
+---
+
+# Desktop Beta
+
+Radarboard desktop beta releases are published from the canonical GitHub repository:
+
+<Card title="Radarboard Releases" icon="download" href="https://github.com/Radarboard/radarboard/releases">
+  Download the latest macOS beta DMG and read release notes.
+</Card>
+
+## Current beta channel
+
+- Public release repo: [`Radarboard/radarboard`](https://github.com/Radarboard/radarboard)
+- Beta tag format: `desktop-vX.Y.Z-beta.N`
+- First beta tag: `desktop-v0.1.1-beta.1`
+- Homebrew tap repo: [`Radarboard/homebrew-radarboard`](https://github.com/Radarboard/homebrew-radarboard)
+
+## Direct download
+
+Open [GitHub Releases](https://github.com/Radarboard/radarboard/releases), choose the latest `desktop-v*-beta.*` prerelease, and download the macOS DMG asset.
+
+## Homebrew beta
+
+After the beta cask sync PR is merged in the tap repository, install the beta with:
+
+```bash
+brew tap Radarboard/radarboard https://github.com/Radarboard/homebrew-radarboard
+brew install --cask radarboard-beta
+```
+
+The beta cask downloads mirrored artifacts from `Radarboard/homebrew-radarboard` so Homebrew installs do not depend on private release infrastructure.
+
+## Updates
+
+Radarboard desktop uses Tauri updater metadata attached to GitHub desktop releases. Beta testers should stay on the beta channel until a stable desktop release is published.

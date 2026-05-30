@@ -32,12 +32,18 @@ pnpm dev
 
 This runs `turbo run dev` which starts the Next.js app with Turbopack.
 
+The primary local routes are:
+
+- Dashboard app: `https://radarboard.localhost:1355`
+- Marketing site: `https://radarboard-marketing.localhost:1355`
+
 ## Project structure
 
 ```
 radarboard/
 ├── apps/
-│   ├── web/          # Next.js 16 dashboard app (@radarboard/app)
+│   ├── app/          # Next.js dashboard app (@radarboard/app)
+│   ├── desktop/      # Tauri desktop app (@radarboard/desktop)
 │   └── docs/         # Mintlify documentation (@radarboard/docs)
 ├── packages/
 │   ├── api/          # External service API clients (@radarboard/api)

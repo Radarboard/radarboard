@@ -33,7 +33,7 @@ OAuth-specific config for providers that need the redirect flow.
 |----------|------|-------------|
 | `provider` | `string` | Provider key used in route paths (e.g., "github", "google"). |
 | `scopes` | `string[]` | Scopes to request during authorization. |
-| `setupInstructions?` | `string \| undefined` | Instructions for creating the OAuth app, shown above client credential fields. Use {origin} as placeholder. |
+| `setupInstructions?` | `string \| undefined` | Instructions for creating the OAuth app, shown above client credential fields. Use &#123;origin&#125; as placeholder. |
 | `normalizeOrigin?` | `boolean \| undefined` | Whether to normalize *.localhost subdomains to plain localhost when building the callback URL shown in setup instructions. Set true for Google (rejects custom subdomains), false/omit for GitHub (accepts *.localhost as-is). |
 
 ### `IntegrationAuthField`
@@ -60,7 +60,7 @@ How an integration authenticates with its external API.
 | `name` | `string` | Display name for this service (e.g., "Vercel", "Linear"). |
 | `type` | `"api_key" \| "oauth" \| "none"` | Auth method: "api_key" = manual token entry, "oauth" = OAuth redirect flow, "none" = no auth. |
 | `fields?` | `IntegrationAuthField[] \| undefined` | For api_key and oauth: fields to show in the credential input UI (client ID/secret for OAuth). |
-| `testEndpoint?` | `string \| undefined` | API route path to test credentials (POST with { key, values }). |
+| `testEndpoint?` | `string \| undefined` | API route path to test credentials (POST with &#123; key, values &#125;). |
 | `docsUrl?` | `string \| undefined` | URL to the service's docs for obtaining credentials. |
 | `oauth?` | `IntegrationOAuthConfig \| undefined` | OAuth-specific config. Required when type === "oauth". |
 
@@ -72,7 +72,7 @@ Maps a saved integration credential field to an MCP server auth mechanism.
 |----------|------|-------------|
 | `sourceField` | `string` | Saved integration credential field to reuse, e.g. "accessToken". |
 | `target` | `{ type: "authHeader"; } \| { type: "env"; key: string; }` | MCP target field that receives the resolved value. |
-| `template?` | `string \| undefined` | Optional template applied after resolution. Use "{{value}}" as the placeholder. |
+| `template?` | `string \| undefined` | Optional template applied after resolution. Use "&#123;&#123;value&#125;&#125;" as the placeholder. |
 
 ### `IntegrationMcpTransportPresetBase`
 
@@ -121,7 +121,7 @@ Configuration for connecting an integration to an MCP server.
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `serverName` | `string` | Canonical MCP server name stored as `mcp::<serverName>`. |
+| `serverName` | `string` | Canonical MCP server name stored as `mcp::&lt;serverName&gt;`. |
 | `aliases?` | `string[] \| undefined` | Optional alternate stored names that should also map back to this integration. |
 | `docsUrl?` | `string \| undefined` | URL to server docs or homepage for assistant access setup. |
 | `transport` | `IntegrationMcpTransportPreset` | Default server transport and non-secret fields. |
@@ -133,7 +133,7 @@ MCP tool definition for an integration.
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `action` | `string` | Route action under `/api/integrations/<integration>/<action>`. |
+| `action` | `string` | Route action under `/api/integrations/&lt;integration&gt;/&lt;action&gt;`. |
 | `integrationId?` | `string \| undefined` | Optional route integration override for virtual or delegated integrations. |
 | `buildParams?` | `((params: Record<string, unknown>) => Record<string, string> \| undefined) \| undefined` | Optional query-string builder for validated tool arguments. |
 
@@ -207,8 +207,8 @@ Avoids circular deps between packages/integrations and apps/app.
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `resolveCredential` | `(key: string) => Promise<Record<string, string> \| null>` | Resolve stored credentials by service key. Returns a flat record of credential fields (e.g. `{ authToken: "sk-..." }`), or `null` if no credential is saved for the given key. |
-| `getProjectIntegrations` | `() => Promise<Record<string, Record<string, Record<string, unknown>>>>` | Returns all project integration configs, keyed by `projectSlug -> integrationId -> configKey -> value`. |
+| `resolveCredential` | `(key: string) => Promise<Record<string, string> \| null>` | Resolve stored credentials by service key. Returns a flat record of credential fields (e.g. `&#123; authToken: "sk-..." &#125;`), or `null` if no credential is saved for the given key. |
+| `getProjectIntegrations` | `() => Promise<Record<string, Record<string, Record<string, unknown>>>>` | Returns all project integration configs, keyed by `projectSlug -&gt; integrationId -&gt; configKey -&gt; value`. |
 | `getAllProjects` | `() => Promise<Array<{ slug: string; name: string; color: string; platforms: Array<{ id: string; name: string; integrations: Record<string, unknown>; }>; [k: string]: unknown; }>>` |  |
 | `getMcpClient?` | `((url: string, authHeader?: string) => { callToolJson: <T>(tool: string, args: Record<string, unknown>) => Promise<T>; }) \| undefined` |  |
 | `listMcpToolsByName?` | `((name: string) => Promise<Array<{ name: string; inputSchema?: Record<string, unknown> \| null; }>>) \| undefined` |  |
@@ -226,7 +226,7 @@ Declares a fetchable endpoint for an integration.
 | `cacheTtlSeconds` | `number` | Cache TTL in seconds for withCache. |
 | `pollingSourceId?` | `string \| undefined` | Optional shared polling family used to resolve configurable TTLs. |
 | `evictPrefixes?` | `string[] \| undefined` | Optional prefix for in-memory cache eviction on force refresh. |
-| `buildCacheKey?` | `((params: TParams & CommonRouteParams) => string) \| undefined` | Build the cache key from params. Defaults to `<integration>:<action>:<projectSlug>:<range>:<timeZone>`. |
+| `buildCacheKey?` | `((params: TParams & CommonRouteParams) => string) \| undefined` | Build the cache key from params. Defaults to `&lt;integration&gt;:&lt;action&gt;:&lt;projectSlug&gt;:&lt;range&gt;:&lt;timeZone&gt;`. |
 | `parseParams?` | `((searchParams: URLSearchParams) => Partial<TParams>) \| undefined` | Parse integration-specific params from the URL search params. |
 | `fetch` | `(params: TParams & CommonRouteParams, ctx: DataSourceContext) => Promise<TData>` | Fetch the data. Receives merged common + integration-specific params plus injected context. |
 | `delta?` | `{ extractData: (data: TData) => unknown; detector: DeltaDetector<TData>; shouldDetect?: (data: TData) => boolean; } \| undefined` | Optional delta detection on fresh data. |
@@ -285,7 +285,7 @@ run a validation function, or present a confirmation screen.
 | `description?` | `string \| undefined` | Optional description or instructions shown below the title. |
 | `fields?` | `IntegrationAuthField[] \| undefined` | Form fields to collect in this step. Omit for confirmation-only steps. |
 | `dependsOn?` | `string \| undefined` | Step ID that must complete before this step is available. |
-| `validate?` | `((values: Record<string, string>) => Promise<{ valid: boolean; error?: string; }>) \| undefined` | Optional async validation function run after the user submits this step. Return `{ valid: true }` to proceed or `{ valid: false, error }` to show an error. |
+| `validate?` | `((values: Record<string, string>) => Promise<{ valid: boolean; error?: string; }>) \| undefined` | Optional async validation function run after the user submits this step. Return `&#123; valid: true &#125;` to proceed or `&#123; valid: false, error &#125;` to show an error. |
 
 ### `IntegrationConfigFlow`
 
