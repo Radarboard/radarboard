@@ -88,33 +88,31 @@ copy_pnpm_package_tree() {
         [ -d "$scoped_pkg" ] || continue
         local scoped_name="$name/$(basename "$scoped_pkg")"
         local dest="$RESOURCES/standalone/node_modules/$scoped_name"
-        if [ ! -d "$dest" ]; then
-          mkdir -p "$(dirname "$dest")"
-          cp -rL "$scoped_pkg" "$dest"
-        fi
+        rm -rf "$dest"
+        mkdir -p "$(dirname "$dest")"
+        cp -rL "$scoped_pkg" "$dest"
       done
     else
       local dest="$RESOURCES/standalone/node_modules/$name"
-      if [ ! -d "$dest" ]; then
-        cp -rL "$pkg" "$dest"
-      fi
+      rm -rf "$dest"
+      cp -rL "$pkg" "$dest"
     fi
   done
 }
 
-# Packages whose dependency trees are missed by standalone tracing
-UNTRACED_PACKAGES=(
-  "node-fetch@3.3.2"
-  "fetch-blob@3.2.0"
-  "jsdom@29.0.1"
+# Packages whose dependency trees are missed by standalone tracing.
+UNTRACED_PACKAGE_NAMES=(
+  "node-fetch"
+  "jsdom"
 )
 
-for PKG_ENTRY in "${UNTRACED_PACKAGES[@]}"; do
-  STORE_PATH="$MONOREPO_ROOT/node_modules/.pnpm/$PKG_ENTRY/node_modules"
-  if [ -d "$STORE_PATH" ]; then
-    echo "[build-sidecar] Copying untraced package tree: $PKG_ENTRY"
-    copy_pnpm_package_tree "$STORE_PATH"
-  fi
+for PKG_NAME in "${UNTRACED_PACKAGE_NAMES[@]}"; do
+  while IFS= read -r STORE_PATH; do
+    if [ -d "$STORE_PATH" ]; then
+      echo "[build-sidecar] Copying untraced package tree: $(basename "$(dirname "$STORE_PATH")")"
+      copy_pnpm_package_tree "$STORE_PATH"
+    fi
+  done < <(find "$MONOREPO_ROOT/node_modules/.pnpm" -maxdepth 2 -path "*/${PKG_NAME}@*/node_modules" -type d)
 done
 
 # Hoist pnpm's hidden node_modules so require() can resolve them.

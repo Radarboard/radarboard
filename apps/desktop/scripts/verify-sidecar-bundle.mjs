@@ -2,12 +2,7 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 
-export const REQUIRED_PACKAGES = [
-  "node-fetch",
-  "data-uri-to-buffer",
-  "fetch-blob",
-  "formdata-polyfill",
-];
+export const REQUIRED_PACKAGES = ["node-fetch", "jsdom"];
 
 export function getMissingPackages(standaloneRoot) {
   const nodeModulesDir = join(standaloneRoot, "node_modules");
