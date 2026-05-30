@@ -137,8 +137,16 @@ jobs:
             apple_signing_ready=true
           fi
 
-          if [ "${apple_signing_ready}" != "true" ] && [ "${RELEASE_IS_PRERELEASE}" != "true" ]; then
-            echo "Stable desktop releases require Apple signing and notarization secrets." >&2
+          allow_unsigned_release=false
+          case "${RELEASE_TAG}" in
+            desktop-v*-alpha.*)
+              allow_unsigned_release=true
+              ;;
+          esac
+          echo "ALLOW_UNSIGNED_DESKTOP_RELEASE=${allow_unsigned_release}" >> "$GITHUB_ENV"
+
+          if [ "${apple_signing_ready}" != "true" ] && [ "${allow_unsigned_release}" != "true" ]; then
+            echo "Beta and stable desktop releases require Apple signing and notarization secrets." >&2
             echo "Provide APPLE_CERTIFICATE + APPLE_CERTIFICATE_PASSWORD + KEYCHAIN_PASSWORD and either Apple ID or App Store Connect API credentials." >&2
             exit 1
           fi
@@ -167,7 +175,7 @@ jobs:
           KEYCHAIN_PATH="${RUNNER_TEMP}/radarboard-signing.keychain-db"
 
           if ! printf '%s' "${APPLE_CERTIFICATE}" | tr -d '[:space:]' | base64 --decode > "${CERT_PATH}"; then
-            if [ "${RELEASE_IS_PRERELEASE}" = "true" ]; then
+            if [ "${ALLOW_UNSIGNED_DESKTOP_RELEASE}" = "true" ]; then
               echo "Apple certificate could not be decoded; continuing prerelease as unsigned."
               echo "APPLE_SIGNING_ENABLED=false" >> "$GITHUB_ENV"
               echo "TAURI_BUILD_ARGS=--config src-tauri/tauri.conf.json --target aarch64-apple-darwin --ci --no-sign --bundles app,dmg" >> "$GITHUB_ENV"
@@ -178,6 +186,7 @@ jobs:
           fi
 
           security create-keychain -p "${KEYCHAIN_PASSWORD}" "${KEYCHAIN_PATH}"
+          security list-keychains -d user -s "${KEYCHAIN_PATH}" $(security list-keychains -d user | tr -d '"')
           security default-keychain -s "${KEYCHAIN_PATH}"
           security unlock-keychain -p "${KEYCHAIN_PASSWORD}" "${KEYCHAIN_PATH}"
           security set-keychain-settings -t 3600 -u "${KEYCHAIN_PATH}"
@@ -185,7 +194,7 @@ jobs:
             -k "${KEYCHAIN_PATH}" \
             -P "${APPLE_CERTIFICATE_PASSWORD}" \
             -T /usr/bin/codesign; then
-            if [ "${RELEASE_IS_PRERELEASE}" = "true" ]; then
+            if [ "${ALLOW_UNSIGNED_DESKTOP_RELEASE}" = "true" ]; then
               echo "Apple certificate import failed; continuing prerelease as unsigned."
               echo "APPLE_SIGNING_ENABLED=false" >> "$GITHUB_ENV"
               echo "TAURI_BUILD_ARGS=--config src-tauri/tauri.conf.json --target aarch64-apple-darwin --ci --no-sign --bundles app,dmg" >> "$GITHUB_ENV"
@@ -202,7 +211,7 @@ jobs:
 
           CERT_IDENTITY="$(security find-identity -v -p codesigning "${KEYCHAIN_PATH}" | grep 'Developer ID Application' | head -n 1 | awk -F '\"' '{print $2}')"
           if [ -z "${CERT_IDENTITY:-}" ]; then
-            if [ "${RELEASE_IS_PRERELEASE}" = "true" ]; then
+            if [ "${ALLOW_UNSIGNED_DESKTOP_RELEASE}" = "true" ]; then
               echo "No Developer ID Application identity was found; continuing prerelease as unsigned."
               security find-identity -v -p codesigning "${KEYCHAIN_PATH}" || true
               echo "APPLE_SIGNING_ENABLED=false" >> "$GITHUB_ENV"
@@ -302,6 +311,17 @@ jobs:
           prerelease: ${{ env.RELEASE_IS_PRERELEASE == 'true' }}
           generateReleaseNotes: true
           assetNamePattern: "Radarboard-[version]-macos-[arch][ext]"
+
+      - name: Validate signed macOS release artifacts
+        if: env.APPLE_SIGNING_ENABLED == 'true'
+        working-directory: apps/desktop
+        run: |
+          set -euo pipefail
+
+          VERSION="${RELEASE_TAG#desktop-v}"
+          pnpm validate:release-artifacts \
+            --app "src-tauri/target/aarch64-apple-darwin/release/bundle/macos/Radarboard.app" \
+            --dmg "src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/Radarboard_${VERSION}_aarch64.dmg"
 
       - name: Build and Publish macOS Prerelease (unsigned)
         if: env.APPLE_NOTARIZATION_AUTH_MODE == 'none'

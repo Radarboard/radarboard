@@ -365,11 +365,17 @@ if [[ "$(uname -s)" == "Darwin" && -n "${APPLE_SIGNING_IDENTITY:-}" ]]; then
   while IFS= read -r -d '' native_binary; do
     if file "$native_binary" | grep -q "Mach-O"; then
       native_binary_count=$((native_binary_count + 1))
+      codesign_args=(
+        --force
+        --options runtime
+        --timestamp
+        --sign "$APPLE_SIGNING_IDENTITY"
+      )
+      if [[ -n "${APPLE_KEYCHAIN_PATH:-}" ]]; then
+        codesign_args+=(--keychain "$APPLE_KEYCHAIN_PATH")
+      fi
       codesign \
-        --force \
-        --options runtime \
-        --timestamp \
-        --sign "$APPLE_SIGNING_IDENTITY" \
+        "${codesign_args[@]}" \
         "$native_binary"
       signed_native_binary_count=$((signed_native_binary_count + 1))
     fi
