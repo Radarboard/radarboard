@@ -124,6 +124,13 @@ jobs:
           else
             has_notarization=true
           fi
+          if [ "${has_api_key_auth}" = "true" ]; then
+            notarization_auth_mode=api-key
+          elif [ "${has_apple_id_auth}" = "true" ]; then
+            notarization_auth_mode=apple-id
+          else
+            notarization_auth_mode=none
+          fi
 
           apple_signing_ready=false
           if [ "${has_certificate}" = "true" ] && [ "${has_notarization}" = "true" ]; then
@@ -138,10 +145,12 @@ jobs:
 
           if [ "${apple_signing_ready}" = "true" ]; then
             echo "APPLE_SIGNING_ENABLED=true" >> "$GITHUB_ENV"
+            echo "APPLE_NOTARIZATION_AUTH_MODE=${notarization_auth_mode}" >> "$GITHUB_ENV"
             echo "TAURI_BUILD_ARGS=--config src-tauri/tauri.conf.json --target aarch64-apple-darwin --ci --bundles app,dmg" >> "$GITHUB_ENV"
           else
             echo "Apple signing secrets are incomplete; building unsigned prerelease artifacts."
             echo "APPLE_SIGNING_ENABLED=false" >> "$GITHUB_ENV"
+            echo "APPLE_NOTARIZATION_AUTH_MODE=none" >> "$GITHUB_ENV"
             echo "TAURI_BUILD_ARGS=--config src-tauri/tauri.conf.json --target aarch64-apple-darwin --ci --no-sign --bundles app,dmg" >> "$GITHUB_ENV"
           fi
 
@@ -211,7 +220,7 @@ jobs:
           } >> "$GITHUB_ENV"
 
       - name: Prepare Apple notarization credentials
-        if: env.APPLE_SIGNING_ENABLED == 'true'
+        if: env.APPLE_SIGNING_ENABLED == 'true' && env.APPLE_NOTARIZATION_AUTH_MODE == 'api-key'
         env:
           APPLE_API_PRIVATE_KEY: ${{ secrets.APPLE_API_PRIVATE_KEY }}
         run: |
@@ -243,8 +252,35 @@ jobs:
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Build and Publish macOS Release
+      - name: Build and Publish macOS Release (ASC API key)
+        if: env.APPLE_NOTARIZATION_AUTH_MODE == 'api-key'
         id: tauri-release
+        uses: tauri-apps/tauri-action@v0.6.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ env.APPLE_SIGNING_IDENTITY }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+          APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
+          APPLE_API_KEY_PATH: ${{ env.APPLE_API_KEY_PATH }}
+        with:
+          projectPath: apps/desktop
+          tauriScript: pnpm tauri
+          args: ${{ env.TAURI_BUILD_ARGS }}
+          tagName: ${{ env.RELEASE_TAG }}
+          releaseName: Radarboard Desktop ${{ env.RELEASE_TAG }}
+          releaseBody: ${{ steps.release-notes.outputs.body }}
+          releaseDraft: true
+          releaseCommitish: ${{ github.sha }}
+          prerelease: ${{ env.RELEASE_IS_PRERELEASE == 'true' }}
+          generateReleaseNotes: true
+          assetNamePattern: "Radarboard-[version]-macos-[arch][ext]"
+
+      - name: Build and Publish macOS Release (Apple ID)
+        if: env.APPLE_NOTARIZATION_AUTH_MODE == 'apple-id'
+        id: tauri-release-apple-id
         uses: tauri-apps/tauri-action@v0.6.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -254,9 +290,27 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
-          APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
-          APPLE_API_KEY_PATH: ${{ env.APPLE_API_KEY_PATH }}
+        with:
+          projectPath: apps/desktop
+          tauriScript: pnpm tauri
+          args: ${{ env.TAURI_BUILD_ARGS }}
+          tagName: ${{ env.RELEASE_TAG }}
+          releaseName: Radarboard Desktop ${{ env.RELEASE_TAG }}
+          releaseBody: ${{ steps.release-notes.outputs.body }}
+          releaseDraft: true
+          releaseCommitish: ${{ github.sha }}
+          prerelease: ${{ env.RELEASE_IS_PRERELEASE == 'true' }}
+          generateReleaseNotes: true
+          assetNamePattern: "Radarboard-[version]-macos-[arch][ext]"
+
+      - name: Build and Publish macOS Prerelease (unsigned)
+        if: env.APPLE_NOTARIZATION_AUTH_MODE == 'none'
+        id: tauri-release-unsigned
+        uses: tauri-apps/tauri-action@v0.6.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           projectPath: apps/desktop
           tauriScript: pnpm tauri
