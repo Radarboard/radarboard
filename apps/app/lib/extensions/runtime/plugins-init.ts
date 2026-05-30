@@ -5,24 +5,24 @@
  * Import this early in the app before PluginHost mounts.
  */
 
-import { tasksDescriptor } from "@radarboard/plugin-tasks";
-import { expensesDescriptor } from "@radarboard/plugin-expenses";
-import { notesDescriptor } from "@radarboard/plugin-notes";
-import { bookmarksDescriptor } from "@radarboard/plugin-bookmarks";
-import { rssReaderDescriptor } from "@radarboard/plugin-rss-reader";
-import { changelogDescriptor } from "@radarboard/plugin-changelog";
-import { statusPageDescriptor } from "@radarboard/plugin-status-page";
-import { webhookRelayDescriptor } from "@radarboard/plugin-webhook-relay";
-import { embeddingsDescriptor } from "@radarboard/plugin-embeddings";
 import { backupDescriptor } from "@radarboard/plugin-backup";
-import { registerPlugin } from "@radarboard/plugin-sdk/registry";
-import { tasksWidgetContribution } from "@radarboard/plugin-tasks/widget-contribution";
-import { expensesWidgetContribution } from "@radarboard/plugin-expenses/widget-contribution";
-import { notesWidgetContribution } from "@radarboard/plugin-notes/widget-contribution";
+import { bookmarksDescriptor } from "@radarboard/plugin-bookmarks";
 import { bookmarksWidgetContribution } from "@radarboard/plugin-bookmarks/widget-contribution";
-import { rssWidgetContribution } from "@radarboard/plugin-rss-reader/widget-contribution";
+import { changelogDescriptor } from "@radarboard/plugin-changelog";
 import { changelogWidgetContribution } from "@radarboard/plugin-changelog/widget-contribution";
+import { embeddingsDescriptor } from "@radarboard/plugin-embeddings";
+import { expensesDescriptor } from "@radarboard/plugin-expenses";
+import { expensesWidgetContribution } from "@radarboard/plugin-expenses/widget-contribution";
+import { notesDescriptor } from "@radarboard/plugin-notes";
+import { notesWidgetContribution } from "@radarboard/plugin-notes/widget-contribution";
+import { rssReaderDescriptor } from "@radarboard/plugin-rss-reader";
+import { rssWidgetContribution } from "@radarboard/plugin-rss-reader/widget-contribution";
+import { registerPlugin } from "@radarboard/plugin-sdk/registry";
+import { statusPageDescriptor } from "@radarboard/plugin-status-page";
 import { statusPageWidgetContribution } from "@radarboard/plugin-status-page/widget-contribution";
+import { tasksDescriptor } from "@radarboard/plugin-tasks";
+import { tasksWidgetContribution } from "@radarboard/plugin-tasks/widget-contribution";
+import { webhookRelayDescriptor } from "@radarboard/plugin-webhook-relay";
 import { webhookRelayWidgetContribution } from "@radarboard/plugin-webhook-relay/widget-contribution";
 
 registerPlugin({ ...tasksDescriptor, widgets: [tasksWidgetContribution] });

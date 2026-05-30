@@ -43,6 +43,7 @@ const EXCLUDED_FILE_PATTERNS = [/\.(stories|test|spec)\.[jt]sx?$/u, /\.log$/u];
 const WARNING_MARKER_PATTERN = /(^|\n)\s*[│]?\s*⚠\s+/u;
 const FULL_SCAN_FALLBACK_PATTERN =
   /No feature branch or uncommitted changes detected\.\s+Running full scan\./u;
+const DIFF_ARGS = new Set(["--diff", "--changed", "--staged"]);
 
 function parseScalar(raw: string): string {
   return raw.trim().replace(/^['"]|['"]$/g, "");
@@ -170,6 +171,105 @@ function shouldExcludeEntry(sourcePath: string, isDirectory: boolean): boolean {
   }
 
   return EXCLUDED_FILE_NAMES.has(name) || EXCLUDED_FILE_PATTERNS.some((pattern) => pattern.test(name));
+}
+
+function getChangedFilesForDoctor(): string[] {
+  const commands = [
+    ["diff", "--name-only", "--cached"],
+    ["diff", "--name-only"],
+  ];
+  const changedFiles = new Set<string>();
+
+  for (const args of commands) {
+    const result = spawnSync("git", args, {
+      cwd: REPO_ROOT,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    });
+
+    if (result.status !== 0) continue;
+
+    for (const line of result.stdout.split(/\r?\n/u)) {
+      const filePath = line.trim();
+      if (filePath) changedFiles.add(filePath);
+    }
+  }
+
+  return Array.from(changedFiles);
+}
+
+function getPushedFilesForDoctor(): string[] {
+  const upstreamResult = spawnSync(
+    "git",
+    ["rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}"],
+    {
+      cwd: REPO_ROOT,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }
+  );
+
+  if (upstreamResult.status !== 0) return [];
+
+  const upstream = upstreamResult.stdout.trim();
+  if (!upstream) return [];
+
+  const diffResult = spawnSync("git", ["diff", "--name-only", `${upstream}...HEAD`], {
+    cwd: REPO_ROOT,
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "ignore"],
+  });
+
+  if (diffResult.status !== 0) return [];
+
+  return diffResult.stdout
+    .split(/\r?\n/u)
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
+function areFilesOutsideDoctorScope(filePaths: string[]): boolean {
+  if (filePaths.length === 0) return false;
+
+  return filePaths.every((filePath) => {
+    const absolutePath = path.join(REPO_ROOT, filePath);
+    if (filePath.split(/[\\/]/u).some((part) => EXCLUDED_DIR_NAMES.has(part))) {
+      return true;
+    }
+    if (!/\.[cm]?[jt]sx?$/u.test(filePath)) {
+      return true;
+    }
+    if (isGeneratedSourceFile(absolutePath)) {
+      return true;
+    }
+    return shouldExcludeEntry(absolutePath, false);
+  });
+}
+
+function isGeneratedSourceFile(filePath: string): boolean {
+  if (!/\.[cm]?[jt]sx?$/u.test(filePath)) return false;
+
+  try {
+    return readFileSync(filePath, "utf8").slice(0, 512).includes("@generated");
+  } catch {
+    return false;
+  }
+}
+
+function shouldSkipExcludedDiff(rawArgs: string[]): boolean {
+  if (!rawArgs.some((arg) => DIFF_ARGS.has(arg))) return false;
+
+  return areFilesOutsideDoctorScope(getChangedFilesForDoctor());
+}
+
+function shouldSkipExcludedPush(rawArgs: string[]): boolean {
+  const strictHookScan =
+    rawArgs.some((arg) => arg === "--fail-on=warning" || arg === "--fail-on=warnings") ||
+    rawArgs.some((arg, index) => arg === "--fail-on" && rawArgs[index + 1] === "warning");
+
+  if (!strictHookScan || rawArgs.some((arg) => DIFF_ARGS.has(arg))) return false;
+
+  return areFilesOutsideDoctorScope(getPushedFilesForDoctor());
 }
 
 function mirrorDirectory(sourceDir: string, targetDir: string, isRoot = false): void {
@@ -322,10 +422,15 @@ function runReactDoctor(mirrorRoot: string, args: string[], strictWarnings: bool
 }
 
 function main() {
+  const rawArgs = process.argv.slice(2);
+  if (shouldSkipExcludedDiff(rawArgs) || shouldSkipExcludedPush(rawArgs)) {
+    process.stdout.write("react-doctor: skipped because changed files are outside scan scope.\n");
+    return;
+  }
+
   const mirrorRoot = createMirrorRoot();
 
   try {
-    const rawArgs = process.argv.slice(2);
     const { args: wrapperArgs, strictWarnings } = extractWrapperArgs(rawArgs);
     const { args } = resolveTargetDirectory(mirrorRoot, wrapperArgs);
     runReactDoctor(mirrorRoot, args, strictWarnings);
