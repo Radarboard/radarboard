@@ -1,0 +1,15 @@
+# Cloudflare Workers deployment configuration for the webhook relay.
+# Deploy with: pnpm build:cloudflare && wrangler deploy
+# See: https://developers.cloudflare.com/workers/wrangler/configuration/
+
+name = "radarboard-webhook-relay"
+main = "dist/cloudflare/worker.js"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Set secrets with: wrangler secret put <KEY>
+# Required: KV_REST_API_URL, KV_REST_API_TOKEN, RELAY_POLL_SECRET
+# Per-integration: WEBHOOK_SECRET_GITHUB, WEBHOOK_SECRET_VERCEL, etc.
+
+[observability]
+enabled = true

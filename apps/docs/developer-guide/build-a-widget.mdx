@@ -1,0 +1,263 @@
+---
+title: "Build a Widget"
+description: "Step-by-step guide to building a Radarboard dashboard widget from scratch."
+---
+
+## Overview
+
+Widgets are the building blocks of the Radarboard dashboard. They display data from integrations in a 3x3 grid, with optional expanded views. Each widget lives under `widgets/` and uses a **template recipe** system — you declare layouts as data structures, not JSX.
+
+## Prerequisites
+
+- Radarboard dev environment set up ([Setup Guide](/developer-guide/setup))
+- At least one integration configured (widgets consume integration data)
+- Familiarity with React and TypeScript
+
+## Step 1: Scaffold
+
+```bash
+pnpm create-widget my-widget
+```
+
+This creates `widgets/my-widget/` with all boilerplate, registers it in `radarboard.config.ts`, and runs `pnpm install`.
+
+## Step 2: Define the Recipe
+
+Edit `index.ts` to set your layout. The recipe system lets you compose widgets from primitives:
+
+```ts
+import { buildTemplateRecipe, type TemplateRecipeModel } from "@radarboard/widget-engine/templates";
+
+const recipe: TemplateRecipeModel = {
+  kind: "summary_list",
+  summary: [
+    {
+      type: "kpi-row",
+      metrics: [
+        { label: "Total", source: { sourceId: "my-widget", field: "totalCount" } },
+        { label: "Active", source: { sourceId: "my-widget", field: "activeCount" } },
+      ],
+    },
+  ],
+  content: [
+    {
+      type: "list",
+      source: { sourceId: "my-widget", field: "items" },
+      itemTemplate: {
+        title: { sourceId: "my-widget", field: "name" },
+        subtitle: { sourceId: "my-widget", field: "status" },
+      },
+      emptyMessage: "No items found",
+    },
+  ],
+};
+```
+
+### Recipe Kinds
+
+| Kind | Layout | Best for |
+|------|--------|----------|
+| `content_only` | Single content area | Lists, tables, charts |
+| `summary_list` | KPI strip + scrollable list | Most widgets |
+| `summary_content` | KPI strip + rich content | Charts with stats |
+| `summary_chart_list` | KPI strip + chart + list | Analytics dashboards |
+| `rail_content` | Side rail + main content | Detail views |
+| `rail_list` | Side rail + scrollable list | Category browsing |
+| `summary_only` | KPI metrics only | Status displays |
+| `feed_list` | Activity feed | Timelines, logs |
+
+### Section Types
+
+| Type | Description |
+|------|-------------|
+| `list` | Scrollable item list with title/subtitle/badge |
+| `chart` | Line, bar, or area chart |
+| `table` | Data table with columns |
+| `kpi-row` | Horizontal metric cards |
+| `headline-stat` | Large featured number |
+| `summary-quad` | 2x2 metric grid |
+| `activity-chart` | GitHub-style contribution heatmap |
+| `stream-list` | Real-time event stream |
+| `card-list` | Card grid layout |
+| `alert` | Warning/info banner |
+| `tabs` | Tabbed content switching |
+
+## Step 3: Wire Up Data
+
+### Define types (`types.ts`)
+
+```ts
+export interface MyWidgetData {
+  items: Array<{ id: string; name: string; status: string }>;
+  totalCount: number;
+  activeCount: number;
+}
+```
+
+### Create the hook (`hooks/use-my-widget.ts`)
+
+```ts
+"use client";
+
+import { usePollingInterval } from "@radarboard/hooks/use-polling-interval";
+import useSWR from "swr";
+
+export function useMyWidget(projectSlug: string | null) {
+  const refreshInterval = usePollingInterval("my-widget");
+  const url = projectSlug
+    ? `/api/integrations/my-service/data?project=${projectSlug}`
+    : "/api/integrations/my-service/data";
+
+  const { data, error, isLoading, mutate } = useSWR(url, async (u) => {
+    const res = await fetch(u);
+    if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
+    return res.json();
+  }, { refreshInterval });
+
+  return { data: data ?? null, error: error ?? null, isLoading, refetch: () => mutate() };
+}
+```
+
+### Connect to the template (`data-resolver.tsx`)
+
+```ts
+"use client";
+
+import { registerTemplateDataSource, reportResolverState } from "@radarboard/widget-sdk";
+import { useMyWidget } from "./hooks/use-my-widget";
+
+function MyWidgetResolver({ config, onData }) {
+  const { data, error, isLoading } = useMyWidget(config?.projectSlug ?? null);
+
+  reportResolverState(onData, "my-widget", {
+    loading: isLoading,
+    error: error?.message ?? null,
+    configured: true,
+    fetchedAt: null,
+    stale: false,
+    data: data ?? null,
+  });
+
+  return null;
+}
+
+registerTemplateDataSource("my-widget", MyWidgetResolver);
+```
+
+## Step 4: Configure the Descriptor
+
+```ts
+export const myWidgetDescriptor: WidgetDescriptor<WidgetTemplateConfig> = {
+  id: "my-widget",
+  name: "My Widget",
+  description: "Shows data from My Service.",      // max 120 chars
+  capabilities: [
+    {
+      id: "analytics",
+      role: "specialized",
+      providers: [{ integration: "my-service", action: "data" }],
+    },
+  ],
+  requiredIntegrations: ["my-service"],             // which integrations must be configured
+  defaultSlot: "slot5",                             // grid position (slot1-slot9)
+  component: MyWidgetCompact,
+  expandedComponent: MyWidgetExpanded,
+  defaultConfig: MY_WIDGET_TEMPLATE_CONFIG,
+};
+```
+
+### Capability Governance
+
+Use `capabilities` to describe widget ownership of shared product surfaces.
+
+- `role: "canonical"` means this is the primary Radarboard widget for that capability.
+- `role: "specialized"` means the widget intentionally overlaps an existing capability but is not the main shared surface.
+- `providers` must point at real integration/action pairs.
+- `requiredIntegrations` is still useful for availability filtering, but it does not define ownership.
+
+When a new provider overlaps an existing canonical widget, prefer updating that widget’s provider list and runtime selection instead of creating a second widget for the same capability.
+
+## Step 5: Test
+
+Run conformance tests:
+
+```bash
+pnpm --filter @radarboard/widget-my-widget test
+pnpm check:extensions --filter=widget
+```
+
+`pnpm check:extensions` now audits capability governance. It fails on invalid provider references or duplicate canonical widgets, and warns when integrations and canonical widgets drift apart.
+
+## Adding Variants
+
+Offer different views of the same widget that users can switch between:
+
+```ts
+variants: [
+  {
+    id: "overview",
+    name: "Overview",
+    isDefault: true,
+    config: overviewTemplateConfig,
+  },
+  {
+    id: "detailed",
+    name: "Detailed",
+    config: detailedTemplateConfig,
+  },
+],
+```
+
+## Expanded Views
+
+The compact component renders in the grid card. The expanded component renders in a larger overlay when the user clicks expand. Both receive the same props:
+
+```tsx
+export function MyWidgetExpanded({
+  widgetId, projectSlug, timeRange, config, onFetchedAt, onRefetch,
+}: WidgetRenderProps<WidgetTemplateConfig>) {
+  return (
+    <TemplateWidgetExpanded
+      widgetId={widgetId}
+      projectSlug={projectSlug}
+      timeRange={timeRange}
+      config={config}
+      onFetchedAt={onFetchedAt}
+      onRefetch={onRefetch}
+    />
+  );
+}
+```
+
+## Data Flow
+
+```
+Integration API → SWR Hook → Data Resolver → Template Engine → Widget UI
+                                    ↓
+                            reportResolverState()
+                                    ↓
+                         Template sections render
+                         using recipe + resolved data
+```
+
+## Module Boundaries
+
+Widgets can only import from:
+- `@radarboard/widget-sdk`
+- `@radarboard/widget-engine`
+- `@radarboard/types`
+- `@radarboard/utils`
+- `@radarboard/ui`
+- `@radarboard/charts`
+- `@radarboard/hooks`
+- `@radarboard/assistant-ui`
+
+## Reference
+
+- **Widget system deep dive**: [Widget System](/developer-guide/widget-system)
+- **Composition patterns**: [Widget Composition Reference](/developer-guide/widget-composition-reference)
+- **SDK types**: `@radarboard/widget-sdk` — `WidgetDescriptor`, `WidgetRenderProps`
+- **Capability-backed examples**: `widgets/revenue/`, `widgets/raindrop/`, `widgets/stars/`
+- **Recipes**: `@radarboard/widget-sdk/recipes` — layout factory functions
+- **Real examples**: `widgets/github-activity/`, `widgets/revenue/`, `widgets/analytics/`
+- **Extension rules**: `CONTRIBUTING-EXTENSIONS.md`

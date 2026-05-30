@@ -1,0 +1,46 @@
+---
+title: "GET /api/ideas"
+description: "Fetch open issues from Linear, categorized as ideas or bugs."
+---
+
+# GET /api/ideas
+
+Fetches open issues from Linear, categorized as "ideas" or "bugs" based on label names.
+
+## Query parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `project` | string | No | Project slug |
+| `limit` | number | No | Max items to return (default: 30) |
+
+## Response
+
+```json
+{
+  "items": [
+    {
+      "id": "abc-123",
+      "title": "Add export to PDF feature",
+      "type": "idea",
+      "priority": 2,
+      "status": "open",
+      "createdAt": "2026-03-10T08:00:00Z",
+      "labels": ["feature", "enhancement"]
+    },
+    {
+      "id": "def-456",
+      "title": "Widget crashes on empty data",
+      "type": "bug",
+      "priority": 1,
+      "status": "in_progress",
+      "createdAt": "2026-03-15T14:00:00Z",
+      "labels": ["bug"]
+    }
+  ]
+}
+```
+
+## Cache
+
+- **TTL**: 2 minutes

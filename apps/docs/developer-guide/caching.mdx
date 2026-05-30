@@ -1,0 +1,57 @@
+---
+title: "Caching"
+description: "How API responses are cached to reduce external API calls and improve performance."
+---
+
+# Caching
+
+All external API calls go through a cache-first strategy to minimize rate limit hits and improve response times.
+
+## How it works
+
+```
+Request arrives
+      │
+      ▼
+  Is forceRefresh set? ──Yes──▶ Call external API
+      │No                              │
+      ▼                                ▼
+  Check cache                    Write to cache
+      │                                │
+      ▼                                ▼
+  Fresh? (within TTL) ──Yes──▶ Return cached data
+      │No
+      ▼
+  Call external API
+      │
+      ├── Success ──▶ Write to cache ──▶ Return fresh data
+      │
+      └── Failure ──▶ Return stale cache (with _stale: true)
+```
+
+## Cache TTLs per service
+
+| Service | Cache TTL | Notes |
+|---------|-----------|-------|
+| OpenPanel | 60 seconds | Live visitors: 15 seconds |
+| BetterStack | 1 minute | -- |
+| Sentry | 2 minutes | Projects: 10 minutes |
+| Linear | 2 minutes | Teams: 1 hour |
+| GitHub | 2 minutes | -- |
+| Vercel | 2 minutes | Domains: 5 minutes |
+| RevenueCat | 5 minutes | Rate limited: 5 req/min |
+| Google Search Console | 5 minutes | -- |
+| Open Collective | 5 minutes | -- |
+| App Store Connect | 15 minutes | Rate limited: 200 req/min |
+
+## Stale fallback
+
+When an external API call fails (network error, rate limit, etc.), the system falls back to the most recent cached data, even if it's past its TTL. The response includes a `_stale: true` flag so the UI can indicate the data may not be current.
+
+## Cache storage
+
+Cache is stored in the `api_cache` table of your configured database provider. See [Database Providers](/developer-guide/database-providers).
+
+## Force refresh
+
+Pass `forceRefresh: true` to bypass the cache and fetch fresh data. This is used by the [Backup System](/developer-guide/backup-system) to proactively warm the cache.

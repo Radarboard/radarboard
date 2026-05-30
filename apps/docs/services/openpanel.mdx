@@ -1,0 +1,64 @@
+---
+title: "OpenPanel"
+description: "Privacy-friendly web analytics: visitors, sessions, page views, live visitors, referrers, and more."
+---
+
+# OpenPanel
+
+OpenPanel provides web analytics data including visitor counts, session metrics, page views, bounce rate, average session duration, live visitor count, top pages, and referrers.
+
+## What it powers
+
+- **Analytics widget** -- Live visitors, sessions, page views, bounce rate
+- **KPI Strip** -- Live visitor count cell
+- **Detail panel** -- Falls back to analytics data when other services are unavailable
+
+## Getting your API keys
+
+<Steps>
+  <Step title="Sign in to OpenPanel">
+    Go to [dashboard.openpanel.dev](https://dashboard.openpanel.dev/) and sign in.
+  </Step>
+  <Step title="Navigate to your project settings">
+    Select your project, then go to **Settings** > **API Keys** (or **Clients**).
+  </Step>
+  <Step title="Copy Client ID and Secret">
+    You need a **Client ID** and **Client Secret** pair. If you track multiple sites, you use one shared root client for the Radarboard API, and per-site clients for the MCP servers.
+  </Step>
+</Steps>
+
+## Environment variables
+
+```bash .env.local
+# Shared root client (used by the radarboard API)
+OPENPANEL_CLIENT_ID=your-client-id
+OPENPANEL_CLIENT_SECRET=your-client-secret
+```
+
+<Tip>
+  If you also want to use the OpenPanel MCP servers for AI agents, you'll need per-site credentials. See [OpenPanel MCP](/mcp-servers/openpanel).
+</Tip>
+
+## API details
+
+| Property | Value |
+|----------|-------|
+| API base URL | `https://api.openpanel.dev` |
+| Rate limit | 100 requests per 10 seconds |
+| Cache TTL | 60 seconds (live visitors: 15 seconds) |
+| Authentication | Basic auth or Bearer token |
+
+## MCP server
+
+OpenPanel has an MCP server package (`openpanel-mcp-server`). See [OpenPanel MCP](/mcp-servers/openpanel) for setup.
+
+## Widgets that use this service
+
+<CardGroup cols={2}>
+  <Card title="Analytics" icon="chart-line" href="/widgets/analytics">
+    Primary data source for all analytics metrics.
+  </Card>
+  <Card title="KPI Strip" icon="gauge" href="/widgets/kpi-strip">
+    Provides the live visitor count.
+  </Card>
+</CardGroup>

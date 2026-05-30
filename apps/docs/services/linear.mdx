@@ -1,0 +1,55 @@
+---
+title: "Linear"
+description: "Fetch open issues (ideas and bugs) and completed issues for Shipping."
+---
+
+# Linear
+
+Linear integration provides project management data: open issues categorized as ideas or bugs (based on label names), and recently completed issues for Shipping.
+
+## What it powers
+
+- **Ideas + Bugs widget** -- List of open issues with priority, status, and age
+- **Shipping Log widget** -- Completed issues appear as shipped items
+
+## Getting your API key
+
+<Steps>
+  <Step title="Sign in to Linear">
+    Go to [linear.app](https://linear.app/) and sign in.
+  </Step>
+  <Step title="Go to API settings">
+    Click your avatar in the bottom-left, then go to **Settings** > **API** (or visit [linear.app/settings/api](https://linear.app/settings/api) directly).
+  </Step>
+  <Step title="Create a Personal API Key">
+    Under **Personal API keys**, click **Create key**. Give it a label like "Radarboard".
+    
+    Copy the key.
+  </Step>
+</Steps>
+
+## Environment variables
+
+```bash .env.local
+LINEAR_API_KEY=lin_api_xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+## API details
+
+| Property | Value |
+|----------|-------|
+| API | GraphQL at `https://api.linear.app/graphql` |
+| Rate limit | Standard Linear API limits |
+| Cache TTL | 2 minutes (teams: 1 hour) |
+| Authentication | Bearer token (`Authorization: Bearer lin_api_...`) |
+
+## Widgets that use this service
+
+<CardGroup cols={2}>
+  <Card title="Ideas + Bugs" icon="lightbulb" href="/widgets/ideas-bugs">
+    Primary data source for all ideas and bug tracking.
+  </Card>
+  <Card title="Shipping" icon="ship" href="/widgets/shipping">
+    Shows completed Linear issues as shipped items.
+  </Card>
+</CardGroup>

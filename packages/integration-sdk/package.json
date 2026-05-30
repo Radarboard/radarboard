@@ -1,0 +1,35 @@
+{
+  "name": "@radarboard/integration-sdk",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./types": "./src/types.ts",
+    "./registry": "./src/registry.ts",
+    "./resolver": "./src/resolver.ts",
+    "./routes": "./src/routes.ts",
+    "./conformance": "./src/conformance.test.ts",
+    "./testing": "./src/testing.ts"
+  },
+  "dependencies": {
+    "@radarboard/types": "workspace:*",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@radarboard/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "react": "catalog:"
+  }
+}

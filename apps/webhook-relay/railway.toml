@@ -1,0 +1,12 @@
+# Railway deployment configuration for the webhook relay.
+# Railway auto-detects the Dockerfile. Set environment variables in the Railway dashboard.
+# See: https://docs.railway.com/reference/config-as-code
+
+[build]
+dockerfilePath = "apps/webhook-relay/Dockerfile"
+
+[deploy]
+healthcheckPath = "/api/health"
+healthcheckTimeout = 10
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3

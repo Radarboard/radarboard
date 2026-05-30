@@ -1,0 +1,1544 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`onboarding step snapshots > StepComplete — default state 1`] = `
+<div
+  class="flex flex-1 items-center justify-center px-4 py-8 sm:px-6 sm:py-10"
+>
+  <div
+    class="flex w-full max-w-md flex-col items-center text-center"
+  >
+    <div
+      class="flex h-14 w-14 items-center justify-center rounded-full border border-success/30 bg-success/10"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-circle-check-big icon-lg text-success"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M21.801 10A10 10 0 1 1 17 3.335"
+        />
+        <path
+          d="m9 11 3 3L22 4"
+        />
+      </svg>
+    </div>
+    <div
+      class="mt-5 flex max-w-sm flex-col items-center gap-4"
+    >
+      <h2
+        class="font-bold font-mono text-foreground text-w-lg uppercase tracking-widest"
+      >
+        You're all set
+      </h2>
+      <p
+        class="font-mono text-dim text-w-sm leading-6"
+      >
+        Your dashboard is ready. Here's a summary of your setup.
+      </p>
+    </div>
+    <div
+      class="mt-8 w-full max-w-sm text-left"
+    >
+      <p
+        class="font-mono text-dim text-w-xs uppercase tracking-widest"
+      >
+        Setup summary
+      </p>
+      <ul
+        class="mt-3 space-y-2 overflow-x-hidden"
+      >
+        <li
+          class="flex items-start gap-3 rounded-item border border-border bg-surface px-4 py-3.5"
+        >
+          <div
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-item border border-border bg-secondary"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-puzzle icon-sm text-accent"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M15.39 4.39a1 1 0 0 0 1.68-.474 2.5 2.5 0 1 1 3.014 3.015 1 1 0 0 0-.474 1.68l1.683 1.682a2.414 2.414 0 0 1 0 3.414L19.61 15.39a1 1 0 0 1-1.68-.474 2.5 2.5 0 1 0-3.014 3.015 1 1 0 0 1 .474 1.68l-1.683 1.682a2.414 2.414 0 0 1-3.414 0L8.61 19.61a1 1 0 0 0-1.68.474 2.5 2.5 0 1 1-3.014-3.015 1 1 0 0 0 .474-1.68l-1.683-1.682a2.414 2.414 0 0 1 0-3.414L4.39 8.61a1 1 0 0 1 1.68.474 2.5 2.5 0 1 0 3.014-3.015 1 1 0 0 1-.474-1.68l1.683-1.682a2.414 2.414 0 0 1 3.414 0z"
+              />
+            </svg>
+          </div>
+          <div
+            class="min-w-0 font-mono"
+          >
+            <p
+              class="text-dim text-w-xs uppercase tracking-wide"
+            >
+              Plugins
+            </p>
+            <p
+              class="mt-1 text-foreground-secondary text-w-sm leading-6"
+            >
+              8 plugins
+            </p>
+            <p
+              class="mt-1 text-dim text-w-xs leading-5"
+            >
+              Enabled
+            </p>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div
+      class="mt-8 flex max-w-sm flex-col items-center gap-5"
+    >
+      <p
+        class="font-mono text-dim text-w-sm leading-6"
+      >
+        You can always re-run this setup from Settings or adjust individual preferences.
+      </p>
+      <button
+        class="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-accent text-accent-foreground hover:bg-accent/90 h-7 px-3 text-w-sm rounded-item w-auto font-mono uppercase tracking-widest"
+      >
+        Go to Dashboard
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`onboarding step snapshots > StepComplete — finishing state 1`] = `
+<div
+  class="flex flex-1 items-center justify-center px-4 py-8 sm:px-6 sm:py-10"
+>
+  <div
+    class="flex w-full max-w-md flex-col items-center text-center"
+  >
+    <div
+      class="flex h-14 w-14 items-center justify-center rounded-full border border-success/30 bg-success/10"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-circle-check-big icon-lg text-success"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M21.801 10A10 10 0 1 1 17 3.335"
+        />
+        <path
+          d="m9 11 3 3L22 4"
+        />
+      </svg>
+    </div>
+    <div
+      class="mt-5 flex max-w-sm flex-col items-center gap-4"
+    >
+      <h2
+        class="font-bold font-mono text-foreground text-w-lg uppercase tracking-widest"
+      >
+        You're all set
+      </h2>
+      <p
+        class="font-mono text-dim text-w-sm leading-6"
+      >
+        Your dashboard is ready. Here's a summary of your setup.
+      </p>
+    </div>
+    <div
+      class="mt-8 w-full max-w-sm text-left"
+    >
+      <p
+        class="font-mono text-dim text-w-xs uppercase tracking-widest"
+      >
+        Setup summary
+      </p>
+      <ul
+        class="mt-3 space-y-2 overflow-x-hidden"
+      >
+        <li
+          class="flex items-start gap-3 rounded-item border border-border bg-surface px-4 py-3.5"
+        >
+          <div
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-item border border-border bg-secondary"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-puzzle icon-sm text-accent"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M15.39 4.39a1 1 0 0 0 1.68-.474 2.5 2.5 0 1 1 3.014 3.015 1 1 0 0 0-.474 1.68l1.683 1.682a2.414 2.414 0 0 1 0 3.414L19.61 15.39a1 1 0 0 1-1.68-.474 2.5 2.5 0 1 0-3.014 3.015 1 1 0 0 1 .474 1.68l-1.683 1.682a2.414 2.414 0 0 1-3.414 0L8.61 19.61a1 1 0 0 0-1.68.474 2.5 2.5 0 1 1-3.014-3.015 1 1 0 0 0 .474-1.68l-1.683-1.682a2.414 2.414 0 0 1 0-3.414L4.39 8.61a1 1 0 0 1 1.68.474 2.5 2.5 0 1 0 3.014-3.015 1 1 0 0 1-.474-1.68l1.683-1.682a2.414 2.414 0 0 1 3.414 0z"
+              />
+            </svg>
+          </div>
+          <div
+            class="min-w-0 font-mono"
+          >
+            <p
+              class="text-dim text-w-xs uppercase tracking-wide"
+            >
+              Plugins
+            </p>
+            <p
+              class="mt-1 text-foreground-secondary text-w-sm leading-6"
+            >
+              8 plugins
+            </p>
+            <p
+              class="mt-1 text-dim text-w-xs leading-5"
+            >
+              Enabled
+            </p>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div
+      class="mt-8 flex max-w-sm flex-col items-center gap-5"
+    >
+      <p
+        class="font-mono text-dim text-w-sm leading-6"
+      >
+        You can always re-run this setup from Settings or adjust individual preferences.
+      </p>
+      <button
+        class="inline-flex items-center justify-center gap-2 whitespace-nowrap transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-accent text-accent-foreground hover:bg-accent/90 h-7 px-3 text-w-sm rounded-item w-auto font-mono uppercase tracking-widest cursor-wait"
+        disabled=""
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-loader-circle icon-xs animate-spin"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M21 12a9 9 0 1 1-6.219-8.56"
+          />
+        </svg>
+        Applying layout...
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`onboarding step snapshots > StepComplete — with profile and demo mode 1`] = `
+<div
+  class="flex flex-1 items-center justify-center px-4 py-8 sm:px-6 sm:py-10"
+>
+  <div
+    class="flex w-full max-w-md flex-col items-center text-center"
+  >
+    <div
+      class="flex h-14 w-14 items-center justify-center rounded-full border border-success/30 bg-success/10"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-circle-check-big icon-lg text-success"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M21.801 10A10 10 0 1 1 17 3.335"
+        />
+        <path
+          d="m9 11 3 3L22 4"
+        />
+      </svg>
+    </div>
+    <div
+      class="mt-5 flex max-w-sm flex-col items-center gap-4"
+    >
+      <h2
+        class="font-bold font-mono text-foreground text-w-lg uppercase tracking-widest"
+      >
+        You're all set
+      </h2>
+      <p
+        class="font-mono text-dim text-w-sm leading-6"
+      >
+        Your dashboard is ready. Here's a summary of your setup.
+      </p>
+    </div>
+    <div
+      class="mt-8 w-full max-w-sm text-left"
+    >
+      <p
+        class="font-mono text-dim text-w-xs uppercase tracking-widest"
+      >
+        Setup summary
+      </p>
+      <ul
+        class="mt-3 space-y-2 overflow-x-hidden"
+      >
+        <li
+          class="flex items-start gap-3 rounded-item border border-border bg-surface px-4 py-3.5"
+        >
+          <div
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-item border border-border bg-secondary"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-user icon-sm text-accent"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"
+              />
+              <circle
+                cx="12"
+                cy="7"
+                r="4"
+              />
+            </svg>
+          </div>
+          <div
+            class="min-w-0 font-mono"
+          >
+            <p
+              class="text-dim text-w-xs uppercase tracking-wide"
+            >
+              Profile
+            </p>
+            <p
+              class="mt-1 text-foreground-secondary text-w-sm leading-6"
+            >
+              Full-Stack Developer
+            </p>
+          </div>
+        </li>
+        <li
+          class="flex items-start gap-3 rounded-item border border-border bg-surface px-4 py-3.5"
+        >
+          <div
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-item border border-border bg-secondary"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-flask-conical icon-sm text-accent"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2"
+              />
+              <path
+                d="M6.453 15h11.094"
+              />
+              <path
+                d="M8.5 2h7"
+              />
+            </svg>
+          </div>
+          <div
+            class="min-w-0 font-mono"
+          >
+            <p
+              class="text-dim text-w-xs uppercase tracking-wide"
+            >
+              Mode
+            </p>
+            <p
+              class="mt-1 text-foreground-secondary text-w-sm leading-6"
+            >
+              Demo mode
+            </p>
+            <p
+              class="mt-1 text-dim text-w-xs leading-5"
+            >
+              Viewing sample data
+            </p>
+          </div>
+        </li>
+        <li
+          class="flex items-start gap-3 rounded-item border border-border bg-surface px-4 py-3.5"
+        >
+          <div
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-item border border-border bg-secondary"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-plug icon-sm text-accent"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 22v-5"
+              />
+              <path
+                d="M15 8V2"
+              />
+              <path
+                d="M17 8a1 1 0 0 1 1 1v4a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1z"
+              />
+              <path
+                d="M9 8V2"
+              />
+            </svg>
+          </div>
+          <div
+            class="min-w-0 font-mono"
+          >
+            <p
+              class="text-dim text-w-xs uppercase tracking-wide"
+            >
+              Integrations
+            </p>
+            <p
+              class="mt-1 text-foreground-secondary text-w-sm leading-6"
+            >
+              2 integrations
+            </p>
+            <p
+              class="mt-1 text-dim text-w-xs leading-5"
+            >
+              Selected
+            </p>
+          </div>
+        </li>
+        <li
+          class="flex items-start gap-3 rounded-item border border-border bg-surface px-4 py-3.5"
+        >
+          <div
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-item border border-border bg-secondary"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-puzzle icon-sm text-accent"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M15.39 4.39a1 1 0 0 0 1.68-.474 2.5 2.5 0 1 1 3.014 3.015 1 1 0 0 0-.474 1.68l1.683 1.682a2.414 2.414 0 0 1 0 3.414L19.61 15.39a1 1 0 0 1-1.68-.474 2.5 2.5 0 1 0-3.014 3.015 1 1 0 0 1 .474 1.68l-1.683 1.682a2.414 2.414 0 0 1-3.414 0L8.61 19.61a1 1 0 0 0-1.68.474 2.5 2.5 0 1 1-3.014-3.015 1 1 0 0 0 .474-1.68l-1.683-1.682a2.414 2.414 0 0 1 0-3.414L4.39 8.61a1 1 0 0 1 1.68.474 2.5 2.5 0 1 0 3.014-3.015 1 1 0 0 1-.474-1.68l1.683-1.682a2.414 2.414 0 0 1 3.414 0z"
+              />
+            </svg>
+          </div>
+          <div
+            class="min-w-0 font-mono"
+          >
+            <p
+              class="text-dim text-w-xs uppercase tracking-wide"
+            >
+              Plugins
+            </p>
+            <p
+              class="mt-1 text-foreground-secondary text-w-sm leading-6"
+            >
+              8 plugins
+            </p>
+            <p
+              class="mt-1 text-dim text-w-xs leading-5"
+            >
+              Enabled
+            </p>
+          </div>
+        </li>
+        <li
+          class="flex items-start gap-3 rounded-item border border-border bg-surface px-4 py-3.5"
+        >
+          <div
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-item border border-border bg-secondary"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-layout-grid icon-sm text-accent"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect
+                height="7"
+                rx="1"
+                width="7"
+                x="3"
+                y="3"
+              />
+              <rect
+                height="7"
+                rx="1"
+                width="7"
+                x="14"
+                y="3"
+              />
+              <rect
+                height="7"
+                rx="1"
+                width="7"
+                x="14"
+                y="14"
+              />
+              <rect
+                height="7"
+                rx="1"
+                width="7"
+                x="3"
+                y="14"
+              />
+            </svg>
+          </div>
+          <div
+            class="min-w-0 font-mono"
+          >
+            <p
+              class="text-dim text-w-xs uppercase tracking-wide"
+            >
+              Layout
+            </p>
+            <p
+              class="mt-1 text-foreground-secondary text-w-sm leading-6"
+            >
+              Dashboard blueprint selected
+            </p>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div
+      class="mt-8 flex max-w-sm flex-col items-center gap-5"
+    >
+      <p
+        class="font-mono text-dim text-w-sm leading-6"
+      >
+        You can always re-run this setup from Settings or adjust individual preferences.
+      </p>
+      <button
+        class="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-accent text-accent-foreground hover:bg-accent/90 h-7 px-3 text-w-sm rounded-item w-auto font-mono uppercase tracking-widest"
+      >
+        Go to Dashboard
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`onboarding step snapshots > StepDatabase renders correctly 1`] = `
+<div
+  class="flex flex-1 flex-col overflow-hidden px-4 pt-4 sm:px-6 sm:pt-6"
+>
+  <div
+    class="mb-1 font-mono text-dim text-w-sm uppercase tracking-widest"
+  >
+    Database Setup
+  </div>
+  <p
+    class="mb-5 font-mono text-dim text-w-sm"
+  >
+    Choose where to store your dashboard data. SQLite works out of the box for local use.
+  </p>
+  <div
+    class="@container min-h-0 flex-1 overflow-y-auto pr-1"
+  >
+    <fieldset
+      class="space-y-5"
+    >
+      <legend
+        class="sr-only"
+      >
+        Database provider
+      </legend>
+      <div>
+        <div
+          class="mb-2 font-mono text-dim/60 text-w-sm uppercase tracking-widest"
+        >
+          Local
+        </div>
+        <div
+          class="grid grid-cols-1 gap-3 @[500px]:grid-cols-2 @[750px]:grid-cols-4 @[1000px]:grid-cols-5"
+        >
+          <label
+            class="cursor-pointer rounded-item border px-4 py-3 text-left transition-colors border-accent/30 bg-accent/10"
+            for="db-provider-sqlite"
+          >
+            <input
+              checked=""
+              class="sr-only"
+              id="db-provider-sqlite"
+              name="database-provider"
+              type="radio"
+              value="sqlite"
+            />
+            <div
+              class="flex items-center gap-2"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-database h-4 w-4 shrink-0 text-foreground-secondary"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <ellipse
+                  cx="12"
+                  cy="5"
+                  rx="9"
+                  ry="3"
+                />
+                <path
+                  d="M3 5V19A9 3 0 0 0 21 19V5"
+                />
+                <path
+                  d="M3 12A9 3 0 0 0 21 12"
+                />
+              </svg>
+              <span
+                class="font-mono text-foreground text-w-sm uppercase tracking-widest"
+              >
+                SQLite
+              </span>
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-circle-check-big ml-auto h-4 w-4 shrink-0 text-accent"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M21.801 10A10 10 0 1 1 17 3.335"
+                />
+                <path
+                  d="m9 11 3 3L22 4"
+                />
+              </svg>
+            </div>
+            <div
+              class="mt-1 font-mono text-dim text-w-sm"
+            >
+              Local file-based storage. No setup required.
+            </div>
+            <span
+              class="mt-2 inline-block rounded-full bg-accent/20 px-2 py-0.5 font-mono text-accent text-w-xs uppercase tracking-widest"
+            >
+              Recommended
+            </span>
+          </label>
+        </div>
+      </div>
+      <div>
+        <div
+          class="mb-2 font-mono text-dim/60 text-w-sm uppercase tracking-widest"
+        >
+          Cloud
+        </div>
+        <div
+          class="grid grid-cols-1 gap-3 @[500px]:grid-cols-2 @[750px]:grid-cols-4 @[1000px]:grid-cols-5"
+        >
+          <label
+            class="cursor-pointer rounded-item border px-4 py-3 text-left transition-colors border-border bg-surface hover:bg-muted"
+            for="db-provider-supabase"
+          >
+            <input
+              class="sr-only"
+              id="db-provider-supabase"
+              name="database-provider"
+              type="radio"
+              value="supabase"
+            />
+            <div
+              class="flex items-center gap-2"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-database h-4 w-4 shrink-0 text-foreground-secondary"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <ellipse
+                  cx="12"
+                  cy="5"
+                  rx="9"
+                  ry="3"
+                />
+                <path
+                  d="M3 5V19A9 3 0 0 0 21 19V5"
+                />
+                <path
+                  d="M3 12A9 3 0 0 0 21 12"
+                />
+              </svg>
+              <span
+                class="font-mono text-foreground text-w-sm uppercase tracking-widest"
+              >
+                Supabase
+              </span>
+            </div>
+            <div
+              class="mt-1 font-mono text-dim text-w-sm"
+            >
+              Postgres-based backend with real-time capabilities.
+            </div>
+          </label>
+          <label
+            class="cursor-pointer rounded-item border px-4 py-3 text-left transition-colors border-border bg-surface hover:bg-muted"
+            for="db-provider-turso"
+          >
+            <input
+              class="sr-only"
+              id="db-provider-turso"
+              name="database-provider"
+              type="radio"
+              value="turso"
+            />
+            <div
+              class="flex items-center gap-2"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-database h-4 w-4 shrink-0 text-foreground-secondary"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <ellipse
+                  cx="12"
+                  cy="5"
+                  rx="9"
+                  ry="3"
+                />
+                <path
+                  d="M3 5V19A9 3 0 0 0 21 19V5"
+                />
+                <path
+                  d="M3 12A9 3 0 0 0 21 12"
+                />
+              </svg>
+              <span
+                class="font-mono text-foreground text-w-sm uppercase tracking-widest"
+              >
+                Turso
+              </span>
+            </div>
+            <div
+              class="mt-1 font-mono text-dim text-w-sm"
+            >
+              Distributed SQLite at the edge.
+            </div>
+          </label>
+          <label
+            class="cursor-pointer rounded-item border px-4 py-3 text-left transition-colors border-border bg-surface hover:bg-muted"
+            for="db-provider-planetscale"
+          >
+            <input
+              class="sr-only"
+              id="db-provider-planetscale"
+              name="database-provider"
+              type="radio"
+              value="planetscale"
+            />
+            <div
+              class="flex items-center gap-2"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-database h-4 w-4 shrink-0 text-foreground-secondary"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <ellipse
+                  cx="12"
+                  cy="5"
+                  rx="9"
+                  ry="3"
+                />
+                <path
+                  d="M3 5V19A9 3 0 0 0 21 19V5"
+                />
+                <path
+                  d="M3 12A9 3 0 0 0 21 12"
+                />
+              </svg>
+              <span
+                class="font-mono text-foreground text-w-sm uppercase tracking-widest"
+              >
+                PlanetScale
+              </span>
+            </div>
+            <div
+              class="mt-1 font-mono text-dim text-w-sm"
+            >
+              MySQL-compatible serverless database.
+            </div>
+          </label>
+        </div>
+      </div>
+    </fieldset>
+  </div>
+  <div
+    class="flex shrink-0 items-center justify-between border-border/40 border-t py-4"
+  >
+    <button
+      class="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted h-7 px-3 text-w-sm rounded-item w-auto font-mono uppercase tracking-widest"
+    >
+      Back
+    </button>
+    <button
+      class="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-accent text-accent-foreground hover:bg-accent/90 h-7 px-3 text-w-sm rounded-item w-auto font-mono uppercase tracking-widest"
+    >
+      Continue
+    </button>
+  </div>
+</div>
+`;
+
+exports[`onboarding step snapshots > StepProfile renders correctly 1`] = `
+<div
+  class="flex flex-1 flex-col overflow-hidden px-4 pt-4 sm:px-6 sm:pt-6"
+>
+  <div
+    class="mb-1 font-mono text-dim text-w-sm uppercase tracking-widest"
+  >
+    About You
+  </div>
+  <p
+    class="mb-5 font-mono text-dim text-w-sm"
+  >
+    Choose your primary role. This helps us suggest the right integrations, plugins, and layout for your dashboard.
+  </p>
+  <div
+    class="@container min-h-0 flex-1 space-y-5 overflow-y-auto pr-1"
+  >
+    <div>
+      <div
+        class="mb-2 font-mono text-dim/60 text-w-sm uppercase tracking-widest"
+      >
+        Development
+      </div>
+      <fieldset>
+        <div
+          class="grid grid-cols-1 gap-3 @[500px]:grid-cols-2 @[750px]:grid-cols-4 @[1000px]:grid-cols-5"
+        >
+          <legend
+            class="sr-only"
+          >
+            Development
+          </legend>
+          <label
+            class="flex cursor-pointer items-start gap-3 rounded-item border px-3 py-2.5 text-left transition-colors border-border bg-surface hover:bg-muted"
+            for="profile-fullstack"
+          >
+            <input
+              class="sr-only"
+              id="profile-fullstack"
+              name="user-profile"
+              type="radio"
+            />
+            <span
+              class="mt-0.5 text-base leading-none"
+            >
+              🔧
+            </span>
+            <div
+              class="min-w-0 flex-1"
+            >
+              <div
+                class="flex items-center gap-1.5"
+              >
+                <span
+                  class="font-mono text-foreground text-w-sm uppercase tracking-widest"
+                >
+                  Full-Stack Developer
+                </span>
+              </div>
+              <div
+                class="mt-0.5 font-mono text-dim text-w-sm leading-snug"
+              >
+                Web apps, APIs, databases, deployments
+              </div>
+            </div>
+          </label>
+          <label
+            class="flex cursor-pointer items-start gap-3 rounded-item border px-3 py-2.5 text-left transition-colors border-border bg-surface hover:bg-muted"
+            for="profile-frontend"
+          >
+            <input
+              class="sr-only"
+              id="profile-frontend"
+              name="user-profile"
+              type="radio"
+            />
+            <span
+              class="mt-0.5 text-base leading-none"
+            >
+              🎨
+            </span>
+            <div
+              class="min-w-0 flex-1"
+            >
+              <div
+                class="flex items-center gap-1.5"
+              >
+                <span
+                  class="font-mono text-foreground text-w-sm uppercase tracking-widest"
+                >
+                  Frontend Developer
+                </span>
+              </div>
+              <div
+                class="mt-0.5 font-mono text-dim text-w-sm leading-snug"
+              >
+                UI/UX, components, performance, accessibility
+              </div>
+            </div>
+          </label>
+          <label
+            class="flex cursor-pointer items-start gap-3 rounded-item border px-3 py-2.5 text-left transition-colors border-border bg-surface hover:bg-muted"
+            for="profile-backend"
+          >
+            <input
+              class="sr-only"
+              id="profile-backend"
+              name="user-profile"
+              type="radio"
+            />
+            <span
+              class="mt-0.5 text-base leading-none"
+            >
+              ⚙️
+            </span>
+            <div
+              class="min-w-0 flex-1"
+            >
+              <div
+                class="flex items-center gap-1.5"
+              >
+                <span
+                  class="font-mono text-foreground text-w-sm uppercase tracking-widest"
+                >
+                  Backend Developer
+                </span>
+              </div>
+              <div
+                class="mt-0.5 font-mono text-dim text-w-sm leading-snug"
+              >
+                APIs, microservices, databases, infrastructure
+              </div>
+            </div>
+          </label>
+          <label
+            class="flex cursor-pointer items-start gap-3 rounded-item border px-3 py-2.5 text-left transition-colors border-border bg-surface hover:bg-muted"
+            for="profile-mobile"
+          >
+            <input
+              class="sr-only"
+              id="profile-mobile"
+              name="user-profile"
+              type="radio"
+            />
+            <span
+              class="mt-0.5 text-base leading-none"
+            >
+              📱
+            </span>
+            <div
+              class="min-w-0 flex-1"
+            >
+              <div
+                class="flex items-center gap-1.5"
+              >
+                <span
+                  class="font-mono text-foreground text-w-sm uppercase tracking-widest"
+                >
+                  Mobile Developer
+                </span>
+              </div>
+              <div
+                class="mt-0.5 font-mono text-dim text-w-sm leading-snug"
+              >
+                iOS, Android, cross-platform apps
+              </div>
+            </div>
+          </label>
+          <label
+            class="flex cursor-pointer items-start gap-3 rounded-item border px-3 py-2.5 text-left transition-colors border-border bg-surface hover:bg-muted"
+            for="profile-devops"
+          >
+            <input
+              class="sr-only"
+              id="profile-devops"
+              name="user-profile"
+              type="radio"
+            />
+            <span
+              class="mt-0.5 text-base leading-none"
+            >
+              🚀
+            </span>
+            <div
+              class="min-w-0 flex-1"
+            >
+              <div
+                class="flex items-center gap-1.5"
+              >
+                <span
+                  class="font-mono text-foreground text-w-sm uppercase tracking-widest"
+                >
+                  DevOps / Platform
+                </span>
+              </div>
+              <div
+                class="mt-0.5 font-mono text-dim text-w-sm leading-snug"
+              >
+                CI/CD, infrastructure, monitoring, reliability
+              </div>
+            </div>
+          </label>
+        </div>
+      </fieldset>
+    </div>
+    <div>
+      <div
+        class="mb-2 font-mono text-dim/60 text-w-sm uppercase tracking-widest"
+      >
+        Product & Business
+      </div>
+      <fieldset>
+        <div
+          class="grid grid-cols-1 gap-3 @[500px]:grid-cols-2 @[750px]:grid-cols-4 @[1000px]:grid-cols-5"
+        >
+          <legend
+            class="sr-only"
+          >
+            Product & Business
+          </legend>
+          <label
+            class="flex cursor-pointer items-start gap-3 rounded-item border px-3 py-2.5 text-left transition-colors border-border bg-surface hover:bg-muted"
+            for="profile-indie"
+          >
+            <input
+              class="sr-only"
+              id="profile-indie"
+              name="user-profile"
+              type="radio"
+            />
+            <span
+              class="mt-0.5 text-base leading-none"
+            >
+              💡
+            </span>
+            <div
+              class="min-w-0 flex-1"
+            >
+              <div
+                class="flex items-center gap-1.5"
+              >
+                <span
+                  class="font-mono text-foreground text-w-sm uppercase tracking-widest"
+                >
+                  Indie Hacker
+                </span>
+              </div>
+              <div
+                class="mt-0.5 font-mono text-dim text-w-sm leading-snug"
+              >
+                Solo products, revenue, growth, shipping fast
+              </div>
+            </div>
+          </label>
+          <label
+            class="flex cursor-pointer items-start gap-3 rounded-item border px-3 py-2.5 text-left transition-colors border-border bg-surface hover:bg-muted"
+            for="profile-team-lead"
+          >
+            <input
+              class="sr-only"
+              id="profile-team-lead"
+              name="user-profile"
+              type="radio"
+            />
+            <span
+              class="mt-0.5 text-base leading-none"
+            >
+              👥
+            </span>
+            <div
+              class="min-w-0 flex-1"
+            >
+              <div
+                class="flex items-center gap-1.5"
+              >
+                <span
+                  class="font-mono text-foreground text-w-sm uppercase tracking-widest"
+                >
+                  Team Lead / Manager
+                </span>
+              </div>
+              <div
+                class="mt-0.5 font-mono text-dim text-w-sm leading-snug"
+              >
+                Roadmaps, team velocity, shipping cadence
+              </div>
+            </div>
+          </label>
+          <label
+            class="flex cursor-pointer items-start gap-3 rounded-item border px-3 py-2.5 text-left transition-colors border-border bg-surface hover:bg-muted"
+            for="profile-opensource"
+          >
+            <input
+              class="sr-only"
+              id="profile-opensource"
+              name="user-profile"
+              type="radio"
+            />
+            <span
+              class="mt-0.5 text-base leading-none"
+            >
+              🌍
+            </span>
+            <div
+              class="min-w-0 flex-1"
+            >
+              <div
+                class="flex items-center gap-1.5"
+              >
+                <span
+                  class="font-mono text-foreground text-w-sm uppercase tracking-widest"
+                >
+                  Open Source Maintainer
+                </span>
+              </div>
+              <div
+                class="mt-0.5 font-mono text-dim text-w-sm leading-snug"
+              >
+                Stars, PRs, sponsors, community health
+              </div>
+            </div>
+          </label>
+        </div>
+      </fieldset>
+    </div>
+    <div>
+      <div
+        class="mb-2 font-mono text-dim/60 text-w-sm uppercase tracking-widest"
+      >
+        Growth & Marketing
+      </div>
+      <fieldset>
+        <div
+          class="grid grid-cols-1 gap-3 @[500px]:grid-cols-2 @[750px]:grid-cols-4 @[1000px]:grid-cols-5"
+        >
+          <legend
+            class="sr-only"
+          >
+            Growth & Marketing
+          </legend>
+          <label
+            class="flex cursor-pointer items-start gap-3 rounded-item border px-3 py-2.5 text-left transition-colors border-border bg-surface hover:bg-muted"
+            for="profile-seo"
+          >
+            <input
+              class="sr-only"
+              id="profile-seo"
+              name="user-profile"
+              type="radio"
+            />
+            <span
+              class="mt-0.5 text-base leading-none"
+            >
+              🔍
+            </span>
+            <div
+              class="min-w-0 flex-1"
+            >
+              <div
+                class="flex items-center gap-1.5"
+              >
+                <span
+                  class="font-mono text-foreground text-w-sm uppercase tracking-widest"
+                >
+                  SEO Specialist
+                </span>
+              </div>
+              <div
+                class="mt-0.5 font-mono text-dim text-w-sm leading-snug"
+              >
+                Search rankings, keywords, organic traffic
+              </div>
+            </div>
+          </label>
+          <label
+            class="flex cursor-pointer items-start gap-3 rounded-item border px-3 py-2.5 text-left transition-colors border-border bg-surface hover:bg-muted"
+            for="profile-marketing"
+          >
+            <input
+              class="sr-only"
+              id="profile-marketing"
+              name="user-profile"
+              type="radio"
+            />
+            <span
+              class="mt-0.5 text-base leading-none"
+            >
+              📈
+            </span>
+            <div
+              class="min-w-0 flex-1"
+            >
+              <div
+                class="flex items-center gap-1.5"
+              >
+                <span
+                  class="font-mono text-foreground text-w-sm uppercase tracking-widest"
+                >
+                  Marketing / Growth
+                </span>
+              </div>
+              <div
+                class="mt-0.5 font-mono text-dim text-w-sm leading-snug"
+              >
+                Campaigns, analytics, social media, conversions
+              </div>
+            </div>
+          </label>
+          <label
+            class="flex cursor-pointer items-start gap-3 rounded-item border px-3 py-2.5 text-left transition-colors border-border bg-surface hover:bg-muted"
+            for="profile-content-creator"
+          >
+            <input
+              class="sr-only"
+              id="profile-content-creator"
+              name="user-profile"
+              type="radio"
+            />
+            <span
+              class="mt-0.5 text-base leading-none"
+            >
+              ✍️
+            </span>
+            <div
+              class="min-w-0 flex-1"
+            >
+              <div
+                class="flex items-center gap-1.5"
+              >
+                <span
+                  class="font-mono text-foreground text-w-sm uppercase tracking-widest"
+                >
+                  Content Creator
+                </span>
+              </div>
+              <div
+                class="mt-0.5 font-mono text-dim text-w-sm leading-snug"
+              >
+                Blogs, videos, newsletters, audience growth
+              </div>
+            </div>
+          </label>
+          <label
+            class="flex cursor-pointer items-start gap-3 rounded-item border px-3 py-2.5 text-left transition-colors border-border bg-surface hover:bg-muted"
+            for="profile-data"
+          >
+            <input
+              class="sr-only"
+              id="profile-data"
+              name="user-profile"
+              type="radio"
+            />
+            <span
+              class="mt-0.5 text-base leading-none"
+            >
+              📊
+            </span>
+            <div
+              class="min-w-0 flex-1"
+            >
+              <div
+                class="flex items-center gap-1.5"
+              >
+                <span
+                  class="font-mono text-foreground text-w-sm uppercase tracking-widest"
+                >
+                  Data / Analytics
+                </span>
+              </div>
+              <div
+                class="mt-0.5 font-mono text-dim text-w-sm leading-snug"
+              >
+                Dashboards, metrics, reporting, insights
+              </div>
+            </div>
+          </label>
+        </div>
+      </fieldset>
+    </div>
+  </div>
+  <div
+    class="flex shrink-0 items-center justify-between border-border/40 border-t py-4"
+  >
+    <button
+      class="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted h-7 px-3 text-w-sm rounded-item w-auto font-mono uppercase tracking-widest"
+    >
+      Back
+    </button>
+    <div
+      class="flex items-center gap-2"
+    >
+      <span
+        class="font-mono text-dim text-w-sm"
+        role="status"
+      >
+        Choose your role
+      </span>
+      <button
+        class="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-accent text-accent-foreground hover:bg-accent/90 h-7 px-3 text-w-sm rounded-item w-auto font-mono uppercase tracking-widest"
+        disabled=""
+      >
+        Continue
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`onboarding step snapshots > StepWelcome renders correctly 1`] = `
+<div
+  class="flex flex-1 flex-col items-center justify-center px-4 py-6 text-center sm:px-6 sm:py-8"
+>
+  <h2
+    class="font-bold font-mono text-foreground text-w-xl uppercase tracking-widest"
+  >
+    Welcome to Radarboard
+  </h2>
+  <p
+    class="mt-3 mb-6 max-w-md font-mono text-dim text-w-base"
+  >
+    Your dashboard for connected services, projects, audiences, revenue, and more. Let's get you set up.
+  </p>
+  <div
+    class="mt-10 flex w-full max-w-md flex-col gap-3"
+  >
+    <button
+      class="flex items-center gap-4 rounded-item border px-5 py-4 text-left transition-colors border-border bg-surface hover:bg-muted"
+      type="button"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-flask-conical h-6 w-6 shrink-0 text-accent"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2"
+        />
+        <path
+          d="M6.453 15h11.094"
+        />
+        <path
+          d="M8.5 2h7"
+        />
+      </svg>
+      <div>
+        <div
+          class="font-mono text-foreground text-w-base uppercase tracking-widest"
+        >
+          Start with demo data
+        </div>
+        <div
+          class="mt-0.5 font-mono text-dim text-w-sm"
+        >
+          See the dashboard in action with realistic sample data. Connect real services later.
+        </div>
+      </div>
+    </button>
+    <button
+      class="flex items-center gap-4 rounded-item border px-5 py-4 text-left transition-colors border-accent/30 bg-accent/10"
+      type="button"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-rocket h-6 w-6 shrink-0 text-foreground-secondary"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"
+        />
+        <path
+          d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09"
+        />
+        <path
+          d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z"
+        />
+        <path
+          d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05"
+        />
+      </svg>
+      <div>
+        <div
+          class="font-mono text-foreground text-w-base uppercase tracking-widest"
+        >
+          Start fresh
+        </div>
+        <div
+          class="mt-0.5 font-mono text-dim text-w-sm"
+        >
+          Set up your database and connect your services right away.
+        </div>
+      </div>
+    </button>
+    <button
+      class="flex items-center gap-4 rounded-item border border-border bg-surface px-5 py-4 text-left transition-colors hover:bg-muted disabled:cursor-wait disabled:opacity-60"
+      type="button"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-rotate-ccw h-6 w-6 shrink-0 text-foreground-secondary"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"
+        />
+        <path
+          d="M3 3v5h5"
+        />
+      </svg>
+      <div>
+        <div
+          class="font-mono text-foreground text-w-base uppercase tracking-widest"
+        >
+          Restore from backup
+        </div>
+        <div
+          class="mt-0.5 font-mono text-dim text-w-sm"
+        >
+          Upload a config backup to restore your layouts, preferences, and plugin settings.
+        </div>
+      </div>
+    </button>
+    <input
+      accept=".json,application/json"
+      class="hidden"
+      type="file"
+    />
+  </div>
+</div>
+`;

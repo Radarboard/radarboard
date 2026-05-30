@@ -1,0 +1,65 @@
+---
+title: "RevenueCat MCP"
+description: "Connect AI agents to RevenueCat revenue data via MCP."
+---
+
+# RevenueCat MCP Server
+
+RevenueCat provides an official **remote** MCP server that lets AI agents query your subscription revenue data in real time.
+
+## Setup
+
+### 1. Get your API key
+
+Follow the [RevenueCat service setup](/services/revenuecat) to get your `REVENUECAT_API_V2_SECRET_KEY`.
+
+### 2. Add to your environment
+
+Make sure the key is in your root `.env` file (not `apps/app/.env.local`):
+
+```bash .env
+REVENUECAT_API_V2_SECRET_KEY=sk_xxxxxxxxxxxx
+```
+
+### 3. Configuration in opencode.json
+
+The MCP server is already configured in `opencode.json`:
+
+```json opencode.json
+{
+  "mcpServers": {
+    "revenuecat": {
+      "type": "remote",
+      "url": "https://mcp.revenuecat.ai/mcp",
+      "headers": {
+        "Authorization": "Bearer ${REVENUECAT_API_V2_SECRET_KEY}"
+      }
+    }
+  }
+}
+```
+
+## Server details
+
+| Property | Value |
+|----------|-------|
+| Type | Remote (hosted by RevenueCat) |
+| URL | `https://mcp.revenuecat.ai/mcp` |
+| Authentication | Bearer token (same V2 secret key as the API) |
+| Required env var | `REVENUECAT_API_V2_SECRET_KEY` |
+
+## What agents can do
+
+With this MCP server, an AI agent can:
+- Query current MRR and revenue metrics
+- Check subscriber counts and trends
+- Investigate revenue changes
+- Pull transaction details
+
+## Using with different AI tools
+
+### Claude Code / OpenCode
+Already configured via `opencode.json`. No extra setup needed.
+
+### Cursor / Windsurf
+Add the MCP server to your editor's MCP configuration. Consult your editor's docs for the exact config format, but the URL and auth header are the same.

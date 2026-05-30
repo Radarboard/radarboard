@@ -1,0 +1,70 @@
+---
+title: "Open Collective"
+description: "Track open-source funding: balance, total raised, yearly budget, transactions, and backers."
+---
+
+# Open Collective
+
+Open Collective provides financial data for open-source projects: current balance, total raised, yearly budget, backer/member counts, recent transactions (credits and debits), and top contributors.
+
+## What it powers
+
+- **Revenue widget** -- Can supplement RevenueCat with Open Collective financial KPIs
+- **Analytics widget** -- Falls back to OC transactions when OpenPanel is not configured
+- **SEO widget** -- Falls back to OC members list when Google Search Console is not configured
+- **Detail panel** -- Full Open Collective view with KPIs, transactions, and members (highest priority in detail panel)
+
+## Getting your API token
+
+<Steps>
+  <Step title="Sign in to Open Collective">
+    Go to [opencollective.com](https://opencollective.com/) and sign in.
+  </Step>
+  <Step title="Generate a Personal Token">
+    Go to [opencollective.com/applications](https://opencollective.com/applications).
+    
+    Click **Create personal token**. Give it a name like "Radarboard" and select the scopes you need (read access to your collective).
+  </Step>
+  <Step title="Copy the token">
+    Copy the generated token. You won't be able to see it again.
+  </Step>
+  <Step title="Find your collective slug">
+    Your collective slug is the URL path of your collective page: `opencollective.com/<SLUG>` (e.g., `front-end-checklist`).
+  </Step>
+</Steps>
+
+## Environment variables
+
+```bash .env.local
+OPENCOLLECTIVE_API_TOKEN=your-personal-token
+```
+
+<Note>
+  The collective **slug** is configured per-project in `apps/app/config/projects.ts`, not as an env var.
+</Note>
+
+## API details
+
+| Property | Value |
+|----------|-------|
+| API | GraphQL v2 at `https://api.opencollective.com/graphql/v2` |
+| Rate limit | Standard GraphQL limits |
+| Cache TTL | 5 minutes |
+| Authentication | Bearer token (`Authorization: Bearer ...`) |
+
+## Widgets that use this service
+
+<CardGroup cols={2}>
+  <Card title="Revenue" icon="dollar-sign" href="/widgets/revenue">
+    Supplements revenue data with OC financial KPIs.
+  </Card>
+  <Card title="Analytics" icon="chart-line" href="/widgets/analytics">
+    Fallback: shows OC transactions when OpenPanel is unavailable.
+  </Card>
+  <Card title="SEO Performance" icon="search" href="/widgets/seo-performance">
+    Fallback: shows OC members when Google Search Console is unavailable.
+  </Card>
+  <Card title="Detail Panel" icon="panel-right" href="/widgets/detail-panel">
+    Highest priority: full OC KPIs + transactions + members layout.
+  </Card>
+</CardGroup>

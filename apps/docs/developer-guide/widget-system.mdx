@@ -1,0 +1,163 @@
+---
+title: "Widget System"
+description: "How Radarboard widgets are built from shared layout nodes, section primitives, recipes, and the visual editor."
+---
+
+# Widget System
+
+Radarboard’s widget layer is built around a single shared system instead of bespoke per-widget UIs.
+
+That system has four layers:
+
+1. **Layout nodes**
+2. **Section primitives**
+3. **Recipes**
+4. **Data adapters**
+
+## Layout nodes
+
+Layout nodes define structure only.
+
+Current layout nodes include:
+
+- `stack`
+- `split`
+- `grid`
+- `tabs`
+
+These decide where sections go, not how a specific widget behaves.
+
+## Section primitives
+
+Section primitives are the reusable rendering building blocks that both the runtime and the visual editor understand.
+
+Current primitives include:
+
+- `headline-stat`
+- `overview-panel`
+- `kpi-row`
+- `summary-quad`
+- `list`
+- `row-list`
+- `stream-list`
+- `dense-ranked-table`
+- `table`
+- `chart`
+- `activity-chart`
+- `filter-bar`
+- `alert`
+- `tabs`
+
+These primitives replace old bespoke widget shells.
+
+## Recipes
+
+Recipes are just presets that compose layout nodes and section primitives.
+
+Examples:
+
+- `summary_only`
+- `content_only`
+- `summary_list`
+- `summary_chart_list`
+- `rail_content`
+- `rail_list`
+- `feed_list`
+
+Recipes are intentionally thin. If a pattern is reusable enough, it should become a primitive. If it is only a common arrangement of existing primitives, it should remain a recipe.
+
+For exact “when to use which recipe/primitive” guidance, see [Widget Composition Reference](/developer-guide/widget-composition-reference).
+
+## Data adapters
+
+Widgets still keep integration-specific data normalization, but that logic lives in template data sources rather than custom rendering components.
+
+Examples of normalized template data sources:
+
+- `analytics`
+- `seo`
+- `revenue`
+- `sponsorship`
+- `shipping`
+- `ideas`
+- `sentry`
+- `vercel`
+- `aso`
+
+Each adapter reshapes upstream data into fields the primitives can bind to.
+
+## Visual editor
+
+The visual editor works on the same template config that the widget runtime consumes.
+
+That means the editor and runtime share:
+
+- the same layout model
+- the same section types
+- the same bindings
+- the same preview path
+
+Widgets should not need a one-off editor panel as an end-state architecture. If a widget needs a capability the editor/runtime cannot express, the correct fix is to add or improve a primitive.
+
+## Runtime flow
+
+The runtime path is:
+
+1. widget descriptor resolves its template config
+2. `TemplateWidget` or `TemplateWidgetExpanded` mounts
+3. `DataResolverProvider` loads the configured data sources
+4. `TemplateFilterStateProvider` manages shared filter state between sections
+5. `SectionRenderer` renders the configured section tree
+6. `TemplateDetailHost` handles selection-driven detail dialogs
+
+This keeps compact view, expanded view, and editor preview on the same rendering path.
+
+## Examples
+
+### Revenue
+
+`revenue` now renders through:
+
+- `summary-quad`
+- `kpi-row`
+- `chart`
+
+### Sponsorship
+
+`sponsorship` now renders through:
+
+- `summary-quad`
+- `tabs`
+- `row-list`
+
+### Logs
+
+`logs` now renders through:
+
+- `stream-list`
+
+### ASO Keywords
+
+`aso-keywords` is built on:
+
+- `filter-bar`
+- `dense-ranked-table`
+- `kpi-row`
+- template detail rendering
+
+## Why this matters
+
+This system is designed for speed and maintainability:
+
+- new widgets can be assembled faster
+- visual consistency improves automatically
+- editor support comes “for free” when a widget stays inside the system
+- redundancy becomes visible at the primitive/recipe level instead of being hidden in widget-local JSX
+
+The long-term goal is that production widgets differ mainly in:
+
+- their data adapters
+- their default recipes
+- their default section config
+
+not in their rendering architecture.

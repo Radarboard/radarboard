@@ -1,0 +1,89 @@
+---
+title: "Radarboard MCP"
+description: "Find the built-in Radarboard MCP server URL, OAuth endpoints, and required environment variables."
+---
+
+# Radarboard MCP server
+
+Radarboard exposes its own built-in MCP server from the web app. This is the endpoint you use when connecting ChatGPT or another OAuth-capable MCP client to your Radarboard instance.
+
+This is separate from external MCP servers such as RevenueCat or OpenPanel that you configure in `opencode.json`.
+
+## Base URL
+
+The MCP URL is derived from your deployed app URL:
+
+```text
+${NEXT_PUBLIC_APP_URL}/api/mcp
+```
+
+If your app is deployed at:
+
+```text
+https://radarboard.example.com
+```
+
+your MCP server URL is:
+
+```text
+https://radarboard.example.com/api/mcp
+```
+
+## Required environment variables
+
+Set these on the web app deployment:
+
+```bash
+# Public HTTPS URL of your Radarboard instance, with no trailing slash
+NEXT_PUBLIC_APP_URL=https://radarboard.example.com
+
+# Secret used to sign MCP OAuth access tokens
+RADARBOARD_API_SECRET=your-random-secret
+```
+
+Generate a secret with:
+
+```bash
+openssl rand -hex 32
+```
+
+<Note>
+  `NEXT_PUBLIC_APP_URL` is the source of truth for the built-in MCP, OAuth, and discovery URLs.
+</Note>
+
+## Endpoints
+
+| Endpoint | URL pattern | Purpose |
+|----------|-------------|---------|
+| MCP server | `${NEXT_PUBLIC_APP_URL}/api/mcp` | Main MCP endpoint |
+| Authorization | `${NEXT_PUBLIC_APP_URL}/api/oauth/authorize` | OAuth approval flow |
+| Token | `${NEXT_PUBLIC_APP_URL}/api/oauth/token` | Exchange auth code for token |
+| Client registration | `${NEXT_PUBLIC_APP_URL}/api/oauth/register` | Dynamic client registration |
+| OAuth discovery | `${NEXT_PUBLIC_APP_URL}/.well-known/oauth-authorization-server` | Authorization server metadata |
+| Protected resource discovery | `${NEXT_PUBLIC_APP_URL}/.well-known/oauth-protected-resource` | Resource metadata for clients |
+
+## How to verify
+
+Once deployed, you can verify the MCP-related endpoints with:
+
+```bash
+curl https://radarboard.example.com/.well-known/oauth-authorization-server
+curl https://radarboard.example.com/.well-known/oauth-protected-resource
+```
+
+The MCP endpoint itself requires a bearer token, so it will return `401 Unauthorized` unless you call it with a valid OAuth-issued token.
+
+## Where to look in the codebase
+
+If you need the implementation details:
+
+- `apps/app/lib/env.ts` defines the MCP-related env keys
+- `apps/app/lib/mcp-oauth.ts` reads `NEXT_PUBLIC_APP_URL` and `RADARBOARD_API_SECRET`
+- `apps/app/app/api/mcp/route.ts` exposes the built-in MCP endpoint
+- `apps/app/app/.well-known/oauth-authorization-server/route.ts` exposes OAuth server metadata
+- `apps/app/app/.well-known/oauth-protected-resource/route.ts` exposes protected resource metadata
+
+## Related pages
+
+- For ChatGPT-specific setup, see [ChatGPT connector](/mcp-servers/chatgpt)
+- For external MCP servers configured for local agents, see [MCP servers overview](/mcp-servers/overview)

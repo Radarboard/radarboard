@@ -1,0 +1,45 @@
+---
+title: "Shipping Widget"
+description: "A scrollable feed of recently shipped items: merged PRs, completed issues, and production deploys."
+---
+
+# Shipping Widget
+
+The Shipping widget shows a chronological feed of things you've shipped across GitHub, Linear, and Vercel.
+
+## What it displays
+
+### Compact view
+- shared two-line feed rows
+- project badge, source indicator, and relative time
+- selection-driven detail dialog
+
+### Expanded view
+- same item model with fuller feed view
+- source filters and detail selection
+
+## Shared system
+
+Shipping uses the shared feed/list primitives and shared detail host rather than a bespoke widget renderer.
+
+## Item sources
+
+| Source | What it shows | Service |
+|--------|--------------|---------|
+| GitHub | Recently merged pull requests | [GitHub](/services/github) |
+| Linear | Recently completed issues | [Linear](/services/linear) |
+| Vercel | Recent production deployments | [Vercel](/services/vercel) |
+
+## Required services
+
+All three services are optional. The widget combines whatever is available:
+
+| Service | Required? |
+|---------|-----------|
+| [GitHub](/services/github) | Optional |
+| [Linear](/services/linear) | Optional |
+| [Vercel](/services/vercel) | Optional |
+
+<Note>
+  If none of the three services are configured, Shipping will show an empty state.
+</Note>

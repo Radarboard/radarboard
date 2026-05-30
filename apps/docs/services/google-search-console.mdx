@@ -1,0 +1,71 @@
+---
+title: "Google Search Console"
+description: "Monitor SEO performance: search queries, clicks, impressions, CTR, and average position."
+---
+
+# Google Search Console
+
+Google Search Console provides search analytics data: top queries with clicks, impressions, CTR, and average position, plus date-based trend data.
+
+## What it powers
+
+- **SEO Performance widget** -- Top queries table with all metrics
+- **SEO expanded view** -- Click/impression trend charts and summary KPIs
+
+## Getting your credentials
+
+Google Search Console uses OAuth2 with a refresh token. This requires a one-time setup with a Google Cloud project.
+
+<Steps>
+  <Step title="Create a Google Cloud project">
+    Go to [console.cloud.google.com](https://console.cloud.google.com/). Create a new project (or use an existing one).
+  </Step>
+  <Step title="Enable the Search Console API">
+    In the API Library, search for **Google Search Console API** and enable it.
+  </Step>
+  <Step title="Create OAuth2 credentials">
+    Go to **APIs & Services** > **Credentials** > **Create Credentials** > **OAuth 2.0 Client ID**.
+    
+    Select **Web application** as the application type. Add the exact callback URL Radarboard shows in the integration UI.
+
+    For the default local `portless` setup, that callback is:
+
+    ```text
+    https://localhost:1355/api/auth/google/callback
+    ```
+    
+    Note the **Client ID** and **Client Secret**.
+  </Step>
+  <Step title="Get a refresh token">
+    Use the OAuth2 Playground or a script to authorize with the scope `https://www.googleapis.com/auth/webmasters.readonly` and obtain a **refresh token**.
+    
+    <Tip>
+      You can use [Google's OAuth2 Playground](https://developers.google.com/oauthplayground/) -- set your own OAuth credentials in the settings gear, authorize the Search Console scope, and exchange for a refresh token.
+    </Tip>
+  </Step>
+</Steps>
+
+## Environment variables
+
+```bash .env.local
+GOOGLE_CLIENT_ID=xxxxxxxxxxxx.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=GOCSPX-xxxxxxxxxxxx
+GOOGLE_REFRESH_TOKEN=1//xxxxxxxxxxxx
+```
+
+## API details
+
+| Property | Value |
+|----------|-------|
+| API base URL | `https://searchconsole.googleapis.com/webmasters/v3` |
+| Rate limit | Standard Google API quotas |
+| Cache TTL | 5 minutes |
+| Authentication | OAuth2 with refresh token |
+
+## Widgets that use this service
+
+<CardGroup cols={1}>
+  <Card title="SEO Performance" icon="search" href="/widgets/seo-performance">
+    Primary data source for all search analytics.
+  </Card>
+</CardGroup>

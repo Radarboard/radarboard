@@ -1,0 +1,50 @@
+---
+title: "Everything you run. One live dashboard."
+description: "Radarboard brings together revenue, launches, audience, reliability, and product signals from the tools you already use."
+---
+
+# Everything you run. One live dashboard.
+
+Radarboard is a personal operations dashboard built with Next.js. It pulls data from revenue trackers, analytics platforms, error monitors, uptime checkers, and project management tools into a single, at-a-glance interface.
+
+## What it does
+
+- **Revenue tracking** via RevenueCat and Open Collective
+- **Analytics** via OpenPanel (visitors, sessions, page views, live visitors)
+- **SEO monitoring** via Google Search Console (queries, clicks, impressions)
+- **Error tracking** via Sentry (unresolved issues, error trends)
+- **Uptime monitoring** via BetterStack (monitor status, incidents)
+- **Shipping log** via GitHub, Linear, and Vercel (merged PRs, completed issues, deploys)
+- **App Store reviews** via App Store Connect
+- **Email alerts** via Resend
+
+## Architecture at a glance
+
+<CardGroup cols={2}>
+  <Card title="20+ Widgets" icon="grid-2">
+    Revenue, Shipping Log, Ideas + Bugs, Analytics, SEO Performance, and Detail Panel -- all configurable and expandable.
+  </Card>
+  <Card title="21+ Service Integrations" icon="plug">
+    Each service has its own API client with built-in caching and graceful degradation.
+  </Card>
+  <Card title="4 Database Providers" icon="database">
+    SQLite (default), Supabase, Turso, or PlanetScale for persistent settings and cache.
+  </Card>
+  <Card title="MCP Servers" icon="server">
+    RevenueCat and OpenPanel expose MCP servers for AI agent access.
+  </Card>
+</CardGroup>
+
+## Quick links
+
+<CardGroup cols={3}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Get up and running in minutes.
+  </Card>
+  <Card title="Services" icon="plug" href="/services/overview">
+    Connect your external services and get API keys.
+  </Card>
+  <Card title="Widgets" icon="grid-2" href="/widgets/overview">
+    Understand what each widget displays and how to configure it.
+  </Card>
+</CardGroup>

@@ -1,0 +1,46 @@
+{
+  "name": "@radarboard/widget-sdk",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "test:coverage": "vitest run --coverage"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./types": "./src/types.ts",
+    "./widget-types": "./src/widget-types.ts",
+    "./recipes": "./src/recipes.ts",
+    "./section-helpers": "./src/section-helpers.ts",
+    "./testing": "./src/testing.ts",
+    "./recipe-model": "./src/recipe-model/index.ts",
+    "./data-source-registry": "./src/data-source-registry.ts",
+    "./detail-renderer-registry": "./src/detail-renderer-registry.tsx",
+    "./section-utils": "./src/section-utils.ts",
+    "./composition-catalog": "./src/composition-catalog/index.ts",
+    "./debug-events": "./src/debug-events.ts",
+    "./utils/get-by-path": "./src/utils/get-by-path.ts",
+    "./utils/selection": "./src/utils/selection.ts",
+    "./utils/evaluate-condition": "./src/utils/evaluate-condition.ts",
+    "./utils/format-value": "./src/utils/format-value.ts",
+    "./capability-utils": "./src/capability-utils.ts",
+    "./route-helpers": "./src/route-helpers.ts",
+    "./variant-utils": "./src/variant-utils.ts"
+  },
+  "dependencies": {
+    "@radarboard/types": "workspace:*",
+    "@radarboard/utils": "workspace:*"
+  },
+  "devDependencies": {
+    "@radarboard/tsconfig": "workspace:*",
+    "@types/react": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "react": "catalog:"
+  }
+}

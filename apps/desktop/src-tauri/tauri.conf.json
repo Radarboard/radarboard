@@ -1,0 +1,100 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Radarboard",
+  "identifier": "com.radarboard.client",
+  "version": "0.1.1-beta.1",
+  "build": {
+    "frontendDist": "../placeholder",
+    "devUrl": "http://127.0.0.1:1355",
+    "beforeBuildCommand": "pnpm build:sidecar",
+    "beforeDevCommand": "pnpm --filter @radarboard/app dev:desktop"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "macOSPrivateApi": true,
+    "windows": [
+      {
+        "label": "main",
+        "title": "Radarboard",
+        "width": 1680,
+        "height": 1050,
+        "minWidth": 1024,
+        "minHeight": 700,
+        "resizable": true,
+        "fullscreen": false,
+        "center": true,
+        "visible": false,
+        "url": "about:blank"
+      },
+      {
+        "label": "splashscreen",
+        "title": "Radarboard",
+        "width": 300,
+        "height": 340,
+        "resizable": false,
+        "fullscreen": false,
+        "center": true,
+        "decorations": false,
+        "transparent": true,
+        "shadow": false,
+        "url": "splashscreen.html"
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "createUpdaterArtifacts": true,
+    "targets": ["app", "dmg", "deb", "rpm"],
+    "category": "DeveloperTool",
+    "shortDescription": "Real-time business dashboard",
+    "longDescription": "Radarboard is a real-time business dashboard for revenue, analytics, deployments, and project health. Self-hosted, privacy-first, and extensible with widgets, integrations, and plugins.",
+    "copyright": "Radarboard",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "resources": ["resources/**/*"],
+    "externalBin": ["binaries/radarboard-server"],
+    "macOS": {
+      "minimumSystemVersion": "12.0",
+      "dmg": {
+        "appPosition": { "x": 140, "y": 185 },
+        "applicationFolderPosition": { "x": 520, "y": 185 },
+        "windowSize": { "height": 400, "width": 660 }
+      }
+    },
+    "iOS": {
+      "minimumSystemVersion": "15.0"
+    },
+    "linux": {
+      "deb": {
+        "depends": ["libwebkit2gtk-4.1-0", "libgtk-3-0"]
+      }
+    },
+    "windows": {
+      "digestAlgorithm": "sha256"
+    }
+  },
+  "plugins": {
+    "shell": {
+      "open": true
+    },
+    "updater": {
+      "endpoints": [
+        "https://github.com/Radarboard/radarboard/releases/latest/download/latest.json"
+      ],
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEI0RkIzQzkxNjNBRUIwRjQKUldUMHNLNWprVHo3dEdBOWE0Y3RRSS9rU0k3SzhuSURSRkJPYk5iZkxVMkpZbzd6bVpuaENZbEgK"
+    },
+    "deep-link": {
+      "desktop": {
+        "schemes": ["radarboard"]
+      }
+    }
+  }
+}

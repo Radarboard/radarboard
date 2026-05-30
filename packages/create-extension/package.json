@@ -1,0 +1,22 @@
+{
+  "name": "create-radarboard-extension",
+  "version": "0.1.0",
+  "description": "Scaffold a new Radarboard extension repository",
+  "license": "MIT",
+  "type": "commonjs",
+  "bin": {
+    "create-radarboard-extension": "./bin/create.mjs",
+    "radarboard-extension": "./bin/create.mjs",
+    "radarboard-extension-dev": "./bin/dev.mjs",
+    "radarboard-extension-build": "./bin/build.mjs"
+  },
+  "files": [
+    "bin/"
+  ],
+  "keywords": [
+    "radarboard",
+    "extension",
+    "scaffold",
+    "create"
+  ]
+}

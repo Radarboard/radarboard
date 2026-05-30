@@ -1,0 +1,171 @@
+---
+title: "Build an MCP-First Extension"
+description: "Create an extension that's primarily useful through the AI assistant — Radarboard's biggest differentiator over Raycast."
+---
+
+## Why MCP-first?
+
+Raycast extensions are UI-only — the AI can't use them. In Radarboard, every integration and plugin can declare `mcpTools` that the AI assistant can call directly. This means your extension is useful even when the user never opens its UI.
+
+An MCP-first extension is one where the **primary value is through the assistant**, with optional UI as a bonus.
+
+## Example: A "Deploy Status" integration
+
+Let's build an integration that lets the AI answer "what's the deploy status?" without any UI.
+
+### Step 1: Scaffold
+
+```bash
+pnpm create-integration deploy-status
+```
+
+### Step 2: Define the MCP tool
+
+Edit `integrations/deploy-status/src/mcp/mcp-tools.ts`:
+
+```ts
+import type { IntegrationMcpTool } from "@radarboard/integration-sdk/types";
+import { z } from "zod";
+
+export const deployStatusMcpTools: IntegrationMcpTool[] = [
+  {
+    name: "get-deploy-status",
+    description: "Get the current deployment status for a project, including the last deploy time, commit, and environment.",
+    parameters: z.object({
+      environment: z.enum(["production", "staging", "preview"]).optional()
+        .describe("Filter by environment. Defaults to production."),
+    }),
+    execute: async ({ environment = "production" }, { resolveCredential }) => {
+      const creds = await resolveCredential("deploy-status");
+      if (!creds) return { error: "Deploy Status not configured" };
+
+      const response = await fetch(`https://api.example.com/deploys?env=${environment}`, {
+        headers: { Authorization: `Bearer ${creds.apiKey}` },
+      });
+
+      const data = await response.json();
+      return {
+        environment,
+        status: data.status,
+        lastDeploy: data.lastDeploy,
+        commit: data.commit,
+        duration: data.duration,
+      };
+    },
+  },
+];
+```
+
+### Step 3: Register in the descriptor
+
+```ts
+import { deployStatusMcpTools } from "./mcp/mcp-tools";
+
+export const deployStatusDescriptor: IntegrationDescriptor = {
+  id: "deploy-status",
+  name: "Deploy Status",
+  description: "AI-queryable deployment status across environments.",
+  icon: Rocket,
+  category: "deployment",
+  auth: {
+    id: "deploy-status",
+    name: "Deploy Status",
+    type: "api_key",
+    fields: [{ key: "apiKey", label: "API Key", type: "password" }],
+  },
+  mcpTools: deployStatusMcpTools,
+};
+```
+
+### Step 4: Test it
+
+Once credentials are configured, ask the assistant:
+
+> "What's the current deploy status for staging?"
+
+The assistant will call `get-deploy-status` with `{ environment: "staging" }` and return a natural language summary.
+
+## MCP tool design principles
+
+### 1. Descriptions are prompts
+
+The `description` field is what the AI reads to decide when to use your tool. Be specific:
+
+```ts
+// Bad — too vague
+description: "Get data"
+
+// Good — the AI knows exactly when to use this
+description: "Get the current deployment status including commit SHA, deploy time, and environment health"
+```
+
+### 2. Parameter descriptions guide the AI
+
+Use Zod's `.describe()` to tell the AI what each parameter does:
+
+```ts
+parameters: z.object({
+  since: z.string().optional()
+    .describe("ISO 8601 date. Only return deploys after this date. Defaults to last 24 hours."),
+})
+```
+
+### 3. Return structured data, not strings
+
+The AI can summarize structured data better than parsing strings:
+
+```ts
+// Bad
+return "Deploy to production at 2:30pm, commit abc123, took 45s";
+
+// Good
+return {
+  environment: "production",
+  deployedAt: "2024-01-15T14:30:00Z",
+  commit: "abc123",
+  duration: 45,
+  status: "success",
+};
+```
+
+### 4. Handle missing credentials gracefully
+
+```ts
+execute: async (params, { resolveCredential }) => {
+  const creds = await resolveCredential("my-service");
+  if (!creds) {
+    return { error: "Service not configured. Ask the user to add credentials in Settings > Integrations." };
+  }
+  // ...
+}
+```
+
+## Plugin MCP tools
+
+Plugins can also declare MCP tools that operate on plugin data:
+
+```ts
+export const tasksMcpTools: McpToolDefinition[] = [
+  {
+    name: "create-task",
+    description: "Create a new task in the Tasks plugin",
+    parameters: z.object({
+      title: z.string().describe("The task title"),
+      priority: z.enum(["low", "medium", "high"]).optional(),
+    }),
+    execute: async ({ title, priority }, api) => {
+      const id = crypto.randomUUID();
+      await api.db.set(`task:${id}`, { id, title, priority: priority ?? "medium", done: false });
+      return { created: true, id, title };
+    },
+  },
+];
+```
+
+The key difference: integration MCP tools receive a `DataSourceContext` (with `resolveCredential`), while plugin MCP tools receive a `PluginAPI` (with `db`, `notify`, etc.).
+
+## What's next?
+
+- [Build an Integration](/developer-guide/build-an-integration) — full integration guide
+- [Build a Plugin](/developer-guide/build-a-plugin) — plugin guide with UI components
+- [Intent Bus Cookbook](/developer-guide/intent-bus-cookbook) — cross-plugin communication

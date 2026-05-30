@@ -1,0 +1,47 @@
+---
+title: "GET /api/app-store"
+description: "Fetch app info, customer reviews, and version history from App Store Connect."
+---
+
+# GET /api/app-store
+
+Fetches iOS app information, customer reviews, and version history from App Store Connect.
+
+## Query parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `project` | string | No | Project slug (e.g., `goshuin-atlas`) |
+
+## Response
+
+```json
+{
+  "app": {
+    "name": "Goshuin Atlas",
+    "bundleId": "com.example.goshuin"
+  },
+  "reviews": [
+    {
+      "rating": 5,
+      "title": "Great app!",
+      "body": "Love the design and functionality.",
+      "reviewerNickname": "templefan123",
+      "territory": "US",
+      "createdAt": "2026-03-16T08:00:00Z"
+    }
+  ],
+  "versions": [
+    {
+      "version": "2.1.0",
+      "state": "READY_FOR_DISTRIBUTION",
+      "createdAt": "2026-03-10T12:00:00Z"
+    }
+  ]
+}
+```
+
+## Cache
+
+- **TTL**: 15 minutes
+- **Rate limit**: 200 requests/minute

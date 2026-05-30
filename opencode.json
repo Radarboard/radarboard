@@ -1,0 +1,27 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "agent-browser": {
+      "type": "local",
+      "command": ["npx", "-y", "@bsbofmusic/agent-browser-mcp-opencode@latest"],
+      "enabled": true
+    },
+    "revenuecat": {
+      "type": "remote",
+      "url": "https://mcp.revenuecat.ai/mcp",
+      "headers": {
+        "Authorization": "Bearer {env:REVENUECAT_API_V2_SECRET_KEY}"
+      },
+      "enabled": true
+    },
+    "openpanel": {
+      "type": "local",
+      "command": ["npx", "-y", "openpanel-mcp-server"],
+      "enabled": true,
+      "environment": {
+        "OPENPANEL_CLIENT_ID": "{env:OPENPANEL_CLIENT_ID}",
+        "OPENPANEL_CLIENT_SECRET": "{env:OPENPANEL_CLIENT_SECRET}"
+      }
+    }
+  }
+}

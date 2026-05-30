@@ -1,0 +1,55 @@
+---
+title: "/api/settings"
+description: "Get and update widget layout and project order."
+---
+
+# /api/settings
+
+Manages persistent user settings: project tab order and widget grid layout.
+
+## GET /api/settings
+
+Returns the current settings.
+
+### Response
+
+```json
+{
+  "projectOrder": ["goshuin-atlas", "front-end-checklist", "souls-directory"],
+  "widgetLayout": {
+    "slots": {
+      "revenue": "revenue",
+      "shipping": "shipping",
+      "ideas": "ideas",
+      "analytics": "analytics",
+      "seo": "seo",
+      "detail": "detail"
+    },
+    "configs": {
+      "revenue": { "showOC": true }
+    }
+  }
+}
+```
+
+## POST /api/settings
+
+Updates settings. Both fields are optional -- only include what you want to change.
+
+### Request body
+
+```json
+{
+  "projectOrder": ["front-end-checklist", "goshuin-atlas"],
+  "widgetLayout": {
+    "slots": { "revenue": "revenue", "shipping": "analytics" },
+    "configs": { "revenue": { "showOC": false } }
+  }
+}
+```
+
+### Response
+
+```json
+{ "ok": true }
+```

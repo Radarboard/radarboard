@@ -1,0 +1,33 @@
+{
+  "name": "@radarboard/llm-adapter-vercel",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "exports": {
+    "./adapter": "./src/adapter.ts",
+    "./provider-factory": "./src/provider-factory.ts",
+    "./message-converter": "./src/message-converter.ts"
+  },
+  "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.58",
+    "@ai-sdk/deepseek": "^2.0.24",
+    "@ai-sdk/google": "^3.0.43",
+    "@ai-sdk/mistral": "^3.0.24",
+    "@ai-sdk/openai": "^3.0.41",
+    "@ai-sdk/xai": "^3.0.67",
+    "@radarboard/llm": "workspace:*",
+    "ai": "^6.0.116",
+    "ollama-ai-provider": "^1.2.0"
+  },
+  "devDependencies": {
+    "@radarboard/tsconfig": "workspace:*",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

@@ -1,0 +1,275 @@
+---
+title: "Local Webhook Development"
+description: "Expose Radarboard locally for GitHub, Vercel, Sentry, BetterStack, and Linear webhooks using Tailscale Funnel or Cloudflare Tunnel."
+---
+
+# Local Webhook Development
+
+Radarboard's inbound webhook endpoints live under:
+
+```text
+/api/webhooks/[integration]
+```
+
+Examples:
+
+- `/api/webhooks/github`
+- `/api/webhooks/vercel`
+- `/api/webhooks/sentry`
+- `/api/webhooks/betterstack`
+- `/api/webhooks/linear`
+
+Webhook providers cannot call `localhost` directly, so local development requires a public HTTPS URL that tunnels traffic back to your machine.
+
+Radarboard supports two practical workflows:
+
+1. **Tailscale Funnel**
+2. **Cloudflare Tunnel**
+
+## Before you start
+
+Make sure the dashboard app is running locally.
+
+Radarboard's local web app runs at:
+
+```text
+https://radarboard.localhost:1355
+```
+
+You also need the correct webhook secret stored in Radarboard for each integration.
+
+The generic route loads secrets from credentials with this key pattern:
+
+```text
+webhook_secret::<integration>
+```
+
+Examples:
+
+- `webhook_secret::github`
+- `webhook_secret::vercel`
+- `webhook_secret::sentry`
+
+## Option 1: Tailscale Funnel
+
+Tailscale Funnel is the simplest setup if you already use Tailscale.
+
+### Prerequisites
+
+- Tailscale installed and logged in
+- Funnel enabled on your device/account
+
+### Start Funnel
+
+Expose the local app port:
+
+```bash
+tailscale funnel 1355
+```
+
+Tailscale gives you a public HTTPS URL like:
+
+```text
+https://your-device.tail1234.ts.net
+```
+
+Your GitHub webhook URL then becomes:
+
+```text
+https://your-device.tail1234.ts.net/api/webhooks/github
+```
+
+### Verify locally
+
+Open the public URL in the browser first:
+
+```text
+https://your-device.tail1234.ts.net
+```
+
+Then hit a webhook endpoint with a test request if needed.
+
+### Notes
+
+- good for one-person local development
+- HTTPS is handled for you
+- easiest path if you're already on Tailscale
+
+## Option 2: Cloudflare Tunnel
+
+Cloudflare Tunnel is a good choice if you want a stable development hostname.
+
+### Prerequisites
+
+- `cloudflared` installed
+- access to a Cloudflare account
+- either a managed domain or a quick tunnel setup
+
+### Quick Tunnel
+
+For a disposable public URL:
+
+```bash
+cloudflared tunnel --url https://radarboard.localhost:1355 --no-tls-verify
+```
+
+Cloudflare prints a temporary URL like:
+
+```text
+https://random-name.trycloudflare.com
+```
+
+Use that with the webhook path:
+
+```text
+https://random-name.trycloudflare.com/api/webhooks/github
+```
+
+### Named Tunnel
+
+For a stable hostname:
+
+```bash
+cloudflared tunnel login
+cloudflared tunnel create radarboard-dev
+```
+
+Create a config file that points to the local app:
+
+```yaml
+tunnel: radarboard-dev
+credentials-file: /path/to/credentials.json
+
+ingress:
+  - hostname: radarboard-dev.example.com
+    service: https://radarboard.localhost:1355
+    originRequest:
+      noTLSVerify: true
+  - service: http_status:404
+```
+
+Then run:
+
+```bash
+cloudflared tunnel run radarboard-dev
+```
+
+Your webhook URL becomes:
+
+```text
+https://radarboard-dev.example.com/api/webhooks/github
+```
+
+## Configuring providers
+
+Each provider should point directly to the integration-specific route.
+
+### GitHub
+
+- URL: `https://<public-host>/api/webhooks/github`
+- secret: the same value stored as `webhook_secret::github`
+- content type: `application/json`
+
+### Vercel
+
+- URL: `https://<public-host>/api/webhooks/vercel`
+- secret: the same value stored as `webhook_secret::vercel`
+
+### Sentry
+
+- URL: `https://<public-host>/api/webhooks/sentry`
+- secret: the same value stored as `webhook_secret::sentry`
+
+### BetterStack
+
+- URL: `https://<public-host>/api/webhooks/betterstack`
+- token/secret: the same value stored as `webhook_secret::betterstack`
+
+### Linear
+
+- URL: `https://<public-host>/api/webhooks/linear`
+- secret: the same value stored as `webhook_secret::linear`
+
+## Security model
+
+No public webhook endpoint is ever “100% secure”, but Radarboard's model is strong if you follow the intended setup.
+
+### 1. Per-integration signature verification
+
+Each integration owns its own verifier in:
+
+```text
+packages/integrations/src/<integration>/webhook.ts
+```
+
+The generic route does **not** trust payloads until signature verification passes.
+
+### 2. Narrow routes
+
+Every service gets its own endpoint:
+
+- GitHub cannot hit the Vercel verifier path
+- Sentry cannot hit the Linear verifier path
+
+This reduces accidental cross-service parsing and keeps failure modes isolated.
+
+### 3. Shared-secret matching
+
+Radarboard compares provider signatures against the configured secret for that integration.
+
+If the signature fails, the route returns `401`.
+
+### 4. Replay protection through dedup
+
+Events are deduplicated where source event IDs are available, so repeated deliveries do not create repeated notifications.
+
+### 5. Defense in depth
+
+Recommended operational practices:
+
+- rotate webhook secrets when you regenerate a tunnel URL or suspect exposure
+- do not reuse the same secret across integrations
+- prefer named tunnels for repeat development workflows
+- avoid sharing tunnel URLs publicly
+- shut the tunnel down when not in use
+
+## Recommended workflow
+
+For quick local testing:
+
+- use **Cloudflare quick tunnel** or **Tailscale Funnel**
+
+For repeated integration development:
+
+- use **named Cloudflare Tunnel** or **stable Tailscale Funnel hostname**
+
+For production:
+
+- point providers at your deployed Radarboard URL, not a local tunnel
+
+## Troubleshooting
+
+### Webhook returns `401`
+
+Check:
+
+- provider secret matches `webhook_secret::<integration>`
+- provider is sending to the correct integration route
+- tunnel URL is still active
+
+### No notifications appear
+
+Check:
+
+- the integration webhook route returns `200`
+- source/global notification preferences are enabled
+- digest window is not delaying a non-critical event
+- custom rules are not filtering the event out
+
+### Tunnel works in browser but webhook fails
+
+Check:
+
+- provider requires HTTPS (both Funnel and Cloudflare Tunnel provide this)
+- webhook path is correct
+- body signature is configured correctly for that provider

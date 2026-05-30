@@ -1,0 +1,61 @@
+---
+title: "Backup System"
+description: "Proactive cache refresh system that keeps all service data warm."
+---
+
+# Backup System
+
+The backup system proactively refreshes all cache entries to ensure data stays fresh even when the dashboard isn't actively being viewed.
+
+## How it works
+
+1. An external cron script (`apps/app/scripts/backup-cron.ts`) periodically POSTs to `/api/backup`
+2. The backup endpoint iterates over all projects and their integrations
+3. Each service fetcher is called with `forceRefresh: true` to bypass the cache
+4. Rate-limit-aware delays are applied between calls:
+   - **RevenueCat**: 15 seconds between tasks (5 req/min limit)
+   - **App Store Connect**: 2 seconds between tasks
+   - **All others**: 500ms between tasks
+
+## Configuration
+
+```bash .env.local
+BACKUP_SECRET=your-secret-token          # Required: Bearer token for auth
+BACKUP_INTERVAL_MS=900000                # Optional: 15 minutes (default)
+BACKUP_CRON_URL=http://localhost:3000    # Optional: base URL (default)
+```
+
+Generate a secret with:
+```bash
+openssl rand -hex 32
+```
+
+## API endpoint
+
+```
+POST /api/backup
+Authorization: Bearer <BACKUP_SECRET>
+```
+
+### Response
+
+```json
+{
+  "refreshed": 42,
+  "failed": 1,
+  "duration": "2m 15s",
+  "errors": [
+    { "project": "goshuin-atlas", "integration": "sentry", "error": "Rate limited" }
+  ]
+}
+```
+
+## Running the cron
+
+The cron script runs independently of the Next.js app:
+
+```bash
+npx tsx apps/app/scripts/backup-cron.ts
+```
+
+For production, set this up as a system cron, PM2 process, or cloud scheduler (e.g., Vercel Cron, Railway scheduled tasks).

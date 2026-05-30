@@ -1,0 +1,45 @@
+{
+  "skill_name": "create-integration",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create a new Radarboard integration called `statuscake`. It should live in `integrations/statuscake`, use an API key auth flow, sit in the `monitoring` category, expose `checks` and `incidents` data sources, and add one MCP tool that lists failing checks for a project. Follow the repo's extension conventions and verify the package when you're done.",
+      "expected_output": "A scaffolded `integrations/statuscake` package with a real descriptor, typed API client and data sources, an MCP tool, and verification commands run against the new package.",
+      "files": [],
+      "expectations": [
+        "Uses `pnpm create-integration statuscake` instead of hand-creating the package",
+        "Implements the package under `integrations/statuscake/` rather than an outdated `packages/integrations/` path",
+        "Replaces template placeholder text in `src/index.ts` with real auth, docs, and category values",
+        "Adds typed client and data-source code instead of leaving template TODOs",
+        "Resolves credentials through `ctx.resolveCredential(\"statuscake\")` in the data sources",
+        "Adds or updates MCP tool tests alongside the MCP tool implementation",
+        "Runs verification with `pnpm check:extensions --filter=integration` and a package-level test command"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Add a `buildkite` integration for Radarboard. It should use OAuth, expose `builds` and `annotations` routes, and support inbound webhook processing for build state changes. Keep the descriptor and route payloads aligned with the current integration SDK types.",
+      "expected_output": "A new `integrations/buildkite` package with OAuth auth config, multiple data sources, and a webhook handler wired into the descriptor.",
+      "files": [],
+      "expectations": [
+        "Configures OAuth fields and provider metadata in the descriptor",
+        "Creates more than one data source action for the integration",
+        "Adds `src/events/webhook.ts` and wires it through `webhookHandler` in `src/index.ts`",
+        "Uses current `@radarboard/integration-sdk/types` contracts instead of stale package-local assumptions",
+        "Does not leave fake URLs like `example.com` or generic descriptions in the final files"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Create an integration called `docs-search` that does not require direct API credentials. It should connect to an MCP server instead, expose one `search` data source, and keep the descriptor honest about the auth flow.",
+      "expected_output": "A new integration package that uses `auth.type: \"none\"` or an MCP connection block as appropriate, without inventing fake credential fields.",
+      "files": [],
+      "expectations": [
+        "Avoids adding meaningless API key fields when the integration should be MCP-backed or auth-free",
+        "Uses the integration descriptor's `mcp` support when appropriate",
+        "Creates a stable `search` action under `/api/integrations/docs-search/search`",
+        "Keeps the descriptor and data-source implementation aligned with the actual SDK types"
+      ]
+    }
+  ]
+}

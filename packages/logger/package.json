@@ -1,0 +1,27 @@
+{
+  "name": "@radarboard/logger",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "exports": {
+    ".": "./src/logger.ts",
+    "./logger": "./src/logger.ts",
+    "./log-buffer": "./src/log-buffer.ts",
+    "./middleware": "./src/middleware.ts"
+  },
+  "dependencies": {
+    "@radarboard/types": "workspace:*"
+  },
+  "devDependencies": {
+    "@radarboard/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

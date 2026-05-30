@@ -1,0 +1,74 @@
+---
+title: "MCP Servers Overview"
+description: "Radarboard integrates with MCP (Model Context Protocol) servers to give AI agents access to service data."
+---
+
+# MCP Servers
+
+MCP (Model Context Protocol) servers allow AI agents to query live data directly from Radarboard and connected services.
+
+There are two MCP categories in this project:
+
+| Category | Location | What it is |
+|----------|----------|------------|
+| Built-in Radarboard MCP | [Radarboard MCP](/mcp-servers/radarboard) | The MCP endpoint exposed by the web app itself at `/api/mcp` |
+| External MCP servers | `opencode.json` and app settings | Third-party or local MCP servers such as RevenueCat and OpenPanel |
+
+## Built-in Radarboard MCP
+
+Use the built-in Radarboard MCP when you want an external client such as ChatGPT to connect directly to your deployed Radarboard instance.
+
+The URL pattern is:
+
+```text
+${NEXT_PUBLIC_APP_URL}/api/mcp
+```
+
+See [Radarboard MCP](/mcp-servers/radarboard) for the full URL breakdown, required environment variables, and OAuth endpoints.
+
+## External MCP servers
+
+Radarboard also works with external MCP servers for individual services. This repo currently documents:
+
+| Server | Service | Type | Description |
+|--------|---------|------|-------------|
+| [RevenueCat MCP](/mcp-servers/revenuecat) | RevenueCat | Remote (hosted) | Query revenue metrics and subscription data |
+| [OpenPanel MCP](/mcp-servers/openpanel) | OpenPanel | Local (npm package) | Query analytics data for specific sites |
+
+## How MCP works
+
+MCP servers expose tools that AI agents can call. For example, an AI agent could:
+- Ask "What's the current MRR?" and query RevenueCat
+- Ask "How many visitors did the site get today?" and query OpenPanel
+- Ask "What are my unread Radarboard notifications?" and query the built-in Radarboard MCP
+
+## Where external servers are configured
+
+External MCP servers are configured in `opencode.json` at the project root. Each entry specifies:
+- The server type (remote URL or local command)
+- Environment variables for authentication
+- Any server-specific options
+
+```json opencode.json
+{
+  "mcp": {
+    "revenuecat": {
+      "type": "remote",
+      "url": "https://mcp.revenuecat.ai/mcp",
+      "headers": {
+        "Authorization": "Bearer {env:REVENUECAT_API_V2_SECRET_KEY}"
+      }
+    },
+    "openpanel": {
+      "type": "local",
+      "command": ["npx", "-y", "openpanel-mcp-server"],
+      "environment": {
+        "OPENPANEL_CLIENT_ID": "{env:OPENPANEL_CLIENT_ID}",
+        "OPENPANEL_CLIENT_SECRET": "{env:OPENPANEL_CLIENT_SECRET}"
+      }
+    }
+  }
+}
+```
+
+You can also manage external MCP servers in the Radarboard UI under Settings -> MCP Servers.

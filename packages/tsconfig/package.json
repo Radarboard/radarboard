@@ -1,0 +1,15 @@
+{
+  "name": "@radarboard/tsconfig",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "vitest": "catalog:"
+  },
+  "exports": {
+    "./base.json": "./base.json",
+    "./nextjs.json": "./nextjs.json",
+    "./library.json": "./library.json",
+    "./vitest.shared": "./vitest.shared.ts"
+  }
+}

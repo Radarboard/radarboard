@@ -1,0 +1,29 @@
+{
+  "extends": "@radarboard/tsconfig/base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["../app/*"],
+      "@radarboard/assistant-ui/*": ["../../packages/assistant-ui/src/*"],
+      "@radarboard/charts/*": ["../../packages/charts/src/*"],
+      "@radarboard/hooks/*": ["../../packages/hooks/src/*"],
+      "@radarboard/storybook-preview": ["./.storybook/preview.tsx"],
+      "@radarboard/storybook-scaffold": ["./src/story-scaffold.tsx"],
+      "@radarboard/types/*": ["../../packages/types/src/*"],
+      "@radarboard/ui/*": ["../../packages/ui/src/*"],
+      "@radarboard/utils/*": ["../../packages/utils/src/*"],
+      "@radarboard/widget-engine/*": ["../../packages/widget-engine/src/*"]
+    }
+  },
+  "include": [
+    ".storybook/**/*.ts",
+    ".storybook/**/*.tsx",
+    "scripts/**/*.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ],
+  "exclude": ["node_modules", "dist"]
+}

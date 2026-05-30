@@ -1,0 +1,12 @@
+{
+  "extends": "@radarboard/tsconfig/base.json",
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "outDir": "dist",
+    "rootDir": "."
+  },
+  "include": ["src", "api"],
+  "exclude": ["node_modules", "dist"]
+}

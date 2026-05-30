@@ -1,0 +1,52 @@
+{
+  "name": "@radarboard/hooks",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "exports": {
+    "./dashboard-layout": "./src/dashboard-layout.ts",
+    "./use-polling": "./src/use-polling.ts",
+    "./use-sse": "./src/use-sse.ts",
+    "./use-notifications": "./src/use-notifications.ts",
+    "./use-notification-stream": "./src/use-notification-stream.ts",
+    "./use-unread-count": "./src/use-unread-count.ts",
+    "./use-notification-preferences": "./src/use-notification-preferences.ts",
+    "./use-desktop-notifications": "./src/use-desktop-notifications.ts",
+    "./use-audio-notifications": "./src/use-audio-notifications.ts",
+    "./use-webhook-endpoints": "./src/use-webhook-endpoints.ts",
+    "./use-notification-rules": "./src/use-notification-rules.ts",
+    "./use-dashboard": "./src/use-dashboard.tsx",
+    "./use-demo-mode": "./src/use-demo-mode.ts",
+    "./use-routing-config": "./src/use-routing-config.ts",
+    "./use-effective-locale": "./src/use-effective-locale.ts",
+    "./use-effective-timezone": "./src/use-effective-timezone.ts",
+    "./use-polling-interval": "./src/use-polling-interval.ts",
+    "./use-sentry-projects": "./src/use-sentry-projects.ts",
+    "./use-credentials": "./src/use-credentials.ts",
+    "./use-mcp-servers": "./src/use-mcp-servers.ts",
+    "./use-logs": "./src/use-logs.ts",
+    "./fetcher": "./src/fetcher.ts",
+    "./prefetch-project-data": "./src/prefetch-project-data.ts"
+  },
+  "dependencies": {
+    "@radarboard/themes": "workspace:*",
+    "@radarboard/types": "workspace:*",
+    "@radarboard/utils": "workspace:*",
+    "swr": "catalog:"
+  },
+  "devDependencies": {
+    "@radarboard/tsconfig": "workspace:*",
+    "@types/react": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "react": "catalog:"
+  }
+}

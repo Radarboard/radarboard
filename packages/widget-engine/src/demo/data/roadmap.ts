@@ -1,0 +1,70 @@
+import type { RoadmapInProgressIssue, RoadmapProject } from "@radarboard/types/roadmap";
+
+// --- Roadmap ---
+export const MOCK_ROADMAP_PROJECTS: RoadmapProject[] = [
+  {
+    id: "rp1",
+    name: "v1.4.0 - Collaboration Mode",
+    state: "started",
+    progress: 0.72,
+    targetDate: "2026-01-26",
+    health: "onTrack",
+    issueCountDone: 12,
+    issueCountInProgress: 3,
+    issueCountOpen: 5,
+    teams: ["Pixel Studio"],
+  },
+  {
+    id: "rp2",
+    name: "v2.0.0 - Plugin System",
+    state: "planned",
+    progress: 0.28,
+    targetDate: "2027-03-06",
+    health: "onTrack",
+    issueCountDone: 4,
+    issueCountInProgress: 2,
+    issueCountOpen: 24,
+    teams: ["Pixel Studio"],
+  },
+  {
+    id: "rp3",
+    name: "v1.1.0 - Pro Plan",
+    state: "started",
+    progress: 0.91,
+    targetDate: "2025-12-15",
+    health: "atRisk",
+    issueCountDone: 18,
+    issueCountInProgress: 1,
+    issueCountOpen: 2,
+    teams: ["Pixel Studio"],
+  },
+];
+
+export const MOCK_ROADMAP_IN_PROGRESS: RoadmapInProgressIssue[] = [
+  {
+    id: "ri1",
+    identifier: "PS-342",
+    title: "Add real-time collaboration API",
+    url: "https://linear.app/pixel-studio/issue/PS-342",
+    priority: "high",
+    assignee: { name: "Alex", avatarUrl: null },
+    projectName: "Pixel Studio",
+    projectColor: "#E63946",
+    startedAt: "2026-03-20T10:00:00Z",
+    timeInStarted: "2d",
+    labels: [],
+  },
+  {
+    id: "ri2",
+    identifier: "PS-298",
+    title: "Fix auth token refresh",
+    url: "https://linear.app/pixel-studio/issue/PS-298",
+    priority: "critical",
+    assignee: { name: "Alex", avatarUrl: null },
+    projectName: "Pixel Studio",
+    projectColor: "#E63946",
+    startedAt: "2026-03-22T05:00:00Z",
+    timeInStarted: "5h",
+    labels: [{ name: "bug", color: "#e05555" }],
+  },
+];

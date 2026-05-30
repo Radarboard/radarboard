@@ -1,0 +1,22 @@
+# Render deployment configuration for the webhook relay.
+# See: https://docs.render.com/blueprint-spec
+services:
+  - type: web
+    name: radarboard-webhook-relay
+    runtime: docker
+    dockerfilePath: ./apps/webhook-relay/Dockerfile
+    dockerContext: .
+    region: oregon
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: PORT
+        value: "8787"
+      - key: NODE_ENV
+        value: production
+      - key: KV_REST_API_URL
+        sync: false
+      - key: KV_REST_API_TOKEN
+        sync: false
+      - key: RELAY_POLL_SECRET
+        sync: false

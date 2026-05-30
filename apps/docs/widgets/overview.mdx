@@ -1,0 +1,57 @@
+---
+title: "Widgets Overview"
+description: "Radarboard widgets are built from shared template primitives, recipes, and data adapters."
+---
+
+# Widgets Overview
+
+Radarboard’s dashboard widgets now share one rendering system:
+
+- shared layout nodes
+- shared section primitives
+- shared recipes
+- shared visual editor host
+
+Widgets still differ by data source and default configuration, but they no longer need bespoke compact or expanded shells to participate in the dashboard.
+
+## Grid widgets
+
+Grid widgets are the main content area. Each occupies a slot in the dashboard grid and can be expanded to full-screen by double-clicking or using the expand button.
+
+| Widget | Default Slot | Primary Service | Shared primitives |
+|--------|-------------|----------------|-------------------|
+| [Revenue](/widgets/revenue) | `slot1` | RevenueCat | `summary-quad`, `kpi-row`, `chart` |
+| [Shipping](/widgets/shipping) | `slot2` | GitHub + Linear + Vercel | `row-list`, compact project badges, shared detail host |
+| [Ideas + Bugs](/widgets/ideas-bugs) | `slot3` | Linear | `row-list`, shared detail host |
+| [Analytics](/widgets/analytics) | `slot4` | OpenPanel | `headline-stat`, `kpi-row`, inline list |
+| [SEO Performance](/widgets/seo-performance) | `slot5` | Google Search Console | `kpi-row`, inline list |
+| [Service Monitor](/widgets/service-monitor) | `slot6` | Adaptive | `split`, `row-list`, shared detail host |
+| [Sponsorship](/widgets/sponsorship) | `slot7` | Open Collective + GitHub Sponsors | `summary-quad`, `tabs`, `row-list` |
+| `ASO Keywords` | `slot8` | Astro | `kpi-row`, `filter-bar`, `dense-ranked-table` |
+| `GitHub Activity` | `slot9` or assigned | GitHub | shared tabs, two-line rows |
+
+## Chrome components
+
+Chrome components are fixed UI elements around the grid that provide at-a-glance information.
+
+| Component | Description |
+|-----------|-------------|
+| [KPI Strip](/widgets/kpi-strip) | Always-visible summary strip for health, errors, deploy status, rating, and traffic |
+| [Bottom Ticker](/widgets/bottom-ticker) | Scrolling alert/activity ticker |
+| Top Bar | Header chrome and global actions |
+| Project Tabs | Project selector and project-scoped view switcher |
+
+## Widget configuration
+
+Widgets can be rearranged by dragging slots. Their runtime and editor behavior is driven by persisted widget config rather than one-off UI state.
+
+The shared widget system now supports:
+
+- shared template-backed compact and expanded rendering
+- shared selection/detail dialogs
+- shared filter state for widgets that need persisted controls
+- shared visual editor support for production widgets
+
+## Developer guide
+
+For the underlying architecture, see [Widget System](/developer-guide/widget-system).

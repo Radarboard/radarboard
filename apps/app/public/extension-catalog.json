@@ -1,0 +1,401 @@
+{
+  "generatedAt": "2026-03-28T17:04:13.541Z",
+  "extensions": [
+    {
+      "id": "@radarboard/integration-app-store-connect",
+      "name": "@radarboard/integration-app-store-connect",
+      "description": "",
+      "type": "integration",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/integration-betterstack",
+      "name": "@radarboard/integration-betterstack",
+      "description": "",
+      "type": "integration",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/integration-github",
+      "name": "@radarboard/integration-github",
+      "description": "",
+      "type": "integration",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/integration-github-sponsors",
+      "name": "@radarboard/integration-github-sponsors",
+      "description": "",
+      "type": "integration",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/integration-google-search-console",
+      "name": "@radarboard/integration-google-search-console",
+      "description": "",
+      "type": "integration",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/integration-linear",
+      "name": "@radarboard/integration-linear",
+      "description": "",
+      "type": "integration",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/integration-npm",
+      "name": "@radarboard/integration-npm",
+      "description": "",
+      "type": "integration",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/integration-open-collective",
+      "name": "@radarboard/integration-open-collective",
+      "description": "",
+      "type": "integration",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/integration-openpanel",
+      "name": "@radarboard/integration-openpanel",
+      "description": "",
+      "type": "integration",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/integration-raindrop",
+      "name": "@radarboard/integration-raindrop",
+      "description": "",
+      "type": "integration",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/integration-resend",
+      "name": "@radarboard/integration-resend",
+      "description": "",
+      "type": "integration",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/integration-revenuecat",
+      "name": "@radarboard/integration-revenuecat",
+      "description": "",
+      "type": "integration",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/integration-sentry",
+      "name": "@radarboard/integration-sentry",
+      "description": "",
+      "type": "integration",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/integration-slack",
+      "name": "@radarboard/integration-slack",
+      "description": "",
+      "type": "integration",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/integration-vercel",
+      "name": "@radarboard/integration-vercel",
+      "description": "",
+      "type": "integration",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/plugin-tasks",
+      "name": "@radarboard/plugin-tasks",
+      "description": "",
+      "type": "plugin",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/plugin-expenses",
+      "name": "@radarboard/plugin-expenses",
+      "description": "",
+      "type": "plugin",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/plugin-notes",
+      "name": "@radarboard/plugin-notes",
+      "description": "",
+      "type": "plugin",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/plugin-bookmarks",
+      "name": "@radarboard/plugin-bookmarks",
+      "description": "",
+      "type": "plugin",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/plugin-rss-reader",
+      "name": "@radarboard/plugin-rss-reader",
+      "description": "",
+      "type": "plugin",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/plugin-changelog",
+      "name": "@radarboard/plugin-changelog",
+      "description": "",
+      "type": "plugin",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/plugin-status-page",
+      "name": "@radarboard/plugin-status-page",
+      "description": "",
+      "type": "plugin",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/plugin-webhook-relay",
+      "name": "@radarboard/plugin-webhook-relay",
+      "description": "",
+      "type": "plugin",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/plugin-embeddings",
+      "name": "@radarboard/plugin-embeddings",
+      "description": "",
+      "type": "plugin",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/plugin-backup",
+      "name": "@radarboard/plugin-backup",
+      "description": "",
+      "type": "plugin",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/widget-analytics",
+      "name": "@radarboard/widget-analytics",
+      "description": "",
+      "type": "widget",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/widget-aso-keywords",
+      "name": "@radarboard/widget-aso-keywords",
+      "description": "",
+      "type": "widget",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/widget-builds",
+      "name": "@radarboard/widget-builds",
+      "description": "",
+      "type": "widget",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/widget-commits",
+      "name": "@radarboard/widget-commits",
+      "description": "",
+      "type": "widget",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/widget-deployments",
+      "name": "@radarboard/widget-deployments",
+      "description": "",
+      "type": "widget",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/widget-domains",
+      "name": "@radarboard/widget-domains",
+      "description": "",
+      "type": "widget",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/widget-downloads",
+      "name": "@radarboard/widget-downloads",
+      "description": "",
+      "type": "widget",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/widget-logs",
+      "name": "@radarboard/widget-logs",
+      "description": "",
+      "type": "widget",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/widget-observability",
+      "name": "@radarboard/widget-observability",
+      "description": "",
+      "type": "widget",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/widget-projects",
+      "name": "@radarboard/widget-projects",
+      "description": "",
+      "type": "widget",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/widget-pulls",
+      "name": "@radarboard/widget-pulls",
+      "description": "",
+      "type": "widget",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/widget-raindrop",
+      "name": "@radarboard/widget-raindrop",
+      "description": "",
+      "type": "widget",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/widget-revenue",
+      "name": "@radarboard/widget-revenue",
+      "description": "",
+      "type": "widget",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/widget-review-pulse",
+      "name": "@radarboard/widget-review-pulse",
+      "description": "",
+      "type": "widget",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/widget-roadmap",
+      "name": "@radarboard/widget-roadmap",
+      "description": "",
+      "type": "widget",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/widget-seo",
+      "name": "@radarboard/widget-seo",
+      "description": "",
+      "type": "widget",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/widget-shipping",
+      "name": "@radarboard/widget-shipping",
+      "description": "",
+      "type": "widget",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/widget-sponsorship",
+      "name": "@radarboard/widget-sponsorship",
+      "description": "",
+      "type": "widget",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    },
+    {
+      "id": "@radarboard/widget-stars",
+      "name": "@radarboard/widget-stars",
+      "description": "",
+      "type": "widget",
+      "tier": "official",
+      "hasChangelog": false,
+      "hasReadme": false
+    }
+  ]
+}

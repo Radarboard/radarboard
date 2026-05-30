@@ -1,0 +1,260 @@
+{
+  "version": 1,
+  "skills": {
+    "agent-browser": {
+      "source": "vercel-labs/agent-browser",
+      "sourceType": "github",
+      "computedHash": "3c1e3549339c98c44c8c75f676f56ebc0adcd4494ec27b7f1851f7c5a7c2deaf"
+    },
+    "ai-chat": {
+      "source": "thedaviddias/ux-patterns-for-developers",
+      "sourceType": "github",
+      "computedHash": "622fb1e6bcc845b6049d3aaff0184ce29411739ba512b60a6b677a15fc1073a2"
+    },
+    "ai-elements": {
+      "source": "vercel/ai-elements",
+      "sourceType": "github",
+      "computedHash": "84f3a2a57fa71ae5061786280987575d673792d6dda9a63941efb2795b83543a"
+    },
+    "ai-error-states": {
+      "source": "thedaviddias/ux-patterns-for-developers",
+      "sourceType": "github",
+      "computedHash": "b7c69dc699bd368fb2e6793ad4c6a40da33ad1bd47bad8e75d7148fc0ef7f92c"
+    },
+    "ai-loading-states": {
+      "source": "thedaviddias/ux-patterns-for-developers",
+      "sourceType": "github",
+      "computedHash": "86fddb80b8dd186b06d6ecc48c06a951397908e7c80baf1e5f6415204c7c1771"
+    },
+    "ai-suggestions": {
+      "source": "thedaviddias/ux-patterns-for-developers",
+      "sourceType": "github",
+      "computedHash": "564ff22762eddfb49eec0936da7988c295e2922aec4bd447b7fcbbfc703ea548"
+    },
+    "asc-aso-audit": {
+      "source": "rudrankriyam/app-store-connect-cli-skills",
+      "sourceType": "github",
+      "computedHash": "eff3d21b26cc20b7e09445953c50c09885777b8cda1797493bb10cf9aa24d851"
+    },
+    "asc-build-lifecycle": {
+      "source": "rudrankriyam/app-store-connect-cli-skills",
+      "sourceType": "github",
+      "computedHash": "3795cd19e498ccef8f897f0b1cc400aaec985866b216993e5359998cfbd9cdf5"
+    },
+    "asc-cli-usage": {
+      "source": "rudrankriyam/app-store-connect-cli-skills",
+      "sourceType": "github",
+      "computedHash": "34ca70865c6f2f1f3352856e0e37b38ee164bf9da3d5613eadf1a9c254e32b08"
+    },
+    "asc-crash-triage": {
+      "source": "rudrankriyam/app-store-connect-cli-skills",
+      "sourceType": "github",
+      "computedHash": "18ab1d4172147c36d75f9279613459815eb6168849df7f4750a7270b83016fb4"
+    },
+    "asc-id-resolver": {
+      "source": "rudrankriyam/app-store-connect-cli-skills",
+      "sourceType": "github",
+      "computedHash": "17ffb7c20c68d75cd379ce604ccc6cead7ba16b9db564ba556f1a3c9550d68a4"
+    },
+    "asc-localize-metadata": {
+      "source": "rudrankriyam/app-store-connect-cli-skills",
+      "sourceType": "github",
+      "computedHash": "39e4eaced9f49adad24b8d9067b8cdf44d5df5aa9b373c2a303159d42446b512"
+    },
+    "asc-metadata-sync": {
+      "source": "rudrankriyam/app-store-connect-cli-skills",
+      "sourceType": "github",
+      "computedHash": "5952d6957377a46a1de9e95b1adc13bc3674277de81a956abf2ab2b9ef0b2224"
+    },
+    "asc-notarization": {
+      "source": "rudrankriyam/app-store-connect-cli-skills",
+      "sourceType": "github",
+      "computedHash": "5a352a16af1bc65d8edb39ee676f39a0388df43ef896a44d8f0a111be7568b06"
+    },
+    "asc-ppp-pricing": {
+      "source": "rudrankriyam/app-store-connect-cli-skills",
+      "sourceType": "github",
+      "computedHash": "46362dd6ab1188e8645cf56dfdba98b9a33965977b366e56140158af38e3cd80"
+    },
+    "asc-release-flow": {
+      "source": "rudrankriyam/app-store-connect-cli-skills",
+      "sourceType": "github",
+      "computedHash": "c9fe7d13295bb02d99d782381f48cdab1f2ae1a94cadb859008b7d070a8927bb"
+    },
+    "asc-revenuecat-catalog-sync": {
+      "source": "rudrankriyam/app-store-connect-cli-skills",
+      "sourceType": "github",
+      "computedHash": "2a4c34955e9e0fe31695fbbf7c63c6c254e18381108ac3d77a8c4b67ddf612f9"
+    },
+    "asc-submission-health": {
+      "source": "rudrankriyam/app-store-connect-cli-skills",
+      "sourceType": "github",
+      "computedHash": "020e01376585f4fbdbb8942b72d33369b2811f24518544c1629d1de834706599"
+    },
+    "asc-whats-new-writer": {
+      "source": "rudrankriyam/app-store-connect-cli-skills",
+      "sourceType": "github",
+      "computedHash": "de84772f057ca10600b3dee2aadd1cf8d5ef80aeaf293b13cda3ee08814699c1"
+    },
+    "asc-workflow": {
+      "source": "rudrankriyam/app-store-connect-cli-skills",
+      "sourceType": "github",
+      "computedHash": "5dae2a0da272a0d3c6cee6e48a2c2c0472879c0156635665ccd88e3063257b8e"
+    },
+    "brainstorming": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "computedHash": "13b0b2aa645c340d54fb7e91d7ff5d1417a4d10c9d4c381b4b0fd629a6398155"
+    },
+    "button": {
+      "source": "thedaviddias/ux-patterns-for-developers",
+      "sourceType": "github",
+      "computedHash": "2c450144e9bc0a654d50ce3d97f61b85567ca3e19fc2b0e075da8ae8336c09fc"
+    },
+    "code-quality": {
+      "source": "tursodatabase/turso",
+      "sourceType": "github",
+      "computedHash": "4bd34c624734d588f607750ab1c5aa2de6f8255bb1dd572529d5a1906f6ea155"
+    },
+    "context-window": {
+      "source": "thedaviddias/ux-patterns-for-developers",
+      "sourceType": "github",
+      "computedHash": "b7b13d81ddc249cb0064a2b7ba0693a02a986a32cca348c68a513090247a2680"
+    },
+    "core": {
+      "source": "vercel-labs/json-render",
+      "sourceType": "github",
+      "computedHash": "ee0feec2d99e508c9561455afa6697c8ce3f6ab03b5428fe671b881abb0a022f"
+    },
+    "find-skills": {
+      "source": "vercel-labs/skills",
+      "sourceType": "github",
+      "computedHash": "d31e234f0c90694a670222cdd1dafa853e051d7066beda389f1097c22dadd461"
+    },
+    "form-validation": {
+      "source": "thedaviddias/ux-patterns-for-developers",
+      "sourceType": "github",
+      "computedHash": "1b03c2d269b0354da95a88a9376c051945931ea8390e8d718ec7c0cdefa8af9a"
+    },
+    "mcp": {
+      "source": "vercel-labs/json-render",
+      "sourceType": "github",
+      "computedHash": "b7cbc4e81c3115e1c9bdc4b9fd925488b00b600622b34e28361c1b7e081d42d1"
+    },
+    "mintlify": {
+      "source": "mintlify.com",
+      "sourceType": "well-known",
+      "computedHash": "fc61ab6703f692dc2c215e74327a8998d02987ca9571084440be20e7ecad6b46"
+    },
+    "model-selector": {
+      "source": "thedaviddias/ux-patterns-for-developers",
+      "sourceType": "github",
+      "computedHash": "ce876261b2fa469ebc677332b4e52b2fdd146b6edbe8f82a76ce1e9b38930367"
+    },
+    "portless": {
+      "source": "vercel-labs/portless",
+      "sourceType": "github",
+      "computedHash": "664fdebdd1ddfae9de7c72d2bd5410c81c6786e35e0708b7c948023be36af10d"
+    },
+    "prompt-input": {
+      "source": "thedaviddias/ux-patterns-for-developers",
+      "sourceType": "github",
+      "computedHash": "5d2acf071a2556e1f761d59e986e10b924f0417b9997d0002d5927d174f41144"
+    },
+    "react": {
+      "source": "vercel-labs/json-render",
+      "sourceType": "github",
+      "computedHash": "22dde85d5a69aaee45eb56aeed8e7f8fb5d2ae2559b38f71621d0654385bed1d"
+    },
+    "react-doctor": {
+      "source": "millionco/react-doctor",
+      "sourceType": "github",
+      "computedHash": "efa8db174b3c60e27b34d76842e3a9a7c0e5e602fd4d66eec897372d0ce3f30b"
+    },
+    "react-pdf": {
+      "source": "vercel-labs/json-render",
+      "sourceType": "github",
+      "computedHash": "a02018e64af5fc7e07e09fdd27ed43cc2b34b4ff1fbfcc21c0b391564f6a9528"
+    },
+    "remotion": {
+      "source": "vercel-labs/json-render",
+      "sourceType": "github",
+      "computedHash": "391d340781220430ac6a8cc92fea99c5df026439d2e9be46b9d2c5d20488e3ef"
+    },
+    "response-feedback": {
+      "source": "thedaviddias/ux-patterns-for-developers",
+      "sourceType": "github",
+      "computedHash": "0e2589c891c94c76dbb3929bcdf9831c9368a13028bfa6da004ecc0160a31efd"
+    },
+    "selection-input": {
+      "source": "thedaviddias/ux-patterns-for-developers",
+      "sourceType": "github",
+      "computedHash": "bccf659d4dccb5ff875a78d9e3e19c3b19a140396ca5fa2da9e7e25414243480"
+    },
+    "skeleton": {
+      "source": "thedaviddias/ux-patterns-for-developers",
+      "sourceType": "github",
+      "computedHash": "baa9469ca399f4d773910773d713a8b414c4b74ed589d8c83141e1b7ae027859"
+    },
+    "skill-creator": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "computedHash": "b122f4d1e91aa1d83027e050b5b37c3156203ee85458d7b1360bc48167c9e02a"
+    },
+    "streaming-response": {
+      "source": "thedaviddias/ux-patterns-for-developers",
+      "sourceType": "github",
+      "computedHash": "42ce5c361ced6b65f75a5812cd1415b5d0bd39089dadc14f1c643da6ebe8f5a8"
+    },
+    "tdd": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "computedHash": "ad055544599481182d0079c4198e85da26677cb408a677be2da04915375f0427"
+    },
+    "template-skill": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "computedHash": "38c88f722b574a922311d334a70c2008a2a5b896f06eaa75516d716e5725b26f"
+    },
+    "text-field": {
+      "source": "thedaviddias/ux-patterns-for-developers",
+      "sourceType": "github",
+      "computedHash": "2c7dbd3fb8537db53a2791c3caf3364b76be8ba60ac280c246209649ba2aec56"
+    },
+    "textarea": {
+      "source": "thedaviddias/ux-patterns-for-developers",
+      "sourceType": "github",
+      "computedHash": "6518a8809fe1f7573929d9e38148c63ece7c2720fe80917933e1ce704510dd60"
+    },
+    "toggle": {
+      "source": "thedaviddias/ux-patterns-for-developers",
+      "sourceType": "github",
+      "computedHash": "439f5ddc323230b04920c88187111df21eda365447ffd17949f5f11d4ba62c27"
+    },
+    "token-counter": {
+      "source": "thedaviddias/ux-patterns-for-developers",
+      "sourceType": "github",
+      "computedHash": "56c0e7bc26b0f2e5ab9d9bb4af03dc3f868b3bc02c138464f4d6f28d710f62ac"
+    },
+    "tooltip": {
+      "source": "thedaviddias/ux-patterns-for-developers",
+      "sourceType": "github",
+      "computedHash": "b7d7a1d9f4e41cb0f429b3fb2cc44d48274210442721fecd0a90c805dcd7fb52"
+    },
+    "ux-patterns": {
+      "source": "thedaviddias/ux-patterns-for-developers",
+      "sourceType": "github",
+      "computedHash": "cbe531988ae51bf7fc2754a2d09fc6201db080f6d8e10cbf8f2624489e456ac2"
+    },
+    "vercel-react-best-practices": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "computedHash": "afeca00ac2f492d88fdd010e73d91719a5b57c564bb4a73325b0bd77e11323ab"
+    },
+    "vitest": {
+      "source": "supabase/supabase",
+      "sourceType": "github",
+      "computedHash": "669c7275f7e1379b06b2bcfa593603aead4c983b951c7e8edbc09640aa38d0a1"
+    }
+  }
+}

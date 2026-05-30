@@ -1,0 +1,48 @@
+---
+title: "Revenue Widget"
+description: "Displays subscription revenue metrics through the shared summary and chart primitives."
+---
+
+# Revenue Widget
+
+The Revenue widget shows subscription revenue from RevenueCat using the shared widget runtime.
+
+<Note>
+Sponsorship data from Open Collective is now in its own [Sponsorship widget](/widgets/sponsorship).
+</Note>
+
+## What it displays
+
+### Compact view
+- `summary-quad` of:
+  - Gross Revenue
+  - MRR
+  - Last Payment
+  - Net Revenue
+
+### Expanded view
+- same `summary-quad`
+- shared `kpi-row` for:
+  - New Customers
+  - Active Users
+- shared line chart for revenue trend
+
+## Authentication
+
+| Service | Auth Type | Fields |
+|---------|-----------|--------|
+| RevenueCat | API Key | API Secret Key, Project ID |
+
+Enter your RevenueCat API credentials in the widget settings. [Get your API key](https://www.revenuecat.com/docs/authentication).
+
+## Shared system
+
+This widget now renders through shared primitives rather than a bespoke runtime shell:
+
+- `summary-quad`
+- `kpi-row`
+- `chart`
+
+## Default slot
+
+Assigned to `slot1` by default.

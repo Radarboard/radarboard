@@ -1,0 +1,37 @@
+---
+title: "Packages Overview"
+description: "Internal packages in the Radarboard monorepo."
+---
+
+# Packages Overview
+
+The monorepo contains 8 internal packages under `packages/`, all scoped to `@radarboard/`.
+
+| Package | Name | Description |
+|---------|------|-------------|
+| `packages/api` | `@radarboard/api` | 11 external service API clients (one per service) |
+| `packages/charts` | `@radarboard/charts` | Chart components (Sparkline, etc.) built on Recharts |
+| `packages/hooks` | `@radarboard/hooks` | React hooks for data fetching via SWR |
+| `packages/tsconfig` | `@radarboard/tsconfig` | Shared TypeScript configurations |
+| `packages/types` | `@radarboard/types` | Shared type definitions (12 type files, one per domain) |
+| `packages/ui` | `@radarboard/ui` | Shared UI components built on Radix UI |
+| `packages/utils` | `@radarboard/utils` | Utility functions (format-number, format-currency, cn) |
+| `packages/widgets` | `@radarboard/widget-engine` | Widget components, registry, and chrome components |
+
+## Dependency graph
+
+```
+@radarboard/app (app)
+  ├── @radarboard/widget-engine
+  │     ├── @radarboard/charts
+  │     ├── @radarboard/ui
+  │     ├── @radarboard/types
+  │     └── @radarboard/utils
+  ├── @radarboard/hooks
+  │     └── @radarboard/types
+  ├── @radarboard/api
+  │     └── @radarboard/types
+  └── @radarboard/utils
+```
+
+All packages use `@radarboard/tsconfig` for their TypeScript configuration.

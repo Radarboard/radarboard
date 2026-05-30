@@ -1,0 +1,61 @@
+---
+title: "Sentry"
+description: "Monitor unresolved errors, error count trends, and project health."
+---
+
+# Sentry
+
+Sentry integration fetches unresolved error issues (with event count, affected users, severity, and culprit), error count stats over time, and project listings.
+
+## What it powers
+
+- **Detail panel** -- Unresolved error issues list (second priority after Open Collective)
+- **KPI Strip** -- Unresolved error count cell (pulses red for critical)
+
+## Getting your auth token
+
+<Steps>
+  <Step title="Sign in to Sentry">
+    Go to [sentry.io](https://sentry.io/) and sign in.
+  </Step>
+  <Step title="Create an Auth Token">
+    Go to **Settings** > **Auth Tokens** (or visit [sentry.io/settings/auth-tokens/](https://sentry.io/settings/auth-tokens/)).
+    
+    Click **Create New Token**.
+    
+    **Required scopes:**
+    - `project:read`
+    - `event:read`
+    - `org:read`
+  </Step>
+  <Step title="Find your organization slug">
+    Your org slug is in the URL when viewing your Sentry dashboard: `sentry.io/organizations/<ORG_SLUG>/`.
+  </Step>
+</Steps>
+
+## Environment variables
+
+```bash .env.local
+SENTRY_AUTH_TOKEN=sntrys_xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+SENTRY_ORG_SLUG=your-org-slug
+```
+
+## API details
+
+| Property | Value |
+|----------|-------|
+| API base URL | `https://sentry.io/api/0/` |
+| Rate limit | Standard Sentry API limits |
+| Cache TTL | 2 minutes (projects: 10 minutes) |
+| Authentication | Bearer token (`Authorization: Bearer sntrys_...`) |
+
+## Widgets that use this service
+
+<CardGroup cols={2}>
+  <Card title="Detail Panel" icon="panel-right" href="/widgets/detail-panel">
+    Shows unresolved error issues.
+  </Card>
+  <Card title="KPI Strip" icon="gauge" href="/widgets/kpi-strip">
+    Error count cell.
+  </Card>
+</CardGroup>

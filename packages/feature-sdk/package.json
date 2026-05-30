@@ -1,0 +1,28 @@
+{
+  "name": "@radarboard/feature-sdk",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "exports": {
+    "./types": "./src/types.ts",
+    "./registry": "./src/registry.ts",
+    "./resolution": "./src/resolution.ts"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@radarboard/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "react": "catalog:"
+  }
+}

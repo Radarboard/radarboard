@@ -1,0 +1,168 @@
+---
+title: "Extension Packages"
+description: "Bundle multiple extensions in a single repo with radarboard-extension.json"
+---
+
+## Overview
+
+An **extension package** is a single Git repository that contains multiple extensions — for example, an integration, a plugin, and a widget that work together. This is the recommended approach when your extensions are tightly coupled (e.g., a Notion integration + Notion plugin + Notion widget).
+
+## Manifest format
+
+Create a `radarboard-extension.json` file at the root of your repo:
+
+```json radarboard-extension.json
+{
+  "name": "Notion Extension Package",
+  "description": "Full Notion integration for Radarboard",
+  "author": {
+    "name": "Your Name",
+    "url": "https://github.com/yourname"
+  },
+  "minAppVersion": "1.0.0",
+  "extensions": [
+    {
+      "type": "integration",
+      "path": "integrations/notion",
+      "name": "@radarboard/integration-notion",
+      "required": true
+    },
+    {
+      "type": "plugin",
+      "path": "plugins/notion",
+      "name": "@radarboard/plugin-notion",
+      "required": true
+    },
+    {
+      "type": "widget",
+      "path": "widgets/notion",
+      "name": "@radarboard/widget-notion",
+      "required": false
+    }
+  ]
+}
+```
+
+### Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | string | Human-readable package name |
+| `description` | string | What this package provides |
+| `author` | object | `{ name, url }` of the author |
+| `minAppVersion` | string | Minimum Radarboard version required |
+| `extensions` | array | List of extensions in this repo |
+
+### Extension entry fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `type` | `"integration" \| "plugin" \| "widget"` | Extension category |
+| `path` | string | Relative path from repo root to the extension directory |
+| `name` | string | Package name (must match the `name` in the extension's `package.json`) |
+| `required` | boolean | If `true`, validation fails when this extension has errors |
+
+## Repository structure
+
+```
+radarboard-notion/
+├── radarboard-extension.json     # Package manifest
+├── package.json                  # Root package.json
+├── tsconfig.json
+├── biome.json
+├── integrations/
+│   └── notion/
+│       ├── package.json          # @radarboard/integration-notion
+│       └── src/
+│           ├── index.ts          # IntegrationDescriptor
+│           ├── types.ts
+│           └── api/
+│               ├── client.ts
+│               └── data-sources.ts
+├── plugins/
+│   └── notion/
+│       ├── package.json          # @radarboard/plugin-notion
+│       └── src/
+│           ├── index.ts          # PluginDescriptor
+│           └── components/
+│               └── notion-overlay.tsx
+└── widgets/
+    └── notion/
+        ├── package.json          # @radarboard/widget-notion
+        ├── index.ts              # WidgetDescriptor
+        └── components/
+            ├── notion-compact.tsx
+            └── notion-expanded.tsx
+```
+
+## Scaffolding
+
+Use the scaffold tool to generate a starter extension repo:
+
+```bash
+# Integration + plugin + widget
+pnpm scaffold:extension-repo notion --integration --plugin --widget
+
+# Just a widget
+pnpm scaffold:extension-repo my-charts --widget --out ~/projects
+
+# Integration + widget (no plugin)
+pnpm scaffold:extension-repo jira --integration --widget
+```
+
+This generates a complete repo with:
+- `radarboard-extension.json` manifest
+- `package.json` files for each extension with correct SDK dependencies
+- Starter TypeScript code with descriptor exports and capability stubs where relevant
+- `biome.json`, `tsconfig.json`, `.gitignore`
+- README with installation instructions
+
+## Capability-aware packaging
+
+When an extension package contains both an integration and a widget for the same product area, keep the ownership model explicit:
+
+- Integrations should declare `capabilities` for the shared surfaces they provide.
+- Widgets should declare `capabilities` for the surfaces they own, using `role: "canonical"` or `role: "specialized"`.
+- `requiredIntegrations` still helps with availability filtering, but capability ownership is what Radarboard uses for canonical widget governance.
+
+This matters most when a package adds a new provider to an existing canonical widget. In those cases, the package should usually update the canonical widget’s provider list instead of shipping a second widget that duplicates the same capability.
+
+## Installation
+
+When a user installs from a GitHub URL, Radarboard:
+
+1. Checks for `radarboard-extension.json` in the repo
+2. If found, validates each declared extension
+3. Clones the repo and extracts each extension to its correct directory (`integrations/`, `plugins/`, `widgets/`)
+4. Updates `radarboard.config.ts` with all extensions
+5. Runs `pnpm generate:extensions` and `pnpm install`
+
+If no manifest is found, it falls back to single-extension validation (checking `package.json` name prefix).
+
+## Validation
+
+Each extension in the package is validated independently:
+
+- Package name matches the manifest entry
+- Required SDK dependency is present (`integration-sdk`, `plugin-sdk`, or `widget-sdk`)
+- Export map has a `.` (default) entry
+- No cross-extension imports (widget importing plugin code, etc.)
+- No forbidden workspace dependencies
+
+Run validation locally before publishing:
+
+```bash
+# The install UI will validate before installing
+# Or use the validation API programmatically:
+import { validateExtensionPackage } from "@/lib/extension-installer/validate-package";
+```
+
+## Dependency rules
+
+Each extension type has allowed workspace dependencies:
+
+| Extension type | Allowed `@radarboard/*` deps |
+|---------------|------------------------------|
+| Integration | `integration-sdk`, `types`, `utils` |
+| Plugin | `plugin-sdk`, `types`, `utils`, `ui`, `widget-engine`, `embedding-service`, `llm` |
+| Widget | `widget-sdk`, `widget-engine`, `types`, `utils`, `ui`, `charts`, `hooks`, `assistant-ui` |

@@ -1,0 +1,41 @@
+---
+title: "GET /api/seo"
+description: "Fetch search analytics from Google Search Console."
+---
+
+# GET /api/seo
+
+Fetches search analytics from Google Search Console: top queries with clicks, impressions, CTR, and position.
+
+## Query parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `siteUrl` | string | No | Site URL (e.g., `https://goshuin.com`) |
+| `project` | string | No | Project slug |
+
+## Response
+
+```json
+{
+  "queries": [
+    {
+      "query": "goshuin meaning",
+      "clicks": 120,
+      "impressions": 3400,
+      "ctr": 0.035,
+      "position": 4.2
+    }
+  ],
+  "totals": {
+    "clicks": 5000,
+    "impressions": 150000,
+    "ctr": 0.033,
+    "position": 12.5
+  }
+}
+```
+
+## Cache
+
+- **TTL**: 5 minutes

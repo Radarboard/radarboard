@@ -1,0 +1,52 @@
+---
+title: "Resend"
+description: "Send email alerts when services go down or for custom notifications."
+---
+
+# Resend
+
+Resend is used for sending email alerts, primarily for health check failures (services going down or degraded). It also supports custom alert emails.
+
+## What it powers
+
+- **Alert system** -- Sends formatted HTML emails when BetterStack reports services as DOWN or DEGRADED
+- **Custom alerts** -- Send arbitrary alert emails via the `/api/alerts/send` endpoint
+
+## Getting your API key
+
+<Steps>
+  <Step title="Sign in to Resend">
+    Go to [resend.com](https://resend.com/) and sign in.
+  </Step>
+  <Step title="Create an API key">
+    Go to **API Keys** in the sidebar (or visit [resend.com/api-keys](https://resend.com/api-keys)).
+    
+    Click **Create API Key**. Give it a name and select appropriate permissions.
+  </Step>
+  <Step title="Verify a domain or use the test address">
+    Go to **Domains** and add/verify a sending domain.
+    
+    Alternatively, for testing, you can use the `onboarding@resend.dev` sender address.
+  </Step>
+</Steps>
+
+## Environment variables
+
+```bash .env.local
+RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+RESEND_FROM_EMAIL=alerts@yourdomain.com
+RESEND_TO_EMAIL=you@example.com
+```
+
+## API details
+
+| Property | Value |
+|----------|-------|
+| API base URL | `https://api.resend.com` |
+| Rate limit | 2 req/s (free tier), 100/s (pro) |
+| Cache TTL | N/A (send-only) |
+| Authentication | Bearer token (`Authorization: Bearer re_...`) |
+
+<Note>
+  Resend is the only service that _sends_ data out rather than fetching it in. If not configured, alerts simply won't be sent -- the dashboard still works normally.
+</Note>

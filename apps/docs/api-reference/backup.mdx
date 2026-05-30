@@ -1,0 +1,49 @@
+---
+title: "POST /api/backup"
+description: "Proactively refresh all cache entries for all projects."
+---
+
+# POST /api/backup
+
+Proactively refreshes all cache entries by iterating over all projects and their integrations, calling each fetcher with `forceRefresh: true`.
+
+## Authentication
+
+Requires a Bearer token matching the `BACKUP_SECRET` environment variable.
+
+```
+Authorization: Bearer <BACKUP_SECRET>
+```
+
+## Request body
+
+None.
+
+## Response
+
+```json
+{
+  "refreshed": 42,
+  "failed": 1,
+  "duration": "2m 15s",
+  "errors": [
+    {
+      "project": "goshuin-atlas",
+      "integration": "sentry",
+      "error": "Rate limited"
+    }
+  ]
+}
+```
+
+## Rate limit awareness
+
+The backup endpoint applies delays between service calls to avoid hitting rate limits:
+
+| Service | Delay between calls |
+|---------|-------------------|
+| RevenueCat | 15 seconds |
+| App Store Connect | 2 seconds |
+| All others | 500ms |
+
+See [Backup System](/developer-guide/backup-system) for details on running this as a cron job.

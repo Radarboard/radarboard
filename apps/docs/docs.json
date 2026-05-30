@@ -1,0 +1,229 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Radarboard",
+  "colors": {
+    "primary": "#2563eb",
+    "light": "#2563eb",
+    "dark": "#1d4ed8"
+  },
+  "fonts": {
+    "family": "Geist",
+    "familyMono": "Geist Mono"
+  },
+  "modeToggle": {
+    "default": "dark"
+  },
+  "styling": {
+    "codeblocks": {
+      "theme": {
+        "light": "min-light",
+        "dark": "min-dark"
+      }
+    }
+  },
+  "favicon": "/favicon.svg",
+  "seo": {
+    "metatags": {
+      "canonical": "https://docs.radarboard.app"
+    }
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Getting Started",
+        "icon": "rocket",
+        "groups": [
+          {
+            "group": "Introduction",
+            "pages": ["index", "quickstart"]
+          }
+        ]
+      },
+      {
+        "tab": "Services",
+        "icon": "plug",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": ["services/overview"]
+          },
+          {
+            "group": "Revenue & Monetization",
+            "pages": [
+              "services/revenuecat",
+              "services/open-collective",
+              "services/app-store-connect"
+            ]
+          },
+          {
+            "group": "Analytics & SEO",
+            "pages": ["services/openpanel", "services/google-search-console"]
+          },
+          {
+            "group": "Development & Shipping",
+            "pages": ["services/github", "services/linear", "services/vercel"]
+          },
+          {
+            "group": "Monitoring & Alerts",
+            "pages": ["services/sentry", "services/betterstack", "services/resend"]
+          }
+        ]
+      },
+      {
+        "tab": "Widgets",
+        "icon": "grid-2",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": ["widgets/overview"]
+          },
+          {
+            "group": "Grid Widgets",
+            "pages": [
+              "widgets/revenue",
+              "widgets/sponsorship",
+              "widgets/shipping",
+              "widgets/analytics",
+              "widgets/seo-performance",
+              "widgets/service-monitor",
+              "widgets/github-stars",
+              "widgets/downloads"
+            ]
+          },
+          {
+            "group": "Chrome Components",
+            "pages": ["widgets/kpi-strip", "widgets/bottom-ticker"]
+          }
+        ]
+      },
+      {
+        "tab": "MCP Servers",
+        "icon": "server",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": ["mcp-servers/overview"]
+          },
+          {
+            "group": "Available Servers",
+            "pages": [
+              "mcp-servers/radarboard",
+              "mcp-servers/revenuecat",
+              "mcp-servers/openpanel",
+              "mcp-servers/chatgpt"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Developer Guide",
+        "icon": "code",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "developer-guide/setup",
+              "developer-guide/architecture",
+              "developer-guide/widget-system",
+              "developer-guide/widget-naming-taxonomy",
+              "developer-guide/widget-composition-reference"
+            ]
+          },
+          {
+            "group": "Build Extensions",
+            "pages": [
+              "developer-guide/quickstart-widget",
+              "developer-guide/build-an-integration",
+              "developer-guide/build-a-widget",
+              "developer-guide/build-a-plugin",
+              "developer-guide/extension-packages",
+              "developer-guide/developer-mode",
+              "developer-guide/mcp-extension-tutorial",
+              "developer-guide/intent-bus-cookbook"
+            ]
+          },
+          {
+            "group": "Infrastructure",
+            "pages": [
+              "developer-guide/database-providers",
+              "developer-guide/caching",
+              "developer-guide/backup-system",
+              "developer-guide/credentials",
+              "developer-guide/notifications",
+              "developer-guide/local-webhooks",
+              "developer-guide/webhook-relay"
+            ]
+          },
+          {
+            "group": "SDK Reference",
+            "pages": [
+              "developer-guide/sdk-reference/integration-sdk",
+              "developer-guide/sdk-reference/plugin-sdk",
+              "developer-guide/sdk-reference/plugin-sdk-components",
+              "developer-guide/sdk-reference/widget-sdk",
+              "developer-guide/sdk-reference/widget-sdk-composition"
+            ]
+          },
+          {
+            "group": "Packages",
+            "pages": ["developer-guide/packages-overview"]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "icon": "square-terminal",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": ["api-reference/overview"]
+          },
+          {
+            "group": "Data Endpoints",
+            "pages": [
+              "api-reference/analytics",
+              "api-reference/revenue",
+              "api-reference/health",
+              "api-reference/sentry",
+              "api-reference/seo",
+              "api-reference/shipping",
+              "api-reference/open-collective",
+              "api-reference/app-store"
+            ]
+          },
+          {
+            "group": "Management Endpoints",
+            "pages": [
+              "api-reference/settings",
+              "api-reference/credentials",
+              "api-reference/alerts",
+              "api-reference/database",
+              "api-reference/backup"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "navbar": {
+    "primary": {
+      "type": "button",
+      "label": "Join Waitlist",
+      "href": "https://radarboard.app/#waitlist"
+    },
+    "links": [
+      {
+        "label": "GitHub",
+        "href": "https://github.com/Radarboard/radarboard"
+      }
+    ]
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/Radarboard/radarboard",
+      "x": "https://x.com/thedaviddias",
+      "website": "https://radarboard.app"
+    }
+  }
+}

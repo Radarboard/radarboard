@@ -1,0 +1,45 @@
+---
+title: "Service Monitor Widget"
+description: "Displays error tracking, app reviews, and uptime monitoring from Sentry, App Store Connect, and BetterStack."
+---
+
+# Service Monitor Widget
+
+The Service Monitor widget provides a unified view of your connected monitoring services. It remains a composite surface for errors, uptime, and adaptive service health.
+
+## Modes
+
+| Mode | Service | What it shows |
+|------|---------|---------------|
+| **Errors** | Sentry | Unresolved issues list with error counts |
+| **App Store** | App Store Connect | Customer reviews with ratings |
+| **Health** | BetterStack | Uptime monitors with response times and incident history |
+
+The widget displays the first available mode in priority order: Sentry → App Store → Health.
+
+## What it displays
+
+### Compact view
+- Service-specific content based on the active mode
+
+### Expanded view
+- Summary strip with key metrics (unresolved count, rating, up/total monitors)
+- Full scrollable content area
+
+## Authentication
+
+| Service | Auth Type | Fields |
+|---------|-----------|--------|
+| Sentry | API Key | Auth Token, Organization Slug |
+| App Store Connect | API Key | Key ID, Issuer ID, Private Key (.p8 file) |
+| BetterStack | API Key | API Token |
+
+Configure each service in the widget settings panel.
+
+## Configuration
+
+This widget has no additional configuration options. The active mode is determined automatically by which services have credentials configured.
+
+## Default slot
+
+Assigned to slot 6 (mid right) by default. Previously named "Detail Panel".

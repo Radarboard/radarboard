@@ -1,0 +1,875 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "@fontsource-variable/ibm-plex-sans";
+@import "@fontsource-variable/public-sans";
+@import "@fontsource-variable/manrope";
+@import "@fontsource-variable/newsreader";
+@import "@fontsource-variable/sora";
+@import "@fontsource-variable/space-grotesk";
+@import "@fontsource-variable/fraunces";
+@import "@fontsource-variable/chivo-mono";
+@import "@fontsource-variable/jetbrains-mono";
+@import "@fontsource-variable/source-code-pro";
+@import "@fontsource-variable/inconsolata";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Scan monorepo packages for Tailwind classes */
+@source "../../../packages/ui/src";
+@source "../../../packages/widget-engine/src";
+@source "../../../packages/widget-sdk/src";
+@source "../../../packages/plugin-sdk/src";
+@source "../../../packages/charts/src";
+@source "../../../packages/hooks/src";
+@source "../../../packages/plugins/src";
+@source "../../../widgets/*/src";
+@source "../../../plugins/*/src";
+@source "../../../integrations/*/src";
+@source "../../../features/*/src";
+
+@theme inline {
+  /*
+   * ─── Base layer ──────────────────────────────────────────────────────────
+   * Used for the outermost app background (body, page shell).
+   * Dark mode default: near-black. Override for light/custom themes.
+   */
+  --color-background: var(--theme-color-background);
+  --color-foreground: var(--theme-color-foreground);
+
+  /*
+   * ─── Surface hierarchy ───────────────────────────────────────────────────
+   * Use these for panels, cards, modals, and widget slots.
+   *   surface         → widget/panel background      bg-surface
+   *   surface-raised  → headers, toolbars, overlays  bg-surface-raised
+   *   card            → settings panels, dialogs     bg-card
+   *   muted/secondary → subdued fills, hover states  bg-muted / bg-secondary
+   *
+   * Light-mode theme: swap these to white/very-light-grey equivalents.
+   */
+  --color-surface: var(--theme-color-surface);
+  --color-surface-raised: var(--theme-color-surface-raised);
+
+  --color-card: var(--theme-color-card);
+  --color-card-foreground: var(--theme-color-card-foreground);
+
+  --color-popover: var(--theme-color-popover);
+  --color-popover-foreground: var(--theme-color-popover-foreground);
+
+  --color-primary: var(--theme-color-primary);
+  --color-primary-foreground: var(--theme-color-primary-foreground);
+
+  --color-secondary: var(--theme-color-secondary);
+  --color-secondary-foreground: var(--theme-color-secondary-foreground);
+
+  --color-muted: var(--theme-color-muted);
+  --color-muted-foreground: var(--theme-color-muted-foreground);
+
+  /*
+   * ─── Text hierarchy ──────────────────────────────────────────────────────
+   * Semantic text-color tokens for the four readable tiers.
+   *   foreground           → primary body text              text-foreground
+   *   foreground-secondary → supporting/label text          text-foreground-secondary
+   *   muted-foreground     → captions, hints, meta          text-muted-foreground
+   *   dim                  → ghost text, inactive icons     text-dim
+   *
+   * Rule: never go darker than text-dim for any readable UI text.
+   */
+  --color-foreground-secondary: var(--theme-color-foreground-secondary);
+  --color-dim: var(--theme-color-dim);
+
+  /*
+   * ─── Accent / status ─────────────────────────────────────────────────────
+   */
+  --color-accent: var(--theme-color-accent);
+  --color-accent-foreground: var(--theme-color-accent-foreground);
+
+  --color-destructive: var(--theme-color-destructive);
+  --color-destructive-foreground: var(--theme-color-destructive-foreground);
+
+  --color-success: var(--theme-color-success);
+  --color-success-foreground: var(--theme-color-success-foreground);
+  --color-success-bg: var(--theme-color-success-bg);
+
+  --color-warning: var(--theme-color-warning);
+  --color-warning-foreground: var(--theme-color-warning-foreground);
+  --color-warning-bg: var(--theme-color-warning-bg);
+
+  --color-destructive-bg: var(--theme-color-destructive-bg);
+
+  --color-info: var(--theme-color-info);
+  --color-info-foreground: var(--theme-color-info-foreground);
+  --color-info-bg: var(--theme-color-info-bg);
+
+  --color-unread-bg: var(--theme-color-unread-bg);
+
+  /*
+   * ─── Borders / lines ─────────────────────────────────────────────────────
+   *   line    → hairline separators, grid lines   border-line
+   *   border  → default interactive borders       border-border
+   *   input   → form field borders                border-input
+   *   ring    → focus ring                        ring-ring
+   *
+   * In Tailwind v4 the `border` utility uses --color-border by default via
+   * the `* { border-color: ... }` rule in globals.
+   */
+  --color-line: var(--theme-color-line);
+  --color-border: var(--theme-color-border);
+  --color-input: var(--theme-color-input);
+  --color-ring: var(--theme-color-ring);
+
+  /*
+   * ─── Data visualisation ──────────────────────────────────────────────────
+   */
+  --color-chart-1: var(--theme-color-chart-1);
+  --color-chart-2: var(--theme-color-chart-2);
+  --color-chart-3: var(--theme-color-chart-3);
+  --color-chart-4: var(--theme-color-chart-4);
+  --color-chart-5: var(--theme-color-chart-5);
+
+  /*
+   * ─── Typography ──────────────────────────────────────────────────────────
+   */
+  --font-sans: "Geist Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  /*
+   * ─── Widget font-size tokens ─────────────────────────────────────────────
+   * Simplified 6-step scale for consistent density and clear hierarchy.
+   *
+   * These use cqi (container query inline units) so they adapt to the
+   * widget's actual width on the dashboard grid.
+   *
+   * Usage Guidelines:
+   * xs  (10px) -> Meta: Relative time, source pills, input labels, dense tags.
+   * sm  (11px) -> Primary: The default for list items and widget body text.
+   * base(13px) -> UI & Narrative: Buttons, sidebar items, modal body text.
+   * lg  (16px) -> Headers: Primary titles for widgets and section headers.
+   * xl  (20px) -> Headline: Primary numbers in medium widgets.
+   * 2xl (24px) -> Hero: Giant focus numbers in hero widgets.
+   */
+  --text-w-xs: var(--widget-font-xs);
+  --text-w-sm: var(--widget-font-sm);
+  --text-w-base: var(--widget-font-base);
+  --text-w-lg: var(--widget-font-lg);
+  --text-w-xl: var(--widget-font-xl);
+  --text-w-2xl: var(--widget-font-2xl);
+
+  /*
+   * ─── Z-Index hierarchy ──────────────────────────────────────────────────
+   */
+  --z-base: 0;
+  --z-dock: 40;
+  --z-ticker: 50;
+  --z-overlay: 60;
+  --z-panel: 70;
+  --z-modal: 80;
+  --z-modal-nested: 85;
+  --z-palette: 90;
+  --z-tooltip: 100;
+  --z-toast: 110;
+
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+
+  /*
+   * ─── Layout Radius ───────────────────────────────────────────────────────
+   * Semantic tokens for consistency. Set to 0px for the requested boxy UI.
+   */
+  --radius-panel: 0px;
+  --radius-card: 0px;
+  --radius-item: 0px;
+
+  /*
+   * ─── Layout Spacing ──────────────────────────────────────────────────────
+   * Semantic tokens for consistent container dimensions.
+   */
+  --spacing-sidebar: 280px;
+  --spacing-panel: 420px;
+  --spacing-content-max: 620px;
+  --spacing-widget-sm: 120px;
+  --spacing-widget-md: 240px;
+  --spacing-modal-inset: 16px;
+  --spacing-modal-sm: 34rem;
+  --spacing-modal-md: 96rem;
+  --spacing-drawer-sm: 20rem;
+  --spacing-drawer-md: 28rem;
+  --spacing-drawer-lg: 36rem;
+  --spacing-modal-height-md: 80dvh;
+
+  /*
+   * ─── Icons ───────────────────────────────────────────────────────────────
+   * Standardized icon sizing.
+   */
+  --icon-xs: 12px;
+  --icon-sm: 14px;
+  --icon-base: 16px;
+  --icon-lg: 20px;
+
+  /*
+   * ─── Transitions ─────────────────────────────────────────────────────────
+   * Standard snappy feel for all dashboard interactions.
+   */
+  --transition-interactive: all 100ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /*
+   * ─── Form / density tokens (avoid arbitrary Tailwind in shared primitives) ─
+   */
+  --min-height-textarea: 5rem;
+  --select-viewport-max-height: 18.75rem;
+  --tracking-badge-dense: 0.16em;
+
+  /*
+   * ─── Shadows ─────────────────────────────────────────────────────────────
+   * Theme-aware shadows that adapt between light and dark modes.
+   */
+  --shadow-popover: var(--theme-shadow-popover);
+  --shadow-modal: var(--theme-shadow-modal);
+  --shadow-glow: var(--theme-shadow-glow);
+}
+
+:root,
+.light {
+  --theme-color-background: #ffffff;
+  --theme-color-foreground: #111111;
+  --theme-color-surface: #ffffff;
+  --theme-color-surface-raised: #f8f8f8;
+  --theme-color-card: #ffffff;
+  --theme-color-card-foreground: #111111;
+  --theme-color-popover: #ffffff;
+  --theme-color-popover-foreground: #111111;
+  --theme-color-primary: #111111;
+  --theme-color-primary-foreground: #ffffff;
+  --theme-color-secondary: #f0f0f0;
+  --theme-color-secondary-foreground: #111111;
+  --theme-color-muted: #f0f0f0;
+  --theme-color-muted-foreground: #666666;
+  --theme-color-foreground-secondary: #444444;
+  --theme-color-dim: #888888;
+  --theme-color-accent: #2563eb;
+  --theme-color-accent-foreground: #ffffff;
+  --theme-color-destructive: #dc2626;
+  --theme-color-destructive-foreground: #ffffff;
+  --theme-color-success: #16a34a;
+  --theme-color-success-foreground: #ffffff;
+  --theme-color-success-bg: rgba(22, 163, 74, 0.08);
+  --theme-color-warning: #ca8a04;
+  --theme-color-warning-foreground: #ffffff;
+  --theme-color-warning-bg: rgba(202, 138, 4, 0.08);
+  --theme-color-destructive-bg: rgba(220, 38, 38, 0.08);
+  --theme-color-info: #2563eb;
+  --theme-color-info-foreground: #ffffff;
+  --theme-color-info-bg: rgba(37, 99, 235, 0.08);
+  --theme-color-unread-bg: rgba(37, 99, 235, 0.05);
+  --theme-color-line: #e5e7eb;
+  --theme-color-border: #d1d5db;
+  --theme-color-input: #d1d5db;
+  --theme-color-ring: #2563eb;
+  --theme-color-chart-1: #2563eb;
+  --theme-color-chart-2: #dc2626;
+  --theme-color-chart-3: #16a34a;
+  --theme-color-chart-4: #ca8a04;
+  --theme-color-chart-5: #9333ea;
+  --theme-shadow-popover: 0 8px 32px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  --theme-shadow-modal: 0 24px 80px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  --theme-shadow-glow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+.dark {
+  --theme-color-background: #101010;
+  --theme-color-foreground: #e8e8e8;
+  --theme-color-surface: #111111;
+  --theme-color-surface-raised: #161616;
+  --theme-color-card: #181818;
+  --theme-color-card-foreground: #e8e8e8;
+  --theme-color-popover: #181818;
+  --theme-color-popover-foreground: #e8e8e8;
+  --theme-color-primary: #e8e8e8;
+  --theme-color-primary-foreground: #101010;
+  --theme-color-secondary: #1e1e1e;
+  --theme-color-secondary-foreground: #e8e8e8;
+  --theme-color-muted: #1e1e1e;
+  --theme-color-muted-foreground: #888888;
+  --theme-color-foreground-secondary: #cccccc;
+  --theme-color-dim: #777777;
+  --theme-color-accent: #5b8af5;
+  --theme-color-accent-foreground: #e8e8e8;
+  --theme-color-destructive: #e05555;
+  --theme-color-destructive-foreground: #e8e8e8;
+  --theme-color-success: #4ade80;
+  --theme-color-success-foreground: #101010;
+  --theme-color-success-bg: rgba(74, 222, 128, 0.08);
+  --theme-color-warning: #f5c542;
+  --theme-color-warning-foreground: #101010;
+  --theme-color-warning-bg: rgba(245, 197, 66, 0.08);
+  --theme-color-destructive-bg: rgba(224, 85, 85, 0.08);
+  --theme-color-info: #5b8af5;
+  --theme-color-info-foreground: #e8e8e8;
+  --theme-color-info-bg: rgba(91, 138, 245, 0.08);
+  --theme-color-unread-bg: rgba(91, 138, 245, 0.06);
+  --theme-color-line: #1a1a1a;
+  --theme-color-border: #2a2a2a;
+  --theme-color-input: #2a2a2a;
+  --theme-color-ring: #5b8af5;
+  --theme-color-chart-1: #5b8af5;
+  --theme-color-chart-2: #e05555;
+  --theme-color-chart-3: #4ade80;
+  --theme-color-chart-4: #f5c542;
+  --theme-color-chart-5: #b388ff;
+  --theme-shadow-popover: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  --theme-shadow-modal: 0 24px 80px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.03);
+  --theme-shadow-glow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+/* Standard utilities for icons */
+.icon-xs {
+  width: var(--icon-xs);
+  height: var(--icon-xs);
+}
+.icon-sm {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+}
+.icon-base {
+  width: var(--icon-base);
+  height: var(--icon-base);
+}
+.icon-lg {
+  width: var(--icon-lg);
+  height: var(--icon-lg);
+}
+
+.transition-interactive {
+  transition: var(--transition-interactive);
+}
+
+.min-h-textarea {
+  min-height: var(--min-height-textarea);
+}
+
+.max-h-select-viewport {
+  max-height: var(--select-viewport-max-height);
+}
+
+.tracking-badge-dense {
+  letter-spacing: var(--tracking-badge-dense);
+}
+
+.font-sans {
+  font-family: var(--font-sans, ui-sans-serif, system-ui, sans-serif);
+}
+
+.font-mono {
+  font-family: var(--font-mono, ui-monospace, "SFMono-Regular", monospace);
+}
+
+/* Global scrollbar standardization */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-track:horizontal {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--color-border);
+  border-radius: 0px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-dim);
+}
+
+/*
+ * ─── Widget / dashboard aliases ──────────────────────────────────────────────
+ * These are referenced by CSS classes and inline styles outside of Tailwind.
+ * They are intentionally derived from the @theme tokens so a theme change
+ * propagates here automatically.
+ */
+:root {
+  --widget-bg: var(--color-surface);
+  --widget-border: var(--color-border);
+  --widget-header-bg: var(--color-surface-raised);
+  --grid-line: var(--color-line);
+
+  /*
+   * ─── Chat / component semantic aliases ───────────────────────────────────
+   * Map the component-level tokens the chat UI uses to the canonical theme tokens.
+   */
+  --color-text: var(--color-foreground); /* #e8e8e8 — primary body text  */
+  --color-text-muted: var(--color-muted-foreground); /* #888888 — captions, hints   */
+  --color-hover: color-mix(in srgb, var(--color-foreground) 6%, transparent);
+
+  /*
+   * ─── Font scale preference ────────────────────────────────────────────────
+   * Multiplier applied to every widget font-size token.
+   * Overridden via data-font-scale on <html> (global) or .widget-card (per-widget).
+   */
+  --w-scale: 1;
+
+  /*
+   * ─── Widget font tokens ──────────────────────────────────────────────────
+   * Uniform font sizes across ALL widgets and chrome, scaled by --w-scale.
+   *
+   * These use cqi (container query inline units) so they adapt to the
+   * widget's actual width on the dashboard grid.
+   */
+  --widget-font-xs: clamp(9px, 2.5cqi, 10px);
+  --widget-font-sm: clamp(10px, 3cqi, 11px);
+  --widget-font-base: clamp(12px, 3.5cqi, 13px);
+  --widget-font-lg: clamp(14px, 4cqi, 16px);
+  --widget-font-xl: clamp(18px, 5cqi, 20px);
+  --widget-font-2xl: clamp(22px, 6cqi, 24px);
+}
+
+[data-font-scale="sm"] {
+  --w-scale: 0.85;
+}
+[data-font-scale="lg"] {
+  --w-scale: 1.15;
+}
+
+.widget-card {
+  container-type: inline-size;
+  container-name: widget;
+}
+
+* {
+  border-color: var(--color-border);
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+}
+
+.rb-dialog-shell {
+  max-inline-size: calc(100vw - (var(--spacing-modal-inset) * 2));
+  max-block-size: calc(100dvh - (var(--spacing-modal-inset) * 2));
+}
+
+.settings-page-layout {
+  container-type: inline-size;
+  container-name: settings-page;
+}
+
+.settings-card-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@container settings-page (min-width: 42rem) {
+  .settings-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@container settings-page (min-width: 56rem) {
+  .settings-card-grid[data-columns="5"] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@container settings-page (min-width: 64rem) {
+  .settings-card-grid[data-columns="3"] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .settings-card-grid[data-columns="4"] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@container settings-page (min-width: 72rem) {
+  .settings-card-grid[data-columns="5"] {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@container settings-page (min-width: 76rem) {
+  .settings-card-grid[data-columns="4"] {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@container settings-page (min-width: 78rem) {
+  .settings-card-grid[data-columns="5"] {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+.rb-dialog-size-sm {
+  inline-size: min(var(--spacing-modal-sm), calc(100vw - (var(--spacing-modal-inset) * 2)));
+}
+
+.rb-dialog-size-md {
+  inline-size: min(var(--spacing-modal-md), calc(100vw - (var(--spacing-modal-inset) * 2)));
+  block-size: min(var(--spacing-modal-height-md), calc(100dvh - (var(--spacing-modal-inset) * 2)));
+}
+
+.rb-dialog-size-lg {
+  inline-size: calc(100vw - (var(--spacing-modal-inset) * 2));
+  block-size: calc(100dvh - (var(--spacing-modal-inset) * 2));
+}
+
+.rb-drawer-size-sm {
+  inline-size: min(var(--spacing-drawer-sm), 100vw);
+}
+
+.rb-drawer-size-md {
+  inline-size: min(var(--spacing-drawer-md), 100vw);
+}
+
+.rb-drawer-size-lg {
+  inline-size: min(var(--spacing-drawer-lg), 100vw);
+}
+
+.dark body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
+
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
+/* ===== Thin Scrollbar ===== */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.dark .scrollbar-thin {
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dark .scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: var(--color-border);
+  border-radius: 0px;
+}
+
+.dark .scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: var(--color-border);
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-dim);
+}
+
+.dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-dim);
+}
+
+/* ===== Dashboard Grid ===== */
+.dashboard-grid-shell {
+  --dashboard-cell-gap: 6px;
+}
+
+.dashboard-grid {
+  display: grid;
+  /*
+    grid-template-columns and the widget-row portion of grid-template-rows are
+    overridden at runtime via inline styles from the active LayoutDefinition's
+    colSizes / rowSizes. These values act as the initial fallback only.
+  */
+  grid-template-rows: 1fr 1fr 1fr auto;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--dashboard-cell-gap, 6px);
+  height: 100%;
+  background-color: var(--grid-line);
+  /* Needed so ResizeHandle overlays (position: absolute) can be parented here */
+  position: relative;
+}
+
+.dark .dashboard-grid {
+  background-color: var(--grid-line);
+}
+
+.dashboard-body-shell {
+  position: relative;
+}
+
+.dashboard-body-shell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease;
+  z-index: 11;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.38) 0%,
+    rgba(0, 0, 0, 0.5) 38%,
+    rgba(0, 0, 0, 0.66) 68%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
+}
+
+.dark .dashboard-body-shell::after {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.38) 0%,
+    rgba(0, 0, 0, 0.5) 38%,
+    rgba(0, 0, 0, 0.66) 68%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
+}
+
+.dashboard-body-shell-dimmed::after {
+  opacity: 1;
+}
+
+.dashboard-grid > * {
+  background-color: var(--widget-bg);
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.dark .dashboard-grid > * {
+  background-color: var(--widget-bg);
+}
+
+/* Subtle border highlight on hovered dashboard cells.
+   Uses ::after so it always paints above chart canvas/SVG layers. */
+.dashboard-cell {
+  position: relative;
+}
+
+.dashboard-cell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid transparent;
+  pointer-events: none;
+  transition: border-color 120ms ease;
+  z-index: 999;
+}
+
+.dashboard-cell:hover::after {
+  border-color: rgba(91, 138, 245, 0.25);
+}
+
+.dark .dashboard-cell:hover::after {
+  border-color: rgba(91, 138, 245, 0.25);
+}
+
+.dashboard-ticker {
+  grid-area: ticker;
+}
+
+/* ===== Animations ===== */
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.pulse-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes ticker-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.ticker-scroll {
+  animation: ticker-scroll 60s linear infinite;
+}
+
+.ticker-hover-card {
+  background: #111;
+  border: 1px solid #2a2a2a;
+  border-radius: 0px;
+  padding: 10px 12px;
+  min-width: 260px;
+  max-width: 360px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(255, 255, 255, 0.03);
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.dark .ticker-hover-card {
+  background: #111;
+  border: 1px solid #2a2a2a;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(255, 255, 255, 0.03);
+}
+
+.ticker-source-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 5px;
+  border-radius: 0px;
+  font-size: 9px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+
+.ticker-pill-github {
+  background: #1a1f2e;
+  color: #7da3e0;
+  border: 1px solid #243050;
+}
+
+.dark .ticker-pill-github {
+  background: #1a1f2e;
+  color: #7da3e0;
+  border: 1px solid #243050;
+}
+
+.ticker-pill-linear {
+  background: #1a1a2e;
+  color: #9b8fe8;
+  border: 1px solid #252540;
+}
+
+.dark .ticker-pill-linear {
+  background: #1a1a2e;
+  color: #9b8fe8;
+  border: 1px solid #252540;
+}
+
+.ticker-pill-vercel {
+  background: #1a1a1a;
+  color: #aaaaaa;
+  border: 1px solid #2a2a2a;
+}
+
+.dark .ticker-pill-vercel {
+  background: #1a1a1a;
+  color: #aaaaaa;
+  border: 1px solid #2a2a2a;
+}
+
+.ticker-pill-manual {
+  background: #1a1a1a;
+  color: #555555;
+  border: 1px solid #252525;
+}
+
+.dark .ticker-pill-manual {
+  background: #1a1a1a;
+  color: #555555;
+  border: 1px solid #252525;
+}
+
+.ticker-pill-rss {
+  background: #2b1a08;
+  color: #f6b65b;
+  border: 1px solid #4b2c0f;
+}
+
+.dark .ticker-pill-rss {
+  background: #2b1a08;
+  color: #f6b65b;
+  border: 1px solid #4b2c0f;
+}
+
+/* ===== Skeleton Shimmer ===== */
+@keyframes skeleton-shimmer {
+  0% {
+    mask-position: 200% 0;
+  }
+  100% {
+    mask-position: -200% 0;
+  }
+}
+
+.skeleton-shimmer {
+  mask-image: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.06) 0%,
+    rgba(0, 0, 0, 0.15) 20%,
+    rgba(0, 0, 0, 0.06) 40%,
+    rgba(0, 0, 0, 0.06) 100%
+  );
+  mask-size: 300% 100%;
+  animation: skeleton-shimmer 2s ease-in-out infinite;
+  pointer-events: none;
+  user-select: none;
+}
+
+.dark .skeleton-shimmer {
+  mask-image: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.06) 0%,
+    rgba(0, 0, 0, 0.15) 20%,
+    rgba(0, 0, 0, 0.06) 40%,
+    rgba(0, 0, 0, 0.06) 100%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-shimmer {
+    animation: none;
+    mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.1) 100%);
+  }
+}
+
+/* View Transition crossfade for skeleton reveal */
+::view-transition-old(root) {
+  animation-duration: 0.25s;
+}
+
+::view-transition-new(root) {
+  animation-duration: 0.25s;
+}
+
+@media (max-width: 600px) {
+  .dashboard-grid {
+    overflow-y: auto;
+    height: 100%;
+  }
+
+  /* Hide KPI strip on mobile — data visible in detail panel and ticker */
+  .dashboard-kpis {
+    display: none;
+  }
+}

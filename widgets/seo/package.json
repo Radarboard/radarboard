@@ -1,0 +1,38 @@
+{
+  "name": "@radarboard/widget-seo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./hooks/*": "./src/hooks/*",
+    "./init": "./src/init.tsx",
+    ".": "./src/index.ts",
+    "./data-resolver": "./src/data-resolver.tsx"
+  },
+  "dependencies": {
+    "@radarboard/assistant-ui": "workspace:*",
+    "@tanstack/react-table": "^8.21.3",
+    "motion": "catalog:",
+    "@radarboard/widget-engine": "workspace:*",
+    "@radarboard/widget-sdk": "workspace:*",
+    "@radarboard/types": "workspace:*",
+    "@radarboard/ui": "workspace:*",
+    "@radarboard/utils": "workspace:*",
+    "@radarboard/hooks": "workspace:*",
+    "react": "catalog:",
+    "lucide-react": "catalog:",
+    "swr": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "vitest": "catalog:",
+    "typescript": "catalog:",
+    "@radarboard/tsconfig": "workspace:*"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  }
+}

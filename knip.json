@@ -1,0 +1,298 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "workspaces": {
+    ".": {
+      "entry": ["*.config.{ts,js}"],
+      "project": ["*.config.{ts,js}", "*.json"],
+      "ignoreDependencies": ["next-themes", "@secretlint/secretlint-rule-preset-recommend"]
+    },
+    "apps/app": {
+      "entry": [
+        "app/**/{page,layout,loading,error,not-found,route,default}.{ts,tsx}!",
+        "lib/**/*.{ts,tsx}!",
+        "components/**/*.{ts,tsx}!",
+        "**/*.stories.{ts,tsx}!",
+        "**/*.test.{ts,tsx}!"
+      ],
+      "project": ["**/*.{ts,tsx}"],
+      "ignoreDependencies": [
+        "tailwindcss",
+        "tw-animate-css",
+        "postcss",
+        "@radarboard/charts",
+        "@radarboard/mcp-tools",
+        "@radarboard/integration-discord",
+        "@radarboard/integration-pagerduty",
+        "@radarboard/integration-stripe",
+        "@radarboard/integration-umami",
+        "@ai-sdk/react",
+        "react-markdown",
+        "@tauri-apps/plugin-clipboard-manager",
+        "@tauri-apps/plugin-stronghold",
+        "@testing-library/jest-dom",
+        "@fontsource-variable/chivo-mono",
+        "@fontsource-variable/fraunces",
+        "@fontsource-variable/ibm-plex-sans",
+        "@fontsource-variable/inconsolata",
+        "@fontsource-variable/jetbrains-mono",
+        "@fontsource-variable/manrope",
+        "@fontsource-variable/newsreader",
+        "@fontsource-variable/public-sans",
+        "@fontsource-variable/sora",
+        "@fontsource-variable/source-code-pro",
+        "@fontsource-variable/space-grotesk"
+      ]
+    },
+    "apps/desktop": {
+      "entry": [
+        "scripts/*.mjs!",
+        "scripts/*.test.ts!"
+      ],
+      "project": ["scripts/**/*.{js,mjs,ts}", "src-tauri/**/*.{json,toml}"],
+      "ignoreDependencies": [
+        "@tauri-apps/api",
+        "@tauri-apps/plugin-clipboard-manager",
+        "@tauri-apps/plugin-deep-link",
+        "@tauri-apps/plugin-dialog",
+        "@tauri-apps/plugin-fs",
+        "@tauri-apps/plugin-log",
+        "@tauri-apps/plugin-os",
+        "@tauri-apps/plugin-positioner",
+        "@tauri-apps/plugin-store",
+        "@tauri-apps/plugin-stronghold",
+        "@tauri-apps/plugin-updater",
+        "@radarboard/app",
+        "@yao-pkg/pkg"
+      ]
+    },
+    "apps/storybook": {
+      "entry": [".storybook/{main,preview}.{ts,js}"],
+      "project": ["**/*.{ts,tsx,js,jsx,mjs}"],
+      "ignoreDependencies": [
+        "@tailwindcss/postcss",
+        "postcss",
+        "@radarboard/assistant-ui",
+        "@radarboard/charts",
+        "@radarboard/hooks",
+        "@radarboard/ui",
+        "@radarboard/utils",
+        "@radarboard/widget-engine",
+        "geist",
+        "lucide-react",
+        "sonner"
+      ]
+    },
+    "apps/webhook-relay": {
+      "entry": [
+        "src/server.ts!",
+        "src/**/*.test.{ts,tsx}!"
+      ],
+      "project": ["src/**/*.{ts,tsx}"],
+      "ignoreDependencies": [
+        "@radarboard/integration-betterstack",
+        "@radarboard/integration-github",
+        "@radarboard/integration-linear",
+        "@radarboard/integration-sdk",
+        "@radarboard/integration-sentry",
+        "@radarboard/integration-vercel",
+        "@radarboard/types",
+        "@upstash/ratelimit",
+        "@upstash/redis",
+        "hono"
+      ]
+    },
+    "apps/marketing": {
+      "entry": [
+        "app/**/*.{ts,tsx}!",
+        "components/**/*.{ts,tsx}!",
+        "data/**/*.{ts,tsx}!",
+        "lib/**/*.{ts,tsx}!"
+      ],
+      "project": ["**/*.{ts,tsx}"],
+      "ignoreDependencies": ["postcss"]
+    },
+    "features/workflows": {
+      "ignoreDependencies": ["zod"]
+    },
+    "packages/assistant-ui": {
+      "entry": [
+        "src/chat/*.{ts,tsx}!",
+        "src/**/*.stories.{ts,tsx}!",
+        "src/**/*.test.{ts,tsx}!"
+      ],
+      "project": ["src/**/*.{ts,tsx}"]
+    },
+    "packages/plugin-sdk": {
+      "entry": [
+        "src/index.{ts,tsx}!",
+        "src/**/*.stories.{ts,tsx}!",
+        "src/**/*.test.{ts,tsx}!"
+      ],
+      "project": ["src/**/*.{ts,tsx}"],
+      "ignoreDependencies": [
+        "@dnd-kit/core",
+        "@dnd-kit/sortable",
+        "@dnd-kit/utilities",
+        "@radarboard/observability"
+      ]
+    },
+    "packages/widget-engine": {
+      "entry": [
+        "src/index.{ts,tsx}!",
+        "src/templates/**/*.{ts,tsx}!",
+        "src/**/*.stories.{ts,tsx}!",
+        "src/**/*.test.{ts,tsx}!"
+      ],
+      "project": ["src/**/*.{ts,tsx}"],
+      "ignoreDependencies": [
+        "modern-screenshot",
+        "motion",
+        "swr",
+        "zod",
+        "@testing-library/jest-dom",
+        "@testing-library/user-event"
+      ]
+    },
+    "packages/feature-sdk": {
+      "ignoreDependencies": ["@types/react"]
+    },
+    "packages/devlogs": {
+      "ignoreDependencies": ["tsx"]
+    },
+    "packages/mcp-tools": {
+      "entry": [
+        "src/**/*.{ts,tsx}!",
+        "src/**/*.test.{ts,tsx}!"
+      ],
+      "project": ["src/**/*.{ts,tsx}"]
+    },
+    "packages/*": {
+      "entry": [
+        "src/index.{ts,tsx}!",
+        "src/**/*.stories.{ts,tsx}!",
+        "src/**/*.test.{ts,tsx}!"
+      ],
+      "project": ["src/**/*.{ts,tsx}"]
+    },
+    "integrations/shipping": {
+      "entry": ["src/index.{ts,tsx}!", "src/**/*.test.{ts,tsx}!"],
+      "project": ["src/**/*.{ts,tsx}"],
+      "ignoreDependencies": ["@radarboard/types"]
+    },
+    "integrations/slack": {
+      "entry": ["src/index.{ts,tsx}!", "src/**/*.test.{ts,tsx}!"],
+      "project": ["src/**/*.{ts,tsx}"],
+      "ignoreDependencies": ["@radarboard/types"]
+    },
+    "integrations/*": {
+      "entry": [
+        "src/index.{ts,tsx}!",
+        "src/**/*.test.{ts,tsx}!"
+      ],
+      "project": ["src/**/*.{ts,tsx}"],
+      "ignoreDependencies": ["zod"]
+    },
+    "plugins/notes": {
+      "entry": ["src/index.{ts,tsx}!", "src/**/*.test.{ts,tsx}!"],
+      "project": ["src/**/*.{ts,tsx}"],
+      "ignoreDependencies": ["react-markdown", "remark-gfm"]
+    },
+    "plugins/*": {
+      "entry": [
+        "src/index.{ts,tsx}!",
+        "src/**/*.test.{ts,tsx}!"
+      ],
+      "project": ["src/**/*.{ts,tsx}"],
+      "ignoreDependencies": [
+        "@dnd-kit/core",
+        "@dnd-kit/sortable",
+        "@dnd-kit/utilities",
+        "@radarboard/hooks",
+        "@radarboard/types",
+        "@radarboard/ui",
+        "@radarboard/utils",
+        "class-variance-authority",
+        "react-markdown",
+        "remark-gfm",
+        "swr",
+        "zod"
+      ]
+    },
+    "widgets/*": {
+      "entry": [
+        "src/index.{ts,tsx}!",
+        "src/init.{ts,tsx}!",
+        "src/data-resolver.{ts,tsx}!",
+        "src/**/*.stories.{ts,tsx}!",
+        "src/**/*.test.{ts,tsx}!"
+      ],
+      "project": ["src/**/*.{ts,tsx}"],
+      "ignoreDependencies": [
+        "@radix-ui/react-slider",
+        "@radarboard/assistant-ui",
+        "@radarboard/charts",
+        "lucide-react",
+        "motion",
+        "swr",
+        "@tanstack/react-table",
+        "@radarboard/ui",
+        "@radarboard/types",
+        "@radarboard/utils",
+        "@radarboard/hooks",
+        "@radarboard/widget-engine",
+        "zod"
+      ]
+    }
+  },
+  "ignoreDependencies": [
+    "@radarboard/devlogs",
+    "@radarboard/product",
+    "@radarboard/themes",
+    "@radarboard/widget-analytics/components",
+    "@radarboard/widget-engine/conformance",
+    "@storybook/nextjs-vite",
+    "@tauri-apps/plugin-fs",
+    "@tauri-apps/plugin-notification",
+    "@tauri-apps/plugin-opener",
+    "drizzle-orm",
+    "geist",
+    "get-port-please",
+    "react-email",
+    "react-syntax-highlighter",
+    "storybook/test",
+    "tailwindcss"
+  ],
+  "ignoreWorkspaces": [
+    "packages/tsconfig",
+    "integrations/_template",
+    "plugins/_template"
+  ],
+  "ignoreBinaries": ["mint", "portless"],
+  "ignoreExportsUsedInFile": true,
+  "ignoreFiles": [
+    "**/*.stories.tsx",
+    "**/*.test.tsx",
+    "**/_template/**",
+    "apps/docs/style.css",
+    "apps/e2e/tests/_helpers/**/*.ts",
+    "apps/desktop/src-tauri/resources/**",
+    "packages/widget-engine/src/templates/section-utils.ts",
+    "packages/widget-sdk/src/widget-engine-types.ts"
+  ],
+  "ignoreIssues": {
+    "**/*.stories.tsx": ["unlisted"],
+    "**/*.scaffold.stories.tsx": ["unlisted"],
+    "apps/storybook/.generated/**/*.tsx": ["unlisted"],
+    "features/onboarding/src/components/onboarding-wizard/wizard-logic.ts": ["exports"],
+    "widgets/app-reviews/src/index.ts": ["duplicates"],
+    "widgets/bookmarks/src/index.ts": ["duplicates"],
+    "widgets/bookmarks/src/init.tsx": ["duplicates"],
+    "widgets/github-commits/src/index.ts": ["duplicates"],
+    "widgets/github-stars/src/index.ts": ["duplicates"],
+    "widgets/github-stars/src/init.tsx": ["duplicates"],
+    "widgets/_template/conformance.test.ts": ["unlisted"],
+    "widgets/npm-downloads/src/index.ts": ["duplicates"],
+    "widgets/vercel-domains/src/index.ts": ["duplicates"]
+  },
+  "exclude": ["enumMembers", "classMembers"]
+}

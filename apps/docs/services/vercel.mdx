@@ -1,0 +1,59 @@
+---
+title: "Vercel"
+description: "Track production deployments, project info, and domains for Shipping and Vercel Domains."
+---
+
+# Vercel
+
+Vercel integration fetches recent deployments (especially production ones), project information, and domain configurations for Shipping and Vercel Domains.
+
+## What it powers
+
+- **Shipping Log widget** -- Production deployments appear as shipped items
+- **KPI Strip** -- Last deploy timestamp and project name
+
+## Getting your token
+
+<Steps>
+  <Step title="Sign in to Vercel">
+    Go to [vercel.com](https://vercel.com/) and sign in.
+  </Step>
+  <Step title="Go to Account Settings">
+    Click your avatar, then **Settings** > **Tokens** (or visit [vercel.com/account/tokens](https://vercel.com/account/tokens) directly).
+  </Step>
+  <Step title="Create a token">
+    Click **Create**. Give it a name, select the scope, and set an expiration.
+    
+    Copy the token.
+  </Step>
+  <Step title="Optional: Team ID">
+    If you deploy under a team, find your Team ID in the team settings URL or via the Vercel API.
+  </Step>
+</Steps>
+
+## Environment variables
+
+```bash .env.local
+VERCEL_TOKEN=your-vercel-token
+VERCEL_TEAM_ID=team_xxxxxxxxxxxx  # Optional, for team deployments
+```
+
+## API details
+
+| Property | Value |
+|----------|-------|
+| API base URL | `https://api.vercel.com` |
+| Rate limit | 500 requests/minute |
+| Cache TTL | 2 minutes (domains: 5 minutes) |
+| Authentication | Bearer token (`Authorization: Bearer ...`) |
+
+## Widgets that use this service
+
+<CardGroup cols={2}>
+  <Card title="Shipping" icon="ship" href="/widgets/shipping">
+    Shows production deployments as shipped items.
+  </Card>
+  <Card title="KPI Strip" icon="gauge" href="/widgets/kpi-strip">
+    Last deploy time and project name.
+  </Card>
+</CardGroup>

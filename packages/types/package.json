@@ -1,0 +1,52 @@
+{
+  "name": "@radarboard/types",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "exports": {
+    "./assistant": "./src/assistant.ts",
+    "./revenue": "./src/revenue.ts",
+    "./shipping": "./src/shipping.ts",
+    "./roadmap": "./src/roadmap.ts",
+    "./health": "./src/health.ts",
+    "./analytics": "./src/analytics.ts",
+    "./seo": "./src/seo.ts",
+    "./project": "./src/project.ts",
+    "./dashboard": "./src/dashboard.ts",
+    "./open-collective": "./src/open-collective.ts",
+    "./sentry": "./src/sentry.ts",
+    "./app-store-connect": "./src/app-store-connect.ts",
+    "./database": "./src/database.ts",
+    "./ui": "./src/ui.ts",
+    "./shortcuts": "./src/shortcuts.ts",
+    "./api-routes": "./src/api-routes.ts",
+    "./aso-keywords": "./src/aso-keywords.ts",
+    "./mcp-server": "./src/mcp-server.ts",
+    "./logs": "./src/logs.ts",
+    "./notifications": "./src/notifications.ts",
+    "./github-activity": "./src/github-activity.ts",
+    "./project-context": "./src/project-context.ts",
+    "./github-sponsors": "./src/github-sponsors.ts",
+    "./raindrop": "./src/raindrop.ts",
+    "./rss": "./src/rss.ts",
+    "./vercel": "./src/vercel.ts",
+    "./polling": "./src/polling.ts",
+    "./status-page": "./src/status-page.ts",
+    "./intent": "./src/intent.ts",
+    "./errors": "./src/errors.ts",
+    "./api-envelope": "./src/api-envelope.ts",
+    "./extension": "./src/extension.ts",
+    "./view-state": "./src/view-state.ts"
+  },
+  "devDependencies": {
+    "@radarboard/tsconfig": "workspace:*",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

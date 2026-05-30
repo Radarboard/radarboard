@@ -1,0 +1,25 @@
+{
+  "name": "@radarboard/integration-astro",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:coverage": "vitest run --coverage --passWithNoTests"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./data-sources": "./src/api/data-sources.ts"
+  },
+  "dependencies": {
+    "@radarboard/integration-sdk": "workspace:*"
+  },
+  "devDependencies": {
+    "@radarboard/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

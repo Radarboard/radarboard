@@ -1,0 +1,56 @@
+name: Webhook Relay CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/webhook-relay/**"
+      - "packages/integrations/**"
+      - "packages/types/**"
+      - "pnpm-lock.yaml"
+  pull_request:
+    paths:
+      - "apps/webhook-relay/**"
+      - "packages/integrations/**"
+      - "packages/types/**"
+      - "pnpm-lock.yaml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      statuses: write
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Setup Node, pnpm, and dependencies
+        uses: ./.github/actions/setup-pnpm-install
+        with:
+          node-version-file: .nvmrc
+
+      - name: Typecheck
+        run: pnpm --filter @radarboard/apphook-relay typecheck
+
+      - name: Lint
+        run: pnpm exec biome check apps/webhook-relay/
+
+      - name: notify vercel
+        uses: vercel/repository-dispatch/actions/status@v1
+        with:
+          name: "Vercel - radarboard-webhook-relay: lint"
+
+      - name: Test
+        run: pnpm --filter @radarboard/apphook-relay test
+
+      - name: Build
+        run: pnpm --filter @radarboard/apphook-relay build

@@ -1,0 +1,77 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+.next/
+.next-dev/
+.next-e2e/
+dist/
+out/
+
+# Turbo
+.turbo/
+
+# Environment
+.env
+.env.local
+.env.*.local
+.env.github
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Debug
+npm-debug.log*
+pnpm-debug.log*
+
+# TypeScript
+*.tsbuildinfo
+
+# Local SQLite
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+
+# Radarboard config (contains database credentials)
+.radarboard.json
+.radarboard.e2e.json
+.radarboard-data/
+
+# Coverage
+coverage/
+
+# Playwright
+playwright-report/
+test-results/
+
+# Brainstorm artifacts
+.superpowers/
+
+# AI/editor local state
+.claude/
+.cursor/
+.opencode/
+
+# Vercel
+.vercel/
+
+# Dev log capture (devlogs CLI)
+.devlogs/
+
+# Tauri
+**/src-tauri/target/
+**/src-tauri/gen/
+apps/desktop/.tauri/
+
+# Playwright MCP
+.playwright-mcp/
+.playwright-mcp/*.log
+.vercel

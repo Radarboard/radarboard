@@ -1,0 +1,227 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { handleTestCredentials } from "../test";
+
+const fetchMock = vi.fn();
+
+beforeEach(() => {
+  fetchMock.mockReset();
+  vi.stubGlobal("fetch", fetchMock);
+});
+
+function makeRequest(payload: unknown): Request {
+  return new Request("http://localhost/api/credentials/test", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+}
+
+describe("handleTestCredentials", () => {
+  it("returns 400 when key is missing", async () => {
+    const res = await handleTestCredentials(makeRequest({ values: { token: "abc" } }));
+    const body = await res.json();
+
+    expect(res.status).toBe(400);
+    expect(body.ok).toBe(false);
+    expect(body.error).toMatch(/Missing/);
+  });
+
+  it("returns 400 when values are missing", async () => {
+    const res = await handleTestCredentials(makeRequest({ key: "sentry" }));
+    expect(res.status).toBe(400);
+  });
+
+  it("returns error for unknown service", async () => {
+    const res = await handleTestCredentials(
+      makeRequest({ key: "unknown-service", values: { token: "abc" } })
+    );
+    const body = await res.json();
+
+    expect(body.ok).toBe(false);
+    expect(body.error).toContain("No test available");
+    expect(body.error).toContain("unknown-service");
+  });
+
+  describe("sentry", () => {
+    it("returns ok on successful API call", async () => {
+      fetchMock.mockResolvedValue({ ok: true, status: 200 });
+
+      const res = await handleTestCredentials(
+        makeRequest({
+          key: "sentry",
+          values: { authToken: "sntrys_abc", orgSlug: "my-org" },
+        })
+      );
+      const body = await res.json();
+
+      expect(body.ok).toBe(true);
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://sentry.io/api/0/organizations/my-org/",
+        expect.objectContaining({ headers: expect.any(Headers) })
+      );
+    });
+
+    it("returns error on failed API call", async () => {
+      fetchMock.mockResolvedValue({ ok: false, status: 401 });
+
+      const res = await handleTestCredentials(
+        makeRequest({
+          key: "sentry",
+          values: { authToken: "bad", orgSlug: "org" },
+        })
+      );
+      const body = await res.json();
+
+      expect(body.ok).toBe(false);
+      expect(body.error).toContain("401");
+    });
+  });
+
+  describe("openpanel", () => {
+    it("uses the current manage projects endpoint", async () => {
+      fetchMock.mockResolvedValue({ ok: true, status: 200 });
+
+      const res = await handleTestCredentials(
+        makeRequest({
+          key: "openpanel",
+          values: { clientId: "client-id", clientSecret: "client-secret" },
+        })
+      );
+      const body = await res.json();
+
+      expect(body.ok).toBe(true);
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api.openpanel.dev/manage/projects",
+        expect.objectContaining({
+          headers: {
+            "openpanel-client-id": "client-id",
+            "openpanel-client-secret": "client-secret",
+          },
+        })
+      );
+    });
+
+    it("shows a root-client hint when OpenPanel returns 401", async () => {
+      fetchMock.mockResolvedValue({ ok: false, status: 401 });
+
+      const res = await handleTestCredentials(
+        makeRequest({
+          key: "openpanel",
+          values: { clientId: "client-id", clientSecret: "client-secret" },
+        })
+      );
+      const body = await res.json();
+
+      expect(body.ok).toBe(false);
+      expect(body.error).toContain("root client");
+    });
+  });
+
+  describe("npm", () => {
+    it("requires extraPackages to be non-empty", async () => {
+      const res = await handleTestCredentials(
+        makeRequest({
+          key: "npm",
+          values: { scope: "@my-org", extraPackages: "" },
+        })
+      );
+      const body = await res.json();
+
+      expect(body.ok).toBe(false);
+      expect(body.error).toContain("package");
+    });
+
+    it("returns ok when extraPackages is provided", async () => {
+      const res = await handleTestCredentials(
+        makeRequest({
+          key: "npm",
+          values: { scope: "@my-org", extraPackages: "lodash" },
+        })
+      );
+      const body = await res.json();
+
+      expect(body.ok).toBe(true);
+    });
+  });
+
+  describe("app-store-connect", () => {
+    it("always returns ok (no remote check)", async () => {
+      const res = await handleTestCredentials(
+        makeRequest({
+          key: "app-store-connect",
+          values: { keyId: "abc" },
+        })
+      );
+      const body = await res.json();
+
+      expect(body.ok).toBe(true);
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("vercel", () => {
+    it("includes teamId in URL when provided", async () => {
+      fetchMock.mockResolvedValue({ ok: true });
+
+      await handleTestCredentials(
+        makeRequest({
+          key: "vercel",
+          values: { token: "tkn", teamId: "team_123" },
+        })
+      );
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        expect.stringContaining("teamId=team_123"),
+        expect.any(Object)
+      );
+    });
+
+    it("omits teamId from URL when not provided", async () => {
+      fetchMock.mockResolvedValue({ ok: true });
+
+      await handleTestCredentials(
+        makeRequest({
+          key: "vercel",
+          values: { token: "tkn" },
+        })
+      );
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        expect.not.stringContaining("teamId"),
+        expect.any(Object)
+      );
+    });
+  });
+
+  describe("error handling", () => {
+    it("catches fetch errors gracefully", async () => {
+      fetchMock.mockRejectedValue(new Error("Network error"));
+
+      const res = await handleTestCredentials(
+        makeRequest({
+          key: "sentry",
+          values: { authToken: "abc", orgSlug: "org" },
+        })
+      );
+      const body = await res.json();
+
+      expect(body.ok).toBe(false);
+      expect(body.error).toBe("Network error");
+    });
+
+    it("catches non-Error exceptions", async () => {
+      fetchMock.mockRejectedValue("string error");
+
+      const res = await handleTestCredentials(
+        makeRequest({
+          key: "linear",
+          values: { apiKey: "abc" },
+        })
+      );
+      const body = await res.json();
+
+      expect(body.ok).toBe(false);
+      expect(body.error).toBe("Connection test failed");
+    });
+  });
+});

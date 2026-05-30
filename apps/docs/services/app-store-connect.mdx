@@ -1,0 +1,80 @@
+---
+title: "App Store Connect"
+description: "Fetch iOS app info, customer reviews, and version history from Apple's App Store Connect API."
+---
+
+# App Store Connect
+
+App Store Connect provides iOS app metadata, customer reviews (rating, title, body, reviewer nickname, territory), and version history.
+
+## What it powers
+
+- **Detail panel** -- Customer reviews list (when Sentry is not available but App Store Connect is configured)
+- **KPI Strip** -- App rating (average stars + review count)
+
+## Getting your API credentials
+
+App Store Connect uses JWT authentication with an ES256 private key. You need three values.
+
+<Steps>
+  <Step title="Sign in to App Store Connect">
+    Go to [appstoreconnect.apple.com](https://appstoreconnect.apple.com/) and sign in with your Apple ID.
+  </Step>
+  <Step title="Navigate to API Keys">
+    Go to **Users and Access** > **Integrations** > **App Store Connect API**.
+    
+    If you don't see this, you need the **Admin** or **Account Holder** role.
+  </Step>
+  <Step title="Generate an API key">
+    Click the **+** button to create a new key. Give it a name and assign the **Developer** role (or whatever minimal role you need).
+    
+    After creation, note the:
+    - **Key ID** (displayed in the table)
+    - **Issuer ID** (displayed at the top of the page)
+  </Step>
+  <Step title="Download the private key">
+    Click **Download API Key** to get the `.p8` file. 
+    
+    <Warning>
+      You can only download it **once**. Store it securely.
+    </Warning>
+    
+    Open the `.p8` file in a text editor. The content looks like:
+    ```
+    -----BEGIN PRIVATE KEY-----
+    MIGTAgEAMBMGB...
+    -----END PRIVATE KEY-----
+    ```
+  </Step>
+  <Step title="Format for env var">
+    Replace newlines with `\n` when setting the env var, so the entire key is on one line.
+  </Step>
+</Steps>
+
+## Environment variables
+
+```bash .env.local
+ASC_KEY_ID=XXXXXXXXXX
+ASC_ISSUER_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+ASC_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIGTAgEA...\n-----END PRIVATE KEY-----"
+```
+
+## API details
+
+| Property | Value |
+|----------|-------|
+| API base URL | `https://api.appstoreconnect.apple.com/v1/` |
+| Rate limit | 200 requests/minute |
+| Cache TTL | 15 minutes |
+| Authentication | JWT (ES256 algorithm) |
+
+## Widgets that use this service
+
+<CardGroup cols={2}>
+  <Card title="Detail Panel" icon="panel-right" href="/widgets/detail-panel">
+    Shows customer reviews when available.
+  </Card>
+  <Card title="KPI Strip" icon="gauge" href="/widgets/kpi-strip">
+    App rating cell with average stars and review count.
+  </Card>
+</CardGroup>

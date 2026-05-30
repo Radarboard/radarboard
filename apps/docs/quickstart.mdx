@@ -1,0 +1,63 @@
+---
+title: "Quickstart"
+description: "Get Radarboard running locally in a few minutes."
+---
+
+# Quickstart
+
+## Prerequisites
+
+- **Node.js** 24+ (check `.nvmrc`)
+- **pnpm** 10.32+ (declared in `package.json`)
+
+## Clone and install
+
+```bash
+git clone https://github.com/Radarboard/radarboard.git
+cd radarboard
+pnpm install
+```
+
+## Configure environment variables
+
+Copy the example file and fill in the API keys for the services you want to use:
+
+```bash
+cp apps/app/.env.example apps/app/.env.local
+```
+
+<Tip>
+  You don't need all services configured to start. The dashboard degrades gracefully -- widgets that lack credentials simply won't display data.
+</Tip>
+
+See the [Services overview](/services/overview) for details on where to get each API key.
+
+## Start the dev server
+
+```bash
+pnpm dev
+```
+
+This runs `turbo run dev`, which starts the Next.js app at `http://localhost:3000` and the default `portless` route at `https://radarboard.localhost:1355`.
+
+For the dashboard app, the `portless` route is configured for HTTPS by default:
+
+```text
+https://radarboard.localhost:1355
+```
+
+On the first HTTPS run, `portless` may prompt you to trust its local development certificate authority.
+
+## What's next?
+
+<Steps>
+  <Step title="Connect services">
+    Head to [Services](/services/overview) to configure the integrations you care about. Each page tells you exactly where to get the API key and what env vars to set.
+  </Step>
+  <Step title="Explore widgets">
+    Learn what each [Widget](/widgets/overview) shows and which services power it.
+  </Step>
+  <Step title="Choose a database">
+    The default is SQLite (zero config). If you want cloud persistence, see [Database Providers](/developer-guide/database-providers).
+  </Step>
+</Steps>

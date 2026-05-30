@@ -1,0 +1,47 @@
+---
+title: "GET /api/shipping"
+description: "Fetch recently shipped items from GitHub, Linear, and Vercel."
+---
+
+# GET /api/shipping
+
+Aggregates recently "shipped" items from GitHub (merged PRs), Linear (completed issues), and Vercel (production deploys).
+
+## Query parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `project` | string | No | Project slug (e.g., `goshuin-atlas`) |
+| `limit` | number | No | Max items to return (default: 20) |
+
+## Response
+
+```json
+{
+  "items": [
+    {
+      "title": "Add dark mode toggle",
+      "source": "github",
+      "project": "goshuin-atlas",
+      "url": "https://github.com/org/repo/pull/42",
+      "shippedAt": "2026-03-17T10:00:00Z"
+    },
+    {
+      "title": "Fix navigation crash",
+      "source": "linear",
+      "project": "goshuin-atlas",
+      "shippedAt": "2026-03-16T15:30:00Z"
+    },
+    {
+      "title": "Production deployment",
+      "source": "vercel",
+      "project": "goshuin-atlas",
+      "shippedAt": "2026-03-17T10:05:00Z"
+    }
+  ]
+}
+```
+
+## Cache
+
+- **TTL**: 2 minutes

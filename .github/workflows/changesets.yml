@@ -1,0 +1,154 @@
+name: Changesets
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      create_desktop_tag:
+        description: "Create the desktop-v* tag for the current committed desktop candidate"
+        required: false
+        type: boolean
+        default: false
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  validate:
+    name: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node, pnpm, and dependencies
+        uses: ./.github/actions/setup-pnpm-install
+        with:
+          node-version-file: .nvmrc
+
+      - name: Validate Changesets
+        run: pnpm changeset:check
+
+  release:
+    name: release
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node, pnpm, and dependencies
+        uses: ./.github/actions/setup-pnpm-install
+        with:
+          node-version-file: .nvmrc
+
+      - name: Create or Update Release PR
+        uses: changesets/action@v1
+        with:
+          version: pnpm changeset:version
+          commit: Version Packages
+          title: Version Packages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  desktop-tag:
+    name: desktop-tag
+    if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && inputs.create_desktop_tag) }}
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: write
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node, pnpm, and dependencies
+        uses: ./.github/actions/setup-pnpm-install
+        with:
+          node-version-file: .nvmrc
+
+      - name: Read desktop release info
+        id: desktop-release
+        run: |
+          set -euo pipefail
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            info_args=(--force-current --head "${{ github.sha }}")
+          else
+            info_args=(--base "${{ github.event.before }}" --head "${{ github.sha }}")
+          fi
+
+          while IFS='=' read -r key value; do
+            echo "${key}=${value}" >> "$GITHUB_OUTPUT"
+          done < <(pnpm exec tsx scripts/desktop-release-info.ts "${info_args[@]}")
+
+      - name: Validate desktop release candidate
+        if: steps.desktop-release.outputs.changed == 'true'
+        run: pnpm release:desktop:dry-run
+
+      - name: Check for existing desktop tag
+        if: steps.desktop-release.outputs.changed == 'true'
+        id: tag-exists
+        run: |
+          set -euo pipefail
+
+          tag="${{ steps.desktop-release.outputs.tag }}"
+
+          git fetch --tags --force origin
+
+          if git rev-parse -q --verify "refs/tags/${tag}" >/dev/null; then
+            echo "Desktop release tag already exists locally: ${tag}"
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          elif git ls-remote --exit-code --tags origin "refs/tags/${tag}" >/dev/null 2>&1; then
+            echo "Desktop release tag already exists on origin: ${tag}"
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create desktop tag
+        if: steps.desktop-release.outputs.changed == 'true' && steps.tag-exists.outputs.exists == 'false'
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag "${{ steps.desktop-release.outputs.tag }}"
+          git push origin "${{ steps.desktop-release.outputs.tag }}"
+
+      - name: Dispatch desktop release
+        if: steps.desktop-release.outputs.changed == 'true' && steps.tag-exists.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          tag="${{ steps.desktop-release.outputs.tag }}"
+          prerelease=false
+          case "${tag}" in
+            *-alpha.* | *-beta.*)
+              prerelease=true
+              ;;
+          esac
+
+          gh workflow run desktop-macos-release.yml \
+            --ref main \
+            -f "tag_name=${tag}" \
+            -f "prerelease=${prerelease}"

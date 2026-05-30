@@ -1,0 +1,68 @@
+---
+title: "Architecture"
+description: "How Radarboard is structured: data flow, packages, and key design decisions."
+---
+
+# Architecture
+
+## Data flow
+
+```
+External Services (11)
+       │
+       ▼
+  packages/api/       ← Individual API clients per service
+       │
+       ▼
+  apps/app/api/       ← Next.js API routes with caching layer
+       │
+       ▼
+  packages/hooks/     ← SWR-based React hooks
+       │
+       ▼
+  packages/widgets/   ← Widget components (6 grid + 4 chrome)
+       │
+       ▼
+  apps/app/           ← Dashboard layout with drag-and-drop grid
+```
+
+## Package responsibilities
+
+### `@radarboard/api`
+11 self-contained API client modules, one per external service. Each module:
+- Handles authentication
+- Transforms API responses into typed data structures
+- Manages rate limiting awareness
+
+### `@radarboard/types`
+12 type definition files (one per domain). Shared across all packages.
+
+### `@radarboard/hooks`
+React hooks that call the API routes via SWR. One hook per data domain (e.g., `useAnalytics`, `useRevenue`).
+
+### `@radarboard/widget-engine`
+Widget components and the widget registry. The registry maps widget IDs to components and their metadata.
+
+### `@radarboard/ui`
+Shared UI primitives built on Radix UI (Badge, Dialog, ScrollArea, etc.).
+
+### `@radarboard/charts`
+Chart components (Sparkline, etc.) built on Recharts.
+
+### `@radarboard/utils`
+Pure utility functions (format-number, format-currency, cn).
+
+## Caching
+
+All external API calls go through a **cache-first** strategy:
+1. Check the database cache (unless `forceRefresh` is set)
+2. If the entry is fresh (within TTL), return cached data
+3. If stale or missing, call the external API
+4. Write the result to cache
+5. On fetch error, fall back to stale cache data (marked with `_stale: true`)
+
+See [Caching](/developer-guide/caching) for details.
+
+## Database
+
+Radarboard uses a **repository pattern** with 4 interchangeable database providers. See [Database Providers](/developer-guide/database-providers).

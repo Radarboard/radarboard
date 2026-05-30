@@ -1,0 +1,56 @@
+---
+title: "npm Downloads Widget"
+description: "Displays weekly and monthly download counts for your npm packages."
+---
+
+# npm Downloads Widget
+
+The npm Downloads widget shows download statistics from the npm registry for your published packages.
+
+## What it displays
+
+### Compact view
+- Total weekly downloads with download icon
+- Scrollable package list with per-package weekly downloads and version
+
+### Expanded view
+- Summary KPIs: Weekly Downloads, Monthly Downloads
+- Full package table: name (linked to npmjs.com), version, weekly downloads, monthly downloads
+- Sorted by download count (highest first)
+
+## Authentication
+
+No authentication needed. The npm registry API is public.
+
+## Configuration
+
+The npm integration defines the package catalog for npm widgets. Configure it in
+**Settings → Integrations → npm** by entering explicit package names.
+
+Each npm widget instance can then further filter what it shows with:
+
+- `includePackages`
+- `excludePackages`
+
+Both widget filters use exact package names. The preview and widget data are driven by the explicit
+package list.
+
+For backward compatibility, legacy project-level npm package entries are still merged into the
+catalog during migration. That older format still looks like:
+
+```typescript
+platforms: [
+  {
+    integrations: {
+      npm: { packageName: "my-package" }
+    }
+  }
+]
+```
+
+Packages are deduplicated before fetching download data, and widget-level exclusions override
+inclusions.
+
+## Default slot
+
+Assigned to slot 8 (bottom center) by default.

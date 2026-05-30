@@ -1,0 +1,76 @@
+---
+title: "Development Setup"
+description: "Set up the Radarboard development environment."
+---
+
+# Development Setup
+
+## Prerequisites
+
+- **Node.js** 24+ (see `.nvmrc`)
+- **pnpm** 10.32+ (declared in root `package.json`)
+
+## Install dependencies
+
+```bash
+pnpm install
+```
+
+## Environment setup
+
+```bash
+cp apps/app/.env.example apps/app/.env.local
+```
+
+Fill in the API keys for services you want to test. See [Services Overview](/services/overview) for the full list.
+
+## Run the dev server
+
+```bash
+pnpm dev
+```
+
+This runs `turbo run dev` which starts the Next.js app with Turbopack.
+
+## Project structure
+
+```
+radarboard/
+├── apps/
+│   ├── web/          # Next.js 16 dashboard app (@radarboard/app)
+│   └── docs/         # Mintlify documentation (@radarboard/docs)
+├── packages/
+│   ├── api/          # External service API clients (@radarboard/api)
+│   ├── charts/       # Chart components (@radarboard/charts)
+│   ├── hooks/        # React hooks for data fetching (@radarboard/hooks)
+│   ├── tsconfig/     # Shared TypeScript configs (@radarboard/tsconfig)
+│   ├── types/        # Shared type definitions (@radarboard/types)
+│   ├── ui/           # Shared UI components (@radarboard/ui)
+│   ├── utils/        # Utility functions (@radarboard/utils)
+│   └── widgets/      # Widget components and registry (@radarboard/widget-engine)
+├── turbo.json        # Turborepo task configuration
+├── pnpm-workspace.yaml
+└── biome.json        # Linter/formatter config
+```
+
+## Tooling
+
+| Tool | Purpose |
+|------|---------|
+| **Turborepo** | Monorepo task runner and build orchestrator |
+| **pnpm** | Package manager with workspace support |
+| **Biome** | Linter and formatter (replaces ESLint + Prettier) |
+| **Lefthook** | Git hooks (pre-commit: biome check + typecheck) |
+| **Vitest** | Test runner with Testing Library |
+
+## Common commands
+
+```bash
+pnpm build          # Build all packages and apps
+pnpm dev            # Start dev server
+pnpm lint           # Run Biome linter
+pnpm lint:fix       # Auto-fix lint issues
+pnpm typecheck      # Run TypeScript type checking
+pnpm test           # Run tests
+pnpm test:coverage  # Run tests with coverage
+```

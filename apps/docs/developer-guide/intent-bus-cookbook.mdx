@@ -1,0 +1,182 @@
+---
+title: "Intent Bus Cookbook"
+description: "Cross-plugin communication patterns — send data between plugins without coupling them together."
+---
+
+## What is the Intent Bus?
+
+The Intent Bus lets plugins communicate without importing each other. Plugin A dispatches an intent ("create a task with this data"), and Plugin B handles it — without A knowing B exists.
+
+This is Radarboard's equivalent of Android's Intent system, and a capability Raycast doesn't have.
+
+## Core concepts
+
+| Concept | Description |
+|---------|-------------|
+| **Intent** | A named action with typed payload (e.g., `"create-item"` with `{ title, body }`) |
+| **Handler** | A function registered in a plugin's descriptor that processes incoming intents |
+| **Sender** | The plugin dispatching the intent via `api.intents.sendTo()` |
+| **Target resolution** | `api.intents.resolveTargets()` finds all plugins that handle a given intent |
+
+## Recipe 1: Create task from changelog
+
+The Changelog plugin creates a task in the Tasks plugin when the user clicks "Create follow-up task":
+
+```ts
+// In the Changelog plugin component:
+const createFollowUpTask = async (release: Release) => {
+  const targets = api.intents.resolveTargets({
+    kind: "create-item",
+    sourcePluginId: "changelog",
+  });
+
+  if (targets.length === 0) {
+    api.notify("No task plugin available", "error");
+    return;
+  }
+
+  await api.intents.sendTo(targets[0].pluginId, "create-item", {
+    kind: "create-item",
+    title: `Follow up: ${release.name}`,
+    body: `Review items from release ${release.version}`,
+    metadata: { releaseId: release.id },
+  });
+
+  api.notify("Task created!", "success");
+};
+```
+
+### Declaring the handler (Tasks plugin)
+
+```ts
+// In the Tasks plugin descriptor:
+export const tasksDescriptor: PluginDescriptor = {
+  id: "tasks",
+  // ...
+  intents: [
+    {
+      action: "create-item",
+      displayName: "Create Task",
+      handle: async (payload, api) => {
+        const id = crypto.randomUUID();
+        const task = {
+          id,
+          title: payload.title,
+          body: payload.body ?? "",
+          done: false,
+          createdAt: Date.now(),
+        };
+        await api.db.set(`task:${id}`, task);
+        return { ok: true, itemId: id };
+      },
+    },
+  ],
+};
+```
+
+## Recipe 2: Bookmark from RSS
+
+The RSS Reader plugin offers "Save to Bookmarks" on any feed item:
+
+```ts
+// RSS Reader component:
+const saveToBookmarks = async (item: FeedItem) => {
+  await api.intents.sendTo("bookmarks", "create-item", {
+    kind: "create-item",
+    title: item.title,
+    body: item.link,
+    metadata: { source: "rss", feedUrl: item.feedUrl },
+  });
+};
+```
+
+The Bookmarks plugin handles the same `"create-item"` intent — no special code needed. The payload is generic enough that any plugin exposing `"create-item"` can handle it.
+
+## Recipe 3: Send to AI assistant
+
+Any plugin can escalate to the assistant:
+
+```ts
+await api.intents.sendToAssistant({
+  message: `Analyze this error pattern: ${errorSummary}`,
+  context: { pluginId: "observability", data: errorData },
+});
+```
+
+## Recipe 4: Intent menu (automatic UI)
+
+The `<IntentMenu>` component from `@radarboard/plugin-sdk/components/intent-menu` automatically discovers all handlers for a given intent kind and renders a dropdown:
+
+```tsx
+import { IntentMenu } from "@radarboard/plugin-sdk/components/intent-menu";
+
+function FeedItemActions({ item }: { item: FeedItem }) {
+  return (
+    <IntentMenu
+      kind="create-item"
+      payload={{
+        kind: "create-item",
+        title: item.title,
+        body: item.link,
+      }}
+      label="Send to..."
+    />
+  );
+}
+```
+
+This renders buttons for every plugin that handles `"create-item"` — Tasks, Bookmarks, Notes, etc. Zero configuration needed.
+
+## Designing good intents
+
+### Use generic action names
+
+```ts
+// Good — multiple plugins can handle this
+action: "create-item"
+
+// Bad — too specific, only one plugin will handle it
+action: "create-task-in-tasks-plugin"
+```
+
+### Standard intent kinds
+
+| Kind | Payload | Used by |
+|------|---------|---------|
+| `create-item` | `{ title, body?, metadata? }` | Tasks, Bookmarks, Notes |
+| `view-item` | `{ itemId, pluginId }` | Navigate to an item in another plugin |
+| `search` | `{ query }` | Search across plugin data |
+| `export` | `{ format, data }` | Export data to another plugin |
+
+### Handle missing targets gracefully
+
+```ts
+const targets = api.intents.resolveTargets({ kind: "create-item" });
+if (targets.length === 0) {
+  // Don't show the "Send to..." button at all
+  return null;
+}
+```
+
+## Testing intents
+
+Use `createTestPluginHost()` to wire real intent dispatch in tests:
+
+```ts
+import { createTestPluginHost } from "@radarboard/plugin-sdk/testing";
+
+const host = createTestPluginHost([tasksDescriptor, changelogDescriptor]);
+const changelogApi = host.getAPI("changelog");
+
+// Dispatch intent
+const result = await changelogApi.intents.sendTo("tasks", "create-item", {
+  kind: "create-item",
+  title: "Test task",
+});
+
+// Verify it was created
+const tasksStore = host.getStore("tasks");
+expect(tasksStore.size).toBe(1);
+
+host.cleanup();
+```

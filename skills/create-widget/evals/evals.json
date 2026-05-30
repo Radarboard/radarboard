@@ -1,0 +1,43 @@
+{
+  "skill_name": "create-widget",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create a new Radarboard widget called `deploy-latency`. It should live in `widgets/deploy-latency`, use a template recipe, show two KPIs and a recent deployments list from the Vercel integration, and include the proper data resolver and SWR hook. Follow the current widget package layout and verify the package when you're done.",
+      "expected_output": "A scaffolded widget package under `widgets/deploy-latency` with a template-backed descriptor, data resolver, route helper, hook, and verification commands run against the package.",
+      "files": [],
+      "expectations": [
+        "Uses `pnpm create-widget deploy-latency` instead of creating files by hand",
+        "Implements the widget under `widgets/deploy-latency/` rather than an outdated `packages/widgets/` path",
+        "Defines a template recipe and `WidgetDescriptor` using the current widget SDK imports",
+        "Registers a template data source in `src/data-resolver.tsx`",
+        "Fetches data through `src/routes.ts` and the generated SWR hook",
+        "Runs verification with `pnpm check:extensions --filter=widget` and a package-level test command"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Add a `release-train` widget that should expand into an existing plugin instead of using the normal widget expanded overlay. It still needs a compact card with a list of active release trains and should respect Radarboard's current widget descriptor shape.",
+      "expected_output": "A widget package that uses `expandAction: { type: \"open-plugin\", pluginId: ... }` and still keeps a coherent compact view, config, and resolver flow.",
+      "files": [],
+      "expectations": [
+        "Uses the current `WidgetDescriptor` field names instead of stale widget ID registries or old init paths",
+        "Configures `expandAction` when the prompt asks to open a plugin",
+        "Keeps the compact card functional even when expansion is delegated to a plugin",
+        "Does not invent manual registration steps already handled by `pnpm create-widget`"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Create a custom `review-alerts` widget that cannot use the normal template layout because the compact card needs bespoke state and interactions. Use current Radarboard widget patterns, avoid arbitrary Tailwind values, and make sure lifecycle callbacks are still wired correctly.",
+      "expected_output": "A widget package that switches from the template default to custom compact and expanded components while preserving proper widget callback wiring and repo UI standards.",
+      "files": [],
+      "expectations": [
+        "Uses `useWidgetCallbacks` for custom component lifecycle wiring",
+        "Avoids arbitrary Tailwind values and raw hex colors in the custom UI",
+        "Keeps the package rooted in `widgets/review-alerts/` with the current scaffolded files",
+        "Preserves or replaces the template defaults intentionally instead of mixing stale and new patterns accidentally"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+---
+title: "GET /api/revenue"
+description: "Fetch subscription revenue metrics from RevenueCat."
+---
+
+# GET /api/revenue
+
+Fetches revenue metrics from RevenueCat: gross revenue, MRR, net revenue/proceeds, and revenue charts over time.
+
+## Query parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `range` | string | No | Time range: `7d` (default), `15d`, `30d`, `3m`, `1y`, `all` |
+| `currency` | string | No | Currency: `USD` (default) or `CAD` |
+| `project` | string | No | Project slug |
+
+## Response
+
+```json
+{
+  "grossRevenue": 1234.56,
+  "mrr": 567.89,
+  "netRevenue": 987.65,
+  "activeSubscribers": 42,
+  "chart": [
+    { "date": "2026-03-01", "revenue": 45.00 }
+  ],
+  "lastPayment": {
+    "amount": 9.99,
+    "country": "US",
+    "createdAt": "2026-03-17T10:30:00Z"
+  }
+}
+```
+
+## Cache
+
+- **TTL**: 5 minutes
+- **Rate limit**: 5 requests/minute (RevenueCat Charts & Metrics)

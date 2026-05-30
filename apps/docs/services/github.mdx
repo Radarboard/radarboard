@@ -1,0 +1,61 @@
+---
+title: "GitHub"
+description: "Track merged pull requests, releases, and commits for the Shipping widget."
+---
+
+# GitHub
+
+GitHub integration fetches recently merged pull requests, releases, and commits to populate Shipping.
+
+## What it powers
+
+- **Shipping Log widget** -- Merged PRs appear as shipped items
+- **KPI Strip** -- Last deploy timestamp
+- **Bottom Ticker** -- Recent shipping activity in the scrolling marquee
+
+## Getting your token
+
+<Steps>
+  <Step title="Go to GitHub Settings">
+    Sign in to [github.com](https://github.com) and go to **Settings** > **Developer settings** > **Personal access tokens** > **Tokens (classic)**.
+    
+    Or use [Fine-grained tokens](https://github.com/settings/tokens?type=beta) for more restricted access.
+  </Step>
+  <Step title="Generate a new token">
+    Click **Generate new token**. 
+    
+    **Required scopes:**
+    - `repo` (for private repos) or `public_repo` (for public repos only)
+    
+    Set an expiration that works for you.
+  </Step>
+  <Step title="Copy the token">
+    Copy the token immediately -- it won't be shown again.
+  </Step>
+</Steps>
+
+## Environment variables
+
+```bash .env.local
+GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+## API details
+
+| Property | Value |
+|----------|-------|
+| API base URL | `https://api.github.com` |
+| Rate limit | 5,000 requests/hour (authenticated) |
+| Cache TTL | 2 minutes |
+| Authentication | Bearer token (`Authorization: Bearer ghp_...`) |
+
+## Widgets that use this service
+
+<CardGroup cols={2}>
+  <Card title="Shipping" icon="ship" href="/widgets/shipping">
+    Shows merged PRs as shipped items.
+  </Card>
+  <Card title="Bottom Ticker" icon="text" href="/widgets/bottom-ticker">
+    Includes shipping items in the scrolling marquee.
+  </Card>
+</CardGroup>

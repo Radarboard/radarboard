@@ -1,0 +1,114 @@
+name: CI
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/ci.yml"
+      - "apps/app/**"
+      - "features/**"
+      - "integrations/**"
+      - "packages/**"
+      - "plugins/**"
+      - "widgets/**"
+      - "scripts/**"
+      - "radarboard.config.ts"
+      - "biome.json"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "turbo.json"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/ci.yml"
+      - "apps/app/**"
+      - "features/**"
+      - "integrations/**"
+      - "packages/**"
+      - "plugins/**"
+      - "widgets/**"
+      - "scripts/**"
+      - "radarboard.config.ts"
+      - "biome.json"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "turbo.json"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Lint, Typecheck & Extension Quality
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      CI: true
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Setup Node, pnpm, and dependencies
+        uses: ./.github/actions/setup-pnpm-install
+        with:
+          node-version-file: .nvmrc
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Spellcheck
+        run: pnpm spellcheck
+
+      - name: Dependency Version Audit
+        run: pnpm deps:lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Extension Quality Checks
+        run: pnpm check:extensions
+
+      - name: Extension Compatibility Tests
+        run: pnpm test:extensions
+
+      - name: Architecture Regression Check
+        run: pnpm check:architecture
+
+      - name: Modularity Audit
+        run: pnpm check:modularity
+
+      - name: SDK Docs Drift Check
+        run: pnpm docs:sdk:check
+
+      - name: Package Publish Readiness
+        run: pnpm publint
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      CI: true
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Setup Node, pnpm, and dependencies
+        uses: ./.github/actions/setup-pnpm-install
+        with:
+          node-version-file: .nvmrc
+
+      - name: Run Tests
+        run: pnpm test

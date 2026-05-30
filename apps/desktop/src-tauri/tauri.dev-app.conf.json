@@ -1,0 +1,14 @@
+{
+  "productName": "Radarboard Dev",
+  "identifier": "com.radarboard.client.dev",
+  "bundle": {
+    "createUpdaterArtifacts": false
+  },
+  "plugins": {
+    "deep-link": {
+      "desktop": {
+        "schemes": ["radarboard-dev"]
+      }
+    }
+  }
+}

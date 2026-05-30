@@ -1,0 +1,388 @@
+---
+title: "Integration SDK Reference"
+description: "API reference for @radarboard/integration-sdk — descriptors, auth, data sources, and testing utilities."
+---
+
+# Integration SDK Reference
+
+API reference for @radarboard/integration-sdk — descriptors, auth, data sources, and testing utilities.
+
+## `./types`
+
+### `TimeRange`
+
+Time range for dashboard queries. Duplicated to avoid circular dep on
+
+```ts
+type TimeRange = "today" | "7d" | "15d" | "30d" | "3m" | "1y" | "all"
+```
+
+### `IntegrationCategory`
+
+Integration category for grouping in the settings UI.
+
+```ts
+type IntegrationCategory = "revenue" | "deployment" | "analytics" | "monitoring" | "communication"
+```
+
+### `IntegrationOAuthConfig`
+
+OAuth-specific config for providers that need the redirect flow.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `provider` | `string` | Provider key used in route paths (e.g., "github", "google"). |
+| `scopes` | `string[]` | Scopes to request during authorization. |
+| `setupInstructions?` | `string \| undefined` | Instructions for creating the OAuth app, shown above client credential fields. Use {origin} as placeholder. |
+| `normalizeOrigin?` | `boolean \| undefined` | Whether to normalize *.localhost subdomains to plain localhost when building the callback URL shown in setup instructions. Set true for Google (rejects custom subdomains), false/omit for GitHub (accepts *.localhost as-is). |
+
+### `IntegrationAuthField`
+
+A single credential input field in the integration's Connection section.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `key` | `string` | Storage key within the credential record (e.g., "authToken"). |
+| `label` | `string` | Display label (e.g., "Auth Token"). |
+| `optional?` | `boolean \| undefined` | Whether the field is optional in the generic save/test UI. |
+| `type` | `"text" \| "password" \| "textarea" \| "file"` | "password" = masked, "text" = visible, "textarea" = multi-line, "file" = file upload. |
+| `placeholder?` | `string \| undefined` | Placeholder text. |
+| `helpText?` | `string \| undefined` | Help text below the input. |
+| `accept?` | `string \| undefined` | Accepted file extensions for type "file" (e.g., ".p8,.pem"). |
+
+### `IntegrationAuth`
+
+How an integration authenticates with its external API.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `id` | `string` | Unique service identifier used as credential storage key. |
+| `name` | `string` | Display name for this service (e.g., "Vercel", "Linear"). |
+| `type` | `"api_key" \| "oauth" \| "none"` | Auth method: "api_key" = manual token entry, "oauth" = OAuth redirect flow, "none" = no auth. |
+| `fields?` | `IntegrationAuthField[] \| undefined` | For api_key and oauth: fields to show in the credential input UI (client ID/secret for OAuth). |
+| `testEndpoint?` | `string \| undefined` | API route path to test credentials (POST with { key, values }). |
+| `docsUrl?` | `string \| undefined` | URL to the service's docs for obtaining credentials. |
+| `oauth?` | `IntegrationOAuthConfig \| undefined` | OAuth-specific config. Required when type === "oauth". |
+
+### `IntegrationMcpCredentialBinding`
+
+Maps a saved integration credential field to an MCP server auth mechanism.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `sourceField` | `string` | Saved integration credential field to reuse, e.g. "accessToken". |
+| `target` | `{ type: "authHeader"; } \| { type: "env"; key: string; }` | MCP target field that receives the resolved value. |
+| `template?` | `string \| undefined` | Optional template applied after resolution. Use "{{value}}" as the placeholder. |
+
+### `IntegrationMcpTransportPresetBase`
+
+Base type for MCP transport presets.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `type` | `McpTransportType` |  |
+
+### `IntegrationMcpHttpTransportPreset`
+
+MCP transport preset for Streamable HTTP servers.
+
+Extends: `IntegrationMcpTransportPresetBase`
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `type` | `"streamable-http"` |  |
+| `url` | `string` |  |
+
+### `IntegrationMcpStdioTransportPreset`
+
+MCP transport preset for stdio-based servers (local process).
+
+Extends: `IntegrationMcpTransportPresetBase`
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `type` | `"stdio"` |  |
+| `command` | `string` |  |
+| `args?` | `string[] \| undefined` |  |
+| `cwd?` | `string \| undefined` |  |
+| `env?` | `Record<string, string> \| undefined` |  |
+
+### `IntegrationMcpTransportPreset`
+
+Union of supported MCP transport presets.
+
+```ts
+type IntegrationMcpTransportPreset = IntegrationMcpHttpTransportPreset | IntegrationMcpStdioTransportPreset
+```
+
+### `IntegrationMcpConnectionConfig`
+
+Configuration for connecting an integration to an MCP server.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `serverName` | `string` | Canonical MCP server name stored as `mcp::<serverName>`. |
+| `aliases?` | `string[] \| undefined` | Optional alternate stored names that should also map back to this integration. |
+| `docsUrl?` | `string \| undefined` | URL to server docs or homepage for assistant access setup. |
+| `transport` | `IntegrationMcpTransportPreset` | Default server transport and non-secret fields. |
+| `credentialBindings?` | `IntegrationMcpCredentialBinding[] \| undefined` | Saved credential bindings applied to auth headers or env vars at runtime. |
+
+### `IntegrationMcpToolRoute`
+
+MCP tool definition for an integration.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `action` | `string` | Route action under `/api/integrations/<integration>/<action>`. |
+| `integrationId?` | `string \| undefined` | Optional route integration override for virtual or delegated integrations. |
+| `buildParams?` | `((params: Record<string, unknown>) => Record<string, string> \| undefined) \| undefined` | Optional query-string builder for validated tool arguments. |
+
+### `IntegrationMcpTool`
+
+MCP tool definition for an integration.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `name` | `string` | Public MCP tool name. Integrations own their tool naming. |
+| `description` | `string` | Description shown to LLMs — must be clear and actionable. |
+| `parameters` | `z.ZodType<unknown, unknown, z.core.$ZodTypeInternals<unknown, unknown>>` | Zod schema for validated input parameters. |
+| `route?` | `IntegrationMcpToolRoute \| undefined` | Route-backed execution metadata for the app MCP server. |
+| `execute?` | `((params: unknown) => Promise<unknown>) \| undefined` | Optional custom executor for non-route-backed integration tools. |
+
+### `IntegrationEvent`
+
+A notification event produced by a webhook or delta detector.
+Matches EmitNotificationInput from
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `source` | `string` |  |
+| `sourceEventId?` | `string \| null \| undefined` |  |
+| `type` | `string` |  |
+| `severity` | `"critical" \| "warning" \| "info" \| "success"` |  |
+| `projectSlug?` | `string \| null \| undefined` |  |
+| `title` | `string` |  |
+| `body?` | `string \| null \| undefined` |  |
+| `metadata?` | `Record<string, unknown> \| undefined` | Arbitrary JSON. For in-app notification deep links, include an `http(s)` URL under `url`, `permalink`, `html_url`, or any nested key whose name contains `url` / `link` / `href` / `permalink`. Plain URLs in `body` or `title` are also detected. |
+| `occurredAt?` | `number \| undefined` |  |
+
+### `WebhookHandler`
+
+Inbound webhook handler — lives in each integration's webhook.ts.
+The web app's generic `/api/webhooks/[integration]` route delegates to this.
+
+### `DeltaDetector`
+
+Delta detector — lives in each integration's delta.ts.
+Called from API route handlers after fresh data is fetched.
+Returns events for items that are new or changed since last call.
+
+### `CommonRouteParams`
+
+Standard query params every integration data route receives.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `projectSlug` | `string \| null` |  |
+| `range` | `TimeRange` |  |
+| `timeZone` | `string` |  |
+| `forceRefresh` | `boolean` |  |
+
+**Example:**
+
+```ts
+// At runtime, params look like:
+const params: CommonRouteParams = {
+  projectSlug: "my-saas",
+  range: "30d",
+  timeZone: "America/New_York",
+  forceRefresh: false,
+};
+```
+
+### `DataSourceContext`
+
+App-level services injected into data-source fetch functions.
+Avoids circular deps between packages/integrations and apps/app.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `resolveCredential` | `(key: string) => Promise<Record<string, string> \| null>` | Resolve stored credentials by service key. Returns a flat record of credential fields (e.g. `{ authToken: "sk-..." }`), or `null` if no credential is saved for the given key. |
+| `getProjectIntegrations` | `() => Promise<Record<string, Record<string, Record<string, unknown>>>>` | Returns all project integration configs, keyed by `projectSlug -> integrationId -> configKey -> value`. |
+| `getAllProjects` | `() => Promise<Array<{ slug: string; name: string; color: string; platforms: Array<{ id: string; name: string; integrations: Record<string, unknown>; }>; [k: string]: unknown; }>>` |  |
+| `getMcpClient?` | `((url: string, authHeader?: string) => { callToolJson: <T>(tool: string, args: Record<string, unknown>) => Promise<T>; }) \| undefined` |  |
+| `listMcpToolsByName?` | `((name: string) => Promise<Array<{ name: string; inputSchema?: Record<string, unknown> \| null; }>>) \| undefined` |  |
+| `callMcpToolJsonByName?` | `(<T>(name: string, tool: string, args: Record<string, unknown>) => Promise<T>) \| undefined` |  |
+| `getGitHubStarHistoryRepo?` | `(() => GitHubStarHistoryRepository) \| undefined` |  |
+
+### `DataSourceDescriptor`
+
+Declares a fetchable endpoint for an integration.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `action` | `string` | Action slug used in the URL path, e.g. "data", "projects", "open-issues". |
+| `description` | `string` | Human-readable description of this data source. |
+| `cacheTtlSeconds` | `number` | Cache TTL in seconds for withCache. |
+| `pollingSourceId?` | `string \| undefined` | Optional shared polling family used to resolve configurable TTLs. |
+| `evictPrefixes?` | `string[] \| undefined` | Optional prefix for in-memory cache eviction on force refresh. |
+| `buildCacheKey?` | `((params: TParams & CommonRouteParams) => string) \| undefined` | Build the cache key from params. Defaults to `<integration>:<action>:<projectSlug>:<range>:<timeZone>`. |
+| `parseParams?` | `((searchParams: URLSearchParams) => Partial<TParams>) \| undefined` | Parse integration-specific params from the URL search params. |
+| `fetch` | `(params: TParams & CommonRouteParams, ctx: DataSourceContext) => Promise<TData>` | Fetch the data. Receives merged common + integration-specific params plus injected context. |
+| `delta?` | `{ extractData: (data: TData) => unknown; detector: DeltaDetector<TData>; shouldDetect?: (data: TData) => boolean; } \| undefined` | Optional delta detection on fresh data. |
+
+### `IntegrationDescriptor`
+
+Describes an integration in the registry.
+
+Extends: `ExtensionMeta`
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `id` | `string` | Unique identifier (kebab-case). Should match the key in PlatformIntegrations where applicable. |
+| `name` | `string` | Display name (e.g., "GitHub", "Vercel"). |
+| `description` | `string` | Short description of what this integration provides. |
+| `icon` | `ComponentType<{ className?: string; }>` | Icon component for the settings UI. |
+| `category` | `IntegrationCategory` | Category for grouping in the settings panel. |
+| `auth` | `IntegrationAuth` | Auth configuration for this integration's API. |
+| `mcp?` | `IntegrationMcpConnectionConfig \| undefined` | Optional MCP connection metadata for integrations that can use either API or MCP. |
+| `defaultStatusPageUrl?` | `string \| undefined` | Suggested public provider status page URL. Can be overridden in settings. |
+| `defaultRssFeedUrl?` | `string \| undefined` | Suggested public RSS/Atom feed URL. Users may override this in settings. |
+| `apiDocsUrl?` | `string \| undefined` | URL to the upstream API reference documentation. |
+| `mcpTools?` | `IntegrationMcpTool[] \| undefined` | MCP tools provided by this integration. |
+| `capabilities?` | `IntegrationCapability[] \| undefined` | Capability actions exposed by this integration for canonical widget ownership and audits. |
+| `dataSources?` | `DataSourceDescriptor<Record<string, unknown>, unknown>[] \| undefined` | Data sources exposed by this integration for the unified /api/integrations/[id]/[action] route. |
+| `webhookHandler?` | `WebhookHandler \| undefined` | Inbound webhook handler for this integration (signature verification + payload parsing). |
+| `configFlow?` | `IntegrationConfigFlow \| undefined` | Optional guided setup flow for this integration.  Config Flow defines a sequence of steps that walk the user through configuring this integration — similar to Home Assistant's config_flow. Each step can collect input, validate credentials, or confirm settings.  When present, the settings UI renders a step-by-step wizard instead of the default auth form. |
+
+**Example:**
+
+```ts
+import { GitHubIcon } from "./icon";
+
+const descriptor: IntegrationDescriptor = {
+  id: "github",
+  name: "GitHub",
+  description: "Repositories, pull requests, and CI status",
+  icon: GitHubIcon,
+  category: "deployment",
+  auth: { id: "github", name: "GitHub", type: "oauth", oauth: { provider: "github", scopes: ["repo"] } },
+  dataSources: [openIssuesSource, pullRequestsSource],
+};
+```
+
+### `ConfigFlowStep`
+
+A single step in the integration config flow.
+
+Steps are rendered sequentially. A step can collect form input,
+run a validation function, or present a confirmation screen.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `id` | `string` | Unique step identifier. |
+| `title` | `string` | Step title shown in the wizard header. |
+| `description?` | `string \| undefined` | Optional description or instructions shown below the title. |
+| `fields?` | `IntegrationAuthField[] \| undefined` | Form fields to collect in this step. Omit for confirmation-only steps. |
+| `dependsOn?` | `string \| undefined` | Step ID that must complete before this step is available. |
+| `validate?` | `((values: Record<string, string>) => Promise<{ valid: boolean; error?: string; }>) \| undefined` | Optional async validation function run after the user submits this step. Return `{ valid: true }` to proceed or `{ valid: false, error }` to show an error. |
+
+### `IntegrationConfigFlow`
+
+Guided setup flow for an integration.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `steps` | `ConfigFlowStep[]` | Ordered list of setup steps. |
+
+### `IntegrationCapability`
+
+Capability exposed by an integration descriptor.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `id` | `"revenue" \| "analytics" \| "bookmarks" \| "stars" \| "domains" \| "errors" \| "uptime" \| "app-reviews" \| "downloads" \| "sponsorship" \| "shipping" \| "seo"` |  |
+| `action` | `string` |  |
+
+## `./registry`
+
+### `registerIntegration()`
+
+Register an integration descriptor. Call once per integration at app startup.
+Validates uniqueness, description length, and auto-populates the data source registry.
+
+```ts
+function registerIntegration(descriptor: IntegrationDescriptor): void
+```
+
+### `registerDataSources()`
+
+Register data sources for virtual integrations that don't have a full
+IntegrationDescriptor (e.g. "shipping" aggregates Linear + GitHub + Vercel).
+
+```ts
+function registerDataSources(integration: string, dataSources: DataSourceDescriptor<any, any>[]): void
+```
+
+### `findDataSource()`
+
+Look up a data source by integration ID and action slug.
+
+```ts
+function findDataSource(integration: string, action: string): DataSourceDescriptor<any, any> | undefined
+```
+
+### `getIntegration()`
+
+Get a registered integration by ID, or undefined if not found.
+
+```ts
+function getIntegration(id: string): IntegrationDescriptor | undefined
+```
+
+### `getAllIntegrations()`
+
+Get all registered integration descriptors.
+
+```ts
+function getAllIntegrations(): IntegrationDescriptor[]
+```
+
+## `./routes`
+
+### `integrationRoute()`
+
+```ts
+function integrationRoute(integration: TIntegration, action: TAction): `/api/integrations/${TIntegration}/${TAction}`
+```
+
+### `pluginRoute()`
+
+```ts
+function pluginRoute(plugin: TPlugin, action: TAction): `/api/plugins/${TPlugin}/${TAction}`
+```
+
+## `./testing`
+
+### `createMockDataSourceContext()`
+
+Create a mock DataSourceContext backed by an in-memory credential Map.
+Useful for testing integration data-source `fetch` functions.
+
+```ts
+function createMockDataSourceContext(credentials?: Record<string, Record<string, string>> | undefined): TrackedDataSourceContext
+```
+
+### `TrackedDataSourceContext`
+
+Extended DataSourceContext that records calls for test assertions.
+
+Extends: `DataSourceContext`
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `credentialStore` | `Map<string, Record<string, string>>` | Direct access to the in-memory credential store for assertions. |
+| `resolvedCredentialKeys` | `string[]` | All credential keys requested via `resolveCredential()`. |
+| `getProjectIntegrationsCallCount` | `number` | Number of times `getProjectIntegrations()` was called. |
+| `getAllProjectsCallCount` | `number` | Number of times `getAllProjects()` was called. |
+| `resetTracking` | `() => void` | Reset all tracked state. |

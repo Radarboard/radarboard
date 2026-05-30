@@ -1,0 +1,62 @@
+[package]
+name = "radarboard-desktop"
+version = "0.1.1-beta.1"
+edition = "2021"
+description = "Radarboard desktop and mobile application"
+license = "MIT"
+
+[lib]
+name = "radarboard_desktop"
+crate-type = ["staticlib", "cdylib", "lib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+image = { version = "0.25", default-features = false, features = ["png"] }
+
+[dependencies]
+tauri = { version = "2", features = ["macos-private-api"] }
+tauri-plugin-shell = "2"
+tauri-plugin-opener = "2"
+tauri-plugin-notification = "2"
+tauri-plugin-log = "2"
+tauri-plugin-store = "2"
+tauri-plugin-deep-link = "2"
+tauri-plugin-updater = "2"
+tauri-plugin-clipboard-manager = "2"
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = "2"
+tauri-plugin-os = "2"
+tauri-plugin-stronghold = "2"
+tauri-plugin-mcp-bridge = "0.8"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+reqwest = { version = "0.12", features = ["json"], default-features = false }
+tokio = { version = "1", features = ["process", "time", "io-util"] }
+log = "0.4"
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-window-state = "2"
+tauri-plugin-single-instance = "2"
+tauri-plugin-autostart = "2"
+tauri-plugin-process = "2"
+tauri-plugin-global-shortcut = "2"
+tauri-plugin-prevent-default = "0.7"
+tauri-plugin-positioner = { version = "2", features = ["tray-icon"] }
+devtools = { package = "tauri-plugin-devtools", version = "2", optional = true }
+image = { version = "0.25", default-features = false, features = ["png"] }
+
+[features]
+default = ["desktop"]
+desktop = ["tauri/tray-icon"]
+devtools = ["dep:devtools"]
+mobile = []
+
+[profile.dev.package.scrypt]
+opt-level = 3
+
+[profile.release]
+strip = true
+lto = true
+codegen-units = 1
+opt-level = "s"
+panic = "abort"

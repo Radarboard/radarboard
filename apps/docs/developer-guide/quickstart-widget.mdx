@@ -1,0 +1,135 @@
+---
+title: "Your First Widget in 5 Minutes"
+description: "Build and preview a working dashboard widget from scratch in under 5 minutes."
+---
+
+## What you'll build
+
+A simple "Project Pulse" widget that shows two KPIs and a list — the same structure used by most Radarboard widgets. By the end you'll have a live widget in the sandbox.
+
+## Prerequisites
+
+- Radarboard dev environment running (`pnpm dev`)
+- Terminal open in the project root
+
+## Step 1: Scaffold (30 seconds)
+
+```bash
+pnpm create-widget project-pulse
+```
+
+This creates `widgets/project-pulse/` with all boilerplate, registers it in `radarboard.config.ts`, and installs dependencies.
+
+## Step 2: Define your layout (2 minutes)
+
+Open `widgets/project-pulse/index.ts` and replace the starter recipe:
+
+```ts
+import {
+  buildTemplateRecipe,
+  type TemplateRecipeModel,
+  type WidgetTemplateConfig,
+} from "@radarboard/widget-engine/templates";
+import type { WidgetDescriptor } from "@radarboard/widget-sdk/widget-types";
+import { kpiRow, list } from "@radarboard/widget-sdk/section-helpers";
+
+const SRC = "project-pulse";
+
+const recipe: TemplateRecipeModel = {
+  kind: "summary_list",
+  summary: [
+    kpiRow(SRC, [
+      { label: "Open PRs", field: "openPrs" },
+      { label: "Deploys Today", field: "deploysToday" },
+    ]),
+  ],
+  rail: [],
+  content: [
+    list(SRC, "recentEvents", {
+      title: "title",
+      subtitle: "timestamp",
+      emptyMessage: "No recent activity",
+    }),
+  ],
+};
+
+export const PROJECT_PULSE_CONFIG: WidgetTemplateConfig = {
+  dataSources: [{ id: SRC }],
+  recipe,
+  sections: buildTemplateRecipe(recipe),
+  expandedRecipe: recipe,
+  expandedSections: buildTemplateRecipe(recipe),
+};
+```
+
+The key concepts:
+- **`kpiRow`** creates a row of headline numbers
+- **`list`** renders an array of items with title/subtitle
+- **`SRC`** ties sections to a data source by ID
+
+When you turn this into a real widget descriptor, add `capabilities` if the widget owns or specializes an existing shared surface. Use `requiredIntegrations` only for availability filtering.
+
+## Step 3: Preview it (1 minute)
+
+Open your browser to:
+
+```
+http://localhost:1355/debug/widget-sandbox
+```
+
+Select "Project Pulse" from the dropdown. You'll see your widget rendered in 4 states:
+
+- **Happy Path** — with auto-generated mock data
+- **Empty** — all arrays empty, all numbers zero
+- **Loading** — skeleton shimmer
+- **Error** — error message overlay
+
+No real API connection needed — the sandbox generates mock data from your recipe definition.
+
+## Step 4: Connect real data (1 minute)
+
+Create a data resolver in `widgets/project-pulse/src/hooks/use-project-pulse.ts`:
+
+```ts
+import { registerTemplateDataSource } from "@radarboard/widget-engine/templates";
+
+function ProjectPulseResolver({ onState }) {
+  // Replace with real API calls later
+  onState({
+    data: {
+      openPrs: 12,
+      deploysToday: 3,
+      recentEvents: [
+        { title: "Deployed v2.1.0", timestamp: "2 hours ago" },
+        { title: "PR #142 merged", timestamp: "4 hours ago" },
+      ],
+    },
+    fetchedAt: Date.now() / 1000,
+    refetch: null,
+    loading: false,
+    error: null,
+  });
+  return null;
+}
+
+registerTemplateDataSource("project-pulse", ProjectPulseResolver);
+```
+
+Import this file in your widget's entry point and the data flows through automatically.
+
+## What's next?
+
+- **Add an expanded view**: Create a `ProjectPulseExpanded` component for the detail overlay
+- **Connect to integrations**: Use `@radarboard/utils/api-routes` to fetch from GitHub, Vercel, etc.
+- **Add variants**: Define multiple layout presets users can switch between
+- **Read the full guide**: [Build a Widget](/developer-guide/build-a-widget) covers advanced topics like visual editors, custom components, and testing
+
+## Key concepts
+
+| Concept | What it does |
+|---------|-------------|
+| **Recipe** | Declares the widget layout as data — `kpiRow`, `list`, `chart`, etc. |
+| **Data Source** | A resolver component that fetches data and calls `onState()` |
+| **Section Helpers** | Shorthand functions that build section configs without verbose objects |
+| **Template Widget** | The runtime renderer that turns your recipe + data into React components |
+| **Widget Sandbox** | Dev tool at `/debug/widget-sandbox` for previewing all states |

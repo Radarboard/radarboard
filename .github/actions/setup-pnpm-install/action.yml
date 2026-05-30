@@ -1,0 +1,25 @@
+name: Setup pnpm workspace
+description: Install pnpm, set up Node.js with pnpm cache, and install workspace dependencies.
+
+inputs:
+  node-version-file:
+    description: File that defines the Node.js version.
+    required: false
+    default: .nvmrc
+  install-args:
+    description: Arguments passed to pnpm install.
+    required: false
+    default: --frozen-lockfile
+
+runs:
+  using: composite
+  steps:
+    - uses: pnpm/action-setup@v5
+
+    - uses: actions/setup-node@v6
+      with:
+        node-version-file: ${{ inputs.node-version-file }}
+        cache: pnpm
+
+    - shell: bash
+      run: pnpm install ${{ inputs.install-args }}

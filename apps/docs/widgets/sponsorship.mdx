@@ -1,0 +1,45 @@
+---
+title: "Sponsorship Widget"
+description: "Displays Open Collective and GitHub Sponsors data through shared summary, tabs, and row-list primitives."
+---
+
+# Sponsorship Widget
+
+The Sponsorship widget combines Open Collective and GitHub Sponsors into one shared runtime view.
+
+## What it displays
+
+### Compact view
+- `summary-quad` of:
+  - Monthly Income
+  - Total Sponsors
+  - OC Balance
+  - Donations sparkline
+
+### Expanded view
+- same `summary-quad`
+- shared `tabs` section with:
+  - Sponsors
+  - Backers
+  - Transactions
+  - Tiers
+- shared `row-list` content inside each tab
+
+## Authentication
+
+| Service | Auth Type | Fields |
+|---------|-----------|--------|
+| Open Collective | API Key | Personal Token |
+| GitHub Sponsors | OAuth | Client ID, Client Secret |
+
+## Shared system
+
+This widget now renders through shared primitives:
+
+- `summary-quad`
+- `tabs`
+- `row-list`
+
+## Default slot
+
+Assigned to `slot7` by default.

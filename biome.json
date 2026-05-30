@@ -1,0 +1,892 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.4.8/schema.json",
+  "files": {
+    "includes": [
+      "apps/**",
+      "packages/**",
+      "widgets/**",
+      "integrations/**",
+      "plugins/**",
+      "!**/coverage",
+      "!**/dist",
+      "!**/.next",
+      "!**/.generated",
+      "!widgets/_template"
+    ]
+  },
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": {
+          "level": "on"
+        }
+      }
+    }
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "double",
+      "semicolons": "always",
+      "trailingCommas": "es5"
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "domains": {
+      "react": "recommended",
+      "next": "recommended",
+      "test": "recommended"
+    },
+    "rules": {
+      "recommended": true,
+      "correctness": {
+        "noUnusedImports": "error",
+        "noUnusedVariables": "error",
+        "noUndeclaredDependencies": "error",
+        "useExhaustiveDependencies": "warn",
+        "noUnusedFunctionParameters": "error"
+      },
+      "security": {
+        "noDangerouslySetInnerHtml": "error",
+        "noGlobalEval": "error"
+      },
+      "nursery": {
+        "noFloatingPromises": "off",
+        "useSortedClasses": "error",
+        "noLeakedRender": "off",
+        "noNestedPromises": "off",
+        "noMisusedPromises": "error",
+        "useArraySome": "error"
+      },
+      "suspicious": {
+        "noExplicitAny": "error",
+        "noConsole": "error",
+        "noDoubleEquals": "error",
+        "noEmptyBlockStatements": "error",
+        "noAssignInExpressions": "error",
+        "noConfusingVoidType": "error",
+        "noShadowRestrictedNames": "error",
+        "noEvolvingTypes": "error",
+        "noMisrefactoredShorthandAssign": "error",
+        "noApproximativeNumericConstant": "error",
+        "useErrorMessage": "error"
+      },
+      "style": {
+        "useFilenamingConvention": {
+          "level": "error",
+          "options": {
+            "filenameCases": ["kebab-case"]
+          }
+        },
+        "noNonNullAssertion": "off",
+        "noDefaultExport": "error",
+        "noProcessEnv": "error",
+        "useTemplate": "warn",
+        "useExponentiationOperator": "error",
+        "noEnum": "warn",
+        "noNestedTernary": "off",
+        "useDefaultSwitchClause": "error",
+        "useThrowOnlyError": "error",
+        "useNamingConvention": {
+          "level": "error",
+          "options": {
+            "strictCase": false
+          }
+        }
+      },
+      "complexity": {
+        "noExcessiveCognitiveComplexity": {
+          "level": "error",
+          "options": {
+            "maxAllowedComplexity": 30
+          }
+        },
+        "noForEach": "error",
+        "noVoid": "error",
+        "noUselessFragments": "error",
+        "noUselessLoneBlockStatements": "error",
+        "noUselessTypeConstraint": "error"
+      },
+      "a11y": {
+        "useAltText": "error",
+        "useValidAriaProps": "error",
+        "useValidAriaRole": "error",
+        "useButtonType": "error",
+        "useAnchorContent": "error",
+        "noLabelWithoutControl": "error",
+        "useFocusableInteractive": "error",
+        "useKeyWithClickEvents": "error",
+        "useKeyWithMouseEvents": "error",
+        "useSemanticElements": "error",
+        "useHeadingContent": "error"
+      },
+      "performance": {
+        "noBarrelFile": "error",
+        "noReExportAll": "error",
+        "noNamespaceImport": "error"
+      }
+    }
+  },
+  "css": {
+    "parser": {
+      "cssModules": false,
+      "tailwindDirectives": true
+    },
+    "linter": {
+      "enabled": true
+    },
+    "formatter": {
+      "enabled": true
+    }
+  },
+  "overrides": [
+    {
+      "includes": [
+        "apps/app/app/**/page.tsx",
+        "apps/app/app/**/layout.tsx",
+        "apps/app/app/**/loading.tsx",
+        "apps/app/app/**/error.tsx",
+        "apps/app/app/**/not-found.tsx",
+        "apps/app/app/**/default.tsx",
+        "apps/app/app/**/template.tsx",
+        "apps/app/app/**/global-error.tsx",
+        "apps/app/app/**/route.ts"
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noDefaultExport": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "**/*.config.ts",
+        "**/*.config.js",
+        "**/*.config.mjs",
+        "**/vitest.shared.ts",
+        "apps/webhook-relay/src/vercel-entry.ts",
+        "apps/webhook-relay/src/cloudflare-entry.ts"
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noDefaultExport": "off"
+          },
+          "correctness": {
+            "noUndeclaredDependencies": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off",
+            "noConsole": "off",
+            "noEmptyBlockStatements": "off"
+          },
+          "correctness": {
+            "noUndeclaredDependencies": "off",
+            "noUnusedFunctionParameters": "off"
+          },
+          "style": {
+            "noNonNullAssertion": "off",
+            "useNamingConvention": "off",
+            "noProcessEnv": "off"
+          },
+          "complexity": {
+            "noExcessiveCognitiveComplexity": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/*.scaffold.stories.tsx"],
+      "formatter": {
+        "enabled": false
+      }
+    },
+    {
+      "includes": ["packages/**"],
+      "linter": {
+        "domains": {
+          "next": "none"
+        }
+      }
+    },
+    {
+      "includes": ["packages/integrations/src/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useNamingConvention": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["apps/app/data/**", "apps/app/lib/fetchers.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useNamingConvention": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/scripts/**"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noConsole": "off"
+          },
+          "style": {
+            "useNamingConvention": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["packages/create-extension/bin/**"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noConsole": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["apps/app/app/api/**/route.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useNamingConvention": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "apps/app/lib/env.ts",
+        "apps/app/app/layout.tsx",
+        "apps/app/app/providers.tsx",
+        "apps/app/data/**",
+        "apps/app/drizzle.config.ts",
+        "apps/app/instrumentation.ts",
+        "apps/app/scripts/**",
+        "apps/app/lib/e2e.ts",
+        "apps/app/lib/features.ts",
+        "apps/app/lib/radarboard-config.ts",
+        "apps/app/next.config.ts",
+        "apps/app/app/api/backup/route.ts",
+        "apps/webhook-relay/src/dev-server.ts",
+        "apps/webhook-relay/src/lib/env.ts",
+        "apps/webhook-relay/src/lib/sentry.ts",
+        "apps/marketing/app/api/**",
+        "apps/webhook-relay/src/server.ts",
+        "packages/observability/src/collector.ts"
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noProcessEnv": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["widgets/**"],
+      "linter": {
+        "rules": {
+          "performance": {
+            "noBarrelFile": "off",
+            "noReExportAll": "off",
+            "noImgElement": "off"
+          },
+          "correctness": {
+            "noUndeclaredDependencies": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "integrations/**",
+        "plugins/**/src/mcp-tools.ts",
+        "plugins/**/src/types.ts",
+        "plugins/_template/**",
+        "apps/app/lib/env.ts",
+        "apps/app/lib/ai-actions/**",
+        "packages/llm-adapter-vercel/src/adapter.ts",
+        "packages/widget-engine/src/components/trend-indicator/index.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "useNamingConvention": "off",
+            "useFilenamingConvention": "off"
+          },
+          "performance": {
+            "noBarrelFile": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "packages/**/src/index.ts",
+        "apps/app/lib/features.ts",
+        "apps/app/lib/clipboard.ts",
+        "apps/app/hooks/settings-store.ts",
+        "packages/widget-engine/src/widgets/mock-data.ts",
+        "packages/widget-engine/src/demo/index.ts",
+        "plugins/rss-reader/src/widget.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "performance": {
+            "noBarrelFile": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "apps/app/components/shared/remote-service-icon.tsx",
+        "plugins/rss-reader/src/components/rss-reader-overlay.tsx",
+        "plugins/status-page/src/components/status-page-overlay.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "performance": {
+            "noImgElement": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "apps/webhook-relay/src/cloudflare-entry.ts",
+        "apps/webhook-relay/src/vercel-entry.ts",
+        "packages/ui/src/rich-text-viewer/code-highlight.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noDefaultExport": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "apps/app/lib/offline-sync.ts",
+        "apps/app/lib/platform.ts",
+        "apps/app/hooks/use-persistent-cache.ts",
+        "packages/utils/src/clipboard.ts"
+      ],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "packages/plugin-sdk/src/host.tsx",
+        "packages/plugin-sdk/src/lifecycle.ts",
+        "packages/widget-engine/vitest.jsdom-setup.ts",
+        "apps/app/hooks/use-tauri-tray-sync.ts",
+        "apps/app/hooks/use-tauri-health-sync.ts",
+        "apps/app/hooks/use-native-notifications.ts",
+        "apps/app/hooks/use-persistent-cache.ts",
+        "packages/hooks/src/use-notifications.ts",
+        "apps/webhook-relay/src/server.ts",
+        "apps/webhook-relay/src/dev-server.ts"
+      ],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noEmptyBlockStatements": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["apps/app/components/settings/settings-integrations/utils.ts"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveCognitiveComplexity": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["packages/types/src/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "paths": {
+                  "@radarboard/integrations": "@radarboard/types must not import other workspace packages.",
+                  "@radarboard/hooks": "@radarboard/types must not import other workspace packages.",
+                  "@radarboard/ui": "@radarboard/types must not import other workspace packages.",
+                  "@radarboard/utils": "@radarboard/types must not import other workspace packages.",
+                  "@radarboard/charts": "@radarboard/types must not import other workspace packages.",
+                  "@radarboard/widget-engine": "@radarboard/types must not import other workspace packages."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["packages/utils/src/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "paths": {
+                  "@radarboard/hooks": "@radarboard/utils must not depend on higher-level packages.",
+                  "@radarboard/widget-engine": "@radarboard/utils must not depend on higher-level packages.",
+                  "@radarboard/charts": "@radarboard/utils must not depend on higher-level packages.",
+                  "@radarboard/ui": "@radarboard/utils must not depend on higher-level packages.",
+                  "@radarboard/integrations": "@radarboard/utils must not depend on higher-level packages."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["packages/ui/src/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "paths": {
+                  "@radarboard/hooks": "@radarboard/ui must not depend on hooks, widgets, charts, or api.",
+                  "@radarboard/widget-engine": "@radarboard/ui must not depend on hooks, widgets, charts, or api.",
+                  "@radarboard/charts": "@radarboard/ui must not depend on hooks, widgets, charts, or api.",
+                  "@radarboard/integrations": "@radarboard/ui must not depend on hooks, widgets, charts, or integrations."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["packages/charts/src/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "paths": {
+                  "@radarboard/hooks": "@radarboard/charts must not depend on hooks, widgets, or api.",
+                  "@radarboard/widget-engine": "@radarboard/charts must not depend on hooks, widgets, or api.",
+                  "@radarboard/integrations": "@radarboard/charts must not depend on hooks, widgets, or integrations."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "apps/app/components/**",
+        "packages/assistant-ui/src/**",
+        "packages/plugin-sdk/src/**",
+        "packages/widget-engine/src/**",
+        "plugins/*/src/**",
+        "widgets/*/src/**"
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "paths": {
+                  "@radarboard/ui/dialog": "Use @radarboard/ui/app-dialog for product dialog shells.",
+                  "@radix-ui/react-dialog": "Only the shared UI dialog layer may import Radix dialog primitives directly.",
+                  "@radix-ui/react-scroll-area": "Use @radarboard/ui/scroll-area instead of importing Radix scroll-area directly in product code.",
+                  "@radix-ui/react-select": "Use @radarboard/ui/select instead of importing Radix select directly in product code.",
+                  "@radix-ui/react-separator": "Use @radarboard/ui/separator instead of importing Radix separator directly in product code.",
+                  "@radix-ui/react-switch": "Use @radarboard/ui/switch instead of importing Radix switch directly in product code.",
+                  "@radix-ui/react-tabs": "Use @radarboard/ui/tabs instead of importing Radix tabs directly in product code.",
+                  "@radix-ui/react-toggle-group": "Use @radarboard/ui/toggle-group instead of importing Radix toggle-group directly in product code.",
+                  "@radix-ui/react-tooltip": "Use @radarboard/ui/tooltip instead of importing Radix tooltip directly in product code."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["packages/devlogs/src/**"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noConsole": "off"
+          },
+          "style": {
+            "noProcessEnv": "off",
+            "useNamingConvention": "off",
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "paths": {
+                  "@radarboard/hooks": "@radarboard/devlogs must not depend on higher-level packages.",
+                  "@radarboard/widget-engine": "@radarboard/devlogs must not depend on higher-level packages.",
+                  "@radarboard/charts": "@radarboard/devlogs must not depend on higher-level packages.",
+                  "@radarboard/ui": "@radarboard/devlogs must not depend on higher-level packages.",
+                  "@radarboard/integrations": "@radarboard/devlogs must not depend on higher-level packages."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["packages/logger/src/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "paths": {
+                  "@radarboard/hooks": "@radarboard/logger must not depend on higher-level packages.",
+                  "@radarboard/widget-engine": "@radarboard/logger must not depend on higher-level packages.",
+                  "@radarboard/charts": "@radarboard/logger must not depend on higher-level packages.",
+                  "@radarboard/ui": "@radarboard/logger must not depend on higher-level packages.",
+                  "@radarboard/integrations": "@radarboard/logger must not depend on higher-level packages."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["packages/hooks/src/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "paths": {
+                  "@radarboard/widget-engine": "@radarboard/hooks must not depend on widgets, charts, or ui.",
+                  "@radarboard/charts": "@radarboard/hooks must not depend on widgets, charts, or ui.",
+                  "@radarboard/ui": "@radarboard/hooks must not depend on widgets, charts, or ui."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["packages/llm/src/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "paths": {
+                  "@radarboard/integrations": "@radarboard/llm must only depend on @radarboard/types.",
+                  "@radarboard/hooks": "@radarboard/llm must only depend on @radarboard/types.",
+                  "@radarboard/ui": "@radarboard/llm must only depend on @radarboard/types.",
+                  "@radarboard/utils": "@radarboard/llm must only depend on @radarboard/types.",
+                  "@radarboard/charts": "@radarboard/llm must only depend on @radarboard/types.",
+                  "@radarboard/widget-engine": "@radarboard/llm must only depend on @radarboard/types.",
+                  "@radarboard/llm-adapter-vercel": "@radarboard/llm must not depend on any adapter."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "apps/app/lib/ai-tools.ts",
+        "apps/app/lib/mcp-bridge.ts",
+        "apps/app/lib/oauth/**",
+        "apps/app/app/api/auth/**"
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "useNamingConvention": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["apps/desktop/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noProcessEnv": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["packages/llm-adapter-vercel/src/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "paths": {
+                  "@radarboard/integrations": "@radarboard/llm-adapter-vercel must only depend on @radarboard/llm and @radarboard/types.",
+                  "@radarboard/hooks": "@radarboard/llm-adapter-vercel must only depend on @radarboard/llm and @radarboard/types.",
+                  "@radarboard/ui": "@radarboard/llm-adapter-vercel must only depend on @radarboard/llm and @radarboard/types.",
+                  "@radarboard/utils": "@radarboard/llm-adapter-vercel must only depend on @radarboard/llm and @radarboard/types.",
+                  "@radarboard/charts": "@radarboard/llm-adapter-vercel must only depend on @radarboard/llm and @radarboard/types.",
+                  "@radarboard/widget-engine": "@radarboard/llm-adapter-vercel must only depend on @radarboard/llm and @radarboard/types."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["packages/plugin-sdk/src/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "paths": {
+                  "@radarboard/widget-engine": "@radarboard/plugin-sdk must not depend on widgets or assistant-core.",
+                  "@radarboard/assistant-core": "@radarboard/plugin-sdk must not depend on widgets or assistant-core."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["packages/notifications/src/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "paths": {
+                  "@radarboard/ui": "@radarboard/notifications must not depend on UI-layer packages.",
+                  "@radarboard/widget-engine": "@radarboard/notifications must not depend on UI-layer packages.",
+                  "@radarboard/charts": "@radarboard/notifications must not depend on UI-layer packages."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["packages/assistant-core/src/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "paths": {
+                  "@radarboard/ui": "@radarboard/assistant-core must only depend on types, llm, and utils.",
+                  "@radarboard/widget-engine": "@radarboard/assistant-core must only depend on types, llm, and utils.",
+                  "@radarboard/charts": "@radarboard/assistant-core must only depend on types, llm, and utils.",
+                  "@radarboard/hooks": "@radarboard/assistant-core must only depend on types, llm, and utils.",
+                  "@radarboard/integrations": "@radarboard/assistant-core must only depend on types, llm, and utils."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["packages/assistant-ui/src/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "paths": {
+                  "@radarboard/integrations": "@radarboard/assistant-ui must not import from integrations directly.",
+                  "@radarboard/widget-engine": "@radarboard/assistant-ui must not import from widgets directly."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["packages/widgets/src/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "paths": {
+                  "@radarboard/plugin-sdk": "@radarboard/widget-engine must not depend on plugin-sdk.",
+                  "@radarboard/assistant-core": "@radarboard/widget-engine must not depend on assistant-core.",
+                  "@radarboard/assistant-ui": "@radarboard/widget-engine must not depend on assistant-ui."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["packages/mcp-tools/src/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "paths": {
+                  "@radarboard/ui": "@radarboard/mcp-tools must only depend on types, integrations, and utils.",
+                  "@radarboard/widget-engine": "@radarboard/mcp-tools must only depend on types, integrations, and utils.",
+                  "@radarboard/charts": "@radarboard/mcp-tools must only depend on types, integrations, and utils.",
+                  "@radarboard/hooks": "@radarboard/mcp-tools must only depend on types, integrations, and utils.",
+                  "@radarboard/llm": "@radarboard/mcp-tools must only depend on types, integrations, and utils."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["integrations/*/src/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "paths": {
+                  "@radarboard/plugin-sdk": "Integrations must not depend on plugin-sdk. Use @radarboard/integration-sdk.",
+                  "@radarboard/widget-sdk": "Integrations must not depend on widget-sdk. Use @radarboard/integration-sdk.",
+                  "@radarboard/ui": "Integrations must not depend on UI-layer packages.",
+                  "@radarboard/charts": "Integrations must not depend on UI-layer packages.",
+                  "@radarboard/hooks": "Integrations must not depend on UI-layer packages.",
+                  "@radarboard/widget-engine": "Integrations must not depend on widget-engine."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["plugins/*/src/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "paths": {
+                  "@radarboard/integration-sdk": "Plugins must not depend on integration-sdk. Use @radarboard/plugin-sdk or @radarboard/utils/api-routes.",
+                  "@radarboard/integration-sdk/routes": "Plugins must not depend on integration-sdk. Use @radarboard/utils/api-routes.",
+                  "@radarboard/widget-sdk": "Plugins must not depend on widget-sdk. Use @radarboard/plugin-sdk.",
+                  "@radarboard/charts": "Plugins must not depend on charts.",
+                  "@radarboard/hooks": "Plugins must not depend on hooks."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["widgets/*/src/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "paths": {
+                  "@radarboard/integration-sdk": "Widgets must not depend on integration-sdk. Use @radarboard/utils/api-routes.",
+                  "@radarboard/integration-sdk/routes": "Widgets must not depend on integration-sdk. Use @radarboard/utils/api-routes.",
+                  "@radarboard/plugin-sdk": "Widgets must not depend on plugin-sdk."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["features/*/src/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "paths": {
+                  "@radarboard/plugin-sdk": "Features must not depend on plugin-sdk.",
+                  "@radarboard/widget-sdk": "Features must not depend on widget-sdk.",
+                  "@radarboard/widget-engine": "Features must not depend on widget-engine."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

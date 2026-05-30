@@ -1,0 +1,690 @@
+---
+title: "Plugin SDK Reference"
+description: "API reference for @radarboard/plugin-sdk — descriptors, PluginAPI, intents, MCP tools, and testing."
+---
+
+# Plugin SDK Reference
+
+API reference for @radarboard/plugin-sdk — descriptors, PluginAPI, intents, MCP tools, and testing.
+
+## `./types`
+
+### `resolvePresentationConfig()`
+
+Normalise the descriptor's presentation field into the full object form.
+
+```ts
+function resolvePresentationConfig(descriptor: PluginDescriptor): ResolvedPresentationConfig
+```
+
+### `pluginHasAlternateMode()`
+
+Check whether a plugin supports more than one presentation mode.
+
+```ts
+function pluginHasAlternateMode(descriptor: PluginDescriptor): boolean
+```
+
+### `pluginHasPermission()`
+
+Check if a plugin has a specific permission.
+
+```ts
+function pluginHasPermission(descriptor: PluginDescriptor, permission: PluginPermission): boolean
+```
+
+### `pluginSupportsNotifications()`
+
+Returns true if the plugin declares a notifications integration in its descriptor.
+
+```ts
+function pluginSupportsNotifications(descriptor: PluginDescriptor): boolean
+```
+
+### `pluginSupportsTicker()`
+
+Returns true if the plugin declares a ticker integration in its descriptor.
+
+```ts
+function pluginSupportsTicker(descriptor: PluginDescriptor): boolean
+```
+
+### `isPluginNotificationIntegrationEnabled()`
+
+Checks whether the plugin's notification integration is enabled, considering user config and descriptor defaults.
+
+```ts
+function isPluginNotificationIntegrationEnabled(descriptor: PluginDescriptor, config?: PluginUserConfig | undefined): boolean
+```
+
+### `isPluginTickerIntegrationEnabled()`
+
+Checks whether the plugin's ticker integration is enabled, considering user config and descriptor defaults.
+
+```ts
+function isPluginTickerIntegrationEnabled(descriptor: PluginDescriptor, config?: PluginUserConfig | undefined): boolean
+```
+
+### `PresentationMode`
+
+All possible presentation modes for a plugin overlay.
+
+- `"side-panel"` — slides in from the right (most common)
+- `"fullscreen"` — takes over the viewport
+- `"modal"` — centered dialog
+- `"mini-hud"` — small floating widget
+
+```ts
+type PresentationMode = "fullscreen" | "side-panel" | "modal" | "mini-hud"
+```
+
+### `PluginPresentationConfig`
+
+Structured presentation config — declares a default mode and optional alternates.
+
+Use this instead of a plain `PresentationMode` string when you want users to
+switch between modes (e.g. side-panel ↔ fullscreen).
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `default` | `PresentationMode` | The default mode when launched. |
+| `alternates?` | `PresentationMode[] \| undefined` | Additional modes the user can switch to. |
+| `size?` | `"sm" \| "md" \| "lg" \| undefined` | Size hint for modal / side-panel presentations. |
+
+**Example:**
+
+```ts
+presentation: {
+  default: "side-panel",
+  alternates: ["fullscreen"],
+  size: "md",
+}
+```
+
+### `ResolvedPresentationConfig`
+
+Resolved presentation config — always the full object form.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `default` | `PresentationMode` |  |
+| `alternates` | `PresentationMode[]` |  |
+| `size` | `"sm" \| "md" \| "lg"` |  |
+
+### `PluginIntentHandler`
+
+An action a plugin can receive from other plugins or the assistant.
+
+Register intent handlers in your descriptor to let other plugins or the AI
+assistant send data into your plugin. The intent bus resolves matching
+handlers by payload kind and presents them in the "Send to…" menu.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `action` | `string` | Intent action name, e.g. "create-task", "create-bookmark". |
+| `label` | `string` | Human-readable label shown in the "Send to…" menu, e.g. "Add as Task". |
+| `description?` | `string \| undefined` | Optional description for the menu tooltip. |
+| `icon?` | `ComponentType<{ className?: string; }> \| undefined` | Optional icon override (defaults to the plugin's icon). |
+| `accepts` | `IntentPayloadKind[]` | Which payload shapes this handler accepts. |
+| `handle` | `(payload: IntentPayload, api: PluginAPI) => Promise<IntentResult>` | Execute the intent with the given payload. |
+
+**Example:**
+
+```ts
+intents: [
+  {
+    action: "create-task",
+    label: "Add as Task",
+    accepts: ["text", "url"],
+    handle: async (payload, api) => {
+      await api.db.set(`task:${Date.now()}`, { title: payload.text });
+      return { ok: true };
+    },
+  },
+]
+```
+
+### `ResolvedIntentTarget`
+
+A resolved target returned by the intent bus for UI rendering.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `pluginId` | `string` |  |
+| `pluginName` | `string` |  |
+| `pluginIcon` | `ComponentType<{ className?: string; }>` |  |
+| `action` | `string` |  |
+| `label` | `string` |  |
+| `description?` | `string \| undefined` |  |
+| `icon?` | `ComponentType<{ className?: string; }> \| undefined` |  |
+
+### `PluginDescriptor`
+
+The public contract every plugin must export from its entry point.
+
+The descriptor declares everything Radarboard needs to register, render,
+and manage a plugin — identity, UI, tools, settings, and lifecycle hooks.
+
+Extends: `ExtensionMeta`
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `id` | `string` | Unique, kebab-case identifier, e.g. "tasks". |
+| `name` | `string` | Display name shown in launcher, dock, and TopBar. |
+| `description` | `string` | Shown in launcher search results and MCP tool descriptions. |
+| `icon` | `ComponentType<{ className?: string; }>` | Lucide icon component. |
+| `category` | `"productivity" \| "monitoring" \| "data"` | Category for grouping in settings and onboarding UI. |
+| `thumbnail?` | `string \| undefined` | Optional thumbnail URL for richer card display in onboarding and settings. |
+| `version` | `string` | Semver version string. |
+| `launchSurfaces` | `("palette" \| "topbar" \| "dock")[]` | UI surfaces where this plugin can be launched from. |
+| `presentation` | `PresentationMode \| PluginPresentationConfig` | How the plugin's main UI is presented when launched. |
+| `presentationSize?` | `"sm" \| "md" \| "lg" \| undefined` | Size hint for modal / side-panel presentations (legacy — prefer `PluginPresentationConfig.size`). |
+| `component` | `ComponentType<PluginRenderProps>` | The plugin's main UI component, rendered inside the overlay. |
+| `widgets?` | `PluginWidgetContribution[] \| undefined` | Widget(s) this plugin contributes to the dashboard grid. |
+| `mcpTools?` | `McpToolDefinition[] \| undefined` | MCP tools exposed to in-app chat and external LLMs. |
+| `shortcut?` | `string \| undefined` | Keyboard shortcut to launch this plugin, e.g. "Mod+Shift+N". |
+| `requiredIntegrations?` | `string[] \| undefined` | Integration keys that must be configured for this plugin to work. |
+| `dataSources?` | `PluginDataSource[] \| undefined` | External data sources this plugin can connect to. Each source supports one or more connection types (MCP, OAuth, API key). The plugin reads data through whichever connection the user configures. |
+| `settings?` | `PluginSettingDefinition[] \| undefined` | Plugin-specific settings that users can customise. Each entry renders as a form field in the plugin detail modal. |
+| `radarboardIntegrations?` | `PluginRadarboardIntegrationConfig \| undefined` | Optional integrations into shared Radarboard surfaces like notifications and ticker. Plugins opt in per-surface; users can then enable/disable each contribution. |
+| `intents?` | `PluginIntentHandler[] \| undefined` | Intents this plugin can receive from other plugins or the assistant. Each handler declares which payload kinds it accepts and how to process them. |
+| `lifecycle?` | `PluginLifecycleHooks \| undefined` | Optional lifecycle hooks called at specific stages of the plugin's life. All hooks receive a `PluginAPI` and may return a cleanup function. |
+| `migrations?` | `PluginMigration[] \| undefined` | Ordered list of data migrations. On plugin activation, the runner compares the stored `_meta:version` against the descriptor's `version` and executes any migrations whose `version` is newer than the stored one.  Versions must be valid semver strings and listed in ascending order. |
+| `permissions?` | `PluginPermission[] \| undefined` | Declare which PluginAPI capabilities this plugin requires. Omitting this field grants all capabilities (backward compatible). When specified, undeclared capabilities become no-ops. |
+| `dependencies?` | `string[] \| undefined` | Plugin IDs that must be initialized before this plugin. Used to topologically sort the init order in PluginLifecycleRunner. Cycles are detected at init time and logged as errors. |
+| `services?` | `PluginServiceDefinition[] \| undefined` | Services this plugin exposes for cross-plugin RPC calls. Other plugins can call these via `api.rpc.call(pluginId, action, params)`. Params are validated with the declared Zod schema at call time. |
+
+**Example:**
+
+```ts
+import { Puzzle } from "lucide-react";
+import { MyPluginOverlay } from "./components/my-plugin-overlay";
+
+export const myPluginDescriptor: PluginDescriptor = {
+  id: "my-plugin",
+  name: "My Plugin",
+  description: "A brief description of what this plugin does.",
+  icon: Puzzle,
+  category: "productivity",
+  version: "0.1.0",
+  launchSurfaces: ["palette", "topbar"],
+  presentation: { default: "side-panel", alternates: ["fullscreen"], size: "md" },
+  component: MyPluginOverlay,
+};
+```
+
+### `PluginServiceDefinition`
+
+A service a plugin exposes for cross-plugin RPC calls.
+
+Other plugins invoke services via `api.rpc.call(pluginId, action, params)`.
+The params are validated at runtime against the declared Zod schema.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `action` | `string` | Action name, e.g. "list-tasks", "get-bookmark". |
+| `description?` | `string \| undefined` | Human-readable description. |
+| `parameters` | `z.ZodType<unknown, unknown, z.core.$ZodTypeInternals<unknown, unknown>>` | Zod schema for input params validation. |
+| `handler` | `(params: unknown, api: PluginAPI) => Promise<unknown>` | Execute the service. Receives validated params + the owning plugin's API. |
+
+**Example:**
+
+```ts
+services: [
+  {
+    action: "get-count",
+    description: "Get total item count",
+    parameters: z.object({}),
+    handler: async (_params, api) => {
+      const items = await api.db.list("item:");
+      return { count: items.length };
+    },
+  },
+]
+```
+
+### `PluginRpcResult`
+
+Result of an RPC call.
+
+```ts
+type PluginRpcResult = { ok: true; data: T; } | { ok: false; error: string; }
+```
+
+### `PluginPermission`
+
+Capabilities a plugin may request access to.
+
+```ts
+type PluginPermission = "db" | "events" | "intents" | "hotkeys" | "notify" | "dataSources" | "projects" | "rpc"
+```
+
+### `PluginLifecycleCleanup`
+
+Cleanup function returned from a lifecycle hook.
+
+```ts
+type PluginLifecycleCleanup = () => void | Promise<void>
+```
+
+### `PluginLifecycleHooks`
+
+Optional hooks called at specific stages of a plugin's lifecycle (init, activate, deactivate, destroy).
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `onInit?` | `((api: PluginAPI) => Promise<PluginLifecycleCleanup \| undefined>) \| undefined` | Called once when the plugin is registered (at app startup). Use for preloading data, warming caches, or setting up background tasks. |
+| `onActivate?` | `((api: PluginAPI) => Promise<PluginLifecycleCleanup \| undefined>) \| undefined` | Called each time the plugin becomes the active (visible) plugin. Use for refreshing stale data or starting timers. |
+| `onDeactivate?` | `((api: PluginAPI) => Promise<void>) \| undefined` | Called when the plugin is no longer active (user closed or switched away). Use for pausing background work or saving draft state. |
+| `onDestroy?` | `((api: PluginAPI) => Promise<void>) \| undefined` | Called once during app teardown (PluginHost unmount). Use for releasing resources acquired in onInit. |
+
+### `PluginMigration`
+
+A data migration for upgrading plugin DB schema between versions.
+
+Migrations run automatically when the plugin's stored version is older
+than the descriptor's `version`. List in ascending semver order.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `version` | `string` | Semver version this migration upgrades TO (e.g. "1.1.0"). |
+| `description?` | `string \| undefined` | Human-readable description of what this migration does. |
+| `up` | `(db: PluginAPI["db"]) => Promise<void>` | Execute the migration using the plugin's DB API. |
+
+**Example:**
+
+```ts
+migrations: [
+  {
+    version: "1.1.0",
+    description: "Add 'completed' field to tasks",
+    up: async (db) => {
+      const tasks = await db.list<Task>("task:");
+      for (const task of tasks) {
+        await db.set(`task:${task.id}`, { ...task, completed: false });
+      }
+    },
+  },
+]
+```
+
+### `PluginSettingType`
+
+The supported input types for plugin user-configurable settings.
+
+```ts
+type PluginSettingType = "number" | "boolean" | "text" | "select"
+```
+
+### `PluginSettingDefinition`
+
+Describes one user-configurable option for a plugin.
+
+Each setting renders as a form field in the plugin's settings panel.
+Values are stored in the plugin DB under `_config:<key>`.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `key` | `string` | Unique key for this setting, stored in plugin DB as `_config:<key>`. |
+| `label` | `string` | Display label in the settings form. |
+| `description?` | `string \| undefined` | Optional description shown below the label. |
+| `type` | `PluginSettingType` | Input type. |
+| `defaultValue` | `string \| number \| boolean` | Default value. |
+| `options?` | `{ label: string; value: string; }[] \| undefined` | For "select" type: flat options (use this OR optionGroups, not both). |
+| `optionGroups?` | `{ label: string; options: { label: string; value: string; description?: string; }[]; }[] \| undefined` | For "select" type: grouped options with provider/category headers. |
+| `searchable?` | `boolean \| undefined` | Enable search/filter in select dropdowns. |
+
+**Example:**
+
+```ts
+settings: [
+  {
+    key: "maxItems",
+    label: "Maximum Items",
+    description: "How many items to display at once.",
+    type: "number",
+    defaultValue: 50,
+  },
+  {
+    key: "sortOrder",
+    label: "Sort Order",
+    type: "select",
+    defaultValue: "newest",
+    options: [
+      { label: "Newest first", value: "newest" },
+      { label: "Oldest first", value: "oldest" },
+    ],
+  },
+]
+```
+
+### `PluginUserConfig`
+
+User-level overrides for a plugin's behavior, stored in the plugin DB.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `shortcut?` | `string \| null \| undefined` | Custom keyboard shortcut (overrides descriptor default). |
+| `desktopGlobalShortcut?` | `boolean \| undefined` | Attempt desktop-global registration in Tauri when supported. |
+| `launchSurfaces?` | `("palette" \| "topbar" \| "dock")[] \| undefined` | Custom launch surfaces (overrides descriptor default). |
+| `disabledTools?` | `string[] \| undefined` | Disabled MCP tool names (tool is skipped if listed here). |
+| `disabledWidgets?` | `string[] \| undefined` | Disabled widget IDs (widget is hidden if listed here). |
+| `notificationIntegrationEnabled?` | `boolean \| undefined` | Whether this plugin may publish into Radarboard notifications. |
+| `tickerIntegrationEnabled?` | `boolean \| undefined` | Whether this plugin may surface items in the shared ticker. |
+| `settings?` | `Record<string, string \| number \| boolean> \| undefined` | Plugin-specific settings values. |
+| `preferredPresentation?` | `PresentationMode \| undefined` | User's preferred presentation mode (overrides descriptor default). |
+
+### `PluginRadarboardSurfaceConfig`
+
+Per-surface configuration for a plugin's integration into a shared Radarboard surface.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `enabledByDefault?` | `boolean \| undefined` | Default user-facing enabled state when no override exists. |
+
+### `PluginRadarboardIntegrationConfig`
+
+Declares which shared Radarboard surfaces (notifications, ticker) a plugin integrates with.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `notifications?` | `PluginRadarboardSurfaceConfig \| undefined` |  |
+| `ticker?` | `PluginRadarboardSurfaceConfig \| undefined` |  |
+
+### `PluginConnectionType`
+
+How a plugin can connect to an external data source.
+
+- `"mcp"` — via an MCP server (e.g. a locally running server)
+- `"oauth"` — via OAuth redirect flow
+- `"api_key"` — via a manually entered API token
+
+```ts
+type PluginConnectionType = "mcp" | "oauth" | "api_key"
+```
+
+### `PluginDataSource`
+
+Declares an external service a plugin can pull data from.
+
+Plugins can connect to external APIs, MCP servers, or OAuth providers.
+The user configures connections in the plugin settings UI.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `id` | `string` | Unique ID for this data source within the plugin, e.g. "raindrop". |
+| `name` | `string` | Display name, e.g. "Raindrop.io". |
+| `description` | `string` | Short description of what data this source provides. |
+| `connectionTypes` | `PluginConnectionType[]` | Supported connection methods — order indicates preference. |
+| `mcpServerNames?` | `string[] \| undefined` | For MCP connections: the MCP server name(s) that provide this data. The plugin can check if any of these are available. |
+| `integrationKey?` | `string \| undefined` | For OAuth/API key connections: the integration key used to look up stored credentials (maps to PlatformIntegrations keys or custom ones). |
+| `required?` | `boolean \| undefined` | Whether this source is required or optional. Default: false (optional). |
+
+**Example:**
+
+```ts
+dataSources: [
+  {
+    id: "raindrop",
+    name: "Raindrop.io",
+    description: "Bookmark collections and highlights",
+    connectionTypes: ["api_key", "oauth"],
+    integrationKey: "raindrop",
+    required: false,
+  },
+]
+```
+
+### `PluginWidgetContribution`
+
+A dashboard widget contributed by a plugin.
+
+Plugins can embed widgets in the main grid. The widget is registered
+as `"<pluginId>__<widgetId>"` and uses the shared template engine.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `widgetId` | `string` | Widget ID — automatically namespaced as `"<pluginId>__<widgetId>"` when registered into WIDGET_REGISTRY. |
+| `name` | `string` | Display name in the slot picker. |
+| `description` | `string` | Short description for the slot picker. |
+| `defaultSlot?` | `GridSlot \| undefined` | Preferred default grid slot. |
+| `templateConfig` | `WidgetTemplateConfig` | Template-backed widget configuration used by the shared widget runtime/editor. |
+| `expandedSize?` | `ModalSize \| undefined` | Optional size override for the expanded overlay. Omit to use the centralized widget default size ("md"). |
+| `pollingSourceIds?` | `string[] \| undefined` | Shared dashboard polling source IDs used by the template data sources. |
+| `defaultPollInterval?` | `number \| undefined` | Header hint for default refresh interval in milliseconds. |
+| `requiredIntegrations?` | `string[] \| undefined` | Optional extra integration requirements beyond the parent plugin. |
+
+**Example:**
+
+```ts
+widgets: [
+  {
+    widgetId: "summary",
+    name: "My Plugin Summary",
+    description: "Quick overview of plugin data",
+    defaultSlot: "slot7",
+    templateConfig: { version: 1, dataSources: [...], sections: [...] },
+  },
+]
+```
+
+### `PluginAPI`
+
+Runtime API injected into every plugin via `PluginRenderProps`.
+
+Provides scoped database access, notifications, hotkeys, event bus,
+cross-plugin communication (intents + RPC), and project data.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `widgets` | `{ getState: (widgetId: string) => unknown; }` | Read widget data from the SWR cache. |
+| `db` | `{ get: <T>(key: string) => Promise<T \| null>; set: <T>(key: string, value: T) => Promise<void>; delete: (key: string) => Promise<void>; list: <T>(prefix: string) => Promise<T[]>; }` | Plugin-namespaced key-value DB access.  All keys are automatically scoped to this plugin — no collisions with other plugins. Values are JSON-serialized. |
+| `hotkeys` | `{ register: (key: string, handler: () => void) => () => void; }` | Register keyboard shortcuts scoped to this plugin.  Shortcuts are automatically cleaned up when the plugin unmounts. Returns a cleanup function for manual removal. |
+| `notify` | `(message: string, type?: "info" \| "success" \| "error") => void` | Fire a toast notification. |
+| `close` | `() => void` | Close the plugin overlay. |
+| `events` | `{ emit: (event: { type: string; severity: NotificationSeverity; title: string; body?: string \| null; metadata?: Record<string, unknown>; }) => void; on: (filter: { source?: string; type?: string; }, handler: (event: NotificationEventRow) => void) => () => void; }` | Notification event bus — emit events into the Radarboard notification pipeline and subscribe to events from other sources.  Emitted events are automatically sourced as `plugin:<pluginId>`. |
+| `projects` | `{ list: () => Promise<Array<{ slug: string; name: string; color: string; }>>; }` | Access the app's project list (read-only). |
+| `searchParams` | `URLSearchParams` | Reactive URL search parameters from Next.js |
+| `intents` | `{ resolveTargets: (payload: IntentPayload) => ResolvedIntentTarget[]; sendTo: (targetPluginId: string, action: string, payload: IntentPayloadInput) => Promise<IntentResult>; sendToAssistant: (payload: IntentPayloadInput, promptHint?: string) => Promise<void>; }` | Cross-plugin intent system — send data to other plugins or the assistant. |
+| `dataSources` | `{ isConnected: (sourceId: string) => Promise<boolean>; getConnectionType: (sourceId: string) => Promise<PluginConnectionType \| null>; }` | Query the connection status of a plugin's data sources. Returns which sources are connected and via which method. |
+| `rpc` | `{ call: <T = unknown>(pluginId: string, action: string, params?: unknown) => Promise<PluginRpcResult<T>>; listServices: () => Array<{ pluginId: string; action: string; description?: string; }>; }` | Cross-plugin RPC — call services exposed by other plugins. Returns typed results with Zod-validated params. |
+
+**Example:**
+
+```ts
+function MyPluginOverlay({ api }: PluginRenderProps) {
+  // Read from plugin-scoped DB
+  const items = await api.db.list<Item>("item:");
+
+  // Show a toast
+  api.notify("Saved!", "success");
+
+  // Register a keyboard shortcut
+  api.hotkeys.register("Mod+N", () => createItem());
+
+  // Close the overlay
+  api.close();
+}
+```
+
+### `PluginRenderProps`
+
+Props passed to every plugin's main component.
+
+Your overlay component receives this as its only prop. Destructure `api`
+to access the full `PluginAPI`.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `api` | `PluginAPI` |  |
+
+**Example:**
+
+```tsx
+export function MyPluginOverlay({ api }: PluginRenderProps) {
+  return <div>Hello from {api.db.get("name")}</div>;
+}
+```
+
+### `McpToolDefinition`
+
+Defines an MCP tool that the AI assistant can invoke on behalf of the user.
+
+Tools are automatically namespaced as `"<pluginId>__<name>"` when registered.
+The `execute` function receives Zod-validated params and the plugin's API.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `name` | `string` | Tool name — automatically namespaced as `"<pluginId>__<name>"`. |
+| `description` | `string` | Description shown to LLMs — must be clear and accurate. |
+| `parameters` | `z.ZodType<unknown, unknown, z.core.$ZodTypeInternals<unknown, unknown>>` | Zod schema for validated input parameters. |
+| `execute` | `(params: unknown, api: PluginAPI) => Promise<unknown>` | Execute the tool with validated params and the plugin API. |
+
+**Example:**
+
+```ts
+import { z } from "zod";
+
+const tools: McpToolDefinition[] = [
+  {
+    name: "list-items",
+    description: "List all items in the plugin",
+    parameters: z.object({
+      limit: z.number().optional().describe("Max items to return"),
+    }),
+    execute: async (params, api) => {
+      const items = await api.db.list("item:");
+      return { items: items.slice(0, params.limit ?? 100) };
+    },
+  },
+];
+```
+
+## `./registry`
+
+### `registerPlugin()`
+
+Register a plugin descriptor into the global registry.
+Silently skips re-registration (for HMR); throws if the description is too long.
+
+```ts
+function registerPlugin(descriptor: PluginDescriptor): void
+```
+
+### `getPlugin()`
+
+Get a registered plugin by ID, or undefined if not found.
+
+```ts
+function getPlugin(id: string): PluginDescriptor | undefined
+```
+
+### `getAllPlugins()`
+
+Get all registered plugins as an array.
+
+```ts
+function getAllPlugins(): PluginDescriptor[]
+```
+
+## `./intent-bus`
+
+*No documented exports.*
+
+## `./crud-helpers`
+
+### `createCrudHelper()`
+
+Create a typed CRUD helper scoped to a DB key prefix.
+
+The prefix is used as `"<prefix>:<id>"` for each item key. For example,
+`createCrudHelper(api, "task")` stores items as `"task:abc123"`.
+
+```ts
+function createCrudHelper(api: PluginAPI, prefix: string): CrudHelper<T>
+```
+
+**Example:**
+
+```ts
+interface Note { id: string; title: string; body: string; createdAt: number }
+
+const notes = createCrudHelper<Note>(api, "note");
+const note = await notes.create({ title: "Hello", body: "World" });
+const all = await notes.list((a, b) => b.createdAt - a.createdAt);
+```
+
+### `Identifiable`
+
+An entity with a string `id` field.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `id` | `string` |  |
+
+### `CrudHelper`
+
+CRUD operations for a keyed collection in the plugin DB.
+
+All operations are type-safe and scoped to a single key prefix.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `create` | `(data: Omit<T, "id" \| "createdAt"> & { id?: string; createdAt?: number; }) => Promise<T>` | Create a new item. Generates an `id` and `createdAt` timestamp if missing. |
+| `get` | `(id: string) => Promise<T \| null>` | Get a single item by ID. Returns `null` if not found. |
+| `list` | `(sortBy?: (a: T, b: T) => number) => Promise<T[]>` | List all items with the configured prefix. |
+| `update` | `(id: string, partial: Partial<Omit<T, "id">>) => Promise<T \| null>` | Update an existing item by merging partial fields. |
+| `remove` | `(id: string) => Promise<boolean>` | Delete an item by ID. |
+| `count` | `() => Promise<number>` | Count all items with the configured prefix. |
+
+## `./testing`
+
+### `createMockPluginAPI()`
+
+Create a mock PluginAPI backed by an in-memory Map.
+Useful for testing MCP tools and plugin logic.
+
+```ts
+function createMockPluginAPI(pluginId?: string | undefined, store?: Map<string, string> | undefined): TrackedPluginAPI
+```
+
+### `createTestPluginHost()`
+
+Create a test plugin host that registers descriptors and provides
+scoped, tracked PluginAPIs with real intent dispatch.
+
+Usage:
+```ts
+const host = createTestPluginHost([tasksDescriptor, notesDescriptor]);
+const tasksApi = host.getAPI("tasks");
+// ... run tests ...
+host.cleanup();
+```
+
+```ts
+function createTestPluginHost(descriptors: PluginDescriptor[]): TestPluginHost
+```
+
+### `TrackedPluginAPI`
+
+A mock PluginAPI that records all calls (notifications, events, close) for test assertions.
+
+Extends: `PluginAPI`
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `notifications` | `{ message: string; type?: string; }[]` | All `notify()` calls recorded as `{ message, type }`. |
+| `closeCount` | `number` | Number of times `close()` was called. |
+| `emittedEvents` | `{ type: string; severity: string; title: string; body?: string \| null; metadata?: Record<string, unknown>; }[]` | All events emitted via `events.emit()`. |
+| `dbStore` | `Map<string, string>` | Direct access to the in-memory DB store for assertions. |
+| `resetTracking` | `() => void` | Reset all tracked state (notifications, events, close count). |
+
+### `TestPluginHost`
+
+Test harness that registers plugin descriptors and provides scoped, tracked APIs with real intent dispatch.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `getAPI` | `(pluginId: string) => TrackedPluginAPI` | Get a tracked PluginAPI scoped to a plugin. |
+| `getStore` | `(pluginId: string) => Map<string, string>` | Get the in-memory DB store for a plugin. |
+| `cleanup` | `() => void` | Clean up: clear registry and all stores. |

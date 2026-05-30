@@ -1,0 +1,50 @@
+---
+title: "GET /api/open-collective"
+description: "Fetch Open Collective financial data, transactions, and members."
+---
+
+# GET /api/open-collective
+
+Fetches Open Collective overview: financial stats (balance, total raised, yearly budget), recent transactions, and top backers/members.
+
+## Query parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `slug` | string | No | Collective slug (e.g., `front-end-checklist`) |
+
+## Response
+
+```json
+{
+  "stats": {
+    "balance": 12345,
+    "totalRaised": 56789,
+    "yearlyBudget": 10000,
+    "backerCount": 234
+  },
+  "transactions": [
+    {
+      "id": "tx-123",
+      "type": "CREDIT",
+      "amount": 50,
+      "currency": "USD",
+      "description": "Monthly contribution",
+      "createdAt": "2026-03-15T10:00:00Z"
+    }
+  ],
+  "members": [
+    {
+      "name": "Jane Doe",
+      "role": "BACKER",
+      "tier": "Gold Sponsor",
+      "totalDonated": 500,
+      "imageUrl": "https://..."
+    }
+  ]
+}
+```
+
+## Cache
+
+- **TTL**: 5 minutes

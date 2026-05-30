@@ -1,0 +1,102 @@
+---
+title: "Developer Mode"
+description: "Load local extensions during development without publishing to GitHub"
+---
+
+## Overview
+
+Developer Mode lets you load extensions from your local filesystem while building them, without needing to publish to GitHub first. This is the fastest way to iterate on integration, plugin, or widget development.
+
+## Setup
+
+Add your local extension paths to `radarboard.config.ts`:
+
+```typescript radarboard.config.ts
+export default {
+  devExtensions: [
+    { type: "integration", path: "../my-extension/integrations/notion" },
+    { type: "plugin", path: "../my-extension/plugins/notion" },
+    { type: "widget", path: "/Users/me/projects/my-widget" },
+  ],
+
+  // ... existing integrations, plugins, widgets
+};
+```
+
+Then regenerate init files:
+
+```bash
+pnpm generate:extensions
+```
+
+## How it works
+
+1. **`radarboard.config.ts`** declares `devExtensions` — an array of `{ type, path }` entries pointing to local directories
+2. **`pnpm generate:extensions`** reads the config and produces `dev-extensions-init.ts` which imports each local extension and registers it at startup
+3. **Providers.tsx** calls `initializeDevExtensions()` on mount, which registers each extension with the appropriate registry (integration, plugin, or widget)
+4. **Production safety**: `initializeDevExtensions()` is a no-op when `NODE_ENV === "production"`, so dev extensions never leak into production builds
+
+## Path resolution
+
+Paths can be:
+- **Relative** — resolved from the monorepo root (e.g., `../my-extension/integrations/notion`)
+- **Absolute** — used as-is (e.g., `/Users/me/projects/my-widget`)
+
+The extension directory must contain a valid `package.json` with the correct `@radarboard/*` package name and export map.
+
+## Extension descriptor discovery
+
+Each dev extension module is expected to export a descriptor. The loader tries these patterns in order:
+
+1. `module.descriptor` — a named `descriptor` export
+2. `module.default` — a default export
+3. First value in the module that has both `id` and `name` properties
+
+## Workflow
+
+A typical development workflow looks like:
+
+<Steps>
+  <Step title="Scaffold a new extension repo">
+    ```bash
+    pnpm scaffold:extension-repo my-tool --integration --widget --out ~/projects
+    ```
+  </Step>
+  <Step title="Add to devExtensions">
+    ```typescript radarboard.config.ts
+    devExtensions: [
+      { type: "integration", path: "../radarboard-my-tool/integrations/my-tool" },
+      { type: "widget", path: "../radarboard-my-tool/widgets/my-tool" },
+    ],
+    ```
+  </Step>
+  <Step title="Regenerate and start dev server">
+    ```bash
+    pnpm generate:extensions
+    pnpm dev
+    ```
+  </Step>
+  <Step title="Iterate">
+    Edit your extension code. The Next.js dev server will hot-reload changes automatically since the paths are resolved at build time.
+  </Step>
+  <Step title="When ready, publish">
+    Push your extension repo to GitHub and install via the GitHub URL in Settings → Extensions.
+  </Step>
+</Steps>
+
+## Widget Sandbox
+
+While developing widgets, use the **Widget Sandbox** at `/debug/widget-sandbox` to preview your widget in all possible states:
+
+- **Happy** — fully loaded with mock data
+- **Empty** — loaded but no data
+- **Loading** — spinner/skeleton state
+- **Error** — connection failure state
+
+The sandbox auto-generates mock data from your `WidgetTemplateConfig` sections, so you can see your widget render without setting up real integrations.
+
+## Limitations
+
+- Dev extensions are not included in `pnpm install` dependency resolution — they must manage their own `node_modules` or rely on hoisted dependencies
+- Changes to the extension's `package.json` or export map require re-running `pnpm generate:extensions`
+- Dev extensions don't appear in the Settings UI extension list (they're loaded directly via code)

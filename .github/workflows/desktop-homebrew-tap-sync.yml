@@ -1,0 +1,170 @@
+name: Desktop Homebrew Tap Sync
+
+on:
+  release:
+    types:
+      - published
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Desktop release tag to sync, for example desktop-v0.1.1-beta.1"
+        required: true
+        type: string
+      prerelease:
+        description: "Whether the release tag is a prerelease"
+        required: true
+        type: boolean
+        default: true
+
+jobs:
+  sync-homebrew-tap:
+    name: sync-homebrew-tap
+    if: startsWith(github.event.release.tag_name || inputs.tag_name, 'desktop-v') && ((github.event_name == 'release' && github.event.release.prerelease == false) || (github.event_name == 'workflow_dispatch' && inputs.prerelease == false) || contains(github.event.release.tag_name || inputs.tag_name, '-beta.'))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      CI: true
+      RELEASE_TAG: ${{ github.event.release.tag_name || inputs.tag_name }}
+      RELEASE_PRERELEASE: ${{ github.event.release.prerelease || inputs.prerelease || false }}
+      RELEASE_REPO: ${{ github.repository }}
+      TAP_REPOSITORY: ${{ vars.HOMEBREW_TAP_REPOSITORY }}
+
+    steps:
+      - name: Validate tap sync configuration
+        env:
+          HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${TAP_REPOSITORY:-}" ]; then
+            echo "Missing repository variable: HOMEBREW_TAP_REPOSITORY" >&2
+            exit 1
+          fi
+
+          if [ -z "${HOMEBREW_TAP_GITHUB_TOKEN:-}" ]; then
+            echo "Missing repository secret: HOMEBREW_TAP_GITHUB_TOKEN" >&2
+            exit 1
+          fi
+
+      - name: Checkout Repo
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.ref_name || github.event.release.tag_name }}
+
+      - name: Setup Node, pnpm, and dependencies
+        uses: ./.github/actions/setup-pnpm-install
+        with:
+          node-version-file: .nvmrc
+
+      - name: Resolve desktop release asset
+        run: |
+          set -euo pipefail
+
+          VERSION="${RELEASE_TAG#desktop-v}"
+          ASSET_NAME="Radarboard-${VERSION}-macos-aarch64.dmg"
+          ASSET_URL="https://github.com/${RELEASE_REPO}/releases/download/${RELEASE_TAG}/${ASSET_NAME}"
+
+          if [ "${RELEASE_PRERELEASE}" = "true" ]; then
+            if [[ "${RELEASE_TAG}" != *"-beta."* ]]; then
+              echo "Only beta prereleases are synced to Homebrew. Skipping ${RELEASE_TAG}."
+              exit 0
+            fi
+            CASK_CHANNEL="beta"
+            CASK_NAME="radarboard-beta"
+          else
+            CASK_CHANNEL="stable"
+            CASK_NAME="radarboard"
+          fi
+
+          {
+            echo "DESKTOP_VERSION=${VERSION}"
+            echo "DESKTOP_ASSET_NAME=${ASSET_NAME}"
+            echo "DESKTOP_ASSET_URL=${ASSET_URL}"
+            echo "DESKTOP_CASK_CHANNEL=${CASK_CHANNEL}"
+            echo "DESKTOP_CASK_NAME=${CASK_NAME}"
+          } >> "$GITHUB_ENV"
+
+      - name: Download release DMG
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release download "${RELEASE_TAG}" \
+            --repo "${RELEASE_REPO}" \
+            --pattern "${DESKTOP_ASSET_NAME}" \
+            --dir "${RUNNER_TEMP}"
+
+          test -f "${RUNNER_TEMP}/${DESKTOP_ASSET_NAME}"
+
+      - name: Compute DMG checksum
+        run: |
+          set -euo pipefail
+          SHA256="$(shasum -a 256 "${RUNNER_TEMP}/${DESKTOP_ASSET_NAME}" | awk '{print $1}')"
+          echo "DESKTOP_DMG_SHA256=${SHA256}" >> "$GITHUB_ENV"
+
+      - name: Mirror DMG to public tap release
+        env:
+          GH_TOKEN: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          if gh release view "${RELEASE_TAG}" --repo "${TAP_REPOSITORY}" > /dev/null 2>&1; then
+            echo "Tap release ${RELEASE_TAG} already exists"
+          else
+            RELEASE_FLAGS=()
+            if [ "${RELEASE_PRERELEASE}" = "true" ]; then
+              RELEASE_FLAGS+=(--prerelease)
+            else
+              RELEASE_FLAGS+=(--latest)
+            fi
+
+            gh release create "${RELEASE_TAG}" \
+              --repo "${TAP_REPOSITORY}" \
+              --title "Radarboard ${DESKTOP_VERSION}" \
+              --notes "Mirrored Radarboard desktop artifact for Homebrew installs." \
+              "${RELEASE_FLAGS[@]}"
+          fi
+
+          gh release upload "${RELEASE_TAG}" \
+            "${RUNNER_TEMP}/${DESKTOP_ASSET_NAME}" \
+            --repo "${TAP_REPOSITORY}" \
+            --clobber
+
+      - name: Checkout tap repository
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ vars.HOMEBREW_TAP_REPOSITORY }}
+          token: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
+          path: homebrew-tap
+
+      - name: Generate Homebrew cask
+        run: |
+          set -euo pipefail
+          pnpm release:homebrew:cask \
+            --version "${DESKTOP_VERSION}" \
+            --sha256 "${DESKTOP_DMG_SHA256}" \
+            --repo "${RELEASE_REPO}" \
+            --download-repo "${TAP_REPOSITORY}" \
+            --channel "${DESKTOP_CASK_CHANNEL}" \
+            --cask-name "${DESKTOP_CASK_NAME}" \
+            --output "${GITHUB_WORKSPACE}/homebrew-tap/Casks/${DESKTOP_CASK_NAME}.rb"
+
+      - name: Commit and push tap update
+        working-directory: homebrew-tap
+        run: |
+          set -euo pipefail
+
+          CASK_PATH="Casks/${DESKTOP_CASK_NAME}.rb"
+
+          git add "${CASK_PATH}"
+
+          if git diff --cached --quiet -- "${CASK_PATH}"; then
+            echo "Homebrew cask is already current"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Update ${DESKTOP_CASK_NAME} cask for ${RELEASE_TAG}"
+          git push

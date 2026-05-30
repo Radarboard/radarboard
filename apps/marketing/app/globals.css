@@ -1,0 +1,206 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-light: var(--accent-light);
+
+  --color-success: var(--success);
+  --color-destructive: var(--destructive);
+  --color-warning: var(--warning);
+
+  --color-border: var(--border);
+  --color-line: var(--line);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", "Menlo", monospace;
+
+  --radius-panel: 0px;
+  --radius-card: 0px;
+  --radius-item: 0px;
+  --radius-pill: 100px;
+
+  --spacing-section: 6rem;
+  --spacing-grid-gap: 6px;
+  --spacing-media: 28rem;
+
+  --text-w-xs: 0.75rem;
+  --text-w-sm: 0.875rem;
+  --text-w-base: 1rem;
+  --text-w-lg: 1.125rem;
+  --text-w-xl: 2rem;
+  --text-w-2xl: 3.5rem;
+
+  --text-mono-xs: 0.6875rem;
+  --text-mono-sm: 0.75rem;
+  --text-mono-base: 0.8125rem;
+
+  --shadow-panel: 0 24px 80px color-mix(in srgb, var(--foreground) 10%, transparent);
+}
+
+:root {
+  color-scheme: dark;
+
+  --background: #101010;
+  --foreground: #e8e8e8;
+
+  --surface: #111111;
+  --surface-raised: #161616;
+
+  --card: #181818;
+  --card-foreground: #e8e8e8;
+
+  --muted: #888888;
+  --muted-foreground: #666666;
+
+  --accent: #5b8af5;
+  --accent-light: #8fa3ff;
+
+  --success: #4ade80;
+  --destructive: #e05555;
+  --warning: #f5c542;
+
+  --border: #2a2a2a;
+  --line: #1a1a1a;
+}
+
+.light {
+  color-scheme: light;
+
+  --background: #f7f7f4;
+  --foreground: #181818;
+
+  --surface: #ffffff;
+  --surface-raised: #eeeeea;
+
+  --card: #ffffff;
+  --card-foreground: #181818;
+
+  --muted: #62625c;
+  --muted-foreground: #8a8a83;
+
+  --accent: #2563eb;
+  --accent-light: #5b8af5;
+
+  --success: #217a42;
+  --destructive: #b42318;
+  --warning: #946200;
+
+  --border: #d9d9d2;
+  --line: #e7e7e0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  overflow-x: hidden;
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+}
+
+.hero-stage {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-accent) 8%, transparent),
+      transparent 36rem
+    ),
+    var(--color-background);
+}
+
+.console-shell {
+  box-shadow:
+    0 28px 90px color-mix(in srgb, var(--color-accent) 14%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--color-accent) 12%, transparent);
+}
+
+.media-placeholder {
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--color-accent) 14%, transparent),
+      transparent 34%
+    ),
+    linear-gradient(180deg, var(--color-surface), var(--color-background));
+}
+
+.product-frame {
+  position: relative;
+}
+
+.product-frame::after {
+  position: absolute;
+  inset: 0;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 22%, transparent);
+  content: "";
+  pointer-events: none;
+}
+
+.integration-matrix article:nth-child(3n) span {
+  background: var(--color-warning);
+}
+
+.integration-matrix article:nth-child(4n) span {
+  background: var(--color-muted);
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono-sm);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.mono-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono-sm);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.transition-interactive {
+  transition-duration: 160ms;
+  transition-property: background-color, border-color, color, opacity, transform;
+  transition-timing-function: ease;
+}
+
+.scrollbar-thin {
+  scrollbar-color: var(--color-border) transparent;
+  scrollbar-width: thin;
+}
+
+.icon-xs {
+  height: 12px;
+  width: 12px;
+}
+
+.icon-sm {
+  height: 14px;
+  width: 14px;
+}
+
+.icon-base {
+  height: 16px;
+  width: 16px;
+}
+
+.icon-lg {
+  height: 20px;
+  width: 20px;
+}

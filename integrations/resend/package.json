@@ -1,0 +1,34 @@
+{
+  "name": "@radarboard/integration-resend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./client": "./src/api/client.ts",
+    "./server/alerts": "./src/server/alerts.ts",
+    "./types": "./src/types.ts",
+    "./mcp-tools": "./src/mcp/mcp-tools.ts"
+  },
+  "dependencies": {
+    "@radarboard/integration-sdk": "workspace:*",
+    "lucide-react": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@radarboard/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "react": "catalog:"
+  }
+}

@@ -1,0 +1,2670 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`LayoutDetailPanel > matches the active current-page assignment state 1`] = `
+<div>
+  <div
+    class="scrollbar-thin flex flex-1 overflow-y-auto p-6"
+  >
+    <div
+      class="flex w-full flex-col gap-6 lg:flex-row lg:items-start"
+    >
+      <div
+        class="flex w-full flex-col gap-4 lg:w-80 lg:flex-none"
+      >
+        <div
+          class="rounded-item border border-border bg-surface-raised/50 p-4"
+        >
+          <div
+            class="mb-1.5 flex items-center justify-between gap-2"
+          >
+            <label
+              class="mb-0 font-mono text-dim text-w-sm uppercase tracking-widest"
+              for="layout-name-input"
+            >
+              Layout Name
+            </label>
+            <span
+              class="inline-flex items-center rounded-item uppercase tracking-wider transition-interactive whitespace-nowrap border border-border bg-secondary text-foreground-secondary px-1.5 py-0.5 font-mono text-w-xs"
+            >
+              1
+               page
+            </span>
+          </div>
+          <input
+            class="flex border border-border font-mono transition-interactive file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:focus-visible:border-destructive bg-secondary text-foreground-secondary focus-visible:border-accent px-2 py-1 text-w-sm rounded-item h-9 w-full"
+            id="layout-name-input"
+            type="text"
+            value="Two by Two"
+          />
+          <div
+            class="mt-3 flex flex-wrap items-center gap-2"
+          >
+            <button
+              class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-copy icon-xs"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect
+                  height="14"
+                  rx="2"
+                  ry="2"
+                  width="14"
+                  x="8"
+                  y="8"
+                />
+                <path
+                  d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+                />
+              </svg>
+              Duplicate
+            </button>
+            <button
+              class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-rotate-ccw icon-xs"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"
+                />
+                <path
+                  d="M3 3v5h5"
+                />
+              </svg>
+              Reset
+            </button>
+            <button
+              class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-destructive/20 text-destructive hover:bg-destructive/10 uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-xs"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-trash2 lucide-trash-2 icon-xs"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 11v6"
+                />
+                <path
+                  d="M14 11v6"
+                />
+                <path
+                  d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
+                />
+                <path
+                  d="M3 6h18"
+                />
+                <path
+                  d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                />
+              </svg>
+              Delete
+            </button>
+          </div>
+        </div>
+        <div
+          class="rounded-item border border-border bg-surface-raised/50 p-4"
+        >
+          <div
+            class="flex items-center gap-2"
+          >
+            <span
+              class="mb-0 font-mono text-dim text-w-sm uppercase tracking-widest"
+            >
+              Assign Layout
+            </span>
+            <span
+              class="inline-flex items-center rounded-item uppercase tracking-wider transition-interactive whitespace-nowrap border border-border bg-secondary text-foreground-secondary px-1.5 py-0.5 font-mono text-w-xs"
+            >
+              Page selector
+            </span>
+          </div>
+          <p
+            class="mt-2 font-mono text-dim text-w-sm"
+          >
+            Pick a project/page target here or use the reverse assignment flow in Projects.
+          </p>
+          <div
+            class="mt-3"
+          >
+            <span
+              class="mb-2 font-mono text-dim text-w-xs uppercase tracking-widest"
+            >
+              Target View
+            </span>
+            <button
+              aria-autocomplete="none"
+              aria-controls="radix-_r_0_"
+              aria-expanded="false"
+              aria-label="Layout assignment target"
+              class="flex cursor-pointer items-center justify-between font-mono outline-none transition-interactive disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:focus-visible:border-destructive border border-border bg-surface text-foreground data-[state=open]:border-accent h-9 px-3 py-2 text-w-base gap-2 rounded-item w-full"
+              data-state="closed"
+              dir="ltr"
+              role="combobox"
+              type="button"
+            >
+              <span
+                style="pointer-events: none;"
+              >
+                All Projects
+                 / 
+                Overview
+              </span>
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-chevron-down flex-shrink-0 icon-xs text-dim"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m6 9 6 6 6-6"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div
+          class="rounded-item border border-border bg-surface-raised/50 p-4"
+        >
+          <div
+            class="font-mono text-dim text-w-sm uppercase tracking-widest"
+          >
+            Editing Guide
+          </div>
+          <div
+            class="mt-3 space-y-2 font-mono text-dim text-w-sm"
+          >
+            <p>
+              Resize, merge, and split apply immediately.
+            </p>
+            <p>
+              Removing rows or columns opens a review before the change is applied.
+            </p>
+            <p>
+              Current layout: 
+              2
+               columns × 
+              2
+               rows · 
+              4
+               
+              cells
+            </p>
+          </div>
+        </div>
+      </div>
+      <div
+        class="min-w-0 flex-1"
+      >
+        <div
+          class="rounded-item border border-border bg-surface-raised/50 p-4"
+        >
+          <div
+            class="mb-4 flex flex-wrap items-start justify-between gap-3"
+          >
+            <div>
+              <div
+                class="font-mono text-dim text-w-sm uppercase tracking-widest"
+              >
+                Layout Canvas
+              </div>
+              <p
+                class="mt-2 max-w-sidebar font-mono text-dim text-w-sm"
+              >
+                Use the edge controls to add or remove rows and columns. Drag the resize guides to rebalance tracks, then use merge and split controls to shape regions.
+              </p>
+            </div>
+            <div
+              class="flex flex-wrap items-center gap-1.5"
+            >
+              <span
+                class="font-mono text-dim text-w-xs uppercase tracking-widest"
+              >
+                Equalize
+              </span>
+              <button
+                class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+                data-state="closed"
+                type="button"
+              >
+                Column Widths
+              </button>
+              <button
+                class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+                data-state="closed"
+                type="button"
+              >
+                Row Heights
+              </button>
+              <button
+                class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+                data-state="closed"
+                type="button"
+              >
+                All
+              </button>
+            </div>
+          </div>
+          <div
+            class="mx-auto flex w-full max-w-none flex-col items-center gap-4"
+          >
+            <div
+              class="grid items-center gap-3"
+              style="grid-template-columns: 72px 520px; grid-template-rows: 44px auto; width: 608px;"
+            >
+              <div
+                class="flex h-full items-center justify-center rounded-item border border-border bg-surface font-mono text-dim text-w-sm uppercase tracking-[0.18em]"
+              >
+                Tracks
+              </div>
+              <div
+                class="relative overflow-visible rounded-item border border-border bg-surface w-full"
+                style="height: 44px; width: 520px;"
+              >
+                <div
+                  class="absolute rounded-item border border-secondary bg-surface-raised"
+                  style="left: 1px; top: 1px; width: 258px; height: 42px;"
+                >
+                  <span
+                    class="absolute font-mono text-dim text-w-sm bottom-1 left-1/2 -translate-x-1/2"
+                  >
+                    50
+                    %
+                  </span>
+                  <button
+                    aria-label="Remove column 1"
+                    class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none absolute flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim transition-colors hover:border-destructive hover:text-destructive"
+                    data-state="closed"
+                    style="right: 4px; top: 12px;"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-minus icon-xs"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M5 12h14"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <div
+                  class="absolute rounded-item border border-secondary bg-surface-raised"
+                  style="left: 261px; top: 1px; width: 258px; height: 42px;"
+                >
+                  <span
+                    class="absolute font-mono text-dim text-w-sm bottom-1 left-1/2 -translate-x-1/2"
+                  >
+                    50
+                    %
+                  </span>
+                  <button
+                    aria-label="Remove column 2"
+                    class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none absolute flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim transition-colors hover:border-destructive hover:text-destructive"
+                    data-state="closed"
+                    style="right: 4px; top: 12px;"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-minus icon-xs"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M5 12h14"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <button
+                  aria-label="Insert column at position 1"
+                  class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none absolute z-20 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim transition-colors hover:border-accent hover:text-foreground"
+                  data-state="closed"
+                  style="left: -10px; top: 12px;"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-plus icon-xs"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M5 12h14"
+                    />
+                    <path
+                      d="M12 5v14"
+                    />
+                  </svg>
+                </button>
+                <button
+                  aria-label="Insert column at position 2"
+                  class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none absolute z-20 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim transition-colors hover:border-accent hover:text-foreground"
+                  data-state="closed"
+                  style="left: 250px; top: 12px;"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-plus icon-xs"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M5 12h14"
+                    />
+                    <path
+                      d="M12 5v14"
+                    />
+                  </svg>
+                </button>
+                <button
+                  aria-label="Insert column at position 3"
+                  class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none absolute z-20 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim transition-colors hover:border-accent hover:text-foreground"
+                  data-state="closed"
+                  style="left: 510px; top: 12px;"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-plus icon-xs"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M5 12h14"
+                    />
+                    <path
+                      d="M12 5v14"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <div
+                class="relative overflow-visible rounded-item border border-border bg-surface h-full"
+                style="width: 72px; height: 520px;"
+              >
+                <div
+                  class="absolute rounded-item border border-secondary bg-surface-raised"
+                  style="left: 1px; top: 1px; width: 70px; height: 258px;"
+                >
+                  <span
+                    class="absolute font-mono text-dim text-w-sm top-1/2 left-3 -translate-y-1/2"
+                  >
+                    50
+                    %
+                  </span>
+                  <button
+                    aria-label="Remove row 1"
+                    class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none absolute flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim transition-colors hover:border-destructive hover:text-destructive"
+                    data-state="closed"
+                    style="right: 4px; top: 120px;"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-minus icon-xs"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M5 12h14"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <div
+                  class="absolute rounded-item border border-secondary bg-surface-raised"
+                  style="left: 1px; top: 261px; width: 70px; height: 258px;"
+                >
+                  <span
+                    class="absolute font-mono text-dim text-w-sm top-1/2 left-3 -translate-y-1/2"
+                  >
+                    50
+                    %
+                  </span>
+                  <button
+                    aria-label="Remove row 2"
+                    class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none absolute flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim transition-colors hover:border-destructive hover:text-destructive"
+                    data-state="closed"
+                    style="right: 4px; top: 120px;"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-minus icon-xs"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M5 12h14"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <button
+                  aria-label="Insert row at position 1"
+                  class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none absolute z-20 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim transition-colors hover:border-accent hover:text-foreground"
+                  data-state="closed"
+                  style="left: 26px; top: -10px;"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-plus icon-xs"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M5 12h14"
+                    />
+                    <path
+                      d="M12 5v14"
+                    />
+                  </svg>
+                </button>
+                <button
+                  aria-label="Insert row at position 2"
+                  class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none absolute z-20 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim transition-colors hover:border-accent hover:text-foreground"
+                  data-state="closed"
+                  style="left: 26px; top: 250px;"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-plus icon-xs"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M5 12h14"
+                    />
+                    <path
+                      d="M12 5v14"
+                    />
+                  </svg>
+                </button>
+                <button
+                  aria-label="Insert row at position 3"
+                  class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none absolute z-20 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim transition-colors hover:border-accent hover:text-foreground"
+                  data-state="closed"
+                  style="left: 26px; top: 510px;"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-plus icon-xs"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M5 12h14"
+                    />
+                    <path
+                      d="M12 5v14"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <div
+                class="group/editor relative overflow-visible rounded-item border border-border bg-background"
+                style="width: 520px; height: 520px;"
+              >
+                <div
+                  class="pointer-events-none absolute top-0 bottom-0 w-px bg-border"
+                  style="left: 260px;"
+                />
+                <div
+                  class="absolute flex items-center justify-center overflow-hidden border transition-colors border-border bg-surface"
+                  style="left: 0%; top: 0%; width: calc(50% - 1px); height: calc(50% - 1px);"
+                >
+                  <span
+                    class="relative z-10 font-mono text-dim text-w-sm"
+                  />
+                </div>
+                <div
+                  class="absolute flex items-center justify-center overflow-hidden border transition-colors border-border bg-surface"
+                  style="left: 50%; top: 0%; width: 50%; height: calc(50% - 1px);"
+                >
+                  <span
+                    class="relative z-10 font-mono text-dim text-w-sm"
+                  />
+                </div>
+                <div
+                  class="absolute flex items-center justify-center overflow-hidden border transition-colors border-border bg-surface"
+                  style="left: 0%; top: 50%; width: calc(50% - 1px); height: 50%;"
+                >
+                  <span
+                    class="relative z-10 font-mono text-dim text-w-sm"
+                  />
+                </div>
+                <div
+                  class="absolute flex items-center justify-center overflow-hidden border transition-colors border-border bg-surface"
+                  style="left: 50%; top: 50%; width: 50%; height: 50%;"
+                >
+                  <span
+                    class="relative z-10 font-mono text-dim text-w-sm"
+                  />
+                </div>
+                <button
+                  class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none icon-sm absolute z-20 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim shadow-sm transition-colors hover:border-accent hover:text-foreground opacity-0 group-hover/editor:opacity-100"
+                  data-state="closed"
+                  style="left: 122px; top: 252px; width: 16px; height: 16px;"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-plus icon-xs"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M5 12h14"
+                    />
+                    <path
+                      d="M12 5v14"
+                    />
+                  </svg>
+                </button>
+                <button
+                  class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none icon-sm absolute z-20 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim shadow-sm transition-colors hover:border-accent hover:text-foreground opacity-0 group-hover/editor:opacity-100"
+                  data-state="closed"
+                  style="left: 382px; top: 252px; width: 16px; height: 16px;"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-plus icon-xs"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M5 12h14"
+                    />
+                    <path
+                      d="M12 5v14"
+                    />
+                  </svg>
+                </button>
+                <button
+                  class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none icon-sm absolute z-20 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim shadow-sm transition-colors hover:border-accent hover:text-foreground opacity-0 group-hover/editor:opacity-100"
+                  data-state="closed"
+                  style="left: 252px; top: 122px; width: 16px; height: 16px;"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-plus icon-xs"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M5 12h14"
+                    />
+                    <path
+                      d="M12 5v14"
+                    />
+                  </svg>
+                </button>
+                <button
+                  class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none icon-sm absolute z-20 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim shadow-sm transition-colors hover:border-accent hover:text-foreground opacity-0 group-hover/editor:opacity-100"
+                  data-state="closed"
+                  style="left: 252px; top: 382px; width: 16px; height: 16px;"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-plus icon-xs"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M5 12h14"
+                    />
+                    <path
+                      d="M12 5v14"
+                    />
+                  </svg>
+                </button>
+                <div
+                  style="position: absolute; inset: 0px; pointer-events: none; z-index: 15;"
+                >
+                  <div
+                    data-testid="resize-handle"
+                  />
+                  <div
+                    data-testid="segment-resize-handle"
+                  />
+                  <div
+                    data-testid="segment-resize-handle"
+                  />
+                </div>
+              </div>
+            </div>
+            <div
+              class="grid w-full gap-3 font-mono text-dim text-w-sm"
+              style="width: 608px;"
+            >
+              <div
+                class="whitespace-nowrap rounded-item border border-border bg-surface px-3 py-2"
+              >
+                Columns: 
+                2
+                 · 
+                50% / 50%
+              </div>
+              <div
+                class="rounded-item border border-border bg-surface px-3 py-2"
+              >
+                Vertical splits:
+                 
+                C1 50/50 · C2 50/50
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`LayoutDetailPanel > matches the destructive removal modal state 1`] = `
+<body
+  data-scroll-locked="1"
+  style="pointer-events: none;"
+>
+  <span
+    aria-hidden="true"
+    data-aria-hidden="true"
+    data-radix-focus-guard=""
+    style="outline: none; opacity: 0; position: fixed; pointer-events: none;"
+    tabindex="0"
+  />
+  <div
+    aria-hidden="true"
+    data-aria-hidden="true"
+  >
+    <div
+      class="scrollbar-thin flex flex-1 overflow-y-auto p-6"
+    >
+      <div
+        class="flex w-full flex-col gap-6 lg:flex-row lg:items-start"
+      >
+        <div
+          class="flex w-full flex-col gap-4 lg:w-80 lg:flex-none"
+        >
+          <div
+            class="rounded-item border border-border bg-surface-raised/50 p-4"
+          >
+            <div
+              class="mb-1.5 flex items-center justify-between gap-2"
+            >
+              <label
+                class="mb-0 font-mono text-dim text-w-sm uppercase tracking-widest"
+                for="layout-name-input"
+              >
+                Layout Name
+              </label>
+              <span
+                class="inline-flex items-center rounded-item uppercase tracking-wider transition-interactive whitespace-nowrap border border-border bg-secondary text-foreground-secondary px-1.5 py-0.5 font-mono text-w-xs"
+              >
+                1
+                 page
+              </span>
+            </div>
+            <input
+              class="flex border border-border font-mono transition-interactive file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:focus-visible:border-destructive bg-secondary text-foreground-secondary focus-visible:border-accent px-2 py-1 text-w-sm rounded-item h-9 w-full"
+              id="layout-name-input"
+              type="text"
+              value="Two by Two"
+            />
+            <div
+              class="mt-3 flex flex-wrap items-center gap-2"
+            >
+              <button
+                class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-copy icon-xs"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <rect
+                    height="14"
+                    rx="2"
+                    ry="2"
+                    width="14"
+                    x="8"
+                    y="8"
+                  />
+                  <path
+                    d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+                  />
+                </svg>
+                Duplicate
+              </button>
+              <button
+                class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-rotate-ccw icon-xs"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"
+                  />
+                  <path
+                    d="M3 3v5h5"
+                  />
+                </svg>
+                Reset
+              </button>
+              <button
+                class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-destructive/20 text-destructive hover:bg-destructive/10 uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-xs"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-trash2 lucide-trash-2 icon-xs"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10 11v6"
+                  />
+                  <path
+                    d="M14 11v6"
+                  />
+                  <path
+                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
+                  />
+                  <path
+                    d="M3 6h18"
+                  />
+                  <path
+                    d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                  />
+                </svg>
+                Delete
+              </button>
+            </div>
+          </div>
+          <div
+            class="rounded-item border border-border bg-surface-raised/50 p-4"
+          >
+            <div
+              class="flex items-center gap-2"
+            >
+              <span
+                class="mb-0 font-mono text-dim text-w-sm uppercase tracking-widest"
+              >
+                Assign Layout
+              </span>
+              <span
+                class="inline-flex items-center rounded-item uppercase tracking-wider transition-interactive whitespace-nowrap border border-border bg-secondary text-foreground-secondary px-1.5 py-0.5 font-mono text-w-xs"
+              >
+                Page selector
+              </span>
+            </div>
+            <p
+              class="mt-2 font-mono text-dim text-w-sm"
+            >
+              Pick a project/page target here or use the reverse assignment flow in Projects.
+            </p>
+            <div
+              class="mt-3"
+            >
+              <span
+                class="mb-2 font-mono text-dim text-w-xs uppercase tracking-widest"
+              >
+                Target View
+              </span>
+              <button
+                aria-autocomplete="none"
+                aria-controls="radix-_r_1k_"
+                aria-expanded="false"
+                aria-label="Layout assignment target"
+                class="flex cursor-pointer items-center justify-between font-mono outline-none transition-interactive disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:focus-visible:border-destructive border border-border bg-surface text-foreground data-[state=open]:border-accent h-9 px-3 py-2 text-w-base gap-2 rounded-item w-full"
+                data-state="closed"
+                dir="ltr"
+                role="combobox"
+                type="button"
+              >
+                <span
+                  style="pointer-events: none;"
+                >
+                  All Projects
+                   / 
+                  Overview
+                </span>
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-chevron-down flex-shrink-0 icon-xs text-dim"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="m6 9 6 6 6-6"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div
+            class="rounded-item border border-border bg-surface-raised/50 p-4"
+          >
+            <div
+              class="font-mono text-dim text-w-sm uppercase tracking-widest"
+            >
+              Editing Guide
+            </div>
+            <div
+              class="mt-3 space-y-2 font-mono text-dim text-w-sm"
+            >
+              <p>
+                Resize, merge, and split apply immediately.
+              </p>
+              <p>
+                Removing rows or columns opens a review before the change is applied.
+              </p>
+              <p>
+                Current layout: 
+                2
+                 columns × 
+                2
+                 rows · 
+                4
+                 
+                cells
+              </p>
+            </div>
+          </div>
+        </div>
+        <div
+          class="min-w-0 flex-1"
+        >
+          <div
+            class="rounded-item border border-border bg-surface-raised/50 p-4"
+          >
+            <div
+              class="mb-4 flex flex-wrap items-start justify-between gap-3"
+            >
+              <div>
+                <div
+                  class="font-mono text-dim text-w-sm uppercase tracking-widest"
+                >
+                  Layout Canvas
+                </div>
+                <p
+                  class="mt-2 max-w-sidebar font-mono text-dim text-w-sm"
+                >
+                  Use the edge controls to add or remove rows and columns. Drag the resize guides to rebalance tracks, then use merge and split controls to shape regions.
+                </p>
+              </div>
+              <div
+                class="flex flex-wrap items-center gap-1.5"
+              >
+                <span
+                  class="font-mono text-dim text-w-xs uppercase tracking-widest"
+                >
+                  Equalize
+                </span>
+                <button
+                  class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+                  data-state="closed"
+                  type="button"
+                >
+                  Column Widths
+                </button>
+                <button
+                  class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+                  data-state="closed"
+                  type="button"
+                >
+                  Row Heights
+                </button>
+                <button
+                  class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+                  data-state="closed"
+                  type="button"
+                >
+                  All
+                </button>
+              </div>
+            </div>
+            <div
+              class="mx-auto flex w-full max-w-none flex-col items-center gap-4"
+            >
+              <div
+                class="grid items-center gap-3"
+                style="grid-template-columns: 72px 520px; grid-template-rows: 44px auto; width: 608px;"
+              >
+                <div
+                  class="flex h-full items-center justify-center rounded-item border border-border bg-surface font-mono text-dim text-w-sm uppercase tracking-[0.18em]"
+                >
+                  Tracks
+                </div>
+                <div
+                  class="relative overflow-visible rounded-item border border-border bg-surface w-full"
+                  style="height: 44px; width: 520px;"
+                >
+                  <div
+                    class="absolute rounded-item border border-secondary bg-surface-raised"
+                    style="left: 1px; top: 1px; width: 258px; height: 42px;"
+                  >
+                    <span
+                      class="absolute font-mono text-dim text-w-sm bottom-1 left-1/2 -translate-x-1/2"
+                    >
+                      50
+                      %
+                    </span>
+                    <button
+                      aria-label="Remove column 1"
+                      class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none absolute flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim transition-colors hover:border-destructive hover:text-destructive"
+                      data-state="closed"
+                      style="right: 4px; top: 12px;"
+                      type="button"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="lucide lucide-minus icon-xs"
+                        fill="none"
+                        height="24"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M5 12h14"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                  <div
+                    class="absolute rounded-item border border-secondary bg-surface-raised"
+                    style="left: 261px; top: 1px; width: 258px; height: 42px;"
+                  >
+                    <span
+                      class="absolute font-mono text-dim text-w-sm bottom-1 left-1/2 -translate-x-1/2"
+                    >
+                      50
+                      %
+                    </span>
+                    <button
+                      aria-label="Remove column 2"
+                      class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none absolute flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim transition-colors hover:border-destructive hover:text-destructive"
+                      data-state="closed"
+                      style="right: 4px; top: 12px;"
+                      type="button"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="lucide lucide-minus icon-xs"
+                        fill="none"
+                        height="24"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M5 12h14"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                  <button
+                    aria-label="Insert column at position 1"
+                    class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none absolute z-20 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim transition-colors hover:border-accent hover:text-foreground"
+                    data-state="closed"
+                    style="left: -10px; top: 12px;"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-plus icon-xs"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M5 12h14"
+                      />
+                      <path
+                        d="M12 5v14"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    aria-label="Insert column at position 2"
+                    class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none absolute z-20 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim transition-colors hover:border-accent hover:text-foreground"
+                    data-state="closed"
+                    style="left: 250px; top: 12px;"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-plus icon-xs"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M5 12h14"
+                      />
+                      <path
+                        d="M12 5v14"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    aria-label="Insert column at position 3"
+                    class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none absolute z-20 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim transition-colors hover:border-accent hover:text-foreground"
+                    data-state="closed"
+                    style="left: 510px; top: 12px;"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-plus icon-xs"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M5 12h14"
+                      />
+                      <path
+                        d="M12 5v14"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <div
+                  class="relative overflow-visible rounded-item border border-border bg-surface h-full"
+                  style="width: 72px; height: 520px;"
+                >
+                  <div
+                    class="absolute rounded-item border border-secondary bg-surface-raised"
+                    style="left: 1px; top: 1px; width: 70px; height: 258px;"
+                  >
+                    <span
+                      class="absolute font-mono text-dim text-w-sm top-1/2 left-3 -translate-y-1/2"
+                    >
+                      50
+                      %
+                    </span>
+                    <button
+                      aria-label="Remove row 1"
+                      class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none absolute flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim transition-colors hover:border-destructive hover:text-destructive"
+                      data-state="closed"
+                      style="right: 4px; top: 120px;"
+                      type="button"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="lucide lucide-minus icon-xs"
+                        fill="none"
+                        height="24"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M5 12h14"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                  <div
+                    class="absolute rounded-item border border-secondary bg-surface-raised"
+                    style="left: 1px; top: 261px; width: 70px; height: 258px;"
+                  >
+                    <span
+                      class="absolute font-mono text-dim text-w-sm top-1/2 left-3 -translate-y-1/2"
+                    >
+                      50
+                      %
+                    </span>
+                    <button
+                      aria-label="Remove row 2"
+                      class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none absolute flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim transition-colors hover:border-destructive hover:text-destructive"
+                      data-state="closed"
+                      style="right: 4px; top: 120px;"
+                      type="button"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="lucide lucide-minus icon-xs"
+                        fill="none"
+                        height="24"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M5 12h14"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                  <button
+                    aria-label="Insert row at position 1"
+                    class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none absolute z-20 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim transition-colors hover:border-accent hover:text-foreground"
+                    data-state="closed"
+                    style="left: 26px; top: -10px;"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-plus icon-xs"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M5 12h14"
+                      />
+                      <path
+                        d="M12 5v14"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    aria-label="Insert row at position 2"
+                    class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none absolute z-20 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim transition-colors hover:border-accent hover:text-foreground"
+                    data-state="closed"
+                    style="left: 26px; top: 250px;"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-plus icon-xs"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M5 12h14"
+                      />
+                      <path
+                        d="M12 5v14"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    aria-label="Insert row at position 3"
+                    class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none absolute z-20 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim transition-colors hover:border-accent hover:text-foreground"
+                    data-state="closed"
+                    style="left: 26px; top: 510px;"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-plus icon-xs"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M5 12h14"
+                      />
+                      <path
+                        d="M12 5v14"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <div
+                  class="group/editor relative overflow-visible rounded-item border border-border bg-background"
+                  style="width: 520px; height: 520px;"
+                >
+                  <div
+                    class="pointer-events-none absolute top-0 bottom-0 w-px bg-border"
+                    style="left: 260px;"
+                  />
+                  <div
+                    class="absolute flex items-center justify-center overflow-hidden border transition-colors border-border bg-surface"
+                    style="left: 0%; top: 0%; width: calc(50% - 1px); height: calc(50% - 1px);"
+                  >
+                    <span
+                      class="relative z-10 font-mono text-dim text-w-sm"
+                    />
+                  </div>
+                  <div
+                    class="absolute flex items-center justify-center overflow-hidden border transition-colors border-border bg-surface"
+                    style="left: 50%; top: 0%; width: 50%; height: calc(50% - 1px);"
+                  >
+                    <span
+                      class="relative z-10 font-mono text-dim text-w-sm"
+                    />
+                  </div>
+                  <div
+                    class="absolute flex items-center justify-center overflow-hidden border transition-colors border-border bg-surface"
+                    style="left: 0%; top: 50%; width: calc(50% - 1px); height: 50%;"
+                  >
+                    <span
+                      class="relative z-10 font-mono text-dim text-w-sm"
+                    />
+                  </div>
+                  <div
+                    class="absolute flex items-center justify-center overflow-hidden border transition-colors border-border bg-surface"
+                    style="left: 50%; top: 50%; width: 50%; height: 50%;"
+                  >
+                    <span
+                      class="relative z-10 font-mono text-dim text-w-sm"
+                    />
+                  </div>
+                  <button
+                    class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none icon-sm absolute z-20 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim shadow-sm transition-colors hover:border-accent hover:text-foreground opacity-0 group-hover/editor:opacity-100"
+                    data-state="closed"
+                    style="left: 122px; top: 252px; width: 16px; height: 16px;"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-plus icon-xs"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M5 12h14"
+                      />
+                      <path
+                        d="M12 5v14"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none icon-sm absolute z-20 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim shadow-sm transition-colors hover:border-accent hover:text-foreground opacity-0 group-hover/editor:opacity-100"
+                    data-state="closed"
+                    style="left: 382px; top: 252px; width: 16px; height: 16px;"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-plus icon-xs"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M5 12h14"
+                      />
+                      <path
+                        d="M12 5v14"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none icon-sm absolute z-20 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim shadow-sm transition-colors hover:border-accent hover:text-foreground opacity-0 group-hover/editor:opacity-100"
+                    data-state="closed"
+                    style="left: 252px; top: 122px; width: 16px; height: 16px;"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-plus icon-xs"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M5 12h14"
+                      />
+                      <path
+                        d="M12 5v14"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none icon-sm absolute z-20 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim shadow-sm transition-colors hover:border-accent hover:text-foreground opacity-0 group-hover/editor:opacity-100"
+                    data-state="closed"
+                    style="left: 252px; top: 382px; width: 16px; height: 16px;"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-plus icon-xs"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M5 12h14"
+                      />
+                      <path
+                        d="M12 5v14"
+                      />
+                    </svg>
+                  </button>
+                  <div
+                    style="position: absolute; inset: 0px; pointer-events: none; z-index: 15;"
+                  >
+                    <div
+                      data-testid="resize-handle"
+                    />
+                    <div
+                      data-testid="segment-resize-handle"
+                    />
+                    <div
+                      data-testid="segment-resize-handle"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                class="grid w-full gap-3 font-mono text-dim text-w-sm"
+                style="width: 608px;"
+              >
+                <div
+                  class="whitespace-nowrap rounded-item border border-border bg-surface px-3 py-2"
+                >
+                  Columns: 
+                  2
+                   · 
+                  50% / 50%
+                </div>
+                <div
+                  class="rounded-item border border-border bg-surface px-3 py-2"
+                >
+                  Vertical splits:
+                   
+                  C1 50/50 · C2 50/50
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    aria-hidden="true"
+    class="data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-modal bg-black/80 data-[state=closed]:animate-out data-[state=open]:animate-in"
+    data-aria-hidden="true"
+    data-state="open"
+    style="pointer-events: auto;"
+  />
+  <div
+    aria-describedby="radix-_r_2b_"
+    aria-labelledby="radix-_r_2a_"
+    class="rb-dialog-shell fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-modal overflow-hidden border border-border bg-surface shadow-2xl data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:animate-out data-[state=open]:animate-in flex flex-col rb-dialog-size-sm scrollbar-thin overflow-x-hidden"
+    data-state="open"
+    id="radix-_r_29_"
+    role="dialog"
+    style="pointer-events: auto;"
+    tabindex="-1"
+  >
+    <div
+      class="border-border border-b px-4 py-3"
+    >
+      <div
+        class="flex items-start gap-3"
+      >
+        <div
+          class="min-w-0 flex-1 space-y-1"
+        >
+          <h2
+            class="font-bold font-mono text-foreground text-sm uppercase tracking-wider"
+            id="radix-_r_2a_"
+          >
+            Review Column Removal
+          </h2>
+        </div>
+        <button
+          class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center self-start text-dim transition-colors hover:text-foreground-secondary"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-x icon-lg"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M18 6 6 18"
+            />
+            <path
+              d="m6 6 12 12"
+            />
+          </svg>
+          <span
+            class="sr-only"
+          >
+            Close
+          </span>
+        </button>
+      </div>
+    </div>
+    <div
+      class="px-4 py-3"
+    >
+      <div
+        class="space-y-4"
+      >
+        <p
+          class="font-mono text-muted-foreground text-w-sm leading-relaxed"
+          id="radix-_r_2b_"
+        >
+          Removing 
+          column
+           
+          2
+           from
+           
+          <span
+            class="text-foreground"
+          >
+            Two by Two
+          </span>
+           will update the grid from
+           
+          2
+          ×
+          2
+           to 
+          1
+          ×
+          2
+           before the change is applied.
+        </p>
+        <div
+          class="flex flex-wrap gap-2"
+        >
+          <span
+            class="inline-flex items-center rounded-item font-mono uppercase tracking-wider transition-interactive whitespace-nowrap border border-border bg-secondary text-foreground-secondary px-1.5 py-0.5 text-w-sm"
+          >
+            2
+             cells removed
+          </span>
+          <span
+            class="inline-flex items-center rounded-item font-mono uppercase tracking-wider transition-interactive whitespace-nowrap border border-border bg-secondary text-foreground-secondary px-1.5 py-0.5 text-w-sm"
+          >
+            2
+             kept or remapped
+          </span>
+          <span
+            class="inline-flex items-center rounded-item font-mono uppercase tracking-wider transition-interactive whitespace-nowrap border border-border bg-secondary text-foreground-secondary px-1.5 py-0.5 text-w-sm"
+          >
+            0
+             dropped
+          </span>
+        </div>
+        <div
+          class="space-y-3 rounded-item border border-border bg-surface p-3"
+        >
+          <div>
+            <p
+              class="font-mono text-dim text-w-xs uppercase tracking-widest"
+            >
+              Assignment Preview
+            </p>
+            <p
+              class="mt-1 font-mono text-dim text-w-sm"
+            >
+              This review reflects 
+              All Projects / Overview
+              , because this layout is currently assigned there.
+            </p>
+          </div>
+          <div
+            class="space-y-2 font-mono text-w-sm"
+          >
+            <div>
+              <p
+                class="text-dim"
+              >
+                Kept or remapped
+              </p>
+              <div
+                class="mt-1 flex flex-wrap gap-1.5"
+              >
+                <span
+                  class="inline-flex items-center rounded-item font-mono uppercase tracking-wider transition-interactive whitespace-nowrap border border-border bg-secondary text-foreground-secondary px-1.5 py-0.5 text-w-sm"
+                >
+                  Analytics
+                </span>
+                <span
+                  class="inline-flex items-center rounded-item font-mono uppercase tracking-wider transition-interactive whitespace-nowrap border border-border bg-secondary text-foreground-secondary px-1.5 py-0.5 text-w-sm"
+                >
+                  Revenue
+                </span>
+              </div>
+            </div>
+            <p
+              class="text-dim"
+            >
+              No assigned widgets would be dropped from this assignment target.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="flex items-center gap-2 border-border border-t px-4 py-3 justify-end"
+    >
+      <button
+        class="cursor-pointer px-3 py-1.5 font-mono text-muted-foreground text-xs transition-colors hover:text-foreground"
+        type="button"
+      >
+        Cancel
+      </button>
+      <button
+        class="cursor-pointer rounded-item bg-destructive px-3 py-1.5 font-mono text-destructive-foreground text-xs transition-colors hover:bg-destructive/90"
+        type="button"
+      >
+        Apply change
+      </button>
+    </div>
+  </div>
+  <span
+    aria-hidden="true"
+    data-aria-hidden="true"
+    data-radix-focus-guard=""
+    style="outline: none; opacity: 0; position: fixed; pointer-events: none;"
+    tabindex="0"
+  />
+</body>
+`;
+
+exports[`LayoutDetailPanel > matches the inactive assignment warning state 1`] = `
+<div>
+  <div
+    class="scrollbar-thin flex flex-1 overflow-y-auto p-6"
+  >
+    <div
+      class="flex w-full flex-col gap-6 lg:flex-row lg:items-start"
+    >
+      <div
+        class="flex w-full flex-col gap-4 lg:w-80 lg:flex-none"
+      >
+        <div
+          class="rounded-item border border-border bg-surface-raised/50 p-4"
+        >
+          <div
+            class="mb-1.5 flex items-center justify-between gap-2"
+          >
+            <label
+              class="mb-0 font-mono text-dim text-w-sm uppercase tracking-widest"
+              for="layout-name-input"
+            >
+              Layout Name
+            </label>
+            <span
+              class="inline-flex items-center rounded-item uppercase tracking-wider transition-interactive whitespace-nowrap border border-border bg-secondary text-foreground-secondary px-1.5 py-0.5 font-mono text-w-xs"
+            >
+              3
+               page
+              s
+            </span>
+          </div>
+          <input
+            class="flex border border-border font-mono transition-interactive file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:focus-visible:border-destructive bg-secondary text-foreground-secondary focus-visible:border-accent px-2 py-1 text-w-sm rounded-item h-9 w-full"
+            id="layout-name-input"
+            type="text"
+            value="Two by Two"
+          />
+          <div
+            class="mt-3 flex flex-wrap items-center gap-2"
+          >
+            <button
+              class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-copy icon-xs"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect
+                  height="14"
+                  rx="2"
+                  ry="2"
+                  width="14"
+                  x="8"
+                  y="8"
+                />
+                <path
+                  d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+                />
+              </svg>
+              Duplicate
+            </button>
+            <button
+              class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-rotate-ccw icon-xs"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"
+                />
+                <path
+                  d="M3 3v5h5"
+                />
+              </svg>
+              Reset
+            </button>
+            <button
+              class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-destructive/20 text-destructive hover:bg-destructive/10 uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-xs"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-trash2 lucide-trash-2 icon-xs"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 11v6"
+                />
+                <path
+                  d="M14 11v6"
+                />
+                <path
+                  d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
+                />
+                <path
+                  d="M3 6h18"
+                />
+                <path
+                  d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                />
+              </svg>
+              Delete
+            </button>
+          </div>
+        </div>
+        <div
+          class="rounded-item border border-border bg-surface-raised/50 p-4"
+        >
+          <div
+            class="flex items-center gap-2"
+          >
+            <span
+              class="mb-0 font-mono text-dim text-w-sm uppercase tracking-widest"
+            >
+              Assign Layout
+            </span>
+            <span
+              class="inline-flex items-center rounded-item uppercase tracking-wider transition-interactive whitespace-nowrap border border-border bg-secondary text-foreground-secondary px-1.5 py-0.5 font-mono text-w-xs"
+            >
+              Page selector
+            </span>
+          </div>
+          <p
+            class="mt-2 font-mono text-dim text-w-sm"
+          >
+            Pick a project/page target here or use the reverse assignment flow in Projects.
+          </p>
+          <div
+            class="mt-3"
+          >
+            <span
+              class="mb-2 font-mono text-dim text-w-xs uppercase tracking-widest"
+            >
+              Target View
+            </span>
+            <button
+              aria-autocomplete="none"
+              aria-controls="radix-_r_q_"
+              aria-expanded="false"
+              aria-label="Layout assignment target"
+              class="flex cursor-pointer items-center justify-between font-mono outline-none transition-interactive disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:focus-visible:border-destructive border border-border bg-surface text-foreground data-[state=open]:border-accent h-9 px-3 py-2 text-w-base gap-2 rounded-item w-full"
+              data-state="closed"
+              dir="ltr"
+              role="combobox"
+              type="button"
+            >
+              <span
+                style="pointer-events: none;"
+              >
+                Radarboard
+                 / 
+                Growth
+              </span>
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-chevron-down flex-shrink-0 icon-xs text-dim"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m6 9 6 6 6-6"
+                />
+              </svg>
+            </button>
+          </div>
+          <div
+            class="mt-3 rounded-item border border-accent/20 bg-accent/5 p-3"
+          >
+            <p
+              class="font-mono text-foreground text-w-sm"
+            >
+              <span
+                class="text-accent"
+              >
+                Two by Two
+              </span>
+               is not assigned to
+               
+              Growth
+              .
+            </p>
+            <button
+              class="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap font-mono transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-accent text-accent-foreground hover:bg-accent/90 h-6 px-2 text-w-sm normal-case tracking-normal rounded-item w-auto mt-3"
+              type="button"
+            >
+              Assign to Selected View
+            </button>
+          </div>
+        </div>
+        <div
+          class="rounded-item border border-border bg-surface-raised/50 p-4"
+        >
+          <div
+            class="font-mono text-dim text-w-sm uppercase tracking-widest"
+          >
+            Editing Guide
+          </div>
+          <div
+            class="mt-3 space-y-2 font-mono text-dim text-w-sm"
+          >
+            <p>
+              Resize, merge, and split apply immediately.
+            </p>
+            <p>
+              Removing rows or columns opens a review before the change is applied.
+            </p>
+            <p>
+              Current layout: 
+              2
+               columns × 
+              2
+               rows · 
+              4
+               
+              cells
+            </p>
+            <p
+              class="text-warning"
+            >
+              3
+               other page
+              s
+               also use this layout and may be affected by structural changes.
+            </p>
+            <p
+              class="text-warning"
+            >
+              2 cells removed. Pages using this layout may now have unassigned widgets.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div
+        class="min-w-0 flex-1"
+      >
+        <div
+          class="rounded-item border border-border bg-surface-raised/50 p-4"
+        >
+          <div
+            class="mb-4 flex flex-wrap items-start justify-between gap-3"
+          >
+            <div>
+              <div
+                class="font-mono text-dim text-w-sm uppercase tracking-widest"
+              >
+                Layout Canvas
+              </div>
+              <p
+                class="mt-2 max-w-sidebar font-mono text-dim text-w-sm"
+              >
+                Use the edge controls to add or remove rows and columns. Drag the resize guides to rebalance tracks, then use merge and split controls to shape regions.
+              </p>
+            </div>
+            <div
+              class="flex flex-wrap items-center gap-1.5"
+            >
+              <span
+                class="font-mono text-dim text-w-xs uppercase tracking-widest"
+              >
+                Equalize
+              </span>
+              <button
+                class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+                data-state="closed"
+                type="button"
+              >
+                Column Widths
+              </button>
+              <button
+                class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+                data-state="closed"
+                type="button"
+              >
+                Row Heights
+              </button>
+              <button
+                class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+                data-state="closed"
+                type="button"
+              >
+                All
+              </button>
+            </div>
+          </div>
+          <div
+            class="mx-auto flex w-full max-w-none flex-col items-center gap-4"
+          >
+            <div
+              class="grid items-center gap-3"
+              style="grid-template-columns: 72px 520px; grid-template-rows: 44px auto; width: 608px;"
+            >
+              <div
+                class="flex h-full items-center justify-center rounded-item border border-border bg-surface font-mono text-dim text-w-sm uppercase tracking-[0.18em]"
+              >
+                Tracks
+              </div>
+              <div
+                class="relative overflow-visible rounded-item border border-border bg-surface w-full"
+                style="height: 44px; width: 520px;"
+              >
+                <div
+                  class="absolute rounded-item border border-secondary bg-surface-raised"
+                  style="left: 1px; top: 1px; width: 258px; height: 42px;"
+                >
+                  <span
+                    class="absolute font-mono text-dim text-w-sm bottom-1 left-1/2 -translate-x-1/2"
+                  >
+                    50
+                    %
+                  </span>
+                  <button
+                    aria-label="Remove column 1"
+                    class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none absolute flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim transition-colors hover:border-destructive hover:text-destructive"
+                    data-state="closed"
+                    style="right: 4px; top: 12px;"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-minus icon-xs"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M5 12h14"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <div
+                  class="absolute rounded-item border border-secondary bg-surface-raised"
+                  style="left: 261px; top: 1px; width: 258px; height: 42px;"
+                >
+                  <span
+                    class="absolute font-mono text-dim text-w-sm bottom-1 left-1/2 -translate-x-1/2"
+                  >
+                    50
+                    %
+                  </span>
+                  <button
+                    aria-label="Remove column 2"
+                    class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none absolute flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim transition-colors hover:border-destructive hover:text-destructive"
+                    data-state="closed"
+                    style="right: 4px; top: 12px;"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-minus icon-xs"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M5 12h14"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <button
+                  aria-label="Insert column at position 1"
+                  class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none absolute z-20 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim transition-colors hover:border-accent hover:text-foreground"
+                  data-state="closed"
+                  style="left: -10px; top: 12px;"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-plus icon-xs"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M5 12h14"
+                    />
+                    <path
+                      d="M12 5v14"
+                    />
+                  </svg>
+                </button>
+                <button
+                  aria-label="Insert column at position 2"
+                  class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none absolute z-20 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim transition-colors hover:border-accent hover:text-foreground"
+                  data-state="closed"
+                  style="left: 250px; top: 12px;"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-plus icon-xs"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M5 12h14"
+                    />
+                    <path
+                      d="M12 5v14"
+                    />
+                  </svg>
+                </button>
+                <button
+                  aria-label="Insert column at position 3"
+                  class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none absolute z-20 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim transition-colors hover:border-accent hover:text-foreground"
+                  data-state="closed"
+                  style="left: 510px; top: 12px;"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-plus icon-xs"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M5 12h14"
+                    />
+                    <path
+                      d="M12 5v14"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <div
+                class="relative overflow-visible rounded-item border border-border bg-surface h-full"
+                style="width: 72px; height: 520px;"
+              >
+                <div
+                  class="absolute rounded-item border border-secondary bg-surface-raised"
+                  style="left: 1px; top: 1px; width: 70px; height: 258px;"
+                >
+                  <span
+                    class="absolute font-mono text-dim text-w-sm top-1/2 left-3 -translate-y-1/2"
+                  >
+                    50
+                    %
+                  </span>
+                  <button
+                    aria-label="Remove row 1"
+                    class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none absolute flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim transition-colors hover:border-destructive hover:text-destructive"
+                    data-state="closed"
+                    style="right: 4px; top: 120px;"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-minus icon-xs"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M5 12h14"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <div
+                  class="absolute rounded-item border border-secondary bg-surface-raised"
+                  style="left: 1px; top: 261px; width: 70px; height: 258px;"
+                >
+                  <span
+                    class="absolute font-mono text-dim text-w-sm top-1/2 left-3 -translate-y-1/2"
+                  >
+                    50
+                    %
+                  </span>
+                  <button
+                    aria-label="Remove row 2"
+                    class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none absolute flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim transition-colors hover:border-destructive hover:text-destructive"
+                    data-state="closed"
+                    style="right: 4px; top: 120px;"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="lucide lucide-minus icon-xs"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M5 12h14"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <button
+                  aria-label="Insert row at position 1"
+                  class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none absolute z-20 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim transition-colors hover:border-accent hover:text-foreground"
+                  data-state="closed"
+                  style="left: 26px; top: -10px;"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-plus icon-xs"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M5 12h14"
+                    />
+                    <path
+                      d="M12 5v14"
+                    />
+                  </svg>
+                </button>
+                <button
+                  aria-label="Insert row at position 2"
+                  class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none absolute z-20 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim transition-colors hover:border-accent hover:text-foreground"
+                  data-state="closed"
+                  style="left: 26px; top: 250px;"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-plus icon-xs"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M5 12h14"
+                    />
+                    <path
+                      d="M12 5v14"
+                    />
+                  </svg>
+                </button>
+                <button
+                  aria-label="Insert row at position 3"
+                  class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none absolute z-20 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim transition-colors hover:border-accent hover:text-foreground"
+                  data-state="closed"
+                  style="left: 26px; top: 510px;"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-plus icon-xs"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M5 12h14"
+                    />
+                    <path
+                      d="M12 5v14"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <div
+                class="group/editor relative overflow-visible rounded-item border border-border bg-background"
+                style="width: 520px; height: 520px;"
+              >
+                <div
+                  class="pointer-events-none absolute top-0 bottom-0 w-px bg-border"
+                  style="left: 260px;"
+                />
+                <div
+                  class="absolute flex items-center justify-center overflow-hidden border transition-colors border-border bg-surface"
+                  style="left: 0%; top: 0%; width: calc(50% - 1px); height: calc(50% - 1px);"
+                >
+                  <span
+                    class="relative z-10 font-mono text-dim text-w-sm"
+                  />
+                </div>
+                <div
+                  class="absolute flex items-center justify-center overflow-hidden border transition-colors border-border bg-surface"
+                  style="left: 50%; top: 0%; width: 50%; height: calc(50% - 1px);"
+                >
+                  <span
+                    class="relative z-10 font-mono text-dim text-w-sm"
+                  />
+                </div>
+                <div
+                  class="absolute flex items-center justify-center overflow-hidden border transition-colors border-border bg-surface"
+                  style="left: 0%; top: 50%; width: calc(50% - 1px); height: 50%;"
+                >
+                  <span
+                    class="relative z-10 font-mono text-dim text-w-sm"
+                  />
+                </div>
+                <div
+                  class="absolute flex items-center justify-center overflow-hidden border transition-colors border-border bg-surface"
+                  style="left: 50%; top: 50%; width: 50%; height: 50%;"
+                >
+                  <span
+                    class="relative z-10 font-mono text-dim text-w-sm"
+                  />
+                </div>
+                <button
+                  class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none icon-sm absolute z-20 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim shadow-sm transition-colors hover:border-accent hover:text-foreground opacity-0 group-hover/editor:opacity-100"
+                  data-state="closed"
+                  style="left: 122px; top: 252px; width: 16px; height: 16px;"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-plus icon-xs"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M5 12h14"
+                    />
+                    <path
+                      d="M12 5v14"
+                    />
+                  </svg>
+                </button>
+                <button
+                  class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none icon-sm absolute z-20 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim shadow-sm transition-colors hover:border-accent hover:text-foreground opacity-0 group-hover/editor:opacity-100"
+                  data-state="closed"
+                  style="left: 382px; top: 252px; width: 16px; height: 16px;"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-plus icon-xs"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M5 12h14"
+                    />
+                    <path
+                      d="M12 5v14"
+                    />
+                  </svg>
+                </button>
+                <button
+                  class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none icon-sm absolute z-20 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim shadow-sm transition-colors hover:border-accent hover:text-foreground opacity-0 group-hover/editor:opacity-100"
+                  data-state="closed"
+                  style="left: 252px; top: 122px; width: 16px; height: 16px;"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-plus icon-xs"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M5 12h14"
+                    />
+                    <path
+                      d="M12 5v14"
+                    />
+                  </svg>
+                </button>
+                <button
+                  class="cursor-pointer gap-2 whitespace-nowrap font-mono tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted text-w-sm uppercase rounded-item uppercase-none icon-sm absolute z-20 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface p-0 text-dim shadow-sm transition-colors hover:border-accent hover:text-foreground opacity-0 group-hover/editor:opacity-100"
+                  data-state="closed"
+                  style="left: 252px; top: 382px; width: 16px; height: 16px;"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-plus icon-xs"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M5 12h14"
+                    />
+                    <path
+                      d="M12 5v14"
+                    />
+                  </svg>
+                </button>
+                <div
+                  style="position: absolute; inset: 0px; pointer-events: none; z-index: 15;"
+                >
+                  <div
+                    data-testid="resize-handle"
+                  />
+                  <div
+                    data-testid="segment-resize-handle"
+                  />
+                  <div
+                    data-testid="segment-resize-handle"
+                  />
+                </div>
+              </div>
+            </div>
+            <div
+              class="grid w-full gap-3 font-mono text-dim text-w-sm"
+              style="width: 608px;"
+            >
+              <div
+                class="whitespace-nowrap rounded-item border border-border bg-surface px-3 py-2"
+              >
+                Columns: 
+                2
+                 · 
+                50% / 50%
+              </div>
+              <div
+                class="rounded-item border border-border bg-surface px-3 py-2"
+              >
+                Vertical splits:
+                 
+                C1 50/50 · C2 50/50
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

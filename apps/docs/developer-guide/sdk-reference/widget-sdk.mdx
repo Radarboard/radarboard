@@ -1,0 +1,1211 @@
+---
+title: "Widget SDK Reference"
+description: "API reference for @radarboard/widget-sdk — template config, recipes, section helpers, and testing."
+---
+
+# Widget SDK Reference
+
+API reference for @radarboard/widget-sdk — template config, recipes, section helpers, and testing.
+
+## `./types`
+
+### `DataSourceFormat`
+
+How a data value should be formatted when rendered.
+
+- `"currency"` — locale-aware currency (e.g. $1,234.56)
+- `"number"` — locale-aware number (e.g. 1,234)
+- `"percent"` — percentage with % suffix
+- `"date"` — date string
+- `"relative-time"` — "2 hours ago" style
+- `"duration-seconds"` — seconds → human-readable duration
+
+```ts
+type DataSourceFormat = "number" | "currency" | "percent" | "date" | "relative-time" | "duration-seconds"
+```
+
+### `DataSource`
+
+A pointer to a field in a resolved data source.
+
+This is the fundamental building block of the template system. Every section
+config uses `DataSource` to bind UI elements to data from your integration.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `sourceId` | `string` |  |
+| `field` | `string` |  |
+| `format?` | `DataSourceFormat \| undefined` |  |
+| `precision?` | `number \| undefined` |  |
+| `compact?` | `boolean \| undefined` |  |
+| `normalize?` | `"none" \| "compact-project" \| undefined` |  |
+
+**Example:**
+
+```ts
+// Point to the "totalRevenue" field in the "revenue" data source
+const source: DataSource = {
+  sourceId: "revenue",
+  field: "totalRevenue",
+  format: "currency",
+};
+```
+
+### `DataSourceDeclaration`
+
+Declares a data source ID that this widget template depends on.
+
+Listed in `WidgetTemplateConfig.dataSources` to register which resolvers
+need to run before the template can render.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `id` | `string` |  |
+
+### `LayoutGap`
+
+Gap size between sections in a layout.
+
+```ts
+type LayoutGap = "none" | "sm" | "md"
+```
+
+### `AlertCondition`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `source` | `DataSource` |  |
+| `operator` | `"lt" \| "gt" \| "eq" \| "neq" \| "lte" \| "gte"` |  |
+| `value` | `string \| number \| boolean` |  |
+
+### `AlertSectionConfig`
+
+Alert/banner section — displays a warning, error, or info message.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `type` | `"alert"` |  |
+| `severity` | `"error" \| "warning" \| "info" \| "success" \| "setup"` |  |
+| `message` | `string` |  |
+| `source?` | `DataSource \| undefined` |  |
+| `condition?` | `AlertCondition \| undefined` |  |
+| `dismissible?` | `boolean \| undefined` |  |
+| `action?` | `{ label: string; href?: string; } \| undefined` |  |
+
+### `KPIMetricConfig`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `label` | `string` |  |
+| `source` | `DataSource` |  |
+| `changeSource?` | `DataSource \| undefined` |  |
+| `sparklineSource?` | `DataSource \| undefined` |  |
+| `breakdownSource?` | `DataSource \| undefined` |  |
+| `valueColorSource?` | `DataSource \| undefined` |  |
+| `color?` | `string \| undefined` | Optional colored dot rendered next to the label (e.g. to match a chart series). |
+
+### `KPIRowSectionConfig`
+
+A horizontal row of KPI metric cards.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `type` | `"kpi-row"` |  |
+| `columns` | `1 \| 2 \| 3 \| 4 \| 5 \| 6` |  |
+| `variant?` | `"default" \| "compact" \| undefined` |  |
+| `metrics` | `KPIMetricConfig[]` |  |
+
+**Example:**
+
+```ts
+const kpis: KPIRowSectionConfig = {
+  type: "kpi-row",
+  columns: 3,
+  metrics: [
+    { label: "MRR", source: { sourceId: "rev", field: "mrr", format: "currency" } },
+    { label: "Subscribers", source: { sourceId: "rev", field: "count" } },
+    { label: "Churn", source: { sourceId: "rev", field: "churnRate", format: "percent" } },
+  ],
+};
+```
+
+### `SummaryQuadMetricSlotConfig`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `kind` | `"metric"` |  |
+| `label` | `string` |  |
+| `source` | `DataSource` |  |
+| `subtitle?` | `DataSource \| undefined` |  |
+| `subtitleText?` | `string \| undefined` |  |
+| `footerStart?` | `DataSource \| undefined` |  |
+| `footerEnd?` | `DataSource \| undefined` |  |
+| `footerColor?` | `DataSource \| undefined` |  |
+| `changeSource?` | `DataSource \| undefined` |  |
+| `sparklineSource?` | `DataSource \| undefined` |  |
+| `breakdownSource?` | `DataSource \| undefined` |  |
+| `tooltip?` | `string \| undefined` |  |
+
+### `SummaryQuadSparklineSlotConfig`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `kind` | `"sparkline"` |  |
+| `label` | `string` |  |
+| `source` | `DataSource` |  |
+| `emptyMessage?` | `string \| undefined` |  |
+| `positive?` | `boolean \| undefined` |  |
+
+### `SummaryQuadEmptySlotConfig`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `kind` | `"empty"` |  |
+
+### `SummaryQuadSlotConfig`
+
+```ts
+type SummaryQuadSlotConfig = SummaryQuadMetricSlotConfig | SummaryQuadSparklineSlotConfig | SummaryQuadEmptySlotConfig
+```
+
+### `SummaryQuadSectionConfig`
+
+A 2x2 grid of metric slots (metric, sparkline, or empty).
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `type` | `"summary-quad"` |  |
+| `slots` | `[SummaryQuadSlotConfig, SummaryQuadSlotConfig, SummaryQuadSlotConfig, SummaryQuadSlotConfig]` |  |
+
+### `HeadlineStatSectionConfig`
+
+A large featured number with a label — great for hero metrics.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `type` | `"headline-stat"` |  |
+| `source` | `DataSource` |  |
+| `label` | `string` |  |
+| `indicatorColor?` | `string \| undefined` |  |
+
+### `OverviewPanelRowConfig`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `label` | `string` |  |
+| `source` | `DataSource` |  |
+| `toneSource?` | `DataSource \| undefined` |  |
+
+### `OverviewPanelSectionConfig`
+
+Overview panel with eyebrow, title, metric, badge, description, and detail rows.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `type` | `"overview-panel"` |  |
+| `eyebrow?` | `string \| undefined` |  |
+| `title?` | `string \| undefined` |  |
+| `titleSource?` | `DataSource \| undefined` |  |
+| `metricLabel?` | `string \| undefined` |  |
+| `metricSource?` | `DataSource \| undefined` |  |
+| `metricToneSource?` | `DataSource \| undefined` |  |
+| `badgeSource?` | `DataSource \| undefined` |  |
+| `badgeToneSource?` | `DataSource \| undefined` |  |
+| `descriptionSource?` | `DataSource \| undefined` |  |
+| `rows?` | `OverviewPanelRowConfig[] \| undefined` |  |
+| `footerStart?` | `DataSource \| undefined` |  |
+| `footerEnd?` | `DataSource \| undefined` |  |
+
+### `ListItemTemplate`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `title` | `DataSource` |  |
+| `subtitle?` | `DataSource \| undefined` |  |
+| `value?` | `DataSource \| undefined` |  |
+| `valueColor?` | `DataSource \| undefined` |  |
+| `timestamp?` | `DataSource \| undefined` |  |
+| `timestampColor?` | `DataSource \| undefined` |  |
+| `status?` | `DataSource \| undefined` |  |
+| `badge?` | `RowListBadgeConfig \| undefined` |  |
+
+### `TemplateSelectionDialogConfig`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `title?` | `string \| undefined` |  |
+| `size?` | `ModalSize \| undefined` |  |
+| `resizable?` | `boolean \| undefined` |  |
+
+### `TemplateSelectionConfig`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `selectionId` | `string` |  |
+| `keyField` | `string` |  |
+| `detailRendererId` | `string` |  |
+| `source?` | `DataSource \| undefined` |  |
+| `dialog?` | `TemplateSelectionDialogConfig \| undefined` |  |
+
+### `InlineListHeaderColumnConfig`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `slot` | `"title" \| "subtitle" \| "value" \| "timestamp"` |  |
+| `label` | `string` |  |
+| `align?` | `"left" \| "right" \| "center" \| undefined` |  |
+
+### `InlineListHeaderConfig`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `title?` | `string \| undefined` |  |
+| `subtitle?` | `string \| undefined` |  |
+| `value?` | `string \| undefined` |  |
+| `timestamp?` | `string \| undefined` |  |
+| `gridTemplateColumns?` | `string \| undefined` |  |
+| `columns?` | `InlineListHeaderColumnConfig[] \| undefined` |  |
+
+### `ListSectionConfig`
+
+A scrollable list of items with title, subtitle, badge, and optional selection.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `type` | `"list"` |  |
+| `source` | `DataSource` |  |
+| `itemTemplate` | `ListItemTemplate` |  |
+| `layout?` | `"stacked" \| "inline" \| undefined` |  |
+| `inlineHeader?` | `InlineListHeaderConfig \| undefined` |  |
+| `maxItems?` | `number \| undefined` |  |
+| `emptyMessage?` | `string \| undefined` |  |
+| `hrefSource?` | `DataSource \| undefined` |  |
+| `hrefTarget?` | `"_blank" \| "_self" \| "_parent" \| "_top" \| undefined` |  |
+| `selection?` | `TemplateSelectionConfig \| undefined` |  |
+
+**Example:**
+
+```ts
+const issues: ListSectionConfig = {
+  type: "list",
+  source: { sourceId: "github", field: "issues" },
+  itemTemplate: {
+    title: { sourceId: "github", field: "title" },
+    subtitle: { sourceId: "github", field: "author" },
+    badge: { label: { sourceId: "github", field: "state" } },
+  },
+  emptyMessage: "No open issues",
+};
+```
+
+### `RowListBadgeConfig`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `label` | `DataSource` |  |
+| `color?` | `DataSource \| undefined` |  |
+| `normalize?` | `"none" \| "compact-project" \| undefined` |  |
+
+### `RowListStatusConfig`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `source` | `DataSource` |  |
+| `display?` | `"dot" \| "severity-icon" \| "named-icon" \| "favicon" \| undefined` |  |
+
+### `RowListItemTemplate`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `title` | `DataSource` |  |
+| `subtitle?` | `DataSource \| undefined` |  |
+| `badge?` | `RowListBadgeConfig \| undefined` |  |
+| `value?` | `DataSource \| undefined` |  |
+| `timestamp?` | `DataSource \| undefined` |  |
+| `timestampColor?` | `DataSource \| undefined` |  |
+| `status?` | `RowListStatusConfig \| undefined` |  |
+
+### `RowListSectionConfig`
+
+Compact row list with status dots/icons, badges, and timestamps.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `type` | `"row-list"` |  |
+| `source` | `DataSource` |  |
+| `itemTemplate` | `RowListItemTemplate` |  |
+| `maxItems?` | `number \| undefined` |  |
+| `emptyMessage?` | `string \| undefined` |  |
+| `hrefSource?` | `DataSource \| undefined` |  |
+| `hrefTarget?` | `"_blank" \| "_self" \| "_parent" \| "_top" \| undefined` |  |
+| `selection?` | `TemplateSelectionConfig \| undefined` |  |
+
+### `StreamListSectionConfig`
+
+Real-time event stream with log levels, search, and auto-scroll.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `type` | `"stream-list"` |  |
+| `variant?` | `"compact" \| "expanded" \| undefined` |  |
+| `defaultLevel?` | `"error" \| "info" \| "all" \| "debug" \| "warn" \| undefined` |  |
+| `maxItems?` | `number \| undefined` |  |
+| `autoScroll?` | `boolean \| undefined` |  |
+| `defaultLive?` | `boolean \| undefined` |  |
+| `showSearch?` | `boolean \| undefined` |  |
+| `showLiveToggle?` | `boolean \| undefined` |  |
+| `emptyMessage?` | `string \| undefined` |  |
+
+### `FilterBarSelectControlConfig`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `type` | `"select"` |  |
+| `id` | `string` |  |
+| `label` | `string` |  |
+| `allLabel?` | `string \| undefined` |  |
+| `options?` | `{ value: string; label: string; }[] \| undefined` |  |
+| `optionsSource?` | `DataSource \| undefined` |  |
+
+### `FilterBarRangeControlConfig`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `type` | `"range"` |  |
+| `id` | `string` |  |
+| `label` | `string` |  |
+| `min` | `number` |  |
+| `max` | `number` |  |
+| `step` | `number` |  |
+| `accentColor` | `string` |  |
+| `format?` | `"number" \| "rank" \| undefined` |  |
+
+### `FilterBarToggleControlConfig`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `type` | `"toggle"` |  |
+| `id` | `string` |  |
+| `label` | `string` |  |
+| `accentColor` | `string` |  |
+
+### `FilterBarControlConfig`
+
+```ts
+type FilterBarControlConfig = FilterBarSelectControlConfig | FilterBarRangeControlConfig | FilterBarToggleControlConfig
+```
+
+### `FilterBarSectionConfig`
+
+Filter bar with select, range, and toggle controls.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `type` | `"filter-bar"` |  |
+| `stateId` | `string` |  |
+| `persistKey?` | `string \| undefined` |  |
+| `controls` | `FilterBarControlConfig[]` |  |
+
+### `DenseRankedTableFilterRule`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `controlId` | `string` |  |
+| `field` | `string` |  |
+| `kind` | `"select" \| "range" \| "toggle"` |  |
+| `operator?` | `"eq" \| "neq" \| undefined` |  |
+| `value?` | `string \| number \| boolean \| undefined` |  |
+
+### `DenseRankedTableColumnConfig`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `key` | `string` |  |
+| `header` | `string` |  |
+| `variant` | `"number" \| "rank" \| "text" \| "bar" \| "delta" \| "flag"` |  |
+| `field?` | `string \| undefined` |  |
+| `color?` | `string \| undefined` |  |
+| `align?` | `"left" \| "right" \| "center" \| undefined` |  |
+| `sortable?` | `boolean \| undefined` |  |
+| `width?` | `number \| undefined` |  |
+
+### `DenseRankedTableSectionConfig`
+
+Dense ranked table with sorting, filtering, and compact/expanded variants.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `type` | `"dense-ranked-table"` |  |
+| `source` | `DataSource` |  |
+| `variant?` | `"compact" \| "expanded" \| undefined` |  |
+| `columns` | `DenseRankedTableColumnConfig[]` |  |
+| `maxItems?` | `number \| undefined` |  |
+| `emptyMessage?` | `string \| undefined` |  |
+| `stateKey?` | `string \| undefined` |  |
+| `defaultSort?` | `{ key: string; direction: "asc" \| "desc"; } \| undefined` |  |
+| `filterStateId?` | `string \| undefined` |  |
+| `filterPersistKey?` | `string \| undefined` |  |
+| `filterRules?` | `DenseRankedTableFilterRule[] \| undefined` |  |
+| `gridTemplateColumns?` | `string \| undefined` |  |
+| `selection?` | `TemplateSelectionConfig \| undefined` |  |
+| `filterPlaceholder?` | `string \| undefined` |  |
+
+### `TableColumnConfig`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `key` | `string` |  |
+| `header` | `string` |  |
+| `sortable?` | `boolean \| undefined` |  |
+| `format?` | `DataSourceFormat \| undefined` |  |
+| `width?` | `number \| undefined` |  |
+
+### `TableSectionConfig`
+
+A data table with sortable columns and optional search.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `type` | `"table"` |  |
+| `source` | `DataSource` |  |
+| `columns` | `TableColumnConfig[]` |  |
+| `searchable?` | `boolean \| undefined` |  |
+| `defaultSort?` | `{ key: string; direction: "asc" \| "desc"; } \| undefined` |  |
+| `emptyMessage?` | `string \| undefined` |  |
+| `selection?` | `TemplateSelectionConfig \| undefined` |  |
+
+### `CardListMetaConfig`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `label` | `string` |  |
+| `source` | `DataSource` |  |
+
+### `CardListSectionConfig`
+
+A grid of cards with title, image, badge, and optional search.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `type` | `"card-list"` |  |
+| `source` | `DataSource` |  |
+| `titleSource` | `DataSource` |  |
+| `subtitleSource?` | `DataSource \| undefined` |  |
+| `descriptionSource?` | `DataSource \| undefined` |  |
+| `imageSource?` | `DataSource \| undefined` |  |
+| `badgeSource?` | `DataSource \| undefined` |  |
+| `meta?` | `CardListMetaConfig[] \| undefined` |  |
+| `columns?` | `1 \| 2 \| 3 \| 4 \| undefined` |  |
+| `minCardWidth?` | `number \| undefined` |  |
+| `searchable?` | `boolean \| undefined` |  |
+| `filterPlaceholder?` | `string \| undefined` |  |
+| `emptyMessage?` | `string \| undefined` |  |
+| `maxItems?` | `number \| undefined` |  |
+| `selection?` | `TemplateSelectionConfig \| undefined` |  |
+| `hrefSource?` | `DataSource \| undefined` |  |
+| `hrefTarget?` | `"_blank" \| "_self" \| "_parent" \| "_top" \| undefined` |  |
+
+### `ChartSeriesConfig`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `dataKey` | `string` |  |
+| `name` | `string` |  |
+| `color?` | `string \| undefined` |  |
+| `format?` | `"number" \| "percent" \| "compact" \| "decimal" \| undefined` |  |
+
+### `ChartSectionConfig`
+
+A chart section — area, line, bar, or sparkline.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `type` | `"chart"` |  |
+| `variant` | `"sparkline" \| "bar" \| "area" \| "line"` |  |
+| `source` | `DataSource` |  |
+| `height?` | `number \| undefined` |  |
+| `xKey?` | `string \| undefined` |  |
+| `yKey?` | `string \| undefined` |  |
+| `color?` | `string \| undefined` |  |
+| `series?` | `ChartSeriesConfig[] \| undefined` | Multi-series mode: each entry maps to a Line in the chart. |
+| `normalize?` | `boolean \| undefined` | When true, normalize each series to 0-100 for geometry; tooltips show raw values. |
+| `fillHeight?` | `boolean \| undefined` | When true, the chart section grows to fill remaining parent height via flex-1. |
+
+**Example:**
+
+```ts
+const visitors: ChartSectionConfig = {
+  type: "chart",
+  variant: "area",
+  source: { sourceId: "analytics", field: "dailyVisitors" },
+  height: 200,
+  color: "var(--chart-1)",
+};
+```
+
+### `ActivityChartSegmentConfig`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `key` | `string` |  |
+| `color` | `string` |  |
+
+### `ActivityChartSectionConfig`
+
+GitHub-style contribution heatmap with colored segments.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `type` | `"activity-chart"` |  |
+| `source` | `DataSource` |  |
+| `segments` | `ActivityChartSegmentConfig[]` |  |
+| `heightClassName?` | `string \| undefined` |  |
+| `minBarPercent?` | `number \| undefined` |  |
+
+### `TabConfig`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `id` | `string` |  |
+| `label` | `string` |  |
+| `icon?` | `"pull-request" \| "issue" \| undefined` |  |
+| `accentColor?` | `string \| undefined` |  |
+| `countSource?` | `DataSource \| undefined` |  |
+| `sections` | `SectionConfig[]` |  |
+
+### `TabsSectionConfig`
+
+Tabbed content — switches between different section sets.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `type` | `"tabs"` |  |
+| `tabs` | `TabConfig[]` |  |
+| `defaultTab?` | `string \| undefined` |  |
+| `variant?` | `"compact" \| "expanded" \| undefined` |  |
+| `queryParam?` | `string \| undefined` |  |
+
+### `StackLayoutConfig`
+
+Vertical stack layout — sections arranged top to bottom.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `type` | `"stack"` |  |
+| `sections` | `SectionConfig[]` |  |
+| `gap?` | `LayoutGap \| undefined` |  |
+
+### `GridLayoutConfig`
+
+Grid layout — sections arranged in columns.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `type` | `"grid"` |  |
+| `sections` | `SectionConfig[]` |  |
+| `columns` | `1 \| 2 \| 3 \| 4` |  |
+| `gap?` | `LayoutGap \| undefined` |  |
+
+### `SplitLayoutConfig`
+
+Split layout — left rail + right content area.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `type` | `"split"` |  |
+| `left?` | `SectionConfig[] \| undefined` |  |
+| `right` | `SectionConfig[]` |  |
+| `leftWidth?` | `number \| undefined` |  |
+| `gap?` | `LayoutGap \| undefined` |  |
+| `divider?` | `boolean \| undefined` |  |
+
+### `SectionConfig`
+
+Union of all possible section types in a widget template.
+
+Sections are the building blocks of widget layouts. Combine them in
+`WidgetTemplateConfig.sections` or use recipe helpers like
+`createSummaryListRecipe()` to compose common patterns.
+
+```ts
+type SectionConfig = AlertSectionConfig | HeadlineStatSectionConfig | OverviewPanelSectionConfig | KPIRowSectionConfig | SummaryQuadSectionConfig | ListSectionConfig | RowListSectionConfig | StreamListSectionConfig | FilterBarSectionConfig | DenseRankedTableSectionConfig | TableSectionConfig | CardListSectionConfig | ChartSectionConfig | ActivityChartSectionConfig | TabsSectionConfig | StackLayoutConfig | GridLayoutConfig | SplitLayoutConfig
+```
+
+### `WidgetTemplateConfig`
+
+Top-level configuration for a template-driven widget.
+
+This is the primary config type that widget authors define. It declares
+which data sources to resolve and which sections to render in the compact
+and expanded views.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `version?` | `number \| undefined` |  |
+| `dataSources` | `DataSourceDeclaration[]` |  |
+| `sections` | `SectionConfig[]` |  |
+| `expandedSections?` | `SectionConfig[] \| undefined` |  |
+| `recipe?` | `TemplateRecipeModel \| undefined` |  |
+| `expandedRecipe?` | `TemplateRecipeModel \| undefined` |  |
+
+**Example:**
+
+```ts
+const config: WidgetTemplateConfig = {
+  version: 1,
+  dataSources: [{ id: "my-widget" }],
+  sections: [
+    kpiRow("my-widget", [{ label: "Total", field: "count" }]),
+    list("my-widget", "items", { title: "name", subtitle: "status" }),
+  ],
+  expandedSections: [
+    // Full table in expanded view
+  ],
+};
+```
+
+### `CreateTemplateDescriptorOptions`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `catalogCategory?` | `string \| undefined` |  |
+| `capabilities?` | `WidgetCapability[] \| undefined` |  |
+| `requiredIntegrations?` | `string[] \| undefined` |  |
+| `defaultSlot?` | `GridSlot \| undefined` |  |
+| `auth?` | `WidgetAuth \| WidgetAuth[] \| undefined` |  |
+| `expandedSize?` | `ModalSize \| undefined` |  |
+| `defaultPollInterval?` | `number \| undefined` |  |
+| `pollingSourceIds?` | `string[] \| undefined` |  |
+| `variants?` | `{ id: string; name: string; config: WidgetTemplateConfig; isDefault?: boolean; }[] \| undefined` |  |
+
+## `./widget-types`
+
+### `WidgetModalSize`
+
+Size of the expanded widget overlay: "sm", "md", or "lg".
+
+```ts
+type WidgetModalSize = "sm" | "md" | "lg"
+```
+
+### `GridSlot`
+
+The 9 content grid slots (3x3). Chrome widgets (TopBar, Tabs, KPIs, Ticker) are not slotted.
+
+```ts
+type GridSlot = "slot1" | "slot2" | "slot3" | "slot4" | "slot5" | "slot6" | "slot7" | "slot8" | "slot9"
+```
+
+### `WidgetChromeStatus`
+
+Controls which header utility actions are available in the compact widget cell.
+
+```ts
+type WidgetChromeStatus = "default" | "disconnected"
+```
+
+### `WidgetRenderProps`
+
+Props every widget module component receives.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `widgetId?` | `string \| undefined` | Widget registry identifier for observability and debug events. |
+| `projectSlug` | `string \| null` | Active project filter. null = "All" projects. |
+| `timeRange?` | `TimeRange \| undefined` | Active dashboard time range. |
+| `config` | `TConfig` | Per-instance configuration. |
+| `selectedDetailId?` | `string \| null \| undefined` | Externally controlled selected detail item ID (for URL state). |
+| `onSelectedDetailIdChange?` | `((id: string \| null) => void) \| undefined` | Called when the selected detail changes (for URL state sync). |
+| `onFetchedAt?` | `((fetchedAt: number \| null) => void) \| undefined` | Called by the widget to report its current data-fetch timestamp (unix seconds). WidgetSlot forwards this to WidgetCard for display in the header. |
+| `onRefetch?` | `((refetch: (() => Promise<void>) \| null) => void) \| undefined` | Called by the widget to register its refetch function. WidgetSlot forwards this to WidgetCard as the refresh button handler. |
+| `onChromeStateChange?` | `((status: WidgetChromeStatus) => void) \| undefined` | Called by the widget to control compact-cell utility actions. Use "disconnected" when the widget is showing an explicit not-connected state. |
+| `activeVariantId?` | `string \| undefined` | The currently active variant id, resolved from instance config. |
+| `onConnectService?` | `((serviceId: string) => void) \| undefined` | Open Settings → Integrations for a specific service. |
+
+### `WidgetOAuthConfig`
+
+OAuth-specific config for providers that need the redirect flow.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `provider` | `string` | Provider key used in route paths (e.g., "github", "google"). |
+| `scopes` | `string[]` | Scopes to request during authorization. |
+| `setupInstructions?` | `string \| undefined` | Instructions for creating the OAuth app, shown above client credential fields. Use {origin} as placeholder. |
+| `normalizeOrigin?` | `boolean \| undefined` | Whether to normalize *.localhost subdomains to plain localhost when building the callback URL shown in setup instructions. Set true for Google (rejects custom subdomains), false/omit for GitHub (accepts *.localhost as-is). |
+
+### `WidgetAuth`
+
+How a widget authenticates with its external API.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `id?` | `string \| undefined` | Unique service identifier (required when a widget connects to multiple services). |
+| `name?` | `string \| undefined` | Display name for this service (e.g., "Vercel", "Linear"). |
+| `description?` | `string \| undefined` | Short description of this service shown on onboarding cards. |
+| `type` | `"none" \| "api_key" \| "oauth"` | Auth method: "api_key" = manual token entry, "oauth" = OAuth redirect flow, "none" = no auth. |
+| `fields?` | `WidgetAuthField[] \| undefined` | For api_key and oauth: fields to show in the credential input UI (client ID/secret for OAuth). |
+| `testEndpoint?` | `string \| undefined` | API route path to test credentials (POST with { key, values }). |
+| `docsUrl?` | `string \| undefined` | URL to the service's docs for obtaining credentials. |
+| `oauth?` | `WidgetOAuthConfig \| undefined` | OAuth-specific config. Required when type === "oauth". |
+
+### `WidgetAuthField`
+
+A single credential input field in the widget card's Connection section.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `key` | `string` | Storage key within the credential record (e.g., "authToken"). |
+| `label` | `string` | Display label (e.g., "Auth Token"). |
+| `optional?` | `boolean \| undefined` | Whether the field is optional in the generic save/test UI. |
+| `type` | `"text" \| "password" \| "textarea" \| "file"` | "password" = masked, "text" = visible, "textarea" = multi-line, "file" = file upload. |
+| `placeholder?` | `string \| undefined` | Placeholder text. |
+| `helpText?` | `string \| undefined` | Help text below the input. |
+| `accept?` | `string \| undefined` | Accepted file extensions for type "file" (e.g., ".p8,.pem"). |
+
+### `WidgetDisplayContext`
+
+Context passed to dynamic widget functions like getDisplayName and getSourceIds.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `projectSlug` | `string \| null` |  |
+| `projects` | `Project[]` |  |
+| `config` | `TConfig` |  |
+
+### `WidgetPollingConfig`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `sourceIds?` | `string[] \| undefined` |  |
+| `getSourceIds?` | `((context: WidgetDisplayContext<TConfig>) => PollingSourceId[]) \| undefined` |  |
+
+### `WidgetTemplateVisualEditorBinding`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `kind` | `"template"` |  |
+| `getConfig` | `(context: WidgetDisplayContext<TConfig>) => unknown \| null` |  |
+| `setConfig` | `(args: { config: TConfig; editorConfig: unknown; context: WidgetDisplayContext<TConfig>; }) => TConfig` |  |
+
+### `WidgetVisualEditorBinding`
+
+```ts
+type WidgetVisualEditorBinding = WidgetTemplateVisualEditorBinding<TConfig>
+```
+
+### `WidgetVariant`
+
+A named layout variant preset defined by the widget author.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `id` | `string` | Stable identifier (e.g., "queries", "overview"). |
+| `name` | `string` | Display name shown in the variant picker (e.g., "Queries", "Overview"). |
+| `config` | `TConfig` | The full template config for this variant. |
+| `isDefault?` | `boolean \| undefined` | Mark one variant as the default when no activeVariant is set. First variant is used if omitted. |
+
+### `CustomVariant`
+
+A user-created variant stored in the per-instance widget config.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `id` | `string` |  |
+| `name` | `string` |  |
+| `config` | `Record<string, unknown>` |  |
+
+### `WidgetExpandAction`
+
+Controls what happens when the user clicks the expand button on a widget.
+
+```ts
+type WidgetExpandAction = { type: "expanded-view"; } | { type: "open-plugin"; pluginId: string; }
+```
+
+### `WidgetDescriptor`
+
+Describes a widget template in the registry.
+
+Extends: `ExtensionMeta`
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `id` | `string` | Unique identifier. Used as registry key and WidgetCard widgetId. |
+| `name` | `string` | Display name shown in WidgetCard header and settings UI. |
+| `description` | `string` | Short description for settings UI (Phase 2). |
+| `version?` | `string \| undefined` | Semver version string. |
+| `catalogCategory?` | `string \| undefined` | Catalog grouping used by settings/widget library surfaces. |
+| `capabilities?` | `WidgetCapability[] \| undefined` | Canonical or specialized capability ownership for this widget. |
+| `requiredIntegrations` | `string[]` | Integration keys that must be present on the active project for this widget to be relevant.  Empty array = always available. When "All" projects is selected, all integrations are assumed present. |
+| `defaultSlot` | `GridSlot` | Default grid slot assignment. |
+| `component` | `ComponentType<WidgetRenderProps<TConfig>>` | Compact view component. Rendered inside WidgetCard in the grid. |
+| `expandedComponent?` | `ComponentType<WidgetRenderProps<TConfig>> \| undefined` | Expanded view component. Rendered inside ExpandedPortal when the widget is expanded. Optional. |
+| `defaultConfig` | `TConfig` | Default config for new instances. |
+| `variants?` | `WidgetVariant<TConfig>[] \| undefined` | Named layout variant presets. When defined, the config panel shows a variant picker. The variant with `isDefault: true` (or the first) is used when no activeVariant is set. Users can also duplicate variants for customization via the visual editor. |
+| `getDisplayName?` | `((context: WidgetDisplayContext<TConfig>) => string) \| undefined` | Optional dynamic display name used in runtime surfaces like headers and config dialogs. |
+| `getDisplayDescription?` | `((context: WidgetDisplayContext<TConfig>) => string) \| undefined` | Optional dynamic description used in config dialogs. |
+| `visualEditor?` | `WidgetVisualEditorBinding<TConfig> \| undefined` | Optional visual editor binding for structured config editing. |
+| `auth?` | `WidgetAuth \| WidgetAuth[] \| undefined` | Auth requirements. Omit for widgets that don't need external API access. |
+| `defaultPollInterval?` | `number \| undefined` | Default polling interval in milliseconds. Shown in the widget header next to the refresh button. Individual widgets can override this via their SWR refreshInterval. Omit for widgets that don't poll (e.g. static data, logs with SSE). |
+| `polling?` | `WidgetPollingConfig<TConfig> \| undefined` | Optional refresh-interval settings metadata for standard polling widgets. |
+| `expandedSize?` | `ModalSize \| undefined` | Optional size override for the expanded overlay. Omit this to use the centralized widget default size ("md"). - "lg": full viewport − 16px margin - "md": centered, 90vw max-w-7xl × 80vh - "sm": centered, 75vw max-w-3xl × 65vh |
+| `expandAction?` | `WidgetExpandAction \| undefined` | Controls what happens when the user clicks the expand button. - `{ type: "expanded-view" }` (default): opens the in-place ExpandedPortal - `{ type: "open-plugin", pluginId }`: navigates to the plugin overlay instead |
+
+### `WidgetCapability`
+
+Capability owned by a widget descriptor.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `id` | `"revenue" \| "bookmarks" \| "stars" \| "domains" \| "errors" \| "uptime" \| "app-reviews" \| "downloads" \| "sponsorship" \| "shipping" \| "analytics" \| "seo"` |  |
+| `role` | `"canonical" \| "specialized"` |  |
+| `providers` | `CapabilityProviderRef[]` |  |
+
+## `./recipes`
+
+### `stackLayout()`
+
+Create a vertical stack layout from sections.
+
+```ts
+function stackLayout(sections: SectionConfig[], options?: { gap?: LayoutGap; } | undefined): StackLayoutConfig
+```
+
+### `gridLayout()`
+
+Create a multi-column grid layout from sections.
+
+```ts
+function gridLayout(sections: SectionConfig[], options: { columns: 1 | 2 | 3 | 4; gap?: LayoutGap; }): GridLayoutConfig
+```
+
+### `splitLayout()`
+
+Create a split layout with a left rail and right content area.
+
+```ts
+function splitLayout(options: { left?: SectionConfig[]; right: SectionConfig[]; leftWidth?: number; gap?: LayoutGap; divider?: boolean; }): SplitLayoutConfig
+```
+
+### `createSummaryContentRecipe()`
+
+Recipe: KPI summary strip + rich content area below.
+
+```ts
+function createSummaryContentRecipe(config: { summary: SectionConfig[]; content?: SectionConfig | SectionConfig[]; gap?: LayoutGap; }): SectionConfig[]
+```
+
+### `createSummaryOnlyRecipe()`
+
+Recipe: KPI metrics only — no content below. Good for status displays.
+
+```ts
+function createSummaryOnlyRecipe(config: { summary: SectionConfig[]; gap?: LayoutGap; }): SectionConfig[]
+```
+
+### `createContentOnlyRecipe()`
+
+Recipe: Content only — no KPI summary strip. Good for lists, tables, charts.
+
+```ts
+function createContentOnlyRecipe(config: { content: SectionConfig | SectionConfig[]; gap?: LayoutGap; }): SectionConfig[]
+```
+
+### `createSummaryListRecipe()`
+
+Recipe: KPI strip + scrollable list. The most common widget pattern.
+
+```ts
+function createSummaryListRecipe(config: { summary: SectionConfig[]; list: SectionConfig; gap?: LayoutGap; }): SectionConfig[]
+```
+
+### `createSummaryChartListRecipe()`
+
+Recipe: KPI strip + chart + scrollable list. Good for analytics dashboards.
+
+```ts
+function createSummaryChartListRecipe(config: { summary: SectionConfig[]; chart: SectionConfig; list: SectionConfig; gap?: LayoutGap; }): SectionConfig[]
+```
+
+### `createRailContentRecipe()`
+
+Recipe: Side rail + main content area. Good for detail views with navigation.
+
+```ts
+function createRailContentRecipe(config: { rail?: SectionConfig[]; content: SectionConfig | SectionConfig[]; railWidth?: number; gap?: LayoutGap; divider?: boolean; }): SectionConfig[]
+```
+
+### `createRailListRecipe()`
+
+Recipe: Side rail + scrollable list. Good for category browsing.
+
+```ts
+function createRailListRecipe(config: { rail?: SectionConfig[]; list: SectionConfig; railWidth?: number; gap?: LayoutGap; divider?: boolean; }): SectionConfig[]
+```
+
+### `createFeedListRecipe()`
+
+Recipe: Activity feed / timeline. Alias for content-only with feed semantics.
+
+```ts
+function createFeedListRecipe(config: { content: SectionConfig | SectionConfig[]; gap?: LayoutGap; }): SectionConfig[]
+```
+
+## `./section-helpers`
+
+### `kpiRow()`
+
+Create a KPI row with multiple metric cards.
+
+```ts
+function kpiRow(sourceId: string, metrics: { label: string; field: string; format?: DataSourceFormat; changeField?: string; sparklineField?: string; }[], options?: { columns?: KPIRowSectionConfig["columns"]; variant?: KPIRowSectionConfig["variant"]; } | undefined): KPIRowSectionConfig
+```
+
+**Example:**
+
+```ts
+kpiRow("revenue", [
+  { label: "MRR", field: "mrr", format: "currency" },
+  { label: "Subscribers", field: "subscriberCount" },
+])
+```
+
+### `headlineStat()`
+
+Create a headline stat section — a large featured number.
+
+```ts
+function headlineStat(sourceId: string, field: string, label: string, options?: { format?: DataSourceFormat; indicatorColor?: string; } | undefined): HeadlineStatSectionConfig
+```
+
+**Example:**
+
+```ts
+headlineStat("health", "uptimePercent", "Uptime", { format: "percent" })
+```
+
+### `list()`
+
+Create a scrollable list section.
+
+```ts
+function list(sourceId: string, field: string, template: { title: string; subtitle?: string; value?: string; timestamp?: string; badge?: string; emptyMessage?: string; maxItems?: number; }): ListSectionConfig
+```
+
+**Example:**
+
+```ts
+list("github", "pullRequests", {
+  title: "title",
+  subtitle: "author",
+  badge: "status",
+  emptyMessage: "No open PRs",
+})
+```
+
+### `rowList()`
+
+Create a row-list section (compact rows with status dots/icons).
+
+```ts
+function rowList(sourceId: string, field: string, template: { title: string; subtitle?: string; badge?: string; value?: string; timestamp?: string; emptyMessage?: string; maxItems?: number; }): RowListSectionConfig
+```
+
+**Example:**
+
+```ts
+rowList("sentry", "issues", {
+  title: "title",
+  subtitle: "culprit",
+  badge: "level",
+  timestamp: "lastSeen",
+})
+```
+
+### `chart()`
+
+Create a chart section (area, line, bar, or sparkline).
+
+```ts
+function chart(sourceId: string, field: string, options?: { variant?: ChartSectionConfig["variant"]; height?: number; xKey?: string; yKey?: string; color?: string; series?: ChartSectionConfig["series"]; fillHeight?: boolean; } | undefined): ChartSectionConfig
+```
+
+**Example:**
+
+```ts
+chart("analytics", "dailyVisitors", { variant: "area", height: 200, color: "var(--accent)" })
+```
+
+### `cardList()`
+
+Create a card grid section for rich card layouts.
+
+```ts
+function cardList(sourceId: string, field: string, template: { title: string; subtitle?: string; description?: string; image?: string; badge?: string; columns?: CardListSectionConfig["columns"]; emptyMessage?: string; maxItems?: number; searchable?: boolean; }): CardListSectionConfig
+```
+
+**Example:**
+
+```ts
+cardList("store", "apps", {
+  title: "name",
+  subtitle: "developer",
+  description: "summary",
+  image: "iconUrl",
+  columns: 2,
+})
+```
+
+### `summaryQuad()`
+
+Create a 2x2 summary quad section.
+
+```ts
+function summaryQuad(sourceId: string, slots: ({ label: string; field: string; format?: DataSourceFormat; changeField?: string; sparklineField?: string; } | { kind: "empty"; })[]): SummaryQuadSectionConfig
+```
+
+**Example:**
+
+```ts
+summaryQuad("revenue", [
+  { label: "MRR", field: "mrr" },
+  { label: "ARR", field: "arr" },
+  { label: "Churn", field: "churnRate" },
+  { label: "LTV", field: "ltv" },
+])
+```
+
+### `alert()`
+
+Create an alert/banner section.
+
+```ts
+function alert(severity: "error" | "warning" | "info" | "success" | "setup", message: string, options?: { source?: DataSource; dismissible?: boolean; action?: { label: string; href?: string; }; } | undefined): AlertSectionConfig
+```
+
+**Example:**
+
+```ts
+alert("warning", "API rate limit approaching 80%", { dismissible: true })
+```
+
+### `tabs()`
+
+Create a tabbed content section.
+
+```ts
+function tabs(tabConfigs: { id: string; label: string; sections: SectionConfig[]; countSource?: DataSource; }[], options?: { defaultTab?: string; variant?: "compact" | "expanded"; } | undefined): TabsSectionConfig
+```
+
+**Example:**
+
+```ts
+tabs([
+  { id: "issues", label: "Issues", sections: [list("github", "issues", { title: "title" })] },
+  { id: "prs", label: "Pull Requests", sections: [list("github", "prs", { title: "title" })] },
+])
+```
+
+## `./testing`
+
+### `extractDataSources()`
+
+Extract all DataSource references from a section config tree.
+Returns a map of `sourceId` to `Set<field>`.
+
+```ts
+function extractDataSources(sections: SectionConfig[]): Map<string, Set<string>>
+```
+
+### `createMockWidgetData()`
+
+Generate mock data that matches a WidgetTemplateConfig's data source shape.
+
+Analyzes the section configs to determine which fields are arrays vs scalars,
+then generates appropriate mock data for each field.
+
+```ts
+function createMockWidgetData(config: WidgetTemplateConfig, itemCount?: number): Record<string, MockDataShape>
+```
+
+**Example:**
+
+```ts
+const mockData = createMockWidgetData(MY_TEMPLATE_CONFIG);
+// { totalCount: 42, activeCount: 28, items: [{ title: "Item 1", ... }, ...] }
+```
+
+### `createEmptyWidgetData()`
+
+Generate empty data that matches a WidgetTemplateConfig's shape.
+Arrays become `[]`, numbers become `0`, strings become `""`.
+
+```ts
+function createEmptyWidgetData(config: WidgetTemplateConfig): Record<string, MockDataShape>
+```
+
+### `createWidgetPreviewStates()`
+
+Generate all standard preview states for a widget.
+
+Use these to visually test your widget in every possible state —
+happy path, empty, loading, error, and unconfigured.
+
+```ts
+function createWidgetPreviewStates(config: WidgetTemplateConfig, overrides?: { happy?: T; } | undefined): WidgetPreviewStates<T>
+```
+
+**Example:**
+
+```ts
+const states = createWidgetPreviewStates(MY_CONFIG, {
+  happy: myFetchedData,
+});
+// Iterate over states to render previews
+for (const [name, data] of Object.entries(states)) {
+  console.log(`${name}:`, data);
+}
+```
+
+### `MockDataShape`
+
+Describes the shape of mock data generated for a data source.
+
+### `WidgetPreviewStates`
+
+Standard widget preview states for visual testing.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `happy` | `T` | Happy path — real or mock data. |
+| `empty` | `T` | Empty state — all arrays empty, numbers 0. |
+| `loading` | `{ loading: true; }` | Loading state indicator. |
+| `error` | `{ error: string; }` | Error state indicator. |
+| `unconfigured` | `{ data: null; }` | Unconfigured state — null data. |

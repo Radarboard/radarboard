@@ -1,0 +1,37 @@
+{
+  "name": "@radarboard/integration-vercel",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./client": "./src/api/client.ts",
+    "./types": "./src/types.ts",
+    "./data-sources": "./src/api/data-sources.ts",
+    "./webhook": "./src/events/webhook.ts",
+    "./delta": "./src/events/delta.ts"
+  },
+  "dependencies": {
+    "@radarboard/integration-sdk": "workspace:*",
+    "@radarboard/types": "workspace:*",
+    "@radarboard/utils": "workspace:*",
+    "lucide-react": "catalog:"
+  },
+  "devDependencies": {
+    "@radarboard/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "zod": "catalog:"
+  },
+  "peerDependencies": {
+    "react": "catalog:"
+  }
+}

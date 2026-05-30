@@ -1,0 +1,155 @@
+/* Align styles with apps/marketing/app/globals.css */
+
+/* Dot grid background in dark mode */
+.dark body {
+  background-image: radial-gradient(#262626 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Sharp corners (matching radius-panel: 0px) */
+* {
+  border-radius: 0 !important;
+}
+
+/* Align border colors */
+.dark * {
+  border-color: #2a2a2a !important;
+}
+
+/* Surface and Card colors */
+.dark aside,
+.dark header,
+.dark #navbar,
+.dark .bg-white\/80 {
+  background-color: #111111 !important;
+}
+
+.dark .bg-gray-50,
+.dark .bg-slate-50,
+.dark .bg-zinc-50 {
+  background-color: #161616 !important;
+}
+
+/* Card alignment */
+.dark .border {
+  background-color: #111111 !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.dark .border:hover {
+  border-color: #2563eb !important;
+  box-shadow: 0 0 12px rgba(37, 99, 235, 0.2) !important;
+}
+
+/* Typography alignment */
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4 {
+  color: #e8e8e8 !important;
+}
+
+/* Logo styling to match marketing header */
+.dark #navbar a[href="/"],
+.dark #navbar .font-semibold {
+  font-family: "Geist Mono", monospace !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  font-size: 0.875rem !important; /* text-sm */
+}
+
+.dark p,
+.dark li {
+  color: #888888 !important;
+}
+
+/* Tabs and Main Navigation alignment */
+.dark #navbar a[href*="/"] > span,
+.dark .nav-tabs-item span {
+  font-family: "Geist Mono", monospace !important;
+  font-size: 10px !important;
+  letter-spacing: 0.15em !important;
+  text-transform: uppercase !important;
+  font-weight: 600 !important;
+}
+
+.dark .nav-tabs-item {
+  border-radius: 0 !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.dark .nav-tabs-item:hover {
+  background-color: #161616 !important;
+  color: #e8e8e8 !important;
+}
+
+.dark .nav-tabs-item[aria-selected="true"] {
+  border-bottom: 2px solid #2563eb !important;
+  background-color: transparent !important;
+}
+
+/* Sidebar and Navigation alignment */
+.dark aside a {
+  color: #888888 !important;
+  font-family: "Geist Mono", monospace !important;
+  font-size: 11px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  transition: color 0.2s ease-in-out !important;
+}
+
+.dark aside a:hover,
+.dark aside a.active,
+.dark aside a[aria-current="page"] {
+  color: #e8e8e8 !important;
+  background-color: transparent !important;
+}
+
+.dark aside .font-semibold {
+  color: #e8e8e8 !important;
+  font-family: "Geist Mono", monospace !important;
+  font-size: 10px !important;
+  letter-spacing: 0.15em !important;
+  text-transform: uppercase !important;
+  margin-top: 1.5rem !important;
+}
+
+.dark a {
+  color: #2563eb !important;
+}
+
+/* Navbar button alignment */
+.dark #navbar a[href*="#waitlist"],
+.dark #navbar button {
+  background-color: #2563eb !important;
+  color: #e8e8e8 !important;
+  font-family: "Geist Mono", monospace !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  border-radius: 0 !important;
+  padding: 8px 16px !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.dark #navbar a[href*="#waitlist"]:hover,
+.dark #navbar button:hover {
+  background-color: #5b8af5 !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Scrollbar styling */
+.dark ::-webkit-scrollbar {
+  width: 6px;
+}
+.dark ::-webkit-scrollbar-track {
+  background: #000000;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #2a2a2a;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #333333;
+}

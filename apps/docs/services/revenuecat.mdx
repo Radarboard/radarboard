@@ -1,0 +1,66 @@
+---
+title: "RevenueCat"
+description: "Track subscription revenue, MRR, and gross/net revenue from your mobile apps."
+---
+
+# RevenueCat
+
+RevenueCat provides subscription revenue metrics for your mobile apps, including MRR, gross revenue, net revenue (proceeds), active subscribers, and revenue charts over time.
+
+## What it powers
+
+- **Revenue widget** -- Gross revenue, MRR, and net revenue KPI cards with sparklines
+- **Revenue chart** -- Revenue over time (7d, 15d, 30d, 3m, 1y, all)
+- **Last payment card** -- Most recent payment amount, country, and time
+
+## Getting your API key
+
+<Steps>
+  <Step title="Sign in to RevenueCat">
+    Go to [app.revenuecat.com](https://app.revenuecat.com/) and sign in.
+  </Step>
+  <Step title="Navigate to API Keys">
+    In the left sidebar, go to **Project Settings** > **API Keys**.
+  </Step>
+  <Step title="Generate a V2 Secret Key">
+    Click **Generate new API key**. Select **V2 Secret API Key**. Give it a descriptive name like "Radarboard".
+
+    <Warning>
+      This is a **secret** key. Never commit it to version control or expose it in client-side code.
+    </Warning>
+  </Step>
+  <Step title="Copy your Project ID">
+    Your Project ID is visible in the URL when viewing your project: `app.revenuecat.com/projects/<PROJECT_ID>`.
+  </Step>
+</Steps>
+
+## Environment variables
+
+```bash .env.local
+REVENUECAT_API_V2_SECRET_KEY=sk_xxxxxxxxxxxx
+REVENUECAT_PROJECT_ID=proj_xxxxxxxxxxxx
+```
+
+## API details
+
+| Property | Value |
+|----------|-------|
+| API base URL | `https://api.revenuecat.com/v2` |
+| Rate limit | 5 requests/minute (Charts & Metrics) |
+| Cache TTL | 5 minutes |
+| Authentication | Bearer token (`Authorization: Bearer sk_...`) |
+
+## MCP server
+
+RevenueCat provides an official MCP server. See [RevenueCat MCP](/mcp-servers/revenuecat) for setup instructions.
+
+## Widgets that use this service
+
+<CardGroup cols={2}>
+  <Card title="Revenue" icon="dollar-sign" href="/widgets/revenue">
+    Primary data source for all revenue metrics.
+  </Card>
+  <Card title="Detail Panel" icon="panel-right" href="/widgets/detail-panel">
+    Falls back to revenue data when other services are unavailable.
+  </Card>
+</CardGroup>

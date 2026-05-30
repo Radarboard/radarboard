@@ -1,0 +1,35 @@
+---
+title: "Ideas + Bugs Widget"
+description: "Lists open issues from Linear, categorized as ideas or bugs based on labels."
+---
+
+# Ideas + Bugs Widget
+
+The Ideas + Bugs widget shows open issues from Linear, automatically categorized as "idea" or "bug" based on their label names.
+
+## What it displays
+
+### Compact view
+- shared two-line feed rows
+- title, project badge, type/status styling, and relative age
+
+### Expanded view
+- Type filters (All, Ideas, Bugs)
+- Status breakdown (Open, In Progress, Done, Cancelled)
+- Click any item for detailed view with full description
+
+## Shared system
+
+Ideas + Bugs uses the shared feed/detail path rather than a bespoke compact renderer.
+
+## Categorization
+
+Issues are categorized by their Linear labels:
+- Labels containing "idea", "feature", or "enhancement" are marked as **ideas**
+- Labels containing "bug", "fix", or "defect" are marked as **bugs**
+
+## Required services
+
+| Service | Required? |
+|---------|-----------|
+| [Linear](/services/linear) | Yes |

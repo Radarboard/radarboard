@@ -1,0 +1,362 @@
+---
+title: "Plugin SDK Components"
+description: "React component library for building plugin UIs — layout, lists, forms, and three-pane workspaces."
+---
+
+# Plugin SDK Components
+
+React component library for building plugin UIs — layout, lists, forms, and three-pane workspaces.
+
+## `./components/detail-shell`
+
+### `DetailPanelShell()`
+
+Shared detail panel layout used by plugin detail views.
+
+Provides a consistent structure:
+```
+[Header: title + actions + close]
+[Scrollable content]
+[Footer: metadata]
+```
+
+```ts
+function DetailPanelShell({
+  title,
+  subtitle,
+  actions,
+  onClose,
+  footer,
+  children,
+  className,
+}: DetailPanelShellProps): JSX.Element
+```
+
+### `DetailPanelShellProps`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `title` | `React.ReactNode` | Header content — title text or editable element |
+| `subtitle?` | `React.ReactNode` | Subtitle line (e.g. timestamps, word count) |
+| `actions?` | `React.ReactNode` | Action buttons (pin, archive, trash) rendered in the header |
+| `onClose?` | `(() => void) \| undefined` | Close button handler — shown when provided (drawer mode) |
+| `footer?` | `React.ReactNode` | Footer content (metadata, timestamps, tags) |
+| `children` | `React.ReactNode` | Main scrollable content |
+| `className?` | `string \| undefined` |  |
+
+## `./components/filter-bar`
+
+### `FilterBar()`
+
+Shared tab/button-group filter bar for status, priority, category filtering.
+
+Used by tasks (status/priority tabs), expenses (category filters), etc.
+
+```ts
+function FilterBar({
+  options,
+  value,
+  onChange,
+  className,
+  size = "sm",
+}: FilterBarProps<T>): JSX.Element
+```
+
+### `FilterOption`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `value` | `T` |  |
+| `label` | `string` |  |
+| `count?` | `number \| undefined` |  |
+
+### `FilterBarProps`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `options` | `FilterOption<T>[]` |  |
+| `value` | `T` |  |
+| `onChange` | `(value: T) => void` |  |
+| `className?` | `string \| undefined` |  |
+| `size?` | `"sm" \| "md" \| undefined` | Size variant |
+
+## `./components/form-dialog`
+
+### `PluginFormDialog()`
+
+Shared modal dialog for creating/editing items across all plugins.
+
+Replaces inline forms (tasks, bookmarks, status-page) and custom
+modals (rss-reader) with a consistent Dialog-based pattern.
+
+```
+┌─────────────────────────────────┐
+│ Title                        ✕  │
+├─────────────────────────────────┤
+│                                 │
+│  [Form fields — children]       │
+│                                 │
+├─────────────────────────────────┤
+│              Cancel    [Create] │
+└─────────────────────────────────┘
+```
+
+```ts
+function PluginFormDialog({
+  open,
+  onClose,
+  title,
+  children,
+  onSubmit,
+  submitLabel = "Create",
+  submitDisabled,
+  footerExtra,
+  size = "sm",
+}: PluginFormDialogProps): JSX.Element
+```
+
+### `FormField()`
+
+Labeled form field wrapper.
+
+```ts
+function FormField({ label, children, className }: FormFieldProps): JSX.Element
+```
+
+### `FormInput()`
+
+Standard text input for form dialogs.
+
+```ts
+function FormInput({
+  className,
+  ref,
+  ...props
+}: Omit<React.InputHTMLAttributes<HTMLInputElement>, "size"> & { ref?: Ref<HTMLInputElement>; }): JSX.Element
+```
+
+### `FormTextarea()`
+
+Standard textarea for form dialogs.
+
+```ts
+function FormTextarea({
+  className,
+  ...props
+}: React.TextareaHTMLAttributes<HTMLTextAreaElement>): JSX.Element
+```
+
+### `FormSelect()`
+
+Standard select for form dialogs.
+
+```ts
+function FormSelect({
+  className,
+  ...props
+}: Omit<React.SelectHTMLAttributes<HTMLSelectElement>, "size">): JSX.Element
+```
+
+### `PluginFormDialogProps`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `open` | `boolean` | Whether the dialog is open |
+| `onClose` | `() => void` | Called when the dialog should close |
+| `title` | `string` | Dialog title (e.g. "New Task", "Add Bookmark") |
+| `children` | `React.ReactNode` | Form fields — rendered inside the dialog body |
+| `onSubmit` | `(e: React.FormEvent) => void` | Submit handler |
+| `submitLabel?` | `string \| undefined` | Submit button label (default: "Create") |
+| `submitDisabled?` | `boolean \| undefined` | Whether the submit button is disabled |
+| `footerExtra?` | `React.ReactNode` | Optional extra actions in the footer (before cancel/submit) |
+| `size?` | `ModalSize \| undefined` | Shared dialog shell size |
+
+### `FormFieldProps`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `label` | `string` |  |
+| `children` | `React.ReactNode` |  |
+| `className?` | `string \| undefined` |  |
+
+## `./components/list-header`
+
+### `PluginListHeader()`
+
+Standardized list pane header for plugin overlays.
+
+Consistent layout:
+```
+[Section Label]           [+ Add Button]
+[Search input with icon]
+[Count text] [extra]
+```
+
+```ts
+function PluginListHeader({
+  label,
+  count,
+  search,
+  addButton,
+  extra,
+  className,
+}: PluginListHeaderProps): JSX.Element
+```
+
+### `PluginListHeaderProps`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `label` | `string` | Section label (e.g. "Notes", "Expenses") |
+| `count?` | `string \| undefined` | Item count (e.g. "3 notes") |
+| `search?` | `{ value: string; onChange: (value: string) => void; placeholder?: string; } \| undefined` | Search state — omit to hide search |
+| `addButton?` | `{ label: string; onClick: () => void; icon?: React.ReactNode; custom?: React.ReactNode; } \| undefined` | Add/create button — omit to hide |
+| `extra?` | `React.ReactNode` | Extra content after count (e.g. sort dropdown) |
+| `className?` | `string \| undefined` |  |
+
+## `./components/list-row`
+
+### `PluginListRow()`
+
+Unified list row for all plugin list panes.
+
+Standardises padding, spacing, selected/hover states, and layout
+across tasks, notes, bookmarks, expenses, changelog, rss-reader,
+status-page, and webhook-relay.
+
+```
+[dot/icon]  [title] [badge]        [meta]
+            [subtitle]
+            [chips/tags]
+                             [hover actions]
+```
+
+```ts
+function PluginListRow({
+  indicator,
+  dotColor,
+  title,
+  titleBadge,
+  subtitle,
+  chips,
+  meta,
+  selected,
+  onClick,
+  hoverActions,
+  actions,
+  strikethrough,
+  className,
+}: PluginListRowProps): JSX.Element
+```
+
+### `ListRowChip()`
+
+Small pill/badge for tags, categories, versions, etc.
+
+```ts
+function ListRowChip({ children, className }: ListRowChipProps): JSX.Element
+```
+
+### `ListRowStatusChip()`
+
+Colored status/priority chip
+
+```ts
+function ListRowStatusChip({
+  children,
+  className,
+}: { children: React.ReactNode; className?: string; }): JSX.Element
+```
+
+### `PluginListRowProps`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `indicator?` | `React.ReactNode` | Left indicator — icon, colored dot, or avatar |
+| `dotColor?` | `string \| undefined` | Indicator color for a simple dot (e.g. "bg-success-bg"). When set, renders a dot instead of `indicator`. |
+| `title` | `React.ReactNode` | Primary title |
+| `titleBadge?` | `React.ReactNode` | Optional badge/pill next to the title |
+| `subtitle?` | `React.ReactNode` | Secondary line below title (truncated) |
+| `chips?` | `React.ReactNode` | Third line — tags, pills, metadata chips |
+| `meta?` | `React.ReactNode` | Right-aligned metadata (timestamp, cost, status text) |
+| `selected?` | `boolean \| undefined` | Whether this row is currently selected |
+| `onClick?` | `(() => void) \| undefined` | Click handler |
+| `hoverActions?` | `React.ReactNode` | Hover-revealed action buttons |
+| `actions?` | `React.ReactNode` | Always-visible action buttons (e.g. delete) |
+| `strikethrough?` | `boolean \| undefined` | Strikethrough title (e.g. completed tasks) |
+| `className?` | `string \| undefined` |  |
+
+### `ListRowChipProps`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `children` | `React.ReactNode` |  |
+| `className?` | `string \| undefined` |  |
+
+## `./components/list-tabs`
+
+### `PluginListTabs()`
+
+Horizontal tab bar for switching between list views (e.g. Active/Trash, Unread/Read).
+
+Place below `PluginListHeader` and above the scrollable list area.
+
+```ts
+function PluginListTabs({
+  tabs,
+  value,
+  onChange,
+  className,
+}: PluginListTabsProps<T>): JSX.Element
+```
+
+### `PluginListTab`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `value` | `T` |  |
+| `label` | `string` |  |
+| `activeClassName?` | `string \| undefined` | Optional custom class applied when this tab is active |
+
+### `PluginListTabsProps`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `tabs` | `PluginListTab<T>[]` |  |
+| `value` | `T` |  |
+| `onChange` | `(value: T) => void` |  |
+| `className?` | `string \| undefined` |  |
+
+## `./components/three-pane-workspace`
+
+### `ThreePaneWorkspace()`
+
+```ts
+function ThreePaneWorkspace({
+  sidebar,
+  list,
+  detail,
+  className,
+  sidebarClassName,
+  listClassName,
+  detailClassName,
+  initialSidebarWidth = 280,
+  initialListWidth = 360,
+  minSidebarWidth = 220,
+  minListWidth = 280,
+  minDetailWidth = 420,
+  sidebarTabLabel,
+  listTabLabel,
+  detailKey,
+}: ThreePaneWorkspaceProps): JSX.Element
+```

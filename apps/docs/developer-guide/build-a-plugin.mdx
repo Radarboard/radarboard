@@ -1,0 +1,273 @@
+---
+title: "Build a Plugin"
+description: "Step-by-step guide to building a Radarboard plugin from scratch."
+---
+
+## Overview
+
+Plugins add interactive features to Radarboard — task managers, note-taking, bookmarks, RSS readers, and more. Each plugin lives in its own package under `plugins/` and provides:
+
+- **An overlay UI** — side panel, modal, fullscreen, or mini-HUD
+- **Scoped storage** — key-value DB for plugin data
+- **MCP tools** (optional) — AI assistant actions
+- **Dashboard widgets** (optional) — embed data in the grid
+- **Cross-plugin communication** (optional) — intents and RPC
+
+## Prerequisites
+
+- Radarboard dev environment set up ([Setup Guide](/developer-guide/setup))
+- Familiarity with React and TypeScript
+
+## Step 1: Scaffold
+
+```bash
+pnpm create-plugin my-plugin
+```
+
+This creates `plugins/my-plugin/` with a working overlay, registers it in `radarboard.config.ts`, and runs `pnpm install`.
+
+## Step 2: Build the Overlay
+
+Edit `src/components/my-plugin-overlay.tsx`. The component receives `api: PluginAPI`:
+
+```tsx
+"use client";
+
+import type { PluginRenderProps } from "@radarboard/plugin-sdk/types";
+import { useEffect, useState } from "react";
+
+export function MyPluginOverlay({ api }: PluginRenderProps) {
+  const [items, setItems] = useState([]);
+
+  // Load data from the plugin's scoped DB
+  useEffect(() => {
+    api.db.list("item:").then(setItems);
+  }, [api.db]);
+
+  // Add a new item
+  const addItem = async () => {
+    const item = { id: crypto.randomUUID(), title: "New item" };
+    await api.db.set(`item:${item.id}`, item);
+    setItems((prev) => [...prev, item]);
+    api.notify("Item created!", "success");
+  };
+
+  return (
+    <div className="p-4">
+      <button type="button" onClick={addItem}>Add Item</button>
+      {items.map((item) => (
+        <div key={item.id}>{item.title}</div>
+      ))}
+    </div>
+  );
+}
+```
+
+### PluginAPI Reference
+
+| Method | Description |
+|--------|-------------|
+| `api.db.get(key)` | Read a value from plugin storage |
+| `api.db.set(key, value)` | Write a value to plugin storage |
+| `api.db.delete(key)` | Remove a value |
+| `api.db.list(prefix)` | List all values with a key prefix |
+| `api.notify(msg, type?)` | Show a toast (`"info"`, `"success"`, `"error"`) |
+| `api.hotkeys.register(key, fn)` | Register a keyboard shortcut (auto-cleanup) |
+| `api.close()` | Close the plugin overlay |
+| `api.events.emit(event)` | Emit a notification event |
+| `api.events.on(filter, handler)` | Subscribe to events |
+| `api.intents.sendTo(plugin, action, payload)` | Send data to another plugin |
+| `api.intents.sendToAssistant(payload)` | Send data to the AI chat |
+| `api.rpc.call(plugin, action, params)` | Call a service on another plugin |
+| `api.projects.list()` | Get the project list |
+
+## Step 3: Configure the Descriptor
+
+Edit `src/index.ts`:
+
+```ts
+export const myPluginDescriptor: PluginDescriptor = {
+  id: "my-plugin",
+  name: "My Plugin",
+  description: "A brief description of what this plugin does.", // max 120 chars
+  icon: Puzzle,
+  category: "productivity",     // productivity | monitoring | data
+  version: "0.1.0",
+
+  launchSurfaces: ["palette", "topbar"],  // where users can open it
+  presentation: {
+    default: "side-panel",       // side-panel | fullscreen | modal | mini-hud
+    alternates: ["fullscreen"],  // optional alternate modes
+    size: "md",                  // sm | md | lg
+  },
+
+  component: MyPluginOverlay,
+  mcpTools: myPluginMcpTools,
+  settings: [],
+};
+```
+
+### Presentation Modes
+
+| Mode | Behavior |
+|------|----------|
+| `side-panel` | Slides in from the right |
+| `fullscreen` | Takes over the viewport |
+| `modal` | Centered dialog |
+| `mini-hud` | Small floating widget |
+
+## Step 4: Add Settings (Optional)
+
+Let users configure your plugin without editing code:
+
+```ts
+settings: [
+  {
+    key: "maxItems",
+    label: "Maximum Items",
+    description: "How many items to display at once.",
+    type: "number",
+    defaultValue: 50,
+  },
+  {
+    key: "sortOrder",
+    label: "Sort Order",
+    type: "select",
+    defaultValue: "newest",
+    options: [
+      { label: "Newest first", value: "newest" },
+      { label: "Oldest first", value: "oldest" },
+    ],
+  },
+],
+```
+
+Read settings in your component:
+
+```ts
+const maxItems = await api.db.get<number>("_config:maxItems") ?? 50;
+```
+
+## Step 5: Test
+
+Run conformance tests (included in the scaffold):
+
+```bash
+pnpm --filter @radarboard/plugin-my-plugin test
+```
+
+For unit testing with the mock API:
+
+```ts
+import { createMockPluginAPI } from "@radarboard/plugin-sdk/testing";
+import { describe, expect, it } from "vitest";
+
+describe("my-plugin", () => {
+  it("stores items in db", async () => {
+    const api = createMockPluginAPI("my-plugin");
+
+    await api.db.set("item:1", { id: "1", title: "Test" });
+    const item = await api.db.get("item:1");
+
+    expect(item).toEqual({ id: "1", title: "Test" });
+  });
+
+  it("tracks notifications", () => {
+    const api = createMockPluginAPI("my-plugin");
+    api.notify("Hello!", "success");
+    expect(api.notifications).toEqual([{ message: "Hello!", type: "success" }]);
+  });
+});
+```
+
+## Optional: Add MCP Tools
+
+Let the AI assistant interact with your plugin:
+
+```ts
+import { z } from "zod";
+import type { McpToolDefinition } from "@radarboard/plugin-sdk/types";
+
+export const myPluginMcpTools: McpToolDefinition[] = [
+  {
+    name: "list-items",
+    description: "List all items in My Plugin",
+    parameters: z.object({
+      limit: z.number().optional().describe("Max items to return"),
+    }),
+    execute: async (params, api) => {
+      const items = await api.db.list("item:");
+      return { items: items.slice(0, params.limit ?? 100) };
+    },
+  },
+];
+```
+
+## Optional: Contribute Dashboard Widgets
+
+Plugins can embed widgets in the dashboard grid:
+
+```ts
+widgets: [
+  {
+    widgetId: "summary",
+    name: "My Plugin Summary",
+    description: "Quick overview of plugin data",
+    defaultSlot: "slot7",
+    templateConfig: { /* WidgetTemplateConfig */ },
+  },
+],
+```
+
+## Optional: Cross-Plugin Communication
+
+### Intents (receive data from other plugins)
+
+```ts
+intents: [
+  {
+    action: "add-item",
+    label: "Add to My Plugin",
+    accepts: ["text", "url"],
+    handle: async (payload, api) => {
+      await api.db.set(`item:${Date.now()}`, { title: payload.text });
+      return { ok: true };
+    },
+  },
+],
+```
+
+### Services (expose RPC methods)
+
+```ts
+services: [
+  {
+    action: "get-count",
+    description: "Get total item count",
+    parameters: z.object({}),
+    handler: async (_params, api) => {
+      const items = await api.db.list("item:");
+      return { count: items.length };
+    },
+  },
+],
+```
+
+## Module Boundaries
+
+Plugins can only import from:
+- `@radarboard/plugin-sdk`
+- `@radarboard/types`
+- `@radarboard/utils`
+- `@radarboard/ui`
+- `@radarboard/widget-engine`
+- `@radarboard/embedding-service`
+- `@radarboard/llm`
+
+## Reference
+
+- **Full type reference**: `@radarboard/plugin-sdk/types`
+- **UI components**: `@radarboard/plugin-sdk/components/*`
+- **Testing utilities**: `@radarboard/plugin-sdk/testing`
+- **Real examples**: `plugins/tasks/`, `plugins/notes/`, `plugins/bookmarks/`
+- **Extension rules**: `CONTRIBUTING-EXTENSIONS.md`

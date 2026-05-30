@@ -1,0 +1,182 @@
+glob_matcher: doublestar
+
+pre-commit:
+  parallel: true
+  jobs:
+    - name: fast-policy
+      group:
+        parallel: true
+        jobs:
+          - name: biome-staged
+            glob: "*.{ts,tsx,js,jsx,json,css}"
+            stage_fixed: true
+            run: pnpm biome check --write --no-errors-on-unmatched --staged
+          - name: app-alias-imports
+            glob: "apps/app/app/**/*.{ts,tsx,js,jsx}"
+            run: pnpm exec tsx scripts/check-app-alias-imports.ts {staged_files}
+          - name: generated-files
+            glob: "apps/app/lib/{integrations-init,plugins-init,widgets-init,features-init,transpile-packages}.ts"
+            run: |
+              for file in {staged_files}; do
+                head -1 "$file" | grep -q "@generated" || {
+                  echo "ERROR: $file is @generated — do not edit manually. Run: pnpm generate:extensions"
+                  exit 1
+                }
+              done
+              exit 0
+          - name: secrets-check
+            glob: "*.{ts,tsx,js,jsx,json,env,md}"
+            run: pnpm secrets:staged {staged_files}
+          - name: file-size-check
+            glob: "*.{ts,tsx,js,jsx,json,css,svg,png,jpg}"
+            run: |
+              for file in {staged_files}; do
+                case "$file" in
+                  .agents/skills/*/examples/*|.agents/skills/*/skills/*/examples/*)
+                    continue
+                    ;;
+                esac
+                size=$(wc -c < "$file")
+                if [ "$size" -gt 512000 ]; then
+                  echo "ERROR: $file is $(($size / 1024))KB (max 500KB)"
+                  exit 1
+                fi
+              done
+              exit 0
+          - name: source-file-size
+            glob: "*.{ts,tsx}"
+            run: |
+              for file in {staged_files}; do
+                lines=$(wc -l < "$file")
+                if [ "$lines" -gt 500 ]; then
+                  echo "WARNING: $file has $lines lines (recommended max: 500)"
+                fi
+              done
+              exit 0
+    - name: code-quality
+      group:
+        parallel: true
+        jobs:
+          - name: design-system-enforcement
+            glob: "*.{ts,tsx,astro,css}"
+            run: pnpm tsx scripts/check-design-system.ts
+          - name: component-names
+            run: pnpm tsx scripts/check-component-names.ts
+          - name: button-contract
+            glob: "*.{ts,tsx}"
+            run: pnpm check:button-contract
+          - name: badge-contract
+            glob: "*.{ts,tsx}"
+            run: pnpm check:badge-contract
+          - name: form-controls-contract
+            glob: "*.{ts,tsx}"
+            run: pnpm check:form-controls-contract
+          - name: todo-ticket-check
+            glob: "*.{ts,tsx}"
+            run: pnpm tsx scripts/check-todo-references.ts
+          - name: tailwind-palette-check
+            glob: "*.{ts,tsx}"
+            run: pnpm tsx scripts/check-tailwind-palette.ts
+          - name: usestate-count
+            glob: "*.{tsx}"
+            run: pnpm tsx scripts/check-usestate-count.ts
+          - name: magic-numbers
+            glob: "*.{ts,tsx}"
+            run: pnpm tsx scripts/check-magic-numbers.ts
+          - name: error-logging
+            glob: "apps/app/app/api/**/*.ts"
+            run: pnpm tsx scripts/check-error-logging.ts
+          - name: modal-contract
+            glob: "*.{ts,tsx}"
+            run: pnpm check:modal-contract
+          - name: story-authenticity
+            glob: "*.{ts,tsx}"
+            run: pnpm check:story-authenticity {staged_files}
+          - name: module-boundaries
+            glob: "*.{ts,tsx,json}"
+            run: pnpm tsx scripts/check-module-boundaries.ts
+          - name: app-structure
+            glob: "apps/app/**/*.{ts,tsx,json}"
+            run: pnpm check:app-structure
+          - name: app-ownership
+            glob: "{apps/app,features,integrations,packages,plugins,widgets}/**/*.{ts,tsx,js,jsx,json}"
+            run: pnpm check:app-ownership
+          - name: api-route-literals
+            glob: "{apps/app,features,integrations,packages,plugins,widgets}/**/*.{ts,tsx,js,jsx}"
+            run: pnpm check:api-route-literals
+          - name: route-zod-boundaries
+            glob: "{apps/app/app/api/**/route.ts,apps/app/modules/**/routes/*.ts,apps/marketing/app/api/**/route.ts}"
+            run: pnpm check:route-zod-boundaries {staged_files}
+          - name: ui-consistency
+            glob: "*.{ts,tsx}"
+            run: pnpm check:ui-consistency
+          - name: story-authenticity
+            glob: "*.{ts,tsx}"
+            run: pnpm check:story-authenticity
+          - name: react-doctor-strict
+            glob: "{apps,features,packages,plugins,widgets}/**/*.{ts,tsx,js,jsx}"
+            run: pnpm react-doctor --yes --offline --diff --fail-on warning
+    - name: expensive
+      group:
+        parallel: true
+        jobs:
+          - name: typecheck-staged
+            glob: "*.{ts,tsx}"
+            run: pnpm tsc-files --noEmit {staged_files}
+          - name: vitest-related
+            run: pnpm test:staged:related
+
+commit-msg:
+  jobs:
+    - name: commitlint
+      run: pnpm commitlint --edit {1}
+
+pre-push:
+  parallel: true
+  jobs:
+    - name: repo-policy
+      group:
+        parallel: true
+        jobs:
+          - name: biome-check
+            run: pnpm biome check --no-errors-on-unmatched
+          - name: biome-ignore-audit
+            run: pnpm tsx scripts/audit-biome-ignores.ts
+    - name: repo-quality
+      group:
+        parallel: true
+        jobs:
+          - name: typecheck
+            run: pnpm turbo run typecheck
+          - name: test
+            run: pnpm turbo run test --affected
+          - name: knip
+            run: pnpm knip --no-progress
+          - name: extension-quality
+            run: pnpm check:extensions
+          - name: architecture
+            run: pnpm check:architecture
+          - name: button-contract
+            run: pnpm check:button-contract
+          - name: badge-contract
+            run: pnpm check:badge-contract
+          - name: form-controls-contract
+            run: pnpm check:form-controls-contract
+          - name: modal-contract
+            run: pnpm check:modal-contract
+          - name: modularity
+            run: pnpm check:modularity
+          - name: app-structure
+            run: pnpm check:app-structure
+          - name: app-ownership
+            run: pnpm check:app-ownership
+          - name: api-route-literals
+            run: pnpm check:api-route-literals
+          - name: ui-consistency
+            run: pnpm check:ui-consistency
+          - name: story-authenticity
+            run: pnpm check:story-authenticity
+          - name: jsdoc-coverage
+            run: pnpm check:jsdoc
+          - name: react-doctor-strict
+            run: pnpm react-doctor --yes --offline --fail-on warning

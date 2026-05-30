@@ -1,0 +1,42 @@
+@import "../../app/app/globals.css";
+@import "@fontsource-variable/ibm-plex-sans";
+@import "@fontsource-variable/public-sans";
+@import "@fontsource-variable/manrope";
+@import "@fontsource-variable/newsreader";
+@import "@fontsource-variable/sora";
+@import "@fontsource-variable/space-grotesk";
+@import "@fontsource-variable/fraunces";
+@import "@fontsource-variable/chivo-mono";
+@import "@fontsource-variable/jetbrains-mono";
+@import "@fontsource-variable/source-code-pro";
+@import "@fontsource-variable/inconsolata";
+
+@font-face {
+  font-family: "Geist Sans";
+  src: url("../../../node_modules/.pnpm/geist@1.7.0_next@16.1.7_react-dom@19.2.4_react@19.2.4__react@19.2.4_/node_modules/geist/dist/fonts/geist-sans/Geist-Variable.woff2")
+    format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Geist Mono";
+  src: url("../../../node_modules/.pnpm/geist@1.7.0_next@16.1.7_react-dom@19.2.4_react@19.2.4__react@19.2.4_/node_modules/geist/dist/fonts/geist-mono/GeistMono-Variable.woff2")
+    format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Ensure Tailwind sees the component sources when Storybook runs outside Next. */
+@source ".";
+@source "../.storybook";
+@source "../.generated";
+@source "../../app/components";
+@source "../../../packages/ui/src";
+
+.storybook-geist {
+  --font-sans: "Geist Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SFMono-Regular", monospace;
+}

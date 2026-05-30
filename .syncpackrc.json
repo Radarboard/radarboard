@@ -1,0 +1,20 @@
+{
+  "$schema": "https://unpkg.com/syncpack/config.schema.json",
+  "source": [
+    "package.json",
+    "apps/*/package.json",
+    "packages/*/package.json",
+    "features/*/package.json",
+    "widgets/*/package.json",
+    "integrations/*/package.json",
+    "plugins/*/package.json"
+  ],
+  "versionGroups": [
+    {
+      "label": "Use workspace protocol for local packages",
+      "dependencies": ["$LOCAL"],
+      "dependencyTypes": ["dev", "prod"],
+      "pinVersion": "workspace:*"
+    }
+  ]
+}

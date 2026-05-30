@@ -1,0 +1,57 @@
+---
+title: "BetterStack"
+description: "Monitor uptime status, response times, and active incidents for your services."
+---
+
+# BetterStack (Uptime)
+
+BetterStack Uptime integration fetches monitor status (up/down/degraded), response times, last checked timestamps, active incidents, and heartbeat monitors.
+
+## What it powers
+
+- **Detail panel** -- Uptime monitors and incidents list (lowest priority in detail panel)
+- **KPI Strip** -- Health status cell (up/down/degraded counts, pulses red when services are down)
+- **Bottom Ticker** -- Down alerts appear in red in the scrolling ticker
+
+## Getting your API token
+
+<Steps>
+  <Step title="Sign in to BetterStack">
+    Go to [betterstack.com](https://betterstack.com/) and sign in.
+  </Step>
+  <Step title="Go to Uptime API tokens">
+    Navigate to **Uptime** > **Settings** > **API tokens** (or visit [uptime.betterstack.com/team/0/api-tokens](https://uptime.betterstack.com/team/0/api-tokens)).
+  </Step>
+  <Step title="Create a token">
+    Click **Create API token**. Copy the token.
+  </Step>
+</Steps>
+
+## Environment variables
+
+```bash .env.local
+BETTERSTACK_API_TOKEN=your-betterstack-token
+```
+
+## API details
+
+| Property | Value |
+|----------|-------|
+| API base URL | `https://uptime.betterstack.com/api/v2/` |
+| Rate limit | Standard BetterStack limits |
+| Cache TTL | 1 minute |
+| Authentication | Bearer token (`Authorization: Bearer ...`) |
+
+## Widgets that use this service
+
+<CardGroup cols={3}>
+  <Card title="Detail Panel" icon="panel-right" href="/widgets/detail-panel">
+    Health monitors and incidents.
+  </Card>
+  <Card title="KPI Strip" icon="gauge" href="/widgets/kpi-strip">
+    Up/down/degraded counts.
+  </Card>
+  <Card title="Bottom Ticker" icon="text" href="/widgets/bottom-ticker">
+    Down alerts in scrolling ticker.
+  </Card>
+</CardGroup>

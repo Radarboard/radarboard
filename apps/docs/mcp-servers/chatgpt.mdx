@@ -1,0 +1,152 @@
+---
+title: "ChatGPT Connector"
+description: "Connect ChatGPT Plus/Pro to your Radarboard instance so you can query your dashboard data directly in ChatGPT."
+---
+
+# ChatGPT Connector
+
+Radarboard exposes an MCP server endpoint that ChatGPT can connect to as a custom connector. Once connected, you can ask ChatGPT questions like:
+
+- "What's my current MRR?"
+- "How many visitors did my site get this week?"
+- "Are there any unresolved Sentry errors?"
+- "What was the last Vercel deployment?"
+
+<Tip>
+  If you only need the built-in MCP URL, OAuth endpoints, or required environment variables, see [Radarboard MCP](/mcp-servers/radarboard).
+</Tip>
+
+## Prerequisites
+
+- A deployed Radarboard instance with a public HTTPS URL
+- A ChatGPT Plus or Pro account
+- Access to [platform.openai.com/apps-manage](https://platform.openai.com/apps-manage)
+
+---
+
+## Step 1 — Configure environment variables
+
+Add the following to your `.env` (or deployment environment) and restart the server:
+
+```bash
+# Public URL of your Radarboard instance — no trailing slash
+NEXT_PUBLIC_APP_URL=https://your-radarboard.example.com
+
+# Secret for signing MCP access tokens
+# Generate one with: openssl rand -hex 32
+RADARBOARD_API_SECRET=
+```
+
+<Note>
+  Both variables must be set before the OAuth discovery and token endpoints will work.
+</Note>
+
+---
+
+## Step 2 — Create a connector at OpenAI
+
+Go to [platform.openai.com/apps-manage](https://platform.openai.com/apps-manage) and click **Create app**.
+
+Fill in the form as follows:
+
+### Basic information
+
+| Field | What to enter |
+|-------|--------------|
+| **Name** | `Radarboard` (or any label you prefer) |
+| **Description** | `Read-only access to your Radarboard dashboard — revenue, analytics, deployments, health checks, and more.` |
+| **MCP server URL** | `https://your-radarboard.example.com/api/mcp` |
+
+### OAuth configuration
+
+After entering the MCP URL, ChatGPT auto-discovers your OAuth endpoints via
+`/.well-known/oauth-authorization-server`. The following fields may still need to be filled manually:
+
+| Field | What to enter |
+|-------|--------------|
+| **Authorization endpoint** | `https://your-radarboard.example.com/api/oauth/authorize` |
+| **Token endpoint** | `https://your-radarboard.example.com/api/oauth/token` |
+| **Client registration endpoint** | `https://your-radarboard.example.com/api/oauth/register` |
+| **Scopes** | `read` |
+
+### Redirect URIs
+
+Add **both** of these redirect URIs in the OAuth settings — the exact `{callback_id}` value is shown in your app management dashboard after the app is created:
+
+```
+https://chatgpt.com/connector/oauth/{callback_id}
+https://platform.openai.com/apps-manage/oauth
+```
+
+<Note>
+  Copy the `{callback_id}` URI from the dashboard and add it to your connector's allowed redirect URIs before testing.
+</Note>
+
+---
+
+## Step 3 — Authorize ChatGPT
+
+The first time ChatGPT connects, it will open this URL in your browser:
+
+```
+https://your-radarboard.example.com/api/oauth/authorize
+```
+
+You will see an approval page. Click **Allow**. This only happens once — subsequent connections are auto-approved because the approval is stored in your credential store.
+
+---
+
+## Step 4 — Use it in ChatGPT
+
+Once authorized, the connector appears in your ChatGPT conversation tools. Try asking:
+
+- "What's my MRR for the last 30 days?"
+- "Show me this week's analytics"
+- "Any new Sentry errors?"
+- "What's the status of my monitors?"
+
+---
+
+## Available tools
+
+| Tool | Description | Parameters |
+|------|-------------|------------|
+| `get_revenue` | MRR, gross revenue, net revenue, subscriber count | `range`: `7d` `30d` `3m` `1y` |
+| `get_analytics` | Pageviews, unique visitors, sessions, referrers | `range`: `7d` `30d` `3m` `1y` |
+| `get_sentry_issues` | Unresolved Sentry errors and project health | — |
+| `get_health_checks` | BetterStack uptime monitor statuses | — |
+| `get_vercel_deployments` | Recent production deployments and build status | — |
+| `get_github_stars` | GitHub repo stats: stars, forks, open issues | — |
+| `get_npm_downloads` | NPM package download counts | `range`: `last-week` `last-month` `last-year` |
+
+---
+
+## Security
+
+- Access is controlled by a **long-lived JWT** (1 year) signed with `RADARBOARD_API_SECRET`. Keep this secret.
+- The JWT grants **read-only** access — ChatGPT cannot modify any data.
+- Only OpenAI's registered redirect URIs (`chatgpt.com` and `platform.openai.com`) are accepted.
+- **To revoke access immediately:** rotate `RADARBOARD_API_SECRET`. All existing tokens become invalid.
+- **To show the approval page again:** delete the `mcp::oauth::approved` record from your credential store.
+
+---
+
+## Troubleshooting
+
+**"NEXT_PUBLIC_APP_URL environment variable is not set"**
+Set `NEXT_PUBLIC_APP_URL` in your environment and restart the server.
+
+**"RADARBOARD_API_SECRET environment variable is not set"**
+Run `openssl rand -hex 32` to generate a secret, then set it as `RADARBOARD_API_SECRET` and restart.
+
+**Redirect URI mismatch error during OAuth**
+Copy the exact `https://chatgpt.com/connector/oauth/{callback_id}` URI from your OpenAI app dashboard and make sure it is listed in your connector's allowed redirect URIs.
+
+**401 Unauthorized on `/api/mcp`**
+Either the JWT expired (after 1 year) or `RADARBOARD_API_SECRET` was rotated. Re-authorize by reconnecting the connector in ChatGPT.
+
+**ChatGPT says "connector not found" or times out**
+Verify `NEXT_PUBLIC_APP_URL` points to a publicly accessible HTTPS server and that `/api/mcp` responds. Test with:
+```bash
+curl https://your-radarboard.example.com/.well-known/oauth-protected-resource
+```

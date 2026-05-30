@@ -1,0 +1,59 @@
+---
+title: "Services Overview"
+description: "Radarboard connects to 11 external services. Here's what each does and what you need to set up."
+---
+
+# Services Overview
+
+Radarboard aggregates data from 11 external services. Each service is optional -- configure only the ones you use.
+
+## Environment variables
+
+All service credentials are set via environment variables in `apps/app/.env.local`. Copy from the example:
+
+```bash
+cp apps/app/.env.example apps/app/.env.local
+```
+
+## Service catalog
+
+### Revenue & Monetization
+
+| Service | What it provides | Required env vars |
+|---------|-----------------|-------------------|
+| [RevenueCat](/services/revenuecat) | Subscription revenue, MRR, gross/net revenue | `REVENUECAT_API_V2_SECRET_KEY`, `REVENUECAT_PROJECT_ID` |
+| [Open Collective](/services/open-collective) | Open-source funding: balance, backers, transactions | `OPENCOLLECTIVE_API_TOKEN` |
+| [App Store Connect](/services/app-store-connect) | App info, customer reviews, version history | `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_PRIVATE_KEY` |
+
+### Analytics & SEO
+
+| Service | What it provides | Required env vars |
+|---------|-----------------|-------------------|
+| [OpenPanel](/services/openpanel) | Visitors, sessions, page views, live visitors, referrers | `OPENPANEL_CLIENT_ID`, `OPENPANEL_CLIENT_SECRET` |
+| [Google Search Console](/services/google-search-console) | Search queries, clicks, impressions, CTR, position | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REFRESH_TOKEN` |
+
+### Development & Shipping
+
+| Service | What it provides | Required env vars |
+|---------|-----------------|-------------------|
+| [GitHub](/services/github) | Merged PRs, releases, commits | `GITHUB_TOKEN` |
+| [Linear](/services/linear) | Open issues (ideas/bugs), completed issues | `LINEAR_API_KEY` |
+| [Vercel](/services/vercel) | Production deployments, project info | `VERCEL_TOKEN` |
+
+### Monitoring & Alerts
+
+| Service | What it provides | Required env vars |
+|---------|-----------------|-------------------|
+| [Sentry](/services/sentry) | Unresolved errors, error count trends | `SENTRY_AUTH_TOKEN`, `SENTRY_ORG_SLUG` |
+| [BetterStack](/services/betterstack) | Uptime monitors, response times, incidents | `BETTERSTACK_API_TOKEN` |
+| [Resend](/services/resend) | Email alerts for health failures | `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `RESEND_TO_EMAIL` |
+
+## MCP availability
+
+Some services also expose MCP (Model Context Protocol) servers that let AI agents query the data directly:
+
+| Service | MCP Available | Details |
+|---------|:------------:|---------|
+| RevenueCat | Yes | [RevenueCat MCP](/mcp-servers/revenuecat) |
+| OpenPanel | Yes | [OpenPanel MCP](/mcp-servers/openpanel) |
+| All others | No | -- |

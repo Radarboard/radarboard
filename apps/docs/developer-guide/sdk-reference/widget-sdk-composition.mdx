@@ -1,0 +1,333 @@
+---
+title: "Widget SDK Composition"
+description: "Composition catalog, recipe model, data source registry, and variant utilities."
+---
+
+# Widget SDK Composition
+
+Composition catalog, recipe model, data source registry, and variant utilities.
+
+## `./composition-catalog`
+
+### `LayoutNodeKind`
+
+```ts
+type LayoutNodeKind = "stack" | "grid" | "tabs" | "split"
+```
+
+### `CompositionCapability`
+
+Capability tag describing what a layout node or section primitive can do.
+
+```ts
+type CompositionCapability = "tabs" | "badge" | "breakdown" | "chart" | "compact-inline" | "dense-ranking" | "detail-dialog" | "filter-controls" | "grid-cards" | "hero-metric" | "image" | "live-stream" | "meta-rows" | "nested-layout" | "search" | "selection" | "sorting" | "status" | "timestamp"
+```
+
+### `LayoutNodeDescriptor`
+
+Describes a layout node in the composition catalog with usage guidance.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `kind` | `LayoutNodeKind` |  |
+| `useWhen` | `string[]` |  |
+| `avoidWhen?` | `string[] \| undefined` |  |
+| `constraints?` | `string[] \| undefined` |  |
+
+### `RecipeDescriptor`
+
+Describes a recipe kind in the composition catalog with its buckets and usage guidance.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `kind` | `CanonicalTemplateRecipeKind` |  |
+| `label` | `string` |  |
+| `buckets` | `TemplateSectionBucket[]` |  |
+| `useWhen` | `string[]` |  |
+| `avoidWhen?` | `string[] \| undefined` |  |
+| `goodFits` | `string[]` |  |
+| `typicalSections` | `string[]` |  |
+
+### `PrimitiveDescriptor`
+
+Describes a section primitive in the composition catalog with its capabilities.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `kind` | `"stack" \| "grid" \| "tabs" \| "split" \| "chart" \| "alert" \| "headline-stat" \| "overview-panel" \| "kpi-row" \| "summary-quad" \| "list" \| "row-list" \| "stream-list" \| "filter-bar" \| "dense-ranked-table" \| "table" \| "card-list" \| "activity-chart"` |  |
+| `label` | `string` |  |
+| `category` | `"summary" \| "content" \| "control" \| "layout"` |  |
+| `useWhen` | `string[]` |  |
+| `avoidWhen?` | `string[] \| undefined` |  |
+| `capabilities` | `CompositionCapability[]` |  |
+
+### `CompositionAntiPattern`
+
+Describes a composition pattern that should be avoided, with rationale.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `id` | `string` |  |
+| `label` | `string` |  |
+| `why` | `string` |  |
+
+### `CompositionExample`
+
+Describes an example widget composition with its full config for reference.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `id` | `string` |  |
+| `title` | `string` |  |
+| `recipeKind` | `CanonicalTemplateRecipeKind` |  |
+| `notes` | `string[]` |  |
+| `config` | `WidgetTemplateConfig` |  |
+
+## `./recipe-model`
+
+### `normalizeTemplateRecipeKind()`
+
+Resolves recipe kind aliases (e.g. "feed_list") to their canonical kind.
+
+```ts
+function normalizeTemplateRecipeKind(kind: TemplateRecipeKind): CanonicalTemplateRecipeKind
+```
+
+### `normalizeTemplateRecipeModel()`
+
+Returns a normalized copy of the model with aliases resolved and buckets cloned.
+
+```ts
+function normalizeTemplateRecipeModel(model: TemplateRecipeModel): TemplateRecipeModel
+```
+
+### `inferTemplateRecipe()`
+
+Infers a recipe model from a flat or nested section array, or returns null if empty.
+
+```ts
+function inferTemplateRecipe(sections: SectionConfig[]): TemplateRecipeModel | null
+```
+
+### `buildTemplateRecipe()`
+
+Converts a recipe model into its flat section array representation.
+
+```ts
+function buildTemplateRecipe(model: TemplateRecipeModel): SectionConfig[]
+```
+
+### `getTemplateRecipeBuckets()`
+
+Returns the list of section buckets used by a given recipe kind.
+
+```ts
+function getTemplateRecipeBuckets(kind: TemplateRecipeKind): TemplateSectionBucket[]
+```
+
+### `isTemplateRecipeModelValid()`
+
+Validates that a recipe model's sections don't violate nesting constraints.
+
+```ts
+function isTemplateRecipeModelValid(model: TemplateRecipeModel): boolean
+```
+
+### `synchronizeTemplateConfig()`
+
+Re-derives sections from the recipe model, keeping config and sections in sync.
+
+```ts
+function synchronizeTemplateConfig(config: T): T
+```
+
+### `migrateTemplateConfig()`
+
+Migrates a widget template config to the latest version.
+
+```ts
+function migrateTemplateConfig(config: T): T
+```
+
+### `isTemplateConfig()`
+
+Type guard that checks whether a value is a valid WidgetTemplateConfig.
+
+```ts
+function isTemplateConfig(value: unknown): boolean
+```
+
+### `CanonicalTemplateRecipeKind`
+
+The 8 canonical recipe kinds that define spatial layout grammar.
+
+```ts
+type CanonicalTemplateRecipeKind = "summary_only" | "content_only" | "summary_content" | "summary_list" | "summary_chart_list" | "rail_content" | "rail_list"
+```
+
+### `TemplateRecipeKind`
+
+Union of canonical recipe kinds and their aliases (e.g. "feed_list").
+
+```ts
+type TemplateRecipeKind = CanonicalTemplateRecipeKind | "feed_list"
+```
+
+### `TemplateSectionBucket`
+
+Named bucket a section can belong to: "summary", "rail", or "content".
+
+```ts
+type TemplateSectionBucket = "summary" | "rail" | "content"
+```
+
+### `TemplateRecipeModel`
+
+Declarative model describing a widget's recipe layout and its sections per bucket.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `kind` | `TemplateRecipeKind` |  |
+| `summary` | `SectionConfig[]` |  |
+| `content` | `SectionConfig[]` |  |
+| `rail` | `SectionConfig[]` |  |
+| `railWidth?` | `number \| undefined` |  |
+
+## `./data-source-registry`
+
+### `registerTemplateDataSource()`
+
+Register a data source resolver so the template engine can fetch its data.
+
+```ts
+function registerTemplateDataSource(id: string, resolver: DataSourceResolver): void
+```
+
+**Example:**
+
+```ts
+registerTemplateDataSource("my-widget", MyWidgetResolver);
+```
+
+### `reportResolverState()`
+
+Report the current state of a data source resolver to the template engine.
+
+Call this from your resolver component whenever data, loading, or error state changes.
+
+```ts
+function reportResolverState(onState: (state: Partial<DataSourceResolverState>) => void, state: Partial<DataSourceResolverState>): void
+```
+
+**Example:**
+
+```ts
+reportResolverState(onState, {
+  data: fetchedData,
+  loading: false,
+  error: null,
+  fetchedAt: Date.now() / 1000,
+});
+```
+
+### `DataSourceResolverProps`
+
+Props passed to a data source resolver component.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `projectSlug` | `string \| null` |  |
+| `timeRange?` | `TimeRange \| undefined` |  |
+| `config?` | `object \| undefined` |  |
+| `onState` | `(state: Partial<DataSourceResolverState>) => void` |  |
+
+### `DataSourceResolver`
+
+A React component that resolves data for a template data source.
+
+```ts
+type DataSourceResolver = (props: DataSourceResolverProps) => ReactElement | null
+```
+
+## `./variant-utils`
+
+### `getDefaultVariant()`
+
+Get the default variant (first with `isDefault: true`, or the first in the array).
+
+```ts
+function getDefaultVariant(descriptor: WidgetDescriptor<TConfig>): WidgetVariant<TConfig>
+```
+
+### `resolveVariantConfig()`
+
+Resolve the active variant's base config.
+
+Resolution order:
+1. `activeVariant` matches a built-in variant → that variant's config
+2. `activeVariant` matches a custom variant → that custom variant's config
+3. Fallback → default variant's config
+
+```ts
+function resolveVariantConfig(descriptor: WidgetDescriptor<TConfig>, instanceConfig: Record<string, unknown>): TConfig
+```
+
+### `getAvailableVariants()`
+
+Get all available variants (built-in + custom) for the picker UI.
+
+```ts
+function getAvailableVariants(descriptor: WidgetDescriptor<TConfig>, instanceConfig: Record<string, unknown>): VariantOption[]
+```
+
+### `getActiveVariantId()`
+
+Get the active variant ID, falling back to the default variant.
+
+```ts
+function getActiveVariantId(descriptor: WidgetDescriptor<TConfig>, instanceConfig: Record<string, unknown>): string
+```
+
+### `getVariantConfig()`
+
+Get the config for a specific variant by ID (for rendering previews).
+Returns the variant's template config, or null if not found.
+
+```ts
+function getVariantConfig(descriptor: WidgetDescriptor<TConfig>, instanceConfig: Record<string, unknown>, variantId: string): TConfig | null
+```
+
+### `extractInstanceOverrides()`
+
+Extract instance-level overrides that persist across variant switches.
+These are the non-template fields that should be merged on top of the variant config.
+
+```ts
+function extractInstanceOverrides(config: Record<string, unknown>): Record<string, unknown>
+```
+
+### `createCustomVariant()`
+
+Create a new custom variant by duplicating a source config.
+
+```ts
+function createCustomVariant(name: string, sourceConfig: Record<string, unknown>): CustomVariant
+```
+
+### `isBuiltInVariant()`
+
+Check whether a variant ID refers to a built-in variant (including synthesized default).
+
+```ts
+function isBuiltInVariant(descriptor: WidgetDescriptor<TConfig>, variantId: string): boolean
+```
+
+### `VariantOption`
+
+Metadata about a variant for the picker UI.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `id` | `string` |  |
+| `name` | `string` |  |
+| `isBuiltIn` | `boolean` |  |

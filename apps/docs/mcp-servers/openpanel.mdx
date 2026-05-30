@@ -1,0 +1,80 @@
+---
+title: "OpenPanel MCP"
+description: "Connect AI agents to OpenPanel analytics data via a local MCP server."
+---
+
+# OpenPanel MCP Server
+
+OpenPanel provides a **local** MCP server via the `openpanel-mcp-server` npm package. It runs on your machine and lets AI agents query analytics data for specific sites.
+
+## Setup
+
+### 1. Get per-site API credentials
+
+Unlike the shared root client used by the radarboard API, MCP servers use **per-site** credentials.
+
+Follow the [OpenPanel service setup](/services/openpanel) to create client ID/secret pairs for each site you want to expose.
+
+### 2. Add to your environment
+
+Add the per-site credentials to your root `.env` file:
+
+```bash .env
+# Per-site credentials for MCP
+OPENPANEL_GOSHUIN_COM_CLIENT_ID=your-goshuin-client-id
+OPENPANEL_GOSHUIN_COM_CLIENT_SECRET=your-goshuin-client-secret
+OPENPANEL_GOSHUINATLAS_COM_CLIENT_ID=your-goshuinatlas-client-id
+OPENPANEL_GOSHUINATLAS_COM_CLIENT_SECRET=your-goshuinatlas-client-secret
+```
+
+### 3. Configuration in opencode.json
+
+One MCP server instance per site:
+
+```json opencode.json
+{
+  "mcpServers": {
+    "openpanel-goshuin": {
+      "command": "npx",
+      "args": ["-y", "openpanel-mcp-server"],
+      "env": {
+        "OPENPANEL_CLIENT_ID": "${OPENPANEL_GOSHUIN_COM_CLIENT_ID}",
+        "OPENPANEL_CLIENT_SECRET": "${OPENPANEL_GOSHUIN_COM_CLIENT_SECRET}"
+      }
+    },
+    "openpanel-goshuinatlas": {
+      "command": "npx",
+      "args": ["-y", "openpanel-mcp-server"],
+      "env": {
+        "OPENPANEL_CLIENT_ID": "${OPENPANEL_GOSHUINATLAS_COM_CLIENT_ID}",
+        "OPENPANEL_CLIENT_SECRET": "${OPENPANEL_GOSHUINATLAS_COM_CLIENT_SECRET}"
+      }
+    }
+  }
+}
+```
+
+## Server details
+
+| Property | Value |
+|----------|-------|
+| Type | Local (npm package, runs via `npx`) |
+| Package | `openpanel-mcp-server` |
+| Authentication | Client ID + Secret per site |
+| Required env vars | `OPENPANEL_*_CLIENT_ID`, `OPENPANEL_*_CLIENT_SECRET` (per site) |
+
+## What agents can do
+
+With this MCP server, an AI agent can:
+- Query visitor counts and trends for a specific site
+- Check page view statistics
+- Investigate traffic sources and referrers
+- Monitor live visitor activity
+
+## Adding a new site
+
+To add MCP access for another site tracked in OpenPanel:
+
+1. Create a new client ID/secret pair in OpenPanel for that site
+2. Add the credentials to `.env` with a descriptive prefix
+3. Add a new entry in `opencode.json` under `mcpServers`

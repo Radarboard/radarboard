@@ -1,0 +1,49 @@
+---
+title: "GitHub Stars Widget"
+description: "Displays GitHub repository star counts, forks, and activity across your projects."
+---
+
+# GitHub Stars Widget
+
+The GitHub Stars widget shows star counts, forks, and repository activity from your GitHub repositories.
+
+## What it displays
+
+### Compact view
+- Total star count with star icon
+- Total fork count
+- Scrollable repository list with star counts per repo
+
+### Expanded view
+- Summary KPIs: Total Stars, Total Forks, Repo count
+- Star history bar chart (when available)
+- Full repository table: name, description, stars, forks, open issues, language
+- Direct links to each repository on GitHub
+
+## Authentication
+
+| Service | Auth Type | Setup |
+|---------|-----------|-------|
+| GitHub | OAuth | Create an OAuth App at [github.com/settings/developers](https://github.com/settings/developers) |
+
+### Setup steps
+1. Open the widget settings and click **GitHub Stars**
+2. Enter your GitHub OAuth App's **Client ID** and **Client Secret**
+3. Click **Connect with GitHub**
+4. Authorize the app on GitHub
+5. You're connected!
+
+<Note>
+Set the OAuth callback URL to: `{your-app-url}/api/auth/github/callback`
+</Note>
+
+### Without OAuth
+The widget also works without authentication for public repositories using the GitHub public API. Rate limits are lower (60 requests/hour vs 5000/hour with auth).
+
+## Configuration
+
+This widget has no additional configuration options.
+
+## Default slot
+
+Assigned to slot 7 (bottom left) by default.

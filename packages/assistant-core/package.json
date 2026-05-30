@@ -1,0 +1,40 @@
+{
+  "name": "@radarboard/assistant-core",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "exports": {
+    "./chat-helpers": "./src/chat-helpers.ts",
+    "./chat-request": "./src/chat-request.ts",
+    "./assistant-workflows": "./src/assistant-workflows.ts",
+    "./contracts": "./src/contracts.ts",
+    "./model-preferences": "./src/model-preferences.ts",
+    "./lifecycle": "./src/lifecycle.ts",
+    "./attachments": "./src/attachments.ts",
+    "./presets": "./src/presets.ts",
+    "./tool-evidence": "./src/tool-evidence.ts",
+    "./trace-insights": "./src/trace-insights.ts",
+    "./runtime": "./src/runtime.ts",
+    "./provider-selection": "./src/provider-selection.ts",
+    "./anomaly-detector": "./src/anomaly-detector.ts",
+    "./trend-analyzer": "./src/trend-analyzer.ts",
+    "./model-fallback": "./src/model-fallback.ts",
+    "./conversation-summarizer": "./src/conversation-summarizer.ts",
+    "./correlation-scanner": "./src/correlation-scanner.ts"
+  },
+  "dependencies": {
+    "@radarboard/llm": "workspace:*",
+    "@radarboard/types": "workspace:*"
+  },
+  "devDependencies": {
+    "@radarboard/tsconfig": "workspace:*",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

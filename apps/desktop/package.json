@@ -1,0 +1,46 @@
+{
+  "name": "@radarboard/desktop",
+  "version": "0.1.1-beta.1",
+  "private": true,
+  "scripts": {
+    "dev": "tauri dev --config src-tauri/tauri.conf.json",
+    "build:desktop": "node scripts/build-desktop.mjs",
+    "build:desktop:fresh-install": "node scripts/build-desktop-fresh.mjs",
+    "build:desktop:tauri": "tauri build --config src-tauri/tauri.conf.json --bundles app",
+    "build:dev-app": "env RADARBOARD_DATA_DIR_NAME='Radarboard Dev' tauri build --config src-tauri/tauri.dev-app.conf.json --bundles app",
+    "link:dev-app": "bash scripts/link-dev-app.sh",
+    "unlink:dev-app": "bash scripts/unlink-dev-app.sh",
+    "tauri": "tauri",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "build:sidecar": "bash scripts/build-sidecar.sh",
+    "next:standalone": "node scripts/next-server.mjs",
+    "ios:init": "tauri ios init",
+    "ios:dev": "tauri ios dev",
+    "ios:dev:device": "tauri ios dev --device",
+    "ios:build": "tauri ios build"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.5.0",
+    "@tauri-apps/plugin-clipboard-manager": "^2.3.2",
+    "@tauri-apps/plugin-deep-link": "^2.4.7",
+    "@tauri-apps/plugin-dialog": "^2.6.0",
+    "@tauri-apps/plugin-fs": "^2.4.5",
+    "@tauri-apps/plugin-log": "^2.8.0",
+    "@tauri-apps/plugin-os": "^2.3.2",
+    "@tauri-apps/plugin-positioner": "^2.3.1",
+    "@tauri-apps/plugin-store": "^2.4.2",
+    "@tauri-apps/plugin-stronghold": "^2.3.1",
+    "@tauri-apps/plugin-updater": "^2.10.0",
+    "get-port-please": "^3.1.2"
+  },
+  "devDependencies": {
+    "@radarboard/app": "workspace:*",
+    "@radarboard/tsconfig": "workspace:*",
+    "@tauri-apps/cli": "^2.5.0",
+    "@types/node": "catalog:",
+    "@yao-pkg/pkg": "^6.14.1",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

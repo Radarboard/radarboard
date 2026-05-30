@@ -1,0 +1,31 @@
+name: Setup Rust cache
+description: Install stable Rust with optional targets and configure rust-cache.
+
+inputs:
+  targets:
+    description: Optional Rust targets to install.
+    required: false
+    default: ""
+  workspaces:
+    description: Workspace mapping for rust-cache.
+    required: false
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - if: ${{ inputs.targets != '' }}
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        targets: ${{ inputs.targets }}
+
+    - if: ${{ inputs.targets == '' }}
+      uses: dtolnay/rust-toolchain@stable
+
+    - if: ${{ inputs.workspaces != '' }}
+      uses: Swatinem/rust-cache@v2
+      with:
+        workspaces: ${{ inputs.workspaces }}
+
+    - if: ${{ inputs.workspaces == '' }}
+      uses: Swatinem/rust-cache@v2

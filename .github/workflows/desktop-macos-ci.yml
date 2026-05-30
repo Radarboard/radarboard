@@ -1,0 +1,83 @@
+name: Desktop macOS CI
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/desktop-macos-ci.yml"
+      - "apps/desktop/**"
+      - "apps/app/**"
+      - "features/**"
+      - "integrations/**"
+      - "packages/**"
+      - "plugins/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "turbo.json"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/desktop-macos-ci.yml"
+      - "apps/desktop/**"
+      - "apps/app/**"
+      - "features/**"
+      - "integrations/**"
+      - "packages/**"
+      - "plugins/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "turbo.json"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-macos:
+    name: build-macos
+    runs-on: macos-15
+    permissions:
+      contents: read
+    env:
+      CI: true
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Setup Node, pnpm, and dependencies
+        uses: ./.github/actions/setup-pnpm-install
+        with:
+          node-version-file: .nvmrc
+
+      - name: Setup Rust
+        uses: ./.github/actions/setup-rust-cache
+        with:
+          targets: aarch64-apple-darwin
+          workspaces: |
+            apps/desktop/src-tauri -> target
+
+      - name: Build Next.js Standalone App
+        run: pnpm --filter @radarboard/app build
+
+      - name: Build Unsigned macOS Desktop App
+        run: pnpm --filter @radarboard/desktop exec tauri build --config src-tauri/tauri.conf.json --target aarch64-apple-darwin --ci --no-sign --bundles app,dmg
+
+      - name: Upload macOS .app
+        uses: actions/upload-artifact@v6
+        with:
+          name: radarboard-macos-app
+          path: apps/desktop/src-tauri/target/aarch64-apple-darwin/release/bundle/macos/*.app
+          if-no-files-found: error
+
+      - name: Upload macOS .dmg
+        uses: actions/upload-artifact@v6
+        with:
+          name: radarboard-macos-dmg
+          path: apps/desktop/src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
+          if-no-files-found: error

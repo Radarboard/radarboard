@@ -1,0 +1,33 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.1.3/schema.json",
+  "changelog": "@changesets/cli/changelog",
+  "commit": false,
+  "fixed": [],
+  "linked": [],
+  "access": "restricted",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": [
+    "@radarboard/app",
+    "@radarboard/apphook-relay",
+    "@radarboard/desktop",
+    "@radarboard/docs",
+    "@radarboard/e2e",
+    "@radarboard/marketing",
+    "@radarboard/storybook",
+    "@radarboard/feature-assistant",
+    "@radarboard/feature-briefing",
+    "@radarboard/feature-mcp-servers",
+    "@radarboard/feature-memory",
+    "@radarboard/feature-notifications",
+    "@radarboard/feature-onboarding",
+    "@radarboard/feature-skills",
+    "@radarboard/feature-workflows",
+    "@radarboard/integration-__INTEGRATION_KEBAB__",
+    "@radarboard/plugin-__PLUGIN_KEBAB__"
+  ],
+  "privatePackages": {
+    "version": true,
+    "tag": false
+  }
+}

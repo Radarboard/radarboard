@@ -1,0 +1,530 @@
+---
+title: "Widget Composition Reference"
+description: "Canonical layout recipes, layout nodes, section primitives, and authoring rules for composing Radarboard widgets."
+---
+
+# Widget Composition Reference
+
+This is the canonical authoring reference for building new dashboard widgets.
+
+Use it when deciding:
+
+- which **recipe** to start from
+- which **layout node** to use for structure
+- which **section primitive** to use for each surface
+- whether a new need should become a **recipe**, **primitive**, or just composition
+
+The intended audience is both humans and LLMs.
+
+Machine-readable source of truth:
+
+- `packages/widgets/src/templates/composition-catalog.ts`
+
+## Authoring Order
+
+Always design widgets in this order:
+
+1. What is the **top-level spatial grammar**?
+2. What are the **major buckets**?
+3. Which **section primitives** render each bucket?
+4. Does the complexity live in a **nested bucket layout** or in a **missing primitive**?
+
+Rules:
+
+- Add a new recipe only when the top-level spatial grammar changes.
+- Add a new primitive when the behavior or visual shell inside a bucket is reusable.
+- Use nested layout nodes when the variation is structural inside a bucket.
+- Do not create a recipe just to name a domain-specific widget pattern.
+
+## Canonical Recipes
+
+These are the canonical top-level recipes. New widgets should start from one of these.
+
+### `summary_only`
+
+Use when:
+
+- the widget is primarily a compact metric surface
+- there is no primary list, table, or chart body
+- the whole point is a set of summary cards or KPI rows
+
+Good fits:
+
+- compact revenue summary
+- compact sponsorship summary
+- small health or status summaries
+
+Typical sections:
+
+- `summary-quad`
+- `kpi-row`
+- `headline-stat`
+- `overview-panel`
+
+Do not use when:
+
+- the widget has a main content body the user is expected to scan
+
+### `content_only`
+
+Use when:
+
+- the widget is one primary content surface
+- there is no meaningful summary bucket
+- the content body may itself contain a nested `stack`, `grid`, or `tabs`
+
+Good fits:
+
+- logs
+- bookmark lists
+- changelog feeds
+- single-surface task or note lists
+
+Typical sections:
+
+- `list`
+- `row-list`
+- `stream-list`
+- `table`
+- nested `tabs`
+- nested `grid`
+
+Do not use when:
+
+- top-level summary metrics are part of the main value
+
+### `summary_content`
+
+Use when:
+
+- there is a real summary bucket
+- the main body is not just one canonical list surface
+- the content bucket may contain multiple sections or nested layouts
+
+Good fits:
+
+- stars with metrics plus charts plus table
+- health views with metrics plus tabbed content
+- tasks with stats plus active work list
+
+Typical sections:
+
+- summary: `headline-stat`, `kpi-row`, `summary-quad`, `overview-panel`
+- content: `chart`, `table`, `row-list`, nested `tabs`, nested `grid`
+
+Do not use when:
+
+- the body is just one primary list and no extra composition is needed
+
+### `summary_list`
+
+Use when:
+
+- there is a summary bucket
+- the body is one primary list-like surface
+
+Good fits:
+
+- analytics compact
+- SEO compact
+- downloads
+- notes
+- RSS widget
+- status page widget
+
+Typical sections:
+
+- summary: `headline-stat`, `kpi-row`
+- content: `list`, `row-list`, `table`
+
+### `summary_chart_list`
+
+Use when:
+
+- the body clearly wants both a chart and a list
+- chart + list are both first-class, not optional embellishments
+
+Good fits:
+
+- compact analytical widgets with one trend chart plus one ranked list
+
+Typical sections:
+
+- summary: `headline-stat`, `kpi-row`
+- content: `chart` then `list` or `table`
+
+### `rail_content`
+
+Use when:
+
+- the left side is a narrow context/overview rail
+- the right side is the main scanning or interaction surface
+
+Good fits:
+
+- review pulse
+- future “profile + activity” widgets
+- context-heavy widgets where metadata belongs in a side rail
+
+Typical sections:
+
+- rail: `overview-panel`, `headline-stat`, `summary-quad`
+- content: `row-list`, `table`, nested `tabs`, nested `grid`
+
+### `rail_list`
+
+Use when:
+
+- the left side is compact context
+- the right side is one primary list/feed/table
+
+Good fits:
+
+- sentry mode in observability
+
+Typical sections:
+
+- rail: `headline-stat`, `chart`, `overview-panel`
+- content: `row-list`, `list`, `table`
+
+## Layout Nodes
+
+Layout nodes define structure only.
+
+### `stack`
+
+Use when:
+
+- sections should read vertically in a single flow
+- order matters more than side-by-side comparison
+
+Best for:
+
+- summary-only layouts
+- content-only layouts
+- simple grouped content
+
+### `grid`
+
+Use when:
+
+- a bucket needs parallel surfaces of equal or near-equal importance
+- two to four sub-panels should coexist in the same region
+
+Best for:
+
+- multi-chart content buckets
+- paired metric blocks
+- nested content composition inside `summary_content` or `content_only`
+
+Do not use as the top-level recipe replacement. It belongs inside a recipe bucket.
+
+### `tabs`
+
+Use when:
+
+- the content modes are mutually exclusive
+- the user only needs one content view visible at a time
+
+Best for:
+
+- alternate content modes
+- switching between lists/tables/charts without vertical sprawl
+
+### `split`
+
+Use when:
+
+- the layout is explicitly a left rail plus a main pane
+
+Best for:
+
+- `rail_content`
+- `rail_list`
+
+Constraints:
+
+- top-level `split` is allowed
+- nested `split` is intentionally disallowed in v1
+
+## Section Primitives
+
+These are the current reusable visual/behavioral building blocks.
+
+### Summary / Context
+
+#### `headline-stat`
+
+Use for one strong metric with a label and optional status color.
+
+Best for:
+
+- live visitors
+- unresolved issue count
+- one dominant KPI
+
+#### `kpi-row`
+
+Use for 1-6 compact comparable metrics.
+
+Best for:
+
+- compact metric strips
+- “supporting KPIs” under a larger summary
+
+#### `summary-quad`
+
+Use for a 2x2 summary shell with richer metric cards.
+
+Best for:
+
+- revenue and sponsorship-style summary surfaces
+
+Use it when each card may need:
+
+- change
+- sparkline
+- breakdown
+- footer metadata
+
+#### `overview-panel`
+
+Use for a narrow contextual rail or hero summary block.
+
+Best for:
+
+- title + primary metric + status badge + descriptive copy + metadata rows
+- review pulse
+- future “entity profile” side rails
+
+This is a better fit than `headline-stat` when the panel is narrative and metadata-rich.
+
+### Lists / Tables / Feeds
+
+#### `list`
+
+Use for lighter-weight stacked or inline lists.
+
+Best for:
+
+- top pages
+- package lists
+- simple compact ranked items
+
+#### `row-list`
+
+Use for two-line rows with status/badge/value/timestamp support.
+
+Best for:
+
+- issues
+- tasks
+- notes
+- status items
+- review rows
+
+If the item is basically “title + supporting metadata + optional badge/value”, prefer `row-list`.
+
+#### `stream-list`
+
+Use for live or chronological event feeds.
+
+Best for:
+
+- logs
+- event streams
+- append-heavy activity surfaces
+
+Use it instead of `row-list` when live behavior, level filters, or stream semantics matter.
+
+#### `dense-ranked-table`
+
+Use for compact analytical ranking tables with richer column variants.
+
+Best for:
+
+- keyword rankings
+- dense metric comparisons
+
+Use when you need:
+
+- bars
+- rank deltas
+- flag cells
+- compact analytical scanning
+
+#### `table`
+
+Use for generic expanded tables.
+
+Best for:
+
+- sortable, searchable tabular datasets
+- expanded analytical/detail views
+
+#### `card-list`
+
+Use for image-forward card grids with richer metadata.
+
+Best for:
+
+- bookmarks
+- gallery-like content
+- visual collections
+
+Use when you need:
+
+- image cards
+- grid scanning
+- optional search
+- richer meta fields than a simple list row
+
+### Controls / Visualization / State
+
+#### `filter-bar`
+
+Use for explicit persisted controls above a dense content surface.
+
+Best for:
+
+- select/range/toggle-driven filtering
+- analytical widgets where the controls are part of the widget contract
+
+#### `chart`
+
+Use for single-series or straightforward chart views.
+
+Best for:
+
+- line, area, bar, sparkline content
+
+#### `activity-chart`
+
+Use for segmented bucket activity visualizations.
+
+Best for:
+
+- health/deploy status buckets
+- discrete activity categories over time
+
+#### `alert`
+
+Use for setup, warning, error, or conditional info messaging.
+
+Best for:
+
+- stale data warnings
+- setup hints
+- conditional state callouts
+
+#### `tabs`
+
+Use as a section primitive when the rendered tab control itself is part of the content surface.
+
+Best for:
+
+- content mode switching with counts, icons, or accent styling
+
+## Current Missing Or Candidate Primitives
+
+These are the main candidates that still look plausible. They are not automatically required.
+
+### `trend-panel`
+
+Status:
+
+- proposed in the earlier standardization spec
+- not implemented in the current primitive catalog
+
+Consider adding it if we repeatedly need:
+
+- one compact metric
+- one small sparkline or micro-chart
+- one small footer/meta block
+
+Right now, some of this can be covered by `overview-panel` plus `chart`, or by `summary-quad`.
+
+### `detail-table`
+
+Status:
+
+- proposed in the earlier standardization spec
+- not implemented as a distinct primitive
+
+Consider adding it only if multiple expanded widgets need the same table chrome:
+
+- shared header/footer framing
+- shared filter/footer shell
+- consistent detail-mode container behavior beyond generic `table`
+
+Right now, generic `table` plus recipe composition still covers most cases.
+
+### `rich-content`
+
+Status:
+
+- not implemented
+
+Possible need:
+
+- widgets that want markdown or richer narrative text blocks instead of list/table structures
+
+This is only justified if text-heavy widgets become a real dashboard pattern, not just plugin overlay behavior.
+
+## What We Are Not Missing
+
+These should stay composition, not become new recipes:
+
+- “analytics widget recipe”
+- “review widget recipe”
+- “task widget recipe”
+- “sponsorship widget recipe”
+
+Those are domain patterns, not canonical layout grammars.
+
+## LLM Authoring Heuristics
+
+When composing a new widget, ask these questions in order.
+
+### 1. Is the widget mostly metrics, mostly content, or a split rail + content surface?
+
+Choose:
+
+- mostly metrics: `summary_only`
+- mostly one content body: `content_only`
+- metrics + body: `summary_content` or `summary_list`
+- context rail + body: `rail_content` or `rail_list`
+
+### 2. Is the body one primary list/table, or multiple co-equal surfaces?
+
+Choose:
+
+- one list/table/feed: `summary_list`, `rail_list`, or `content_only`
+- multiple surfaces: `summary_content` or `rail_content`
+- chart + list specifically: `summary_chart_list`
+
+### 3. Does the complexity live inside the body?
+
+If yes:
+
+- keep the same top-level recipe
+- use nested `stack`, `grid`, or `tabs` inside the `content` or `rail` bucket
+
+### 4. Is a current primitive clearly wrong for the content?
+
+If yes:
+
+- add a primitive only if the behavior will be reused
+- otherwise compose existing primitives instead
+
+## Practical Defaults
+
+If unsure, prefer:
+
+- `summary_list` for compact analytical widgets
+- `content_only` for feeds or simple content widgets
+- `row-list` over `list` when rows need richer metadata
+- `table` for expanded detail views
+- `overview-panel` for narrative or metadata-rich side rails
+
+For the system overview, see [Widget System](/developer-guide/widget-system).

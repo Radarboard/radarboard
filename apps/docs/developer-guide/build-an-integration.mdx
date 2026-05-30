@@ -1,0 +1,246 @@
+---
+title: "Build an Integration"
+description: "Step-by-step guide to building a Radarboard integration from scratch."
+---
+
+## Overview
+
+Integrations connect Radarboard to external services (GitHub, Stripe, Sentry, etc.). Each integration lives in its own package under `integrations/` and provides:
+
+- **Credential configuration** — how users authenticate with the service
+- **Data sources** — API endpoints that widgets can consume
+- **MCP tools** (optional) — actions the AI assistant can perform
+- **Webhook handler** (optional) — inbound event processing
+
+## Prerequisites
+
+- Radarboard dev environment set up ([Setup Guide](/developer-guide/setup))
+- Familiarity with TypeScript and REST APIs
+
+## Step 1: Scaffold
+
+```bash
+pnpm create-integration my-service
+```
+
+This creates `integrations/my-service/` with all boilerplate, registers it in `radarboard.config.ts`, and runs `pnpm install`.
+
+## Step 2: Define Credentials
+
+Edit `src/index.ts` to configure how users authenticate:
+
+```ts
+auth: {
+  id: "my-service",
+  name: "My Service",
+  type: "api_key",
+  fields: [
+    {
+      key: "apiKey",
+      label: "API Key",
+      type: "password",
+      placeholder: "sk_...",
+      helpText: "Find this in your My Service dashboard under Settings → API.",
+    },
+  ],
+  docsUrl: "https://my-service.com/docs/api-keys",
+  testEndpoint: "/api/credentials/test",
+},
+```
+
+For OAuth integrations, set `type: "oauth"` and add an `oauth` block:
+
+```ts
+auth: {
+  id: "my-service",
+  name: "My Service",
+  type: "oauth",
+  fields: [
+    { key: "clientId", label: "Client ID", type: "text" },
+    { key: "clientSecret", label: "Client Secret", type: "password" },
+  ],
+  docsUrl: "https://my-service.com/docs/oauth",
+  oauth: {
+    provider: "my-service",
+    scopes: ["read:data"],
+    setupInstructions: "Create an OAuth app at my-service.com/developers. Callback URL: {origin}/api/auth/my-service/callback",
+  },
+},
+```
+
+## Step 3: Build the API Client
+
+Edit `src/api/client.ts` to wrap the external API:
+
+```ts
+import type { MyServiceConfig } from "../types";
+
+const BASE_URL = "https://api.my-service.com/v1";
+
+export async function fetchProjects(config: MyServiceConfig) {
+  const res = await fetch(`${BASE_URL}/projects`, {
+    headers: { Authorization: `Bearer ${config.apiKey}` },
+  });
+  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  return res.json();
+}
+```
+
+**Tips:**
+- Keep the client stateless — receive credentials as arguments, don't store them
+- Throw errors with descriptive messages so they surface in the UI
+- Define response types in `src/types.ts`
+
+## Step 4: Wire Up Data Sources
+
+Edit `src/api/data-sources.ts`. Each data source becomes an API route:
+
+```ts
+import type { DataSourceDescriptor } from "@radarboard/integration-sdk/types";
+import { fetchProjects } from "./client";
+
+const projectsSource: DataSourceDescriptor = {
+  action: "projects",           // → GET /api/integrations/my-service/projects
+  description: "List all projects from My Service.",
+  cacheTtlSeconds: 300,         // Cache for 5 minutes
+
+  async fetch(params, ctx) {
+    // Resolve the user's stored credentials
+    const creds = await ctx.resolveCredential("my-service");
+    if (!creds?.apiKey) return { projects: [] };
+
+    // Call the API client
+    const data = await fetchProjects({ apiKey: creds.apiKey });
+
+    // Return normalized data for widgets to consume
+    return { projects: data.items };
+  },
+};
+```
+
+Key concepts:
+- **`params`** contains `projectSlug`, `range`, `timeZone`, `forceRefresh`
+- **`ctx.resolveCredential(key)`** returns the stored credential fields or `null`
+- **`cacheTtlSeconds`** controls how long responses are cached
+
+## Step 5: Test
+
+Run the conformance tests (included automatically in the scaffold):
+
+```bash
+pnpm --filter @radarboard/integration-my-service test
+pnpm check:extensions --filter=integration
+```
+
+For unit testing your data source fetch functions, use the mock context:
+
+```ts
+import { createMockDataSourceContext } from "@radarboard/integration-sdk/testing";
+import { describe, expect, it } from "vitest";
+import { myServiceDataSource } from "./data-sources";
+
+describe("my-service data source", () => {
+  it("returns empty when no credentials", async () => {
+    const ctx = createMockDataSourceContext(); // no credentials
+    const result = await myServiceDataSource.fetch(
+      { projectSlug: null, range: "30d", timeZone: "UTC", forceRefresh: false },
+      ctx,
+    );
+    expect(result).toEqual({ projects: [] });
+  });
+
+  it("resolves credentials and fetches", async () => {
+    const ctx = createMockDataSourceContext({
+      "my-service": { apiKey: "sk_test_123" },
+    });
+    const result = await myServiceDataSource.fetch(
+      { projectSlug: null, range: "30d", timeZone: "UTC", forceRefresh: false },
+      ctx,
+    );
+    expect(ctx.resolvedCredentialKeys).toContain("my-service");
+  });
+});
+```
+
+## Step 6: Fill in Metadata
+
+Back in `src/index.ts`, complete the descriptor:
+
+```ts
+export const myServiceDescriptor: IntegrationDescriptor = {
+  id: "my-service",
+  name: "My Service",
+  description: "Project data and analytics from My Service.", // max 120 chars
+  icon: Globe,
+  category: "analytics",        // revenue | deployment | analytics | monitoring | communication
+  apiDocsUrl: "https://my-service.com/docs/api",
+  defaultStatusPageUrl: "https://status.my-service.com",
+  capabilities: [{ id: "analytics", action: "data" }],
+  auth: { /* ... */ },
+  dataSources: myServiceDataSources,
+};
+```
+
+### Capability Governance
+
+`capabilities` is how an integration tells Radarboard which shared widget capability it can satisfy and through which `action`.
+
+- The `action` must match a real `DataSourceDescriptor.action`.
+- If the capability already has a canonical widget, update that widget’s provider list instead of creating a duplicate widget.
+- Shared capabilities currently include `revenue`, `bookmarks`, `stars`, `domains`, `errors`, `uptime`, `app-reviews`, `downloads`, `sponsorship`, `shipping`, `analytics`, and `seo`.
+
+This contract powers capability-aware recommendations, dependency audits, and canonical widget provider selection.
+
+## Optional: Add MCP Tools
+
+Edit `src/mcp/mcp-tools.ts` to let the AI assistant interact with your service:
+
+```ts
+import { z } from "zod";
+
+export const myServiceMcpTools = [
+  {
+    name: "list-projects",
+    description: "List all projects from My Service",
+    parameters: z.object({
+      status: z.enum(["active", "archived"]).optional(),
+    }),
+    execute: async (params: { status?: string }) => {
+      // Fetch and return data
+    },
+  },
+];
+```
+
+## Optional: Add Webhooks
+
+Create `src/events/webhook.ts` to handle inbound events:
+
+```ts
+import type { WebhookHandler } from "@radarboard/integration-sdk/types";
+
+export const myServiceWebhookHandler: WebhookHandler = {
+  async verifySignature(request, secret) {
+    // Verify HMAC signature from the service
+    return true;
+  },
+  async parsePayload(request) {
+    // Parse into IntegrationEvent[]
+    return [];
+  },
+};
+```
+
+## Module Boundaries
+
+Integrations can only import from:
+- `@radarboard/integration-sdk`
+- `@radarboard/types`
+- `@radarboard/utils`
+
+## Reference
+
+- **Full type reference**: `@radarboard/integration-sdk/types`
+- **Capability-backed examples**: `integrations/revenuecat/`, `integrations/stripe/`, `integrations/sentry/`, `integrations/betterstack/`
+- **Real examples**: `integrations/github/`, `integrations/stripe/`, `integrations/vercel/`
+- **Extension rules**: `CONTRIBUTING-EXTENSIONS.md`

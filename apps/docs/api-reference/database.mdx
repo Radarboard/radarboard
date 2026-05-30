@@ -1,0 +1,93 @@
+---
+title: "/api/database/*"
+description: "Database configuration, testing, migration, import, and export endpoints."
+---
+
+# /api/database/*
+
+Endpoints for managing the database provider.
+
+## GET /api/database/config
+
+Returns the current database provider and whether it's configured.
+
+```json
+{
+  "provider": "sqlite",
+  "configured": true
+}
+```
+
+## POST /api/database/config
+
+Sets a new database provider.
+
+### Request body
+
+```json
+{
+  "provider": "turso",
+  "config": {
+    "url": "libsql://your-db.turso.io",
+    "authToken": "your-token"
+  }
+}
+```
+
+Supported providers: `sqlite`, `supabase`, `turso`, `planetscale`.
+
+## POST /api/database/test
+
+Tests a database connection with the provided credentials.
+
+### Request body
+
+Same format as POST `/api/database/config`.
+
+### Response
+
+```json
+{ "success": true }
+```
+
+or
+
+```json
+{ "success": false, "error": "Connection refused" }
+```
+
+## POST /api/database/migrate
+
+Creates the required tables (`user_settings`, `api_cache`) in the current database provider.
+
+### Response
+
+```json
+{ "migrated": true }
+```
+
+<Note>
+  For Supabase and PlanetScale, the endpoint returns the SQL statements for manual execution instead of running them directly.
+</Note>
+
+## GET /api/database/export
+
+Exports all database data as JSON.
+
+```json
+{
+  "version": 1,
+  "provider": "sqlite",
+  "settings": {
+    "projectOrder": ["goshuin-atlas", "front-end-checklist"]
+  }
+}
+```
+
+## POST /api/database/import
+
+Imports a previously exported JSON dump.
+
+### Request body
+
+The JSON object returned by the export endpoint.

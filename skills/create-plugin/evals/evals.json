@@ -1,0 +1,42 @@
+{
+  "skill_name": "create-plugin",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create a new Radarboard plugin called `meeting-notes`. It should live in `plugins/meeting-notes`, use plugin-scoped storage for notes, open as a side panel from the palette and topbar, expose MCP tools to list and create notes, and include one user setting for the default view. Follow current plugin SDK patterns and verify the package.",
+      "expected_output": "A scaffolded plugin package under `plugins/meeting-notes` with a real overlay, typed note model, descriptor, MCP tools, and verification commands run against the package.",
+      "files": [],
+      "expectations": [
+        "Uses `pnpm create-plugin meeting-notes` instead of hand-building the package",
+        "Implements the plugin under `plugins/meeting-notes/` with the current scaffolded structure",
+        "Replaces placeholder descriptor values with a real category, presentation, settings, and MCP tools",
+        "Uses `PluginRenderProps` and plugin SDK utilities instead of inventing a separate host API",
+        "Runs verification with `pnpm check:extensions --filter=plugin` and a package-level test command"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Add a monitoring plugin called `incident-hub` that should support deep-linking to a selected incident, use a fullscreen presentation, and contribute a summary widget to the dashboard. Keep query params and selected item state in sync so shared links reopen the same incident.",
+      "expected_output": "A new plugin package that includes a deep-link-aware overlay and a widget contribution without losing alignment with current plugin SDK patterns.",
+      "files": [],
+      "expectations": [
+        "Uses `use-plugin-search-param` or an equivalent current plugin SDK helper for deep-linkable selection state",
+        "Adds widget contribution code instead of forcing everything into the overlay component",
+        "Keeps URL query params and selected item state synchronized on initial load and after selection changes",
+        "Uses current `PluginDescriptor` fields for fullscreen presentation and plugin widget contribution"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Create a `bookmark-inbox` plugin that can receive items from other plugins and expose an RPC service that returns unread counts. The overlay should still follow Radarboard UI standards and not introduce arbitrary Tailwind values.",
+      "expected_output": "A plugin package that includes intent handling, RPC services, and a standards-compliant overlay.",
+      "files": [],
+      "expectations": [
+        "Defines `intents` for inbound actions and `services` for RPC instead of inventing ad hoc cross-plugin wiring",
+        "Uses typed storage or CRUD helpers for persisted plugin data",
+        "Avoids raw hex colors and arbitrary Tailwind values in the overlay",
+        "Keeps the plugin implementation within current plugin SDK boundaries"
+      ]
+    }
+  ]
+}

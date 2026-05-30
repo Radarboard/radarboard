@@ -1,0 +1,51 @@
+---
+title: "POST /api/alerts/send"
+description: "Send email alerts via Resend."
+---
+
+# POST /api/alerts/send
+
+Sends email alerts via Resend. Supports health check alerts (pre-formatted HTML) and custom alerts.
+
+## Request body
+
+### Health alert
+
+```json
+{
+  "type": "health",
+  "monitors": [
+    {
+      "name": "goshuin.com",
+      "status": "down",
+      "url": "https://goshuin.com"
+    }
+  ]
+}
+```
+
+### Custom alert
+
+```json
+{
+  "type": "custom",
+  "subject": "Revenue dropped 20%",
+  "html": "<p>Revenue has dropped significantly in the last 24 hours.</p>"
+}
+```
+
+## Response
+
+### Success
+
+```json
+{ "sent": true, "id": "email-id-from-resend" }
+```
+
+### Not configured
+
+```json
+{ "configured": false }
+```
+
+Returns `configured: false` if Resend env vars are not set. This is not an error -- it means alerts are simply disabled.

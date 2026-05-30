@@ -1,0 +1,24 @@
+---
+title: "KPI Strip"
+description: "Horizontal strip of at-a-glance KPI cells for health, errors, app rating, last deploy, and live visitors."
+---
+
+# KPI Strip
+
+The KPI Strip is a chrome component that sits above the main grid, providing 5 at-a-glance metric cells.
+
+## Cells
+
+| Cell | What it shows | Source Service | Critical state |
+|------|--------------|----------------|---------------|
+| **Health** | Up/down/degraded monitor count | [BetterStack](/services/betterstack) | Pulses red when any service is down |
+| **Errors** | Unresolved error count | [Sentry](/services/sentry) | Pulses red for high error counts |
+| **App Rating** | Average stars + review count | [App Store Connect](/services/app-store-connect) | -- |
+| **Last Deploy** | Time ago + project name | [Vercel](/services/vercel) | -- |
+| **Live Visitors** | Real-time visitor count | [OpenPanel](/services/openpanel) | -- |
+
+## Behavior
+
+- Cells that lack their required service simply don't appear or show a placeholder
+- Critical cells (Health, Errors) **pulse red** when values exceed thresholds
+- All data refreshes according to each service's cache TTL

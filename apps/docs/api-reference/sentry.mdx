@@ -1,0 +1,39 @@
+---
+title: "GET /api/sentry"
+description: "Fetch unresolved error issues from Sentry."
+---
+
+# GET /api/sentry
+
+Fetches unresolved error issues and error count trends from Sentry.
+
+## Query parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `project` | string | No | Project slug (e.g., `goshuin-atlas`) |
+
+## Response
+
+```json
+{
+  "issues": [
+    {
+      "id": "12345",
+      "title": "TypeError: Cannot read property 'x' of undefined",
+      "culprit": "app/components/Widget.tsx",
+      "count": 42,
+      "userCount": 12,
+      "level": "error",
+      "firstSeen": "2026-03-15T10:00:00Z",
+      "lastSeen": "2026-03-17T11:30:00Z"
+    }
+  ],
+  "errorCount": 156
+}
+```
+
+## Cache
+
+- **TTL**: 2 minutes
+- **Projects TTL**: 10 minutes

@@ -1,0 +1,37 @@
+{
+  "$schema": "https://raw.githubusercontent.com/nicovrc/tauri2-schemas/main/capability.schema.json",
+  "identifier": "default",
+  "description": "Default capabilities for the Radarboard app",
+  "local": true,
+  "remote": {
+    "urls": ["https://*.radarboard.dev", "https://*.radarboard.app", "https://*.vercel.app"]
+  },
+  "windows": ["main", "splashscreen"],
+  "permissions": [
+    "core:default",
+    "core:window:default",
+    "core:window:allow-show",
+    "core:window:allow-hide",
+    "core:window:allow-close",
+    "core:window:allow-set-focus",
+    "core:window:allow-start-dragging",
+    "shell:allow-open",
+    "opener:default",
+    "notification:default",
+    "window-state:default",
+    "process:default",
+    "global-shortcut:default",
+    "autostart:default",
+    "mcp-bridge:default",
+    "log:default",
+    "store:default",
+    "updater:default",
+    "deep-link:default",
+    "positioner:default",
+    "clipboard-manager:default",
+    "dialog:default",
+    "fs:default",
+    "os:default",
+    "stronghold:default"
+  ]
+}

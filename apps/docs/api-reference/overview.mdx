@@ -1,0 +1,33 @@
+---
+title: "API Reference Overview"
+description: "Radarboard exposes 14 API routes for data fetching, settings management, database operations, and alerts."
+---
+
+# API Reference
+
+All API routes are located at `apps/app/app/api/` and are served from the Next.js app.
+
+## Data endpoints
+
+These endpoints fetch data from external services and return it with caching.
+
+| Endpoint | Method | Service | Cache TTL |
+|----------|--------|---------|-----------|
+| [`/api/analytics`](/api-reference/analytics) | GET | OpenPanel | 60s |
+| [`/api/revenue`](/api-reference/revenue) | GET | RevenueCat | 300s |
+| [`/api/health`](/api-reference/health) | GET | BetterStack | 60s |
+| [`/api/sentry`](/api-reference/sentry) | GET | Sentry | 120s |
+| [`/api/seo`](/api-reference/seo) | GET | Google Search Console | 300s |
+| [`/api/shipping`](/api-reference/shipping) | GET | GitHub + Linear + Vercel | 120s |
+| [`/api/ideas`](/api-reference/ideas) | GET | Linear | 120s |
+| [`/api/open-collective`](/api-reference/open-collective) | GET | Open Collective | 300s |
+| [`/api/app-store`](/api-reference/app-store) | GET | App Store Connect | 300s |
+
+## Management endpoints
+
+| Endpoint | Methods | Description |
+|----------|---------|-------------|
+| [`/api/settings`](/api-reference/settings) | GET, POST | Widget layout and project order |
+| [`/api/alerts/send`](/api-reference/alerts) | POST | Send email alerts via Resend |
+| [`/api/database/*`](/api-reference/database) | GET, POST | Database config, testing, migration, import/export |
+| [`/api/backup`](/api-reference/backup) | POST | Proactive cache refresh for all services |

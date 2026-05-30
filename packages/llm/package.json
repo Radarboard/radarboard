@@ -1,0 +1,33 @@
+{
+  "name": "@radarboard/llm",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "exports": {
+    "./types": "./src/types.ts",
+    "./providers/registry": "./src/providers/registry.ts",
+    "./providers/anthropic": "./src/providers/anthropic.ts",
+    "./providers/openai": "./src/providers/openai.ts",
+    "./providers/google": "./src/providers/google.ts",
+    "./skills/registry": "./src/skills/registry.ts",
+    "./skills/templates": "./src/skills/templates.ts",
+    "./prompt": "./src/prompt.ts",
+    "./cost-calculator": "./src/cost-calculator.ts",
+    "./context-window": "./src/context-window.ts",
+    "./spending-tracker": "./src/spending-tracker.ts"
+  },
+  "dependencies": {
+    "@radarboard/types": "workspace:*"
+  },
+  "devDependencies": {
+    "@radarboard/tsconfig": "workspace:*",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

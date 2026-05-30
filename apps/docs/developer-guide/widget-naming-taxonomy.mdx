@@ -1,0 +1,56 @@
+---
+title: "Widget Naming Taxonomy"
+description: "Rules for naming canonical and specialized widgets in Radarboard."
+---
+
+# Widget Naming Taxonomy
+
+Radarboard names widgets in two different ways depending on what the widget represents:
+
+- **Canonical widgets** use a job-first name.
+- **Specialized widgets** use a provider-first name.
+
+This keeps the catalog readable while still making provider-specific surfaces explicit when needed.
+
+## Canonical widgets
+
+Canonical widgets represent the primary product surface for a capability. These names should describe the job the user wants done, not the service currently providing the data.
+
+Examples:
+
+- `Revenue`
+- `Bookmarks`
+- `Shipping`
+- `Analytics`
+- `SEO`
+- `App Reviews`
+
+Use a canonical name when the widget is the main Radarboard destination for that capability, even if only one provider exists today.
+
+## Specialized widgets
+
+Specialized widgets are narrower, provider-specific, or intentionally tied to one provider’s mental model. These should carry provider context in the name.
+
+Examples:
+
+- `GitHub Stars`
+- `GitHub Commits`
+- `Vercel Domains`
+- `App Store Reviews`
+
+Use a provider-first name when the widget would be confusing as a generic noun or when the product does not yet support a believable provider-agnostic abstraction.
+
+## Terms to avoid
+
+Avoid names that require internal Radarboard context to understand:
+
+- branded or invented labels like `Review Pulse`
+- vague platform terms like `Observability` when the widget is really a product-facing monitoring surface
+- generic nouns like `Stars` or `Domains` when the implementation is clearly provider-specific
+
+## Current guidance
+
+- Keep `Shipping` as the user-facing name for the release timeline widget. Use `Shipping Log` only in explanatory copy when you are referring to the feed/timeline flavor specifically.
+- Keep `Service Monitor` as the composite monitoring widget name while it still bundles errors, reviews, and uptime.
+- Prefer `Bookmarks` over the provider name `Raindrop` for the canonical saved-links surface.
+- Prefer explicit names like `GitHub Stars`, `GitHub Commits`, and `Vercel Domains` for clearly single-provider surfaces.

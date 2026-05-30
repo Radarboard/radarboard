@@ -1,0 +1,113 @@
+---
+title: "Notifications"
+description: "Notification architecture, settings model, delivery channels, and testing workflow in Radarboard."
+---
+
+# Notifications
+
+Radarboard has a unified notification system that turns integration activity into a single event pipeline.
+
+## What the system does
+
+- ingests events from integrations, plugins, and webhook receivers
+- deduplicates and persists them
+- applies source preferences, quiet hours, snoozes, and custom rules
+- batches non-critical events into digest windows
+- delivers to in-app, desktop, webhook, and MCP channels
+
+Critical events bypass batching and deliver immediately.
+
+## Where settings live
+
+Notification settings are intentionally split by responsibility.
+
+### Integration modal
+
+Per-integration notification behavior belongs in the integration detail modal.
+
+That is where you configure:
+
+- whether the integration emits notifications
+- which preset it uses
+- its digest window
+
+This keeps source-specific behavior close to the service itself.
+
+### Notifications settings page
+
+The Notifications page is for global behavior:
+
+- channels
+- quiet hours
+- rules
+- webhooks
+
+## Desktop notifications
+
+Desktop notifications use the browser Notification API.
+
+If the UI says:
+
+```text
+Denied. Reset permission in browser settings.
+```
+
+the browser has already set notification permission to `denied` for the Radarboard origin.
+
+The app cannot re-prompt in that state.
+
+To fix it:
+
+1. reset notification permission for `https://radarboard.localhost:1355`
+2. refresh the page
+3. enable the desktop toggle again
+
+## Delivery channels
+
+Current channels:
+
+- `in_app`
+- `desktop`
+- `webhook`
+- `mcp`
+
+Email is intentionally deferred for a later pass.
+
+## Webhooks
+
+Inbound integration webhooks are documented separately:
+
+- [Local Webhook Development](/developer-guide/local-webhooks)
+
+Outbound webhook delivery is configured in the Notifications settings page.
+
+## Rules
+
+Rules let Radarboard add or override routing for matching events.
+
+They support:
+
+- source filter
+- event type glob
+- minimum severity
+- optional structured condition
+- delivery channels
+
+## End-to-end test checklist
+
+1. trigger an integration event
+2. confirm the bell badge updates
+3. verify the dropdown and panel show the event
+4. mark the event read or dismissed
+5. test an outbound webhook endpoint from settings
+6. add a rule and confirm it changes routing
+7. test desktop notifications with the tab in the background
+
+## Important files
+
+- `apps/app/lib/notifications.ts`
+- `apps/app/lib/notification-webhooks.ts`
+- `apps/app/components/settings-notifications.tsx`
+- `apps/app/components/settings-integrations.tsx`
+- `packages/notifications/src/accumulator.ts`
+- `packages/types/src/notifications.ts`

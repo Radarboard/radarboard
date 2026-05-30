@@ -1,0 +1,41 @@
+{
+  "name": "@radarboard/utils",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "exports": {
+    "./project-helpers": "./src/project-helpers.ts",
+    "./format-currency": "./src/format-currency.ts",
+    "./format-date-time": "./src/format-date-time.ts",
+    "./format-number": "./src/format-number.ts",
+    "./format-time-ago": "./src/format-time-ago.ts",
+    "./format-percent": "./src/format-percent.ts",
+    "./timezone": "./src/timezone.ts",
+    "./colors": "./src/colors.ts",
+    "./cn": "./src/cn.ts",
+    "./crypto": "./src/crypto.ts",
+    "./routing": "./src/routing.ts",
+    "./api-routes": "./src/api-routes.ts",
+    "./clipboard": "./src/clipboard.ts",
+    "./shortcut-label": "./src/shortcut-label.ts",
+    "./config-migrations": "./src/config-migrations.ts"
+  },
+  "dependencies": {
+    "@radarboard/types": "workspace:*",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.5.0"
+  },
+  "devDependencies": {
+    "@radarboard/tsconfig": "workspace:*",
+    "@tauri-apps/plugin-clipboard-manager": "^2.3.2",
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

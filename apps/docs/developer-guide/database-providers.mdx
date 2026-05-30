@@ -1,0 +1,91 @@
+---
+title: "Database Providers"
+description: "Choose between SQLite, Supabase, Turso, or PlanetScale for persistent settings and cache."
+---
+
+# Database Providers
+
+Radarboard supports 4 database providers for storing settings (widget layout, project order) and API cache.
+
+## Supported providers
+
+| Provider | Type | Setup | Best for |
+|----------|------|-------|----------|
+| **SQLite** | Local file | Zero config (default) | Local development, single machine |
+| **Supabase** | Cloud PostgreSQL | URL + anon key | Cloud hosting, Supabase users |
+| **Turso** | Edge SQLite | URL + auth token | Edge deployments, low latency |
+| **PlanetScale** | Cloud MySQL | Host + username + password | MySQL-based infrastructure |
+
+## Configuration
+
+### Via environment variable
+
+```bash .env.local
+DATABASE_PROVIDER=sqlite  # or supabase, turso, planetscale
+```
+
+### Via `.radarboard.json`
+
+The database provider can also be configured through the Settings UI, which writes to `.radarboard.json`:
+
+```json .radarboard.json
+{
+  "database": {
+    "provider": "turso",
+    "config": {
+      "url": "libsql://your-db.turso.io",
+      "authToken": "your-token"
+    }
+  }
+}
+```
+
+### Via API
+
+Use the `/api/database/config` endpoint to get or set the provider programmatically.
+
+## Database schema
+
+Two tables are used:
+
+### `user_settings`
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | TEXT (PK) | Setting identifier |
+| `project_order` | TEXT | JSON array of project slugs |
+| `updated_at` | INTEGER | Unix timestamp |
+
+### `api_cache`
+| Column | Type | Description |
+|--------|------|-------------|
+| `key` | TEXT (PK) | Cache key |
+| `route` | TEXT | API route that generated this cache |
+| `data` | TEXT | JSON-serialized response data |
+| `fetched_at` | INTEGER | Unix timestamp when fetched |
+| `ttl_seconds` | INTEGER | Time-to-live in seconds |
+
+## Provider-specific setup
+
+### Turso
+
+```bash .env.local
+DATABASE_PROVIDER=turso
+TURSO_DATABASE_URL=libsql://your-db-name.turso.io
+TURSO_AUTH_TOKEN=your-auth-token
+```
+
+### Supabase
+
+Configure via the Settings UI or `.radarboard.json` with your Supabase project URL and anon key.
+
+### PlanetScale
+
+Configure via the Settings UI or `.radarboard.json` with your database host, username, and password.
+
+## Testing connection
+
+Use the `/api/database/test` endpoint to verify your database connection before committing to a provider.
+
+## Migration
+
+Use the `/api/database/migrate` endpoint to create the required tables in your chosen provider.

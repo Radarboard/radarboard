@@ -1,0 +1,40 @@
+---
+title: "GET /api/analytics"
+description: "Fetch web analytics data from OpenPanel."
+---
+
+# GET /api/analytics
+
+Fetches analytics data from OpenPanel: visitors, sessions, page views, bounce rate, top pages, referrers, and live visitor count.
+
+## Query parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `range` | string | No | Time range: `7d`, `15d`, `30d` (default), `3m`, `1y`, `all` |
+| `platform` | string | No | Platform identifier (e.g., `goshuin-com`) |
+| `project` | string | No | Project slug (e.g., `goshuin-atlas`) |
+
+## Response
+
+```json
+{
+  "visitors": 1234,
+  "sessions": 2345,
+  "pageViews": 5678,
+  "bounceRate": 45.2,
+  "avgDuration": 120,
+  "liveVisitors": 12,
+  "topPages": [
+    { "path": "/", "views": 500, "uniqueVisitors": 300 }
+  ],
+  "referrers": [
+    { "source": "google.com", "visitors": 200 }
+  ]
+}
+```
+
+## Cache
+
+- **TTL**: 60 seconds
+- **Live visitors TTL**: 15 seconds

@@ -1,0 +1,235 @@
+name: Desktop macOS Release
+
+on:
+  push:
+    tags:
+      - "desktop-v*"
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Release tag to create, for example desktop-v0.1.0"
+        required: true
+        type: string
+      prerelease:
+        description: "Mark the GitHub release as a prerelease"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  release-macos:
+    name: release-macos
+    runs-on: macos-15
+    permissions:
+      contents: write
+    env:
+      CI: true
+      RELEASE_TAG: ${{ github.ref_type == 'tag' && github.ref_name || inputs.tag_name }}
+      RELEASE_IS_PRERELEASE: ${{ inputs.prerelease || contains(github.ref_name, '-alpha.') || contains(github.ref_name, '-beta.') || contains(inputs.tag_name, '-alpha.') || contains(inputs.tag_name, '-beta.') }}
+      RELEASE_NOTES_PATH: ${{ format('release-notes/{0}.md', github.ref_type == 'tag' && github.ref_name || inputs.tag_name) }}
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v6
+
+      - name: Setup Node, pnpm, and dependencies
+        uses: ./.github/actions/setup-pnpm-install
+        with:
+          node-version-file: .nvmrc
+
+      - name: Setup Rust
+        uses: ./.github/actions/setup-rust-cache
+        with:
+          targets: aarch64-apple-darwin
+          workspaces: |
+            apps/desktop/src-tauri -> target
+
+      - name: Validate release channel
+        run: |
+          set -euo pipefail
+
+          case "${RELEASE_TAG}" in
+            desktop-v*-alpha.*)
+              echo "Release channel: alpha"
+              ;;
+            desktop-v*-beta.*)
+              echo "Release channel: beta"
+              ;;
+            desktop-v*)
+              echo "Release channel: stable"
+              ;;
+            *)
+              echo "Desktop release tags must start with desktop-v" >&2
+              exit 1
+              ;;
+          esac
+
+      - name: Resolve signing mode
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+          APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
+          APPLE_API_PRIVATE_KEY: ${{ secrets.APPLE_API_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${TAURI_SIGNING_PRIVATE_KEY:-}" ]; then
+            echo "Missing required release secret: TAURI_SIGNING_PRIVATE_KEY" >&2
+            exit 1
+          fi
+
+          has_certificate=true
+          for required_secret in APPLE_CERTIFICATE APPLE_CERTIFICATE_PASSWORD KEYCHAIN_PASSWORD; do
+            if [ -z "${!required_secret:-}" ]; then
+              has_certificate=false
+              break
+            fi
+          done
+
+          has_apple_id_auth=true
+          for required_secret in APPLE_ID APPLE_PASSWORD APPLE_TEAM_ID; do
+            if [ -z "${!required_secret:-}" ]; then
+              has_apple_id_auth=false
+              break
+            fi
+          done
+
+          has_api_key_auth=true
+          for required_secret in APPLE_API_ISSUER APPLE_API_KEY APPLE_API_PRIVATE_KEY; do
+            if [ -z "${!required_secret:-}" ]; then
+              has_api_key_auth=false
+              break
+            fi
+          done
+
+          if [ "${has_apple_id_auth}" != "true" ] && [ "${has_api_key_auth}" != "true" ]; then
+            has_notarization=false
+          else
+            has_notarization=true
+          fi
+
+          apple_signing_ready=false
+          if [ "${has_certificate}" = "true" ] && [ "${has_notarization}" = "true" ]; then
+            apple_signing_ready=true
+          fi
+
+          if [ "${apple_signing_ready}" != "true" ] && [ "${RELEASE_IS_PRERELEASE}" != "true" ]; then
+            echo "Stable desktop releases require Apple signing and notarization secrets." >&2
+            echo "Provide APPLE_CERTIFICATE + APPLE_CERTIFICATE_PASSWORD + KEYCHAIN_PASSWORD and either Apple ID or App Store Connect API credentials." >&2
+            exit 1
+          fi
+
+          if [ "${apple_signing_ready}" = "true" ]; then
+            echo "APPLE_SIGNING_ENABLED=true" >> "$GITHUB_ENV"
+            echo "TAURI_BUILD_ARGS=--config src-tauri/tauri.conf.json --target aarch64-apple-darwin --ci --bundles app,dmg" >> "$GITHUB_ENV"
+          else
+            echo "Apple signing secrets are incomplete; building unsigned prerelease artifacts."
+            echo "APPLE_SIGNING_ENABLED=false" >> "$GITHUB_ENV"
+            echo "TAURI_BUILD_ARGS=--config src-tauri/tauri.conf.json --target aarch64-apple-darwin --ci --no-sign --bundles app,dmg" >> "$GITHUB_ENV"
+          fi
+
+      - name: Import Apple Developer certificate
+        if: env.APPLE_SIGNING_ENABLED == 'true'
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          set -euo pipefail
+
+          CERT_PATH="${RUNNER_TEMP}/radarboard-signing-cert.p12"
+          KEYCHAIN_PATH="${RUNNER_TEMP}/radarboard-signing.keychain-db"
+
+          echo "${APPLE_CERTIFICATE}" | base64 --decode > "${CERT_PATH}"
+
+          security create-keychain -p "${KEYCHAIN_PASSWORD}" "${KEYCHAIN_PATH}"
+          security default-keychain -s "${KEYCHAIN_PATH}"
+          security unlock-keychain -p "${KEYCHAIN_PASSWORD}" "${KEYCHAIN_PATH}"
+          security set-keychain-settings -t 3600 -u "${KEYCHAIN_PATH}"
+          security import "${CERT_PATH}" \
+            -k "${KEYCHAIN_PATH}" \
+            -P "${APPLE_CERTIFICATE_PASSWORD}" \
+            -T /usr/bin/codesign
+          security set-key-partition-list \
+            -S apple-tool:,apple:,codesign: \
+            -s \
+            -k "${KEYCHAIN_PASSWORD}" \
+            "${KEYCHAIN_PATH}"
+
+          CERT_IDENTITY="$(security find-identity -v -p codesigning "${KEYCHAIN_PATH}" | grep 'Developer ID Application' | head -n 1 | awk -F '\"' '{print $2}')"
+          if [ -z "${CERT_IDENTITY:-}" ]; then
+            echo "Failed to locate a Developer ID Application signing identity in the imported keychain." >&2
+            security find-identity -v -p codesigning "${KEYCHAIN_PATH}" || true
+            exit 1
+          fi
+
+          {
+            echo "APPLE_KEYCHAIN_PATH=${KEYCHAIN_PATH}"
+            echo "APPLE_SIGNING_IDENTITY=${CERT_IDENTITY}"
+          } >> "$GITHUB_ENV"
+
+      - name: Prepare Apple notarization credentials
+        if: env.APPLE_SIGNING_ENABLED == 'true'
+        env:
+          APPLE_API_PRIVATE_KEY: ${{ secrets.APPLE_API_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+
+          if [ -n "${APPLE_API_PRIVATE_KEY:-}" ]; then
+            APPLE_API_KEY_PATH="${RUNNER_TEMP}/AuthKey_${{ secrets.APPLE_API_KEY }}.p8"
+            printf '%s\n' "${APPLE_API_PRIVATE_KEY}" > "${APPLE_API_KEY_PATH}"
+            chmod 600 "${APPLE_API_KEY_PATH}"
+            echo "APPLE_API_KEY_PATH=${APPLE_API_KEY_PATH}" >> "$GITHUB_ENV"
+          fi
+
+      - name: Load curated release notes
+        id: release-notes
+        run: |
+          set -euo pipefail
+
+          pnpm release:notes:check --path "${RELEASE_NOTES_PATH}"
+
+          {
+            echo "body<<EOF"
+            cat "${RELEASE_NOTES_PATH}"
+            echo
+            echo "---"
+            echo
+            echo "## Auto-generated commit and PR notes"
+            echo
+            echo "The notes below are generated by GitHub and complement the curated summary above."
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Build and Publish macOS Release
+        id: tauri-release
+        uses: tauri-apps/tauri-action@v0.6.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ env.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+          APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
+          APPLE_API_KEY_PATH: ${{ env.APPLE_API_KEY_PATH }}
+        with:
+          projectPath: apps/desktop
+          tauriScript: pnpm tauri
+          args: ${{ env.TAURI_BUILD_ARGS }}
+          tagName: ${{ env.RELEASE_TAG }}
+          releaseName: Radarboard Desktop ${{ env.RELEASE_TAG }}
+          releaseBody: ${{ steps.release-notes.outputs.body }}
+          releaseDraft: true
+          releaseCommitish: ${{ github.sha }}
+          prerelease: ${{ env.RELEASE_IS_PRERELEASE == 'true' }}
+          generateReleaseNotes: true
+          assetNamePattern: "Radarboard-[version]-macos-[arch][ext]"
