@@ -56,11 +56,11 @@ describe("verify-sidecar-bundle", () => {
     tempRoots.push(root);
 
     addRequiredPackages(root);
-    rmSync(join(root, "node_modules", "fetch-blob"), { recursive: true, force: true });
+    rmSync(join(root, "node_modules", "jsdom"), { recursive: true, force: true });
 
-    expect(getMissingPackages(root)).toEqual(["fetch-blob"]);
+    expect(getMissingPackages(root)).toEqual(["jsdom"]);
     expect(() => assertRequiredPackages(root)).toThrow(
-      "Standalone bundle is missing required runtime packages: fetch-blob"
+      "Standalone bundle is missing required runtime packages: jsdom"
     );
   });
 

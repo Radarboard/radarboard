@@ -109,7 +109,10 @@
   "pnpm": {
     "overrides": {
       "@types/react": "catalog:",
-      "@types/react-dom": "catalog:"
+      "@types/react-dom": "catalog:",
+      "esbuild": "^0.28.0",
+      "postcss": "8.5.15",
+      "qs": "6.15.2"
     },
     "onlyBuiltDependencies": [
       "esbuild",
