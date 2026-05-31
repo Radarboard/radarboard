@@ -631,6 +631,18 @@ fn start_server(
         ));
     }
 
+    std::thread::spawn(move || {
+        for line in std::io::BufRead::lines(reader) {
+            match line {
+                Ok(line) => info!("Sidecar stdout: {line}"),
+                Err(err) => {
+                    warn!("Failed to read sidecar stdout: {err}");
+                    break;
+                }
+            }
+        }
+    });
+
     Ok((child, url))
 }
 

@@ -110,7 +110,9 @@ export async function validateSidecarRuntime({
   resourceDir,
   timeoutMs = SIDECAR_STARTUP_TIMEOUT_MS,
 }) {
-  const launcherPath = join(resourceDir, "resources", "standalone", "launcher.mjs");
+  const resolvedSidecarBinaryPath = resolve(sidecarBinaryPath);
+  const resolvedResourceDir = resolve(resourceDir);
+  const launcherPath = join(resolvedResourceDir, "resources", "standalone", "launcher.mjs");
   if (!existsSync(launcherPath)) {
     throw new Error(`Sidecar launcher not found: ${launcherPath}`);
   }
@@ -121,10 +123,10 @@ export async function validateSidecarRuntime({
     let stderr = "";
     let timeout;
 
-    const child = spawn(sidecarBinaryPath, getSidecarLaunchArgs(launcherPath), {
+    const child = spawn(resolvedSidecarBinaryPath, getSidecarLaunchArgs(launcherPath), {
       env: {
         ...process.env,
-        TAURI_RESOURCE_DIR: join(resourceDir, "resources"),
+        TAURI_RESOURCE_DIR: join(resolvedResourceDir, "resources"),
       },
       stdio: ["ignore", "pipe", "pipe"],
     });
