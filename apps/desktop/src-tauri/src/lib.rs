@@ -108,10 +108,10 @@ fn set_tray_state(app: tauri::AppHandle, state: String, unread_count: u32, statu
         let app_name = desktop_app_name(&app);
         // Swap icon based on state
         let icon = match state.as_str() {
-            "badge" => tray_image_from_png(include_bytes!("../tray-icons/tray-badge.png")),
-            "critical" => tray_image_from_png(include_bytes!("../tray-icons/tray-critical.png")),
-            "paused" => tray_image_from_png(include_bytes!("../tray-icons/tray-paused.png")),
-            _ => tray_image_from_png(include_bytes!("../tray-icons/tray-normal.png")),
+            "badge" => tray_image_from_png(include_bytes!("../icons/tray-badge.png")),
+            "critical" => tray_image_from_png(include_bytes!("../icons/tray-critical.png")),
+            "paused" => tray_image_from_png(include_bytes!("../icons/tray-paused.png")),
+            _ => tray_image_from_png(include_bytes!("../icons/tray-normal.png")),
         };
         set_tray_icon_template(&tray, icon);
 
@@ -193,7 +193,7 @@ fn pause_notifications(app: tauri::AppHandle, duration_minutes: u32) {
     // Switch to paused icon
     if let Some(tray) = app.tray_by_id("main") {
         let app_name = desktop_app_name(&app);
-        let icon = tray_image_from_png(include_bytes!("../tray-icons/tray-paused.png"));
+        let icon = tray_image_from_png(include_bytes!("../icons/tray-paused.png"));
         set_tray_icon_template(&tray, icon);
         let _ = tray.set_tooltip(Some(format!(
             "{} — Notifications paused ({}m)",
@@ -210,7 +210,7 @@ fn mark_all_read(app: tauri::AppHandle) {
     info!("Marking all notifications as read");
     // Reset to normal icon
     if let Some(tray) = app.tray_by_id("main") {
-        let icon = tray_image_from_png(include_bytes!("../tray-icons/tray-normal.png"));
+        let icon = tray_image_from_png(include_bytes!("../icons/tray-normal.png"));
         set_tray_icon_template(&tray, icon);
         let _ = tray.set_tooltip(Some(desktop_app_name(&app)));
     }
@@ -384,13 +384,16 @@ fn command_basename(command: &str) -> Option<&str> {
 
 #[cfg(desktop)]
 fn is_radarboard_desktop_command(command: &str) -> bool {
-    matches!(command_basename(command), Some("radarboard-desktop"))
+    matches!(
+        command_basename(command),
+        Some("Radarboard" | "radarboard-desktop")
+    )
 }
 
 #[cfg(desktop)]
 fn is_radarboard_server_command(command: &str) -> bool {
     command_basename(command)
-        .is_some_and(|name| name == "radarboard-server" || name.starts_with("radarboard-server-"))
+        .is_some_and(|name| name == "radarboard-helper" || name.starts_with("radarboard-helper-"))
 }
 
 #[cfg(desktop)]
@@ -535,8 +538,8 @@ fn resolve_sidecar(app: &tauri::App) -> Result<std::path::PathBuf, String> {
     let exe_dir = exe_path.parent().unwrap_or(std::path::Path::new("."));
 
     let target = env!("TAURI_TARGET_TRIPLE");
-    let suffixed_name = format!("radarboard-server-{target}");
-    let plain_name = "radarboard-server";
+    let suffixed_name = format!("radarboard-helper-{target}");
+    let plain_name = "radarboard-helper";
 
     let resource_dir = app.path().resource_dir().ok();
 
@@ -1152,7 +1155,7 @@ pub fn run() {
 
                 let _tray = TrayIconBuilder::with_id("main")
                     .icon(tray_image_from_png(include_bytes!(
-                        "../tray-icons/tray-normal.png"
+                        "../icons/tray-normal.png"
                     )))
                     .icon_as_template(true)
                     .tooltip(desktop_app_name(app))
@@ -1173,7 +1176,7 @@ pub fn run() {
                                 if let Some(tray) = app.tray_by_id("main") {
                                     let app_name = desktop_app_name(app);
                                     let icon = tray_image_from_png(include_bytes!(
-                                        "../tray-icons/tray-paused.png"
+                                        "../icons/tray-paused.png"
                                     ));
                                     set_tray_icon_template(&tray, icon);
                                     let _ = tray
@@ -1185,7 +1188,7 @@ pub fn run() {
                                 if let Some(tray) = app.tray_by_id("main") {
                                     let app_name = desktop_app_name(app);
                                     let icon = tray_image_from_png(include_bytes!(
-                                        "../tray-icons/tray-paused.png"
+                                        "../icons/tray-paused.png"
                                     ));
                                     set_tray_icon_template(&tray, icon);
                                     let _ =
@@ -1197,7 +1200,7 @@ pub fn run() {
                                 if let Some(tray) = app.tray_by_id("main") {
                                     let app_name = desktop_app_name(app);
                                     let icon = tray_image_from_png(include_bytes!(
-                                        "../tray-icons/tray-paused.png"
+                                        "../icons/tray-paused.png"
                                     ));
                                     set_tray_icon_template(&tray, icon);
                                     let _ =
@@ -1210,7 +1213,7 @@ pub fn run() {
                                 if let Some(tray) = app.tray_by_id("main") {
                                     let app_name = desktop_app_name(app);
                                     let icon = tray_image_from_png(include_bytes!(
-                                        "../tray-icons/tray-paused.png"
+                                        "../icons/tray-paused.png"
                                     ));
                                     set_tray_icon_template(&tray, icon);
                                     let _ = tray.set_tooltip(Some(format!(
@@ -1222,7 +1225,7 @@ pub fn run() {
                                 let _ = app.emit("resume-notifications", ());
                                 if let Some(tray) = app.tray_by_id("main") {
                                     let icon = tray_image_from_png(include_bytes!(
-                                        "../tray-icons/tray-normal.png"
+                                        "../icons/tray-normal.png"
                                     ));
                                     set_tray_icon_template(&tray, icon);
                                     let _ = tray.set_tooltip(Some(desktop_app_name(app)));
@@ -1233,7 +1236,7 @@ pub fn run() {
                                 let _ = app.emit("mark-all-read", ());
                                 if let Some(tray) = app.tray_by_id("main") {
                                     let icon = tray_image_from_png(include_bytes!(
-                                        "../tray-icons/tray-normal.png"
+                                        "../icons/tray-normal.png"
                                     ));
                                     set_tray_icon_template(&tray, icon);
                                     let _ = tray.set_tooltip(Some(desktop_app_name(app)));
@@ -1357,9 +1360,9 @@ mod tests {
     #[test]
     fn parse_ps_output_skips_invalid_rows() {
         let processes = parse_ps_output(
-            " 101 1 /Applications/Radarboard.app/Contents/MacOS/radarboard-desktop\n\
+            " 101 1 /Applications/Radarboard.app/Contents/MacOS/Radarboard\n\
              invalid-row\n\
-             202 101 /Applications/Radarboard.app/Contents/MacOS/radarboard-server /launcher.mjs\n\
+             202 101 /Applications/Radarboard.app/Contents/MacOS/radarboard-helper /launcher.mjs\n\
              303 nope /usr/bin/node\n",
         );
 
@@ -1369,14 +1372,13 @@ mod tests {
                 ProcessInfo {
                     pid: 101,
                     ppid: 1,
-                    command:
-                        "/Applications/Radarboard.app/Contents/MacOS/radarboard-desktop".to_string(),
+                    command: "/Applications/Radarboard.app/Contents/MacOS/Radarboard".to_string(),
                 },
                 ProcessInfo {
                     pid: 202,
                     ppid: 101,
                     command:
-                        "/Applications/Radarboard.app/Contents/MacOS/radarboard-server /launcher.mjs"
+                        "/Applications/Radarboard.app/Contents/MacOS/radarboard-helper /launcher.mjs"
                             .to_string(),
                 },
             ]
@@ -1389,21 +1391,20 @@ mod tests {
             ProcessInfo {
                 pid: 400,
                 ppid: 1,
-                command: "/Applications/Radarboard.app/Contents/MacOS/radarboard-desktop"
-                    .to_string(),
+                command: "/Applications/Radarboard.app/Contents/MacOS/Radarboard".to_string(),
             },
             ProcessInfo {
                 pid: 401,
                 ppid: 400,
                 command:
-                    "/Applications/Radarboard.app/Contents/MacOS/radarboard-server /launcher.mjs"
+                    "/Applications/Radarboard.app/Contents/MacOS/radarboard-helper /launcher.mjs"
                         .to_string(),
             },
             ProcessInfo {
                 pid: 402,
                 ppid: 1,
                 command:
-                    "/Applications/Radarboard.app/Contents/MacOS/radarboard-server /launcher.mjs"
+                    "/Applications/Radarboard.app/Contents/MacOS/radarboard-helper /launcher.mjs"
                         .to_string(),
             },
             ProcessInfo {
@@ -1425,7 +1426,7 @@ mod tests {
         let metadata = SidecarRuntimeMetadata {
             pid: 512,
             started_at: 1_744_070_000,
-            binary_path: "/Applications/Radarboard.app/Contents/MacOS/radarboard-server"
+            binary_path: "/Applications/Radarboard.app/Contents/MacOS/radarboard-helper"
                 .to_string(),
             url: Some("http://127.0.0.1:4311".to_string()),
         };
