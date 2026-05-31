@@ -29,6 +29,8 @@ use tauri_plugin_opener::OpenerExt;
 const STABLE_DESKTOP_IDENTIFIER: &str = "com.radarboard.client";
 #[cfg(desktop)]
 const SIDECAR_METADATA_FILE: &str = ".sidecar-runtime.json";
+#[cfg(desktop)]
+const SIDECAR_NODE_RUNTIME_ARGS: &[&str] = &["--jitless"];
 
 #[cfg(desktop)]
 struct ServerState {
@@ -579,21 +581,38 @@ fn start_server(
     }
 
     info!(
-        "Starting sidecar: {} {}",
+        "Starting sidecar: {} {} {}",
         sidecar_path.display(),
+        SIDECAR_NODE_RUNTIME_ARGS.join(" "),
         launcher.display()
     );
 
     let mut child = Command::new(sidecar_path)
+        .args(SIDECAR_NODE_RUNTIME_ARGS)
         .arg(&launcher)
         .env(
             "TAURI_RESOURCE_DIR",
             resource_dir.join("resources").as_os_str(),
         )
         .stdout(std::process::Stdio::piped())
-        .stderr(std::process::Stdio::inherit())
+        .stderr(std::process::Stdio::piped())
         .spawn()
         .map_err(|e| format!("Failed to spawn sidecar: {e}"))?;
+
+    if let Some(stderr) = child.stderr.take() {
+        std::thread::spawn(move || {
+            let reader = std::io::BufReader::new(stderr);
+            for line in std::io::BufRead::lines(reader) {
+                match line {
+                    Ok(line) => warn!("Sidecar: {line}"),
+                    Err(err) => {
+                        warn!("Failed to read sidecar stderr: {err}");
+                        break;
+                    }
+                }
+            }
+        });
+    }
 
     let stdout = child.stdout.take().ok_or("No stdout from sidecar")?;
     let mut reader = std::io::BufReader::new(stdout);
@@ -603,51 +622,16 @@ fn start_server(
     let url = url.trim().to_string();
 
     if url.is_empty() {
-        return Err("Sidecar did not output a URL".to_string());
+        let status = child.wait().ok();
+        return Err(format!(
+            "Sidecar exited before outputting a URL{}",
+            status
+                .map(|status| format!(" with status {status}"))
+                .unwrap_or_default()
+        ));
     }
 
     Ok((child, url))
-}
-
-#[cfg(desktop)]
-fn start_dev_server() -> Result<(std::process::Child, String), String> {
-    let launcher = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .parent()
-        .unwrap_or(std::path::Path::new("."))
-        .join("scripts")
-        .join("next-server.mjs");
-
-    if !launcher.exists() {
-        return Err(format!("Dev launcher not found at {:?}", launcher));
-    }
-
-    info!("Dev fallback: node {}", launcher.display());
-
-    let mut child = Command::new("node")
-        .arg(&launcher)
-        .stdout(std::process::Stdio::piped())
-        .stderr(std::process::Stdio::inherit())
-        .spawn()
-        .map_err(|e| format!("Failed to spawn dev server: {e}"))?;
-
-    let stdout = child.stdout.take().ok_or("No stdout")?;
-    let mut reader = std::io::BufReader::new(stdout);
-    let mut url = String::new();
-    std::io::BufRead::read_line(&mut reader, &mut url)
-        .map_err(|e| format!("Failed to read URL: {e}"))?;
-    let url = url.trim().to_string();
-
-    if url.is_empty() {
-        return Err("Dev server did not output a URL".to_string());
-    }
-
-    Ok((child, url))
-}
-
-#[cfg(mobile)]
-fn get_cloud_url() -> String {
-    std::env::var("RADARBOARD_CLOUD_URL")
-        .unwrap_or_else(|_| "https://app.radarboard.dev".to_string())
 }
 
 #[cfg(desktop)]
@@ -675,6 +659,87 @@ fn transition_from_splash(app: &tauri::App) {
         let _ = main.show();
         let _ = main.set_focus();
     }
+}
+
+#[cfg(desktop)]
+fn escape_html(value: &str) -> String {
+    let mut escaped = String::with_capacity(value.len());
+    for ch in value.chars() {
+        match ch {
+            '&' => escaped.push_str("&amp;"),
+            '<' => escaped.push_str("&lt;"),
+            '>' => escaped.push_str("&gt;"),
+            '"' => escaped.push_str("&quot;"),
+            '\'' => escaped.push_str("&#39;"),
+            _ => escaped.push(ch),
+        }
+    }
+    escaped
+}
+
+#[cfg(desktop)]
+fn show_startup_error(app: &tauri::App, message: &str) {
+    error!("Desktop startup failed: {message}");
+
+    let log_dir = app
+        .path()
+        .app_log_dir()
+        .map(|path| path.display().to_string())
+        .unwrap_or_else(|_| "the Radarboard app log directory".to_string());
+    let html = format!(
+        r#"<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Radarboard Startup Error</title>
+  <style>
+    :root {{ color-scheme: light dark; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }}
+    body {{ margin: 0; min-height: 100vh; display: grid; place-items: center; background: Canvas; color: CanvasText; }}
+    main {{ width: min(720px, calc(100vw - 48px)); }}
+    h1 {{ font-size: 22px; line-height: 1.2; margin: 0 0 12px; }}
+    p {{ font-size: 14px; line-height: 1.5; margin: 0 0 16px; color: color-mix(in srgb, CanvasText 78%, transparent); }}
+    pre {{ overflow: auto; white-space: pre-wrap; border: 1px solid color-mix(in srgb, CanvasText 18%, transparent); padding: 12px; font-size: 12px; line-height: 1.4; }}
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Radarboard could not start</h1>
+    <p>The local desktop server failed to launch. The app stayed open so diagnostics remain available.</p>
+    <p>Logs: {}</p>
+    <pre>{}</pre>
+  </main>
+</body>
+</html>"#,
+        escape_html(&log_dir),
+        escape_html(message)
+    );
+
+    if let Ok(data_dir) = app.path().app_local_data_dir() {
+        if let Err(err) = std::fs::create_dir_all(&data_dir) {
+            warn!("Failed to create startup diagnostics dir: {err}");
+        } else {
+            let diagnostics_path = data_dir.join("startup-error.html");
+            match std::fs::write(&diagnostics_path, html) {
+                Ok(()) => {
+                    if let Some(main) = app.get_webview_window("main") {
+                        if let Ok(url) = tauri::Url::from_file_path(&diagnostics_path) {
+                            let _ = main.navigate(url);
+                        }
+                    }
+                }
+                Err(err) => warn!("Failed to write startup diagnostics page: {err}"),
+            }
+        }
+    }
+
+    transition_from_splash(app);
+}
+
+#[cfg(mobile)]
+fn get_cloud_url() -> String {
+    std::env::var("RADARBOARD_CLOUD_URL")
+        .unwrap_or_else(|_| "https://app.radarboard.dev".to_string())
 }
 
 // ── Tray Menu Builder ──
@@ -976,56 +1041,51 @@ pub fn run() {
                         .resource_dir()
                         .map_err(|e| format!("Failed to get resource dir: {e}"))?;
 
-                    let result = resolve_sidecar(app)
-                        .and_then(|path| {
-                            start_server(&path, &resource_dir).map(|(child, url)| {
-                                (child, url, Some(path), Some(metadata_path.clone()))
-                            })
-                        })
-                        .or_else(|err| {
-                            warn!("Sidecar: {err}");
-                            info!("Trying dev fallback...");
-                            start_dev_server().map(|(child, url)| (child, url, None, None))
-                        });
+                    let result = resolve_sidecar(app).and_then(|path| {
+                        start_server(&path, &resource_dir)
+                            .map(|(child, url)| (child, url, path, metadata_path.clone()))
+                    });
 
-                    let (mut child, url, sidecar_path, metadata_path) = result.map_err(|e| {
-                        error!("{e}");
-                        transition_from_splash(app);
-                        e
-                    })?;
+                    match result {
+                        Ok((mut child, url, sidecar_path, metadata_path)) => {
+                            let child_pid = child.id();
+                            let metadata = SidecarRuntimeMetadata {
+                                pid: child_pid,
+                                started_at: current_unix_timestamp(),
+                                binary_path: sidecar_path.display().to_string(),
+                                url: Some(url.clone()),
+                            };
+                            persist_sidecar_metadata(&metadata_path, &metadata).map_err(|e| {
+                                let _ = child.kill();
+                                let _ = child.wait();
+                                error!("{e}");
+                                transition_from_splash(app);
+                                e
+                            })?;
 
-                    let child_pid = child.id();
-                    if let (Some(sidecar_path), Some(metadata_path)) =
-                        (sidecar_path.as_ref(), metadata_path.as_ref())
-                    {
-                        let metadata = SidecarRuntimeMetadata {
-                            pid: child_pid,
-                            started_at: current_unix_timestamp(),
-                            binary_path: sidecar_path.display().to_string(),
-                            url: Some(url.clone()),
-                        };
-                        persist_sidecar_metadata(metadata_path, &metadata).map_err(|e| {
-                            let _ = child.kill();
-                            let _ = child.wait();
-                            error!("{e}");
+                            info!("Server ready at {url}");
+
+                            app.manage(Mutex::new(ServerState {
+                                child: Some(child),
+                                child_pid: Some(child_pid),
+                                metadata_path: Some(metadata_path),
+                            }));
+
+                            if let Some(main) = app.get_webview_window("main") {
+                                let parsed_url: tauri::Url = url.parse().expect("valid URL");
+                                let _ = main.navigate(parsed_url);
+                            }
                             transition_from_splash(app);
-                            e
-                        })?;
+                        }
+                        Err(err) => {
+                            app.manage(Mutex::new(ServerState {
+                                child: None,
+                                child_pid: None,
+                                metadata_path: Some(metadata_path),
+                            }));
+                            show_startup_error(app, &err);
+                        }
                     }
-
-                    info!("Server ready at {url}");
-
-                    app.manage(Mutex::new(ServerState {
-                        child: Some(child),
-                        child_pid: Some(child_pid),
-                        metadata_path,
-                    }));
-
-                    if let Some(main) = app.get_webview_window("main") {
-                        let parsed_url: tauri::Url = url.parse().expect("valid URL");
-                        let _ = main.navigate(parsed_url);
-                    }
-                    transition_from_splash(app);
                 }
 
                 // ── App menu bar ──

@@ -1,12 +1,15 @@
 #!/usr/bin/env node
-import { spawnSync } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { existsSync, mkdtempSync, readdirSync, rmSync, statSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, join, resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 import { validateMacOsBundle } from "./validate-macos-bundle.mjs";
 
 const DEFAULT_APP_PATH =
   "src-tauri/target/aarch64-apple-darwin/release/bundle/macos/Radarboard.app";
+const SIDECAR_RUNTIME_ARGS = ["--jitless"];
+const SIDECAR_STARTUP_TIMEOUT_MS = 15_000;
 
 function parseArgs(argv) {
   const args = {
@@ -93,7 +96,106 @@ function validateSignature(path) {
   }
 }
 
-function validateApp(appPath, options) {
+export function getSidecarLaunchArgs(launcherPath) {
+  return [...SIDECAR_RUNTIME_ARGS, launcherPath];
+}
+
+function trimOutput(value) {
+  const trimmed = value.trim();
+  return trimmed.length > 2000 ? `${trimmed.slice(0, 2000)}...` : trimmed;
+}
+
+export async function validateSidecarRuntime({
+  sidecarBinaryPath,
+  resourceDir,
+  timeoutMs = SIDECAR_STARTUP_TIMEOUT_MS,
+}) {
+  const launcherPath = join(resourceDir, "resources", "standalone", "launcher.mjs");
+  if (!existsSync(launcherPath)) {
+    throw new Error(`Sidecar launcher not found: ${launcherPath}`);
+  }
+
+  await new Promise((resolvePromise, rejectPromise) => {
+    let settled = false;
+    let stdout = "";
+    let stderr = "";
+    let timeout;
+
+    const child = spawn(sidecarBinaryPath, getSidecarLaunchArgs(launcherPath), {
+      env: {
+        ...process.env,
+        TAURI_RESOURCE_DIR: join(resourceDir, "resources"),
+      },
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+
+    const settle = (error) => {
+      if (settled) return;
+      settled = true;
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+
+      if (!child.killed) {
+        child.kill("SIGTERM");
+      }
+
+      if (error) {
+        rejectPromise(error);
+      } else {
+        resolvePromise();
+      }
+    };
+
+    const runtimeOutput = () => {
+      const parts = [];
+      if (stdout.trim()) parts.push(`stdout:\n${trimOutput(stdout)}`);
+      if (stderr.trim()) parts.push(`stderr:\n${trimOutput(stderr)}`);
+      return parts.length > 0 ? `\n${parts.join("\n\n")}` : "";
+    };
+
+    timeout = setTimeout(() => {
+      settle(
+        new Error(
+          `Sidecar runtime did not print a local URL within ${timeoutMs}ms.${runtimeOutput()}`
+        )
+      );
+    }, timeoutMs);
+
+    child.stdout.setEncoding("utf8");
+    child.stderr.setEncoding("utf8");
+
+    child.stdout.on("data", (chunk) => {
+      stdout += chunk;
+      const url = stdout
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .find((line) => line.startsWith("http://127.0.0.1:"));
+      if (url) {
+        settle();
+      }
+    });
+
+    child.stderr.on("data", (chunk) => {
+      stderr += chunk;
+    });
+
+    child.on("error", (error) => {
+      settle(new Error(`Failed to start sidecar runtime: ${error.message}`));
+    });
+
+    child.on("exit", (code, signal) => {
+      if (settled) return;
+      settle(
+        new Error(
+          `Sidecar runtime exited before printing a local URL (code=${code}, signal=${signal}).${runtimeOutput()}`
+        )
+      );
+    });
+  });
+}
+
+async function validateApp(appPath, options) {
   const resolvedAppPath = resolve(appPath);
   if (!existsSync(resolvedAppPath)) {
     throw new Error(`App bundle not found: ${resolvedAppPath}`);
@@ -101,6 +203,7 @@ function validateApp(appPath, options) {
 
   const { sidecarBinaryPath } = validateMacOsBundle({ appPath: resolvedAppPath });
   const mainBinaryPath = join(resolvedAppPath, "Contents", "MacOS", "radarboard-desktop");
+  const resourceDir = join(resolvedAppPath, "Contents", "Resources");
 
   validateSignature(mainBinaryPath);
   validateSignature(sidecarBinaryPath);
@@ -115,10 +218,12 @@ function validateApp(appPath, options) {
     run("spctl", ["--assess", "--type", "execute", "--verbose=4", resolvedAppPath]);
   }
 
+  await validateSidecarRuntime({ sidecarBinaryPath, resourceDir });
+
   console.log(`[validate-macos-release-artifacts] OK: ${resolvedAppPath}`);
 }
 
-function validateDmg(dmgPath, options) {
+async function validateDmg(dmgPath, options) {
   const resolvedDmgPath = resolve(dmgPath);
   if (!existsSync(resolvedDmgPath)) {
     throw new Error(`DMG not found: ${resolvedDmgPath}`);
@@ -135,7 +240,7 @@ function validateDmg(dmgPath, options) {
       "-mountpoint",
       mountPoint,
     ]);
-    validateApp(join(mountPoint, "Radarboard.app"), options);
+    await validateApp(join(mountPoint, "Radarboard.app"), options);
   } finally {
     const detach = spawnSync("hdiutil", ["detach", mountPoint], {
       encoding: "utf8",
@@ -154,24 +259,26 @@ function validateDmg(dmgPath, options) {
   console.log(`[validate-macos-release-artifacts] OK: ${resolvedDmgPath}`);
 }
 
-function main() {
+async function main() {
   if (process.platform !== "darwin") {
     throw new Error("macOS release artifact validation must run on macOS.");
   }
 
   const args = parseArgs(process.argv.slice(2));
-  validateApp(args.appPath, args);
+  await validateApp(args.appPath, args);
 
   if (args.dmgPath) {
-    validateDmg(args.dmgPath, args);
+    await validateDmg(args.dmgPath, args);
   }
 }
 
-try {
-  main();
-} catch (error) {
-  console.error(
-    `[validate-macos-release-artifacts] ${error instanceof Error ? error.message : String(error)}`
-  );
-  process.exit(1);
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  try {
+    await main();
+  } catch (error) {
+    console.error(
+      `[validate-macos-release-artifacts] ${error instanceof Error ? error.message : String(error)}`
+    );
+    process.exit(1);
+  }
 }
