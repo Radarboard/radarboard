@@ -1,6 +1,6 @@
 [package]
 name = "radarboard-desktop"
-version = "0.1.1-beta.3"
+version = "0.1.1-beta.4"
 edition = "2021"
 description = "Radarboard desktop and mobile application"
 license = "MIT"

@@ -242,6 +242,32 @@ jobs:
             echo "APPLE_API_KEY_PATH=${APPLE_API_KEY_PATH}" >> "$GITHUB_ENV"
           fi
 
+      - name: Import Apple Developer ID intermediates
+        if: env.APPLE_SIGNING_ENABLED == 'true'
+        run: |
+          set -euo pipefail
+
+          CERT_DIR="${RUNNER_TEMP}/apple-developer-id-intermediates"
+          mkdir -p "${CERT_DIR}"
+
+          curl -fsSL \
+            "https://www.apple.com/certificateauthority/DeveloperIDCA.cer" \
+            -o "${CERT_DIR}/DeveloperIDCA.cer"
+          curl -fsSL \
+            "https://www.apple.com/certificateauthority/DeveloperIDG2CA.cer" \
+            -o "${CERT_DIR}/DeveloperIDG2CA.cer"
+
+          security import "${CERT_DIR}/DeveloperIDCA.cer" \
+            -k "${APPLE_KEYCHAIN_PATH}" \
+            -T /usr/bin/codesign
+          security import "${CERT_DIR}/DeveloperIDG2CA.cer" \
+            -k "${APPLE_KEYCHAIN_PATH}" \
+            -T /usr/bin/codesign
+
+          security find-certificate \
+            -c "Developer ID Certification Authority" \
+            "${APPLE_KEYCHAIN_PATH}" >/dev/null
+
       - name: Load curated release notes
         id: release-notes
         run: |
@@ -322,6 +348,28 @@ jobs:
           pnpm validate:release-artifacts \
             --app "src-tauri/target/aarch64-apple-darwin/release/bundle/macos/Radarboard.app" \
             --dmg "src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/Radarboard_${VERSION}_aarch64.dmg"
+
+      - name: Validate uploaded GitHub release DMG
+        if: env.APPLE_SIGNING_ENABLED == 'true'
+        working-directory: apps/desktop
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          VERSION="${RELEASE_TAG#desktop-v}"
+          DOWNLOAD_DIR="$(mktemp -d)"
+          trap 'rm -rf "${DOWNLOAD_DIR}"' EXIT
+
+          gh release download "${RELEASE_TAG}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --pattern "Radarboard-${VERSION}-macos-aarch64.dmg" \
+            --dir "${DOWNLOAD_DIR}" \
+            --clobber
+
+          pnpm validate:release-artifacts \
+            --app "src-tauri/target/aarch64-apple-darwin/release/bundle/macos/Radarboard.app" \
+            --dmg "${DOWNLOAD_DIR}/Radarboard-${VERSION}-macos-aarch64.dmg"
 
       - name: Build and Publish macOS Prerelease (unsigned)
         if: env.APPLE_NOTARIZATION_AUTH_MODE == 'none'

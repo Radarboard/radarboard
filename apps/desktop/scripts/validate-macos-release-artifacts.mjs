@@ -42,9 +42,9 @@ function run(command, args) {
     encoding: "utf8",
     stdio: ["ignore", "pipe", "pipe"],
   });
+  const output = [result.stdout, result.stderr].filter(Boolean).join("\n").trim();
 
   if (result.status !== 0) {
-    const output = [result.stdout, result.stderr].filter(Boolean).join("\n").trim();
     throw new Error(
       `${command} ${args.map((arg) => JSON.stringify(arg)).join(" ")} failed${
         output ? `:\n${output}` : ""
@@ -52,7 +52,7 @@ function run(command, args) {
     );
   }
 
-  return result.stdout.trim();
+  return output;
 }
 
 function collectNativeFiles(rootPath) {
@@ -81,6 +81,16 @@ function collectNativeFiles(rootPath) {
 
 function validateSignature(path) {
   run("codesign", ["--verify", "--strict", "--verbose=4", path]);
+  const signature = run("codesign", ["--display", "--verbose=4", path]);
+  if (signature.includes("Authority=(unavailable)")) {
+    throw new Error(
+      `${path} is missing an embedded Apple certificate authority chain. ` +
+        "Import the Developer ID intermediate certificates before signing."
+    );
+  }
+  if (!signature.includes("Authority=Developer ID Application:")) {
+    throw new Error(`${path} is not signed with a Developer ID Application certificate.`);
+  }
 }
 
 function validateApp(appPath, options) {

@@ -1,6 +1,6 @@
 {
   "name": "@radarboard/desktop",
-  "version": "0.1.1-beta.3",
+  "version": "0.1.1-beta.4",
   "private": true,
   "scripts": {
     "dev": "tauri dev --config src-tauri/tauri.conf.json",
