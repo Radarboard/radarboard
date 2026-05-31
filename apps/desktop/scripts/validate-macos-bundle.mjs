@@ -1,10 +1,11 @@
 import { existsSync, lstatSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { basename, join, resolve } from "node:path";
 
-const EXPECTED_BUNDLE_EXECUTABLE = "radarboard-desktop";
+const EXPECTED_BUNDLE_EXECUTABLE = "Radarboard";
 const EXPECTED_BUNDLE_PACKAGE_TYPE = "APPL";
-const SIDECAR_BINARY_NAME = "radarboard-server";
-const SIDECAR_APP_NAME = "radarboard-server.app";
+const SIDECAR_BINARY_NAME = "radarboard-helper";
+const SIDECAR_APP_NAME = "radarboard-helper.app";
+const MAX_SEALED_APP_FILES = 1500;
 
 function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -49,11 +50,37 @@ export function collectAppBundles(rootPath) {
   return bundles;
 }
 
+export function countRegularFiles(rootPath) {
+  let fileCount = 0;
+
+  function walk(currentPath) {
+    if (!existsSync(currentPath)) return;
+
+    const entry = lstatSync(currentPath);
+    if (entry.isSymbolicLink()) return;
+
+    if (entry.isFile()) {
+      fileCount += 1;
+      return;
+    }
+
+    if (!entry.isDirectory()) return;
+
+    for (const child of readdirSync(currentPath)) {
+      walk(join(currentPath, child));
+    }
+  }
+
+  walk(rootPath);
+  return fileCount;
+}
+
 export function validateMacOsBundle({
   appPath,
   sourceDir,
   productName = "Radarboard",
   expectedExecutable = EXPECTED_BUNDLE_EXECUTABLE,
+  maxSealedFileCount = MAX_SEALED_APP_FILES,
 } = {}) {
   const resolvedAppPath = resolve(appPath);
   if (!existsSync(resolvedAppPath)) {
@@ -82,6 +109,36 @@ export function validateMacOsBundle({
   if (!existsSync(sidecarBinaryPath) || !statSync(sidecarBinaryPath).isFile()) {
     throw new Error(
       `App bundle is missing helper executable ${sidecarBinaryPath}; the sidecar must remain a plain binary inside the main app bundle.`
+    );
+  }
+
+  const resourceRoot = join(resolvedAppPath, "Contents", "Resources", "resources");
+  const launcherPath = join(resourceRoot, "standalone", "launcher.mjs");
+  const archivePath = join(resourceRoot, "standalone-runtime.tar.gz");
+  const unpackedRuntimePath = join(resourceRoot, "standalone-runtime");
+
+  if (!existsSync(launcherPath) || !statSync(launcherPath).isFile()) {
+    throw new Error(
+      `App bundle is missing sidecar launcher ${launcherPath}; the desktop runtime must launch through the extracted archive wrapper.`
+    );
+  }
+
+  if (!existsSync(archivePath) || !statSync(archivePath).isFile()) {
+    throw new Error(
+      `App bundle is missing archived sidecar runtime ${archivePath}; shipping the full runtime tree directly in the .app can make Gatekeeper reject downloaded DMGs.`
+    );
+  }
+
+  if (existsSync(unpackedRuntimePath)) {
+    throw new Error(
+      `App bundle contains unpacked sidecar runtime ${unpackedRuntimePath}; package it as ${archivePath} so Gatekeeper does not scan thousands of sealed files.`
+    );
+  }
+
+  const sealedFileCount = countRegularFiles(resolvedAppPath);
+  if (sealedFileCount > maxSealedFileCount) {
+    throw new Error(
+      `App bundle contains ${sealedFileCount} sealed files; expected at most ${maxSealedFileCount}. Keep the sidecar runtime archived so downloaded DMGs pass Gatekeeper assessment.`
     );
   }
 
@@ -122,5 +179,6 @@ export function validateMacOsBundle({
   return {
     appPath: resolvedAppPath,
     sidecarBinaryPath,
+    sealedFileCount,
   };
 }

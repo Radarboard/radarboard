@@ -16,6 +16,10 @@ APP_DIR="$(cd "$DESKTOP_ROOT/../app" && pwd)"
 STANDALONE="$APP_DIR/.next/standalone"
 SIDECAR_DIR="$DESKTOP_ROOT/src-tauri/binaries"
 RESOURCES="$DESKTOP_ROOT/src-tauri/resources"
+RUNTIME_ROOT="$RESOURCES/standalone-runtime"
+LAUNCHER_DIR="$RESOURCES/standalone"
+RUNTIME_ARCHIVE_NAME="standalone-runtime.tar.gz"
+RUNTIME_ARCHIVE="$RESOURCES/$RUNTIME_ARCHIVE_NAME"
 DATA_DIR_NAME="${RADARBOARD_DATA_DIR_NAME:-Radarboard}"
 
 # Detect target triple
@@ -40,7 +44,7 @@ echo "[build-sidecar] Node.js binary: $NODE_BIN ($(node --version))"
 
 # Step 3: Copy Node.js binary as sidecar
 mkdir -p "$SIDECAR_DIR"
-BINARY_NAME="radarboard-server-${TARGET_TRIPLE}"
+BINARY_NAME="radarboard-helper-${TARGET_TRIPLE}"
 cp "$NODE_BIN" "$SIDECAR_DIR/$BINARY_NAME"
 chmod +x "$SIDECAR_DIR/$BINARY_NAME"
 echo "[build-sidecar] Sidecar: $SIDECAR_DIR/$BINARY_NAME ($(du -sh "$SIDECAR_DIR/$BINARY_NAME" | cut -f1))"
@@ -48,24 +52,24 @@ echo "[build-sidecar] Sidecar: $SIDECAR_DIR/$BINARY_NAME ($(du -sh "$SIDECAR_DIR
 # Step 4: Prepare resources — preserve the original directory structure
 echo "[build-sidecar] Preparing resources..."
 rm -rf "$RESOURCES"
-mkdir -p "$RESOURCES/standalone"
+mkdir -p "$RUNTIME_ROOT"
 
 # Copy the standalone output without dereferencing links up front. The traced
 # tree can contain stale pnpm symlinks, and blindly following them makes the
 # bundle step fail before we have a chance to hoist the real package payloads.
-cp -R "$STANDALONE/." "$RESOURCES/standalone"
+cp -R "$STANDALONE/." "$RUNTIME_ROOT"
 
 # Remove dev artifacts — the bundled app must not ship credentials or data
-find "$RESOURCES/standalone" \( -name ".env" -o -name ".env.local" -o -name ".env.production" -o -name "local.db" -o -name "local.e2e.db" -o -name ".radarboard.json" -o -name ".radarboard.e2e.json" \) -delete 2>/dev/null
+find "$RUNTIME_ROOT" \( -name ".env" -o -name ".env.local" -o -name ".env.production" -o -name "local.db" -o -name "local.e2e.db" -o -name ".radarboard.json" -o -name ".radarboard.e2e.json" \) -delete 2>/dev/null
 echo "[build-sidecar] Removed dev artifacts from bundle"
 
 # Copy static assets (not included by Next.js standalone)
-mkdir -p "$RESOURCES/standalone/apps/app/.next/static"
-cp -r "$APP_DIR/.next/static/." "$RESOURCES/standalone/apps/app/.next/static"
+mkdir -p "$RUNTIME_ROOT/apps/app/.next/static"
+cp -r "$APP_DIR/.next/static/." "$RUNTIME_ROOT/apps/app/.next/static"
 
 # Copy public assets
 if [ -d "$APP_DIR/public" ]; then
-  cp -r "$APP_DIR/public" "$RESOURCES/standalone/apps/app/public"
+  cp -r "$APP_DIR/public" "$RUNTIME_ROOT/apps/app/public"
 fi
 
 # Fix missing packages not traced by Next.js standalone.
@@ -87,13 +91,13 @@ copy_pnpm_package_tree() {
       for scoped_pkg in "$pkg"/*; do
         [ -d "$scoped_pkg" ] || continue
         local scoped_name="$name/$(basename "$scoped_pkg")"
-        local dest="$RESOURCES/standalone/node_modules/$scoped_name"
+        local dest="$RUNTIME_ROOT/node_modules/$scoped_name"
         rm -rf "$dest"
         mkdir -p "$(dirname "$dest")"
         cp -rL "$scoped_pkg" "$dest"
       done
     else
-      local dest="$RESOURCES/standalone/node_modules/$name"
+      local dest="$RUNTIME_ROOT/node_modules/$name"
       rm -rf "$dest"
       cp -rL "$pkg" "$dest"
     fi
@@ -158,9 +162,9 @@ resolve_pnpm_package_dir() {
   pkg_dir="$(dirname "$pkg_path")"
 
   if [[ "$(basename "$pkg_dir")" == @* ]]; then
-    fallback="$(find "$RESOURCES/standalone/node_modules/.pnpm" -path "*/node_modules/$(basename "$pkg_dir")/$pkg_name" -type d -print -quit)"
+    fallback="$(find "$RUNTIME_ROOT/node_modules/.pnpm" -path "*/node_modules/$(basename "$pkg_dir")/$pkg_name" -type d -print -quit)"
   else
-    fallback="$(find "$RESOURCES/standalone/node_modules/.pnpm" -path "*/node_modules/$pkg_name" -type d -print -quit)"
+    fallback="$(find "$RUNTIME_ROOT/node_modules/.pnpm" -path "*/node_modules/$pkg_name" -type d -print -quit)"
   fi
 
   if [ -n "$fallback" ]; then
@@ -171,13 +175,13 @@ resolve_pnpm_package_dir() {
   return 1
 }
 
-PNPM_MODULES="$RESOURCES/standalone/node_modules/.pnpm/node_modules"
+PNPM_MODULES="$RUNTIME_ROOT/node_modules/.pnpm/node_modules"
 if [ -d "$PNPM_MODULES" ]; then
   echo "[build-sidecar] Hoisting pnpm dependencies..."
   for pkg in "$PNPM_MODULES"/*; do
     [ -e "$pkg" ] || continue
     name=$(basename "$pkg")
-    dest="$RESOURCES/standalone/node_modules/$name"
+    dest="$RUNTIME_ROOT/node_modules/$name"
     if [ -L "$dest" ]; then
       rm -f "$dest"
     fi
@@ -193,11 +197,11 @@ if [ -d "$PNPM_MODULES" ]; then
   for scope in "$PNPM_MODULES"/@*; do
     [ -d "$scope" ] || continue
     scope_name=$(basename "$scope")
-    mkdir -p "$RESOURCES/standalone/node_modules/$scope_name"
+    mkdir -p "$RUNTIME_ROOT/node_modules/$scope_name"
     for pkg in "$scope"/*; do
       [ -e "$pkg" ] || continue
       name=$(basename "$pkg")
-      dest="$RESOURCES/standalone/node_modules/$scope_name/$name"
+      dest="$RUNTIME_ROOT/node_modules/$scope_name/$name"
       if [ -L "$dest" ]; then
         rm -f "$dest"
       fi
@@ -224,18 +228,25 @@ while IFS= read -r link; do
   else
     cp -L "$resolved_link" "$link"
   fi
-done < <(find "$RESOURCES/standalone" -type l ! -path "*/.pnpm/*" -print)
+done < <(find "$RUNTIME_ROOT" -type l ! -path "*/.pnpm/*" -print)
 
 # Step 5: Create the launcher script (runs inside the bundled Node.js)
-cat > "$RESOURCES/standalone/launcher.mjs" <<'LAUNCHER_EOF'
+write_launcher() {
+  local archive_id="$1"
+
+  rm -rf "$LAUNCHER_DIR"
+  mkdir -p "$LAUNCHER_DIR"
+  cat > "$LAUNCHER_DIR/launcher.mjs" <<'LAUNCHER_EOF'
+import { spawnSync } from "node:child_process";
 import { createServer } from "node:net";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import http from "node:http";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const serverDir = join(__dirname, "apps", "app");
-const serverJs = join(serverDir, "server.js");
+const resourceRoot = process.env.TAURI_RESOURCE_DIR || join(__dirname, "..");
+const archivePath = join(resourceRoot, "__RUNTIME_ARCHIVE_NAME__");
+const archiveId = "__RUNTIME_ARCHIVE_ID__";
 
 async function getPort() {
   return new Promise((resolve, reject) => {
@@ -278,6 +289,41 @@ const os = await import("node:os");
 const fs = await import("node:fs");
 const dataDir = join(process.env.HOME || os.homedir(), "Library", "Application Support", "__RADARBOARD_DATA_DIR_NAME__");
 fs.mkdirSync(dataDir, { recursive: true });
+
+const runtimeBaseDir = join(dataDir, "standalone-runtime");
+const runtimeDir = join(runtimeBaseDir, archiveId);
+const readyFile = join(runtimeDir, ".ready");
+
+function extractRuntime() {
+  if (fs.existsSync(readyFile)) return;
+
+  if (!fs.existsSync(archivePath)) {
+    throw new Error(`Runtime archive not found: ${archivePath}`);
+  }
+
+  fs.rmSync(runtimeDir, { recursive: true, force: true });
+  fs.mkdirSync(runtimeBaseDir, { recursive: true });
+  const tempDir = fs.mkdtempSync(join(runtimeBaseDir, `${archiveId}.tmp-`));
+  const tarBinary = process.platform === "darwin" ? "/usr/bin/tar" : "tar";
+  const result = spawnSync(tarBinary, ["-xzf", archivePath, "-C", tempDir], {
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+
+  if (result.status !== 0) {
+    fs.rmSync(tempDir, { recursive: true, force: true });
+    const details = [result.stdout, result.stderr].filter(Boolean).join("\n").trim();
+    throw new Error(`Failed to extract runtime archive${details ? `:\n${details}` : ""}`);
+  }
+
+  fs.renameSync(tempDir, runtimeDir);
+  fs.writeFileSync(readyFile, new Date().toISOString());
+}
+
+extractRuntime();
+
+const serverDir = join(runtimeDir, "apps", "app");
+const serverJs = join(serverDir, "server.js");
 
 process.env.PORT = String(port);
 process.env.HOSTNAME = "127.0.0.1";
@@ -330,11 +376,16 @@ process.stdout.write(url + "\n");
 process.stderr.write(`[sidecar] Server ready at ${url}\n`);
 LAUNCHER_EOF
 
-perl -0pi -e 's/__RADARBOARD_DATA_DIR_NAME__/\Q'"$DATA_DIR_NAME"'\E/g' "$RESOURCES/standalone/launcher.mjs"
+  perl -0pi -e 's/__RADARBOARD_DATA_DIR_NAME__/\Q'"$DATA_DIR_NAME"'\E/g' "$LAUNCHER_DIR/launcher.mjs"
+  perl -0pi -e 's/__RUNTIME_ARCHIVE_NAME__/\Q'"$RUNTIME_ARCHIVE_NAME"'\E/g' "$LAUNCHER_DIR/launcher.mjs"
+  perl -0pi -e 's/__RUNTIME_ARCHIVE_ID__/\Q'"$archive_id"'\E/g' "$LAUNCHER_DIR/launcher.mjs"
+}
+
+write_launcher "pending"
 
 # Step 6: Reduce bundle size — strip unnecessary files from node_modules
 echo "[build-sidecar] Stripping unnecessary files from resources..."
-find "$RESOURCES" -type f \( \
+find "$RUNTIME_ROOT" -type f \( \
   -name "*.md" -o -name "*.MD" -o \
   -name "*.txt" -o -name "*.map" -o \
   -name "*.ts" ! -name "*.d.ts" -o \
@@ -350,12 +401,12 @@ find "$RESOURCES" -type f \( \
   -name "appveyor.yml" -o -name ".github" \
 \) -delete 2>/dev/null
 # Remove empty directories
-find "$RESOURCES" -type d -empty -delete 2>/dev/null
+find "$RUNTIME_ROOT" -type d -empty -delete 2>/dev/null
 # Remove .pnpm store (already hoisted)
-rm -rf "$RESOURCES/standalone/node_modules/.pnpm"
+rm -rf "$RUNTIME_ROOT/node_modules/.pnpm"
 
 echo "[build-sidecar] Verifying standalone bundle..."
-node "$SCRIPT_DIR/verify-sidecar-bundle.mjs" "$RESOURCES/standalone"
+node "$SCRIPT_DIR/verify-sidecar-bundle.mjs" "$RUNTIME_ROOT"
 
 if [[ "$(uname -s)" == "Darwin" && -n "${APPLE_SIGNING_IDENTITY:-}" ]]; then
   echo "[build-sidecar] Signing native resource binaries..."
@@ -373,7 +424,7 @@ if [[ "$(uname -s)" == "Darwin" && -n "${APPLE_SIGNING_IDENTITY:-}" ]]; then
         "$native_binary"
       signed_native_binary_count=$((signed_native_binary_count + 1))
     fi
-  done < <(find "$RESOURCES" -type f \( -name "*.node" -o -name "*.dylib" \) -print0)
+  done < <(find "$RUNTIME_ROOT" -type f \( -name "*.node" -o -name "*.dylib" \) -print0)
 
   echo "[build-sidecar] Signed $signed_native_binary_count native resource binaries"
   if [[ "$native_binary_count" -eq 0 ]]; then
@@ -385,5 +436,12 @@ else
   echo "[build-sidecar] Skipping native resource signing on non-macOS host"
 fi
 
+echo "[build-sidecar] Archiving standalone runtime..."
+COPYFILE_DISABLE=1 tar -czf "$RUNTIME_ARCHIVE" -C "$RUNTIME_ROOT" .
+RUNTIME_ARCHIVE_ID="$(shasum -a 256 "$RUNTIME_ARCHIVE" | awk '{print $1}')"
+write_launcher "$RUNTIME_ARCHIVE_ID"
+rm -rf "$RUNTIME_ROOT"
+
 echo "[build-sidecar] Resources: $(du -sh "$RESOURCES" | cut -f1)"
+echo "[build-sidecar] Runtime archive: $RUNTIME_ARCHIVE_ID"
 echo "[build-sidecar] Done"

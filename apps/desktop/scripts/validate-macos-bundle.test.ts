@@ -16,7 +16,7 @@ function uniqueTempDir(name: string) {
 function writeInfoPlist(
   appPath: string,
   {
-    executable = "radarboard-desktop",
+    executable = "Radarboard",
     packageType = "APPL",
   }: { executable?: string; packageType?: string } = {}
 ) {
@@ -38,15 +38,23 @@ function writeInfoPlist(
 }
 
 function writeSidecarBinary(appPath: string) {
-  const sidecarPath = join(appPath, "Contents", "MacOS", "radarboard-server");
+  const sidecarPath = join(appPath, "Contents", "MacOS", "radarboard-helper");
   mkdirSync(join(appPath, "Contents", "MacOS"), { recursive: true });
   writeFileSync(sidecarPath, "sidecar");
+}
+
+function writeSidecarResources(appPath: string) {
+  const resourceRoot = join(appPath, "Contents", "Resources", "resources");
+  mkdirSync(join(resourceRoot, "standalone"), { recursive: true });
+  writeFileSync(join(resourceRoot, "standalone", "launcher.mjs"), "launcher");
+  writeFileSync(join(resourceRoot, "standalone-runtime.tar.gz"), "archive");
 }
 
 function createValidBundle(rootDir: string, appName = "Radarboard.app") {
   const appPath = join(rootDir, appName);
   writeInfoPlist(appPath);
   writeSidecarBinary(appPath);
+  writeSidecarResources(appPath);
   return appPath;
 }
 
@@ -77,11 +85,11 @@ describe("validate-macos-bundle", () => {
     ).not.toThrow();
   });
 
-  it("fails when a nested radarboard-server app bundle exists", () => {
+  it("fails when a nested radarboard-helper app bundle exists", () => {
     const sourceDir = uniqueTempDir("nested-sidecar-app");
     tempDirs.push(sourceDir);
     const appPath = createValidBundle(sourceDir);
-    createValidBundle(join(appPath, "Contents", "Resources"), "radarboard-server.app");
+    createValidBundle(join(appPath, "Contents", "Resources"), "radarboard-helper.app");
 
     expect(() => validateMacOsBundle({ appPath })).toThrow(/Nested app bundle detected/);
   });
@@ -105,7 +113,7 @@ describe("validate-macos-bundle", () => {
     const sourceDir = uniqueTempDir("wrong-executable");
     tempDirs.push(sourceDir);
     const appPath = join(sourceDir, "Radarboard.app");
-    writeInfoPlist(appPath, { executable: "radarboard-server" });
+    writeInfoPlist(appPath, { executable: "radarboard-helper" });
     writeSidecarBinary(appPath);
 
     expect(() => validateMacOsBundle({ appPath })).toThrow(/CFBundleExecutable/);
@@ -116,7 +124,27 @@ describe("validate-macos-bundle", () => {
     tempDirs.push(sourceDir);
     const appPath = join(sourceDir, "Radarboard.app");
     writeInfoPlist(appPath);
+    writeSidecarResources(appPath);
 
     expect(() => validateMacOsBundle({ appPath })).toThrow(/missing helper executable/);
+  });
+
+  it("fails when the runtime archive is missing", () => {
+    const sourceDir = uniqueTempDir("missing-runtime-archive");
+    tempDirs.push(sourceDir);
+    const appPath = createValidBundle(sourceDir);
+    rmSync(join(appPath, "Contents", "Resources", "resources", "standalone-runtime.tar.gz"), {
+      force: true,
+    });
+
+    expect(() => validateMacOsBundle({ appPath })).toThrow(/missing archived sidecar runtime/);
+  });
+
+  it("fails when the app bundle has too many sealed files", () => {
+    const sourceDir = uniqueTempDir("too-many-files");
+    tempDirs.push(sourceDir);
+    const appPath = createValidBundle(sourceDir);
+
+    expect(() => validateMacOsBundle({ appPath, maxSealedFileCount: 1 })).toThrow(/sealed files/);
   });
 });
