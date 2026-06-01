@@ -34,6 +34,18 @@ describe("settings integrations service collection", () => {
     );
   });
 
+  it("provides card descriptions for every collected service", () => {
+    const services = collectServices();
+    const missingDescriptions = services
+      .filter((service) => !service.description?.trim())
+      .map((service) => `${service.credKey} (${service.auth.name ?? service.credKey})`);
+
+    expect(missingDescriptions).toEqual([]);
+    expect(services.find((service) => service.credKey === "opencollective")?.description).toBe(
+      "Open Collective balances, donations, expenses, and contributor funding."
+    );
+  });
+
   it("includes widget-only auth cards so settings shows every configurable provider", () => {
     const serviceMap = new Map<string, ServiceEntry>();
 

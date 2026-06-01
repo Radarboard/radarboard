@@ -131,10 +131,26 @@ const SERVICE_DESCRIPTION_FALLBACKS: Record<string, string> = {
   vercel: "Deployments, domains, projects, build status, and hosting activity.",
 };
 
+function normalizeDescriptionFallbackKey(serviceId: string): string {
+  return serviceId.replace(/[^a-z0-9]/gi, "").toLowerCase();
+}
+
+function getServiceDescriptionFallback(serviceId: string): string | undefined {
+  const exactDescription = SERVICE_DESCRIPTION_FALLBACKS[serviceId];
+  if (exactDescription) return exactDescription;
+
+  const normalizedServiceId = normalizeDescriptionFallbackKey(serviceId);
+  return Object.entries(SERVICE_DESCRIPTION_FALLBACKS).find(
+    ([fallbackServiceId]) =>
+      normalizeDescriptionFallbackKey(fallbackServiceId) === normalizedServiceId
+  )?.[1];
+}
+
 function applyServiceDescriptionFallbacks(serviceMap: Map<string, ServiceEntry>) {
-  for (const [serviceId, description] of Object.entries(SERVICE_DESCRIPTION_FALLBACKS)) {
-    const service = serviceMap.get(serviceId);
-    if (service && !service.description) {
+  for (const [serviceId, service] of serviceMap.entries()) {
+    if (!service.description) {
+      const description = getServiceDescriptionFallback(serviceId);
+      if (!description) continue;
       service.description = description;
     }
   }
