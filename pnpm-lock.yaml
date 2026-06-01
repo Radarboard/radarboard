@@ -223,6 +223,9 @@ importers:
       '@radarboard/hooks':
         specifier: workspace:*
         version: link:../../packages/hooks
+      '@radarboard/integration-revenuecat':
+        specifier: workspace:*
+        version: link:../../integrations/revenuecat
       '@radarboard/integration-sdk':
         specifier: workspace:*
         version: link:../../packages/integration-sdk
@@ -1035,6 +1038,43 @@ importers:
       zod:
         specifier: 'catalog:'
         version: 4.4.3
+
+  integrations/revenuecat:
+    dependencies:
+      '@radarboard/integration-sdk':
+        specifier: workspace:*
+        version: link:../../packages/integration-sdk
+      '@radarboard/types':
+        specifier: workspace:*
+        version: link:../../packages/types
+      '@radarboard/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
+      lucide-react:
+        specifier: 'catalog:'
+        version: 0.577.0(react@19.2.6)
+      react:
+        specifier: 'catalog:'
+        version: 19.2.6
+      zod:
+        specifier: 'catalog:'
+        version: 4.4.3
+    devDependencies:
+      '@radarboard/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/tsconfig
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.9.1
+      '@types/react':
+        specifier: ^19.2.15
+        version: 19.2.15
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(jsdom@29.1.1)(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.3)(yaml@2.9.0))
 
   integrations/shipping:
     dependencies:

@@ -1,3 +1,6 @@
+import "@/lib/integrations-init";
+
+import { getAllIntegrations } from "@radarboard/integration-sdk/registry";
 import { createLogger } from "@radarboard/logger/logger";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -16,14 +19,6 @@ const SERVICE_TESTS: Record<
       headers,
     });
     return res.ok ? { ok: true } : { ok: false, error: `Sentry returned ${res.status}` };
-  },
-  revenuecat: async (values) => {
-    const headers = new Headers();
-    headers.set("Authorization", `Bearer ${values.apiKey}`);
-    const res = await fetch(`https://api.revenuecat.com/v2/projects/${values.projectId}`, {
-      headers,
-    });
-    return res.ok ? { ok: true } : { ok: false, error: `RevenueCat returned ${res.status}` };
   },
   openpanel: async (values) => {
     const res = await fetch("https://api.openpanel.dev/manage/projects", {
@@ -105,6 +100,14 @@ const SERVICE_TESTS: Record<
     return { ok: true };
   },
 };
+
+function getRegisteredCredentialTest(key: string) {
+  for (const integration of getAllIntegrations()) {
+    if (integration.id !== key && integration.auth.id !== key) continue;
+    if (integration.auth.credentialTest) return integration.auth.credentialTest;
+  }
+  return null;
+}
 const testCredentialsSchema = z.object({
   key: z.preprocess(
     (value) => (typeof value === "string" ? value : ""),
@@ -127,7 +130,7 @@ export async function handleTestCredentials(request: Request) {
     }
     const body = parsed.data;
 
-    const testFn = SERVICE_TESTS[body.key];
+    const testFn = SERVICE_TESTS[body.key] ?? getRegisteredCredentialTest(body.key);
     if (!testFn) {
       return errorJson(404, `No test available for "${body.key}"`, { ok: false });
     }

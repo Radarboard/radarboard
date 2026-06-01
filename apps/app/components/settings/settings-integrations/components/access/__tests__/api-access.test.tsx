@@ -6,6 +6,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ApiCredentialAccessCard } from "../api-access";
 
 const saveCredentialValuesMock = vi.fn();
+const mutateSWRMock = vi.fn();
+
+vi.mock("swr", () => ({
+  mutate: (...args: unknown[]) => mutateSWRMock(...args),
+}));
 
 vi.mock("@/components/settings/settings-integrations/utils", async (importOriginal) => {
   const actual =
@@ -33,6 +38,7 @@ const service = {
 describe("ApiCredentialAccessCard", () => {
   beforeEach(() => {
     saveCredentialValuesMock.mockReset();
+    mutateSWRMock.mockReset();
   });
 
   it("shows a success confirmation after saving credentials", async () => {
@@ -56,5 +62,45 @@ describe("ApiCredentialAccessCard", () => {
       expect(screen.getByText("Credentials saved")).toBeInTheDocument();
       expect(onCredentialChange).toHaveBeenCalledTimes(1);
     });
+  });
+
+  it("revalidates integration widget data after saving credentials", async () => {
+    saveCredentialValuesMock.mockResolvedValue(true);
+    mutateSWRMock.mockResolvedValue(undefined);
+    const user = userEvent.setup();
+
+    render(
+      <ApiCredentialAccessCard
+        service={{
+          ...service,
+          credKey: "revenuecat",
+          auth: {
+            name: "RevenueCat",
+            type: "api_key",
+            fields: [
+              { key: "apiKey", label: "API Secret Key", type: "password" },
+              { key: "projectId", label: "Project ID", type: "text" },
+            ],
+          },
+        }}
+        credentialKey="revenuecat"
+        values={{ apiKey: "sk_test", projectId: "proj1ab2c3d4" }}
+        setValues={() => {}}
+        onCredentialChange={vi.fn()}
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => {
+      expect(mutateSWRMock).toHaveBeenCalledWith(expect.any(Function), undefined, {
+        revalidate: true,
+      });
+    });
+
+    const matcher = mutateSWRMock.mock.calls[0]?.[0] as (key: unknown) => boolean;
+    expect(matcher("/api/integrations/revenuecat/data?range=30d")).toBe(true);
+    expect(matcher("/api/integrations/openpanel/data?range=30d")).toBe(true);
+    expect(matcher("/api/credentials")).toBe(false);
   });
 });

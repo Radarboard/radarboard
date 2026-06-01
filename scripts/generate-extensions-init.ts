@@ -394,6 +394,8 @@ function generateTranspilePackages(config: RadarboardConfig): string {
 
   const all = [
     ...corePackages,
+    ...config.integrations,
+    ...config.virtualIntegrations,
     ...config.widgets,
   ];
 

@@ -232,8 +232,21 @@ export const revenueDescriptor: WidgetDescriptor<RevenueWidgetConfig> = {
       name: "RevenueCat",
       type: "api_key",
       fields: [
-        { key: "apiKey", label: "API Secret Key", type: "password", placeholder: "appl_..." },
-        { key: "projectId", label: "Project ID", type: "text", placeholder: "proj_..." },
+        {
+          key: "apiKey",
+          label: "API Secret Key",
+          type: "password",
+          placeholder: "sk_...",
+          helpText:
+            "Create a RevenueCat V2 secret key with Charts metrics Overview and Charts read access.",
+        },
+        {
+          key: "projectId",
+          label: "Project ID",
+          type: "text",
+          placeholder: "proj1ab2c3d4",
+          helpText: "Use the RevenueCat Project ID from Project Settings, not an app ID.",
+        },
       ],
       testEndpoint: API_ROUTES.credentialsTest,
       docsUrl: "https://www.revenuecat.com/docs/authentication",

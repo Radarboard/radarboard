@@ -18,6 +18,8 @@ export const transpilePackages: string[] = [
   "@radarboard/observability",
   "@radarboard/plugin-sdk",
   "motion",
+  "@radarboard/integration-revenuecat",
+  "@radarboard/integration-shipping",
   "@radarboard/widget-analytics",
   "@radarboard/widget-logs",
   "@radarboard/widget-observability",

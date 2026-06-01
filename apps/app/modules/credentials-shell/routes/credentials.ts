@@ -1,3 +1,6 @@
+import "@/lib/integrations-init";
+
+import { getAllIntegrations } from "@radarboard/integration-sdk/registry";
 import { integrationRoute } from "@radarboard/integration-sdk/routes";
 import { createLogger } from "@radarboard/logger/logger";
 import { NextResponse } from "next/server";
@@ -31,14 +34,17 @@ async function clearRouteCache(route: string) {
 }
 
 async function invalidateCredentialDependentCaches(key: string) {
-  if (key === "npm") {
-    await clearRouteCache(integrationRoute("npm", "data"));
-    return;
+  const routes = new Set<string>();
+
+  for (const integration of getAllIntegrations()) {
+    if (integration.id !== key && integration.auth.id !== key) continue;
+
+    for (const dataSource of integration.dataSources ?? []) {
+      routes.add(integrationRoute(integration.id, dataSource.action));
+    }
   }
 
-  if (key === "raindrop") {
-    await clearRouteCache(integrationRoute("raindrop", "data"));
-  }
+  await Promise.all(Array.from(routes).map((route) => clearRouteCache(route)));
 }
 
 export async function handleGetCredentials(request: Request) {

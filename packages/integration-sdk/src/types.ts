@@ -62,6 +62,8 @@ export interface IntegrationAuth {
   fields?: IntegrationAuthField[];
   /** API route path to test credentials (POST with { key, values }). */
   testEndpoint?: string;
+  /** Optional integration-owned credential test used by the shared credentials test route. */
+  credentialTest?: (values: Record<string, string>) => Promise<{ ok: boolean; error?: string }>;
   /** URL to the service's docs for obtaining credentials. */
   docsUrl?: string;
   /** OAuth-specific config. Required when type === "oauth". */

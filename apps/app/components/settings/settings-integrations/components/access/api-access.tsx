@@ -5,6 +5,7 @@ import { Button } from "@radarboard/ui/button";
 import { cn } from "@radarboard/utils/cn";
 import { ExternalLink, Loader2 } from "lucide-react";
 import { useCallback, useState } from "react";
+import { mutate as mutateSWR } from "swr";
 import { CredentialFields } from "@/components/credentials/credential-fields";
 import type { ServiceEntry } from "@/components/settings/settings-integrations/types";
 import {
@@ -42,6 +43,14 @@ export function ApiCredentialAccessCard({
   const allFieldsFilled =
     service.auth.fields?.every((field) => field.optional || values[field.key]?.trim()) ?? false;
 
+  const revalidateCredentialData = useCallback(async () => {
+    await mutateSWR(
+      (key) => typeof key === "string" && key.startsWith("/api/integrations/"),
+      undefined,
+      { revalidate: true }
+    );
+  }, []);
+
   const updateField = useCallback(
     (key: string, value: string) => {
       setValues((prev) => ({ ...prev, [key]: value }));
@@ -76,13 +85,14 @@ export function ApiCredentialAccessCard({
         await onCredentialSaved?.({ credentialKey, values });
         setSaveResult({ ok: true });
         await onCredentialChange();
+        await revalidateCredentialData();
       } else {
         setSaveResult({ ok: false, error: "Failed to save credentials" });
       }
     } finally {
       setSaving(false);
     }
-  }, [credentialKey, onCredentialChange, onCredentialSaved, values]);
+  }, [credentialKey, onCredentialChange, onCredentialSaved, revalidateCredentialData, values]);
 
   const handleDisconnect = useCallback(async () => {
     setDisconnecting(true);
@@ -101,10 +111,11 @@ export function ApiCredentialAccessCard({
       setTestResult(null);
       setSaveResult(null);
       await onCredentialChange();
+      await revalidateCredentialData();
     } finally {
       setDisconnecting(false);
     }
-  }, [credentialKey, onCredentialChange, service.auth.fields, setValues]);
+  }, [credentialKey, onCredentialChange, revalidateCredentialData, service.auth.fields, setValues]);
 
   return (
     <div className="space-y-3">

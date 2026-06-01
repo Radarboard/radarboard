@@ -40,13 +40,14 @@ export default {
   ],
 
   /**
-   * Core provider integrations.
+   * Active provider integrations.
    *
-   * Keep this empty unless Radarboard itself must ship a connectable provider
-   * by default. Concrete SaaS/provider integrations such as GitHub, Stripe,
-   * Vercel, Sentry, Slack, and Linear live in the community extension catalog.
+   * Provider implementations still live as extension packages under
+   * /integrations or the community extension catalog. Listing one here means
+   * this Radarboard install loads it at runtime; it does not make the provider
+   * part of the integration SDK or widget core.
    */
-  integrations: [],
+  integrations: ["@radarboard/integration-revenuecat"],
 
   /**
    * Core virtual integrations.

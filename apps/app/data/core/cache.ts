@@ -44,6 +44,12 @@ function memSet(key: string, data: string, fetchedAt: number, ttlSeconds: number
   memCache.set(key, { data, fetchedAt, ttlSeconds, storedAt: Date.now() });
 }
 
+function isExplicitlyUnconfigured(value: unknown): boolean {
+  return Boolean(
+    value && typeof value === "object" && (value as { configured?: unknown }).configured === false
+  );
+}
+
 /**
  * Cache-first wrapper for API fetches. Reads from the configured cache
  * repository, calls fetchFn on miss/expiry, and falls back to stale data on error.
@@ -60,15 +66,22 @@ export async function withCache<T>(options: CacheOptions<T>): Promise<CacheResul
   if (!forceRefresh) {
     const mem = memGet(key);
     if (mem && mem.fetchedAt + mem.ttlSeconds > now) {
-      return { data: JSON.parse(mem.data) as T, _fetchedAt: mem.fetchedAt };
+      const data = JSON.parse(mem.data) as T;
+      if (!isExplicitlyUnconfigured(data)) {
+        return { data, _fetchedAt: mem.fetchedAt };
+      }
+      memCache.delete(key);
     }
 
     try {
       const entry = await repo.get(key);
 
       if (entry && entry.fetchedAt + entry.ttlSeconds > now) {
-        memSet(key, entry.data, entry.fetchedAt, entry.ttlSeconds);
-        return { data: JSON.parse(entry.data) as T, _fetchedAt: entry.fetchedAt };
+        const data = JSON.parse(entry.data) as T;
+        if (!isExplicitlyUnconfigured(data)) {
+          memSet(key, entry.data, entry.fetchedAt, entry.ttlSeconds);
+          return { data, _fetchedAt: entry.fetchedAt };
+        }
       }
     } catch {
       // Cache read failed, proceed to fetch
@@ -78,6 +91,10 @@ export async function withCache<T>(options: CacheOptions<T>): Promise<CacheResul
   // 2. Call external API
   try {
     const result = await fetchFn();
+
+    if (isExplicitlyUnconfigured(result)) {
+      return { data: result, _fetchedAt: now };
+    }
 
     // 3. Write to cache (both in-memory and database)
     const serialized = JSON.stringify(result);

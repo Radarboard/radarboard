@@ -56,6 +56,7 @@
     "@radarboard/feature-skills": "workspace:*",
     "@radarboard/feature-workflows": "workspace:*",
     "@radarboard/hooks": "workspace:*",
+    "@radarboard/integration-revenuecat": "workspace:*",
     "@radarboard/integration-sdk": "workspace:*",
     "@radarboard/integration-shipping": "workspace:*",
     "@radarboard/llm": "workspace:*",

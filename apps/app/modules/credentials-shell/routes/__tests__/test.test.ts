@@ -117,6 +117,108 @@ describe("handleTestCredentials", () => {
     });
   });
 
+  describe("revenuecat", () => {
+    it("checks documented overview and chart endpoints", async () => {
+      fetchMock.mockResolvedValue({ ok: true, status: 200 });
+
+      const res = await handleTestCredentials(
+        makeRequest({
+          key: "revenuecat",
+          values: { apiKey: "sk_test", projectId: "proj1ab2c3d4" },
+        })
+      );
+      const body = await res.json();
+
+      expect(body.ok).toBe(true);
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+      expect(fetchMock).toHaveBeenNthCalledWith(
+        1,
+        "https://api.revenuecat.com/v2/projects/proj1ab2c3d4/metrics/overview?currency=USD",
+        expect.objectContaining({ headers: expect.any(Headers) })
+      );
+      expect(fetchMock).toHaveBeenNthCalledWith(
+        2,
+        "https://api.revenuecat.com/v2/projects/proj1ab2c3d4/charts/revenue?currency=USD&resolution=0",
+        expect.objectContaining({ headers: expect.any(Headers) })
+      );
+    });
+
+    it("rejects public SDK keys with a secret-key hint", async () => {
+      const res = await handleTestCredentials(
+        makeRequest({
+          key: "revenuecat",
+          values: { apiKey: "appl_public", projectId: "proj1ab2c3d4" },
+        })
+      );
+      const body = await res.json();
+
+      expect(body.ok).toBe(false);
+      expect(body.error).toContain("public SDK keys");
+      expect(body.error).toContain("sk_");
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it("returns a project-id hint when RevenueCat returns 404 for an app-shaped id", async () => {
+      fetchMock.mockResolvedValue({
+        ok: false,
+        status: 404,
+        json: vi.fn().mockResolvedValue({ message: "Not found" }),
+      });
+
+      const res = await handleTestCredentials(
+        makeRequest({
+          key: "revenuecat",
+          values: { apiKey: "sk_test", projectId: "app62917b086a" },
+        })
+      );
+      const body = await res.json();
+
+      expect(body.ok).toBe(false);
+      expect(body.error).toContain("Project ID");
+      expect(body.error).toContain("App ID");
+    });
+
+    it("explains missing overview permission", async () => {
+      fetchMock.mockResolvedValue({
+        ok: false,
+        status: 403,
+        json: vi.fn().mockResolvedValue({ message: "Missing permission" }),
+      });
+
+      const res = await handleTestCredentials(
+        makeRequest({
+          key: "revenuecat",
+          values: { apiKey: "sk_test", projectId: "proj1ab2c3d4" },
+        })
+      );
+      const body = await res.json();
+
+      expect(body.ok).toBe(false);
+      expect(body.error).toContain("Overview Configuration");
+      expect(body.error).toContain("Read");
+    });
+
+    it("explains missing chart permission", async () => {
+      fetchMock.mockResolvedValueOnce({ ok: true, status: 200 }).mockResolvedValueOnce({
+        ok: false,
+        status: 403,
+        json: vi.fn().mockResolvedValue({ message: "Missing permission" }),
+      });
+
+      const res = await handleTestCredentials(
+        makeRequest({
+          key: "revenuecat",
+          values: { apiKey: "sk_test", projectId: "proj1ab2c3d4" },
+        })
+      );
+      const body = await res.json();
+
+      expect(body.ok).toBe(false);
+      expect(body.error).toContain("Charts Configuration");
+      expect(body.error).toContain("Read");
+    });
+  });
+
   describe("npm", () => {
     it("requires extraPackages to be non-empty", async () => {
       const res = await handleTestCredentials(

@@ -103,7 +103,7 @@ const INTEGRATION_META: Record<
   revenuecat: {
     label: "RevenueCat",
     faviconKey: "revenuecat",
-    fields: [{ key: "projectId", label: "Project ID", placeholder: "rc_prj_..." }],
+    fields: [{ key: "projectId", label: "Project ID", placeholder: "proj1ab2c3d4" }],
   },
   appStoreConnect: {
     label: "App Store Connect",

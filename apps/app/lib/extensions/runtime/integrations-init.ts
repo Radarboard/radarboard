@@ -5,7 +5,8 @@
  * Import this early in the app to populate INTEGRATION_REGISTRY.
  */
 
-import { registerDataSources } from "@radarboard/integration-sdk/registry";
+import { revenuecatDescriptor } from "@radarboard/integration-revenuecat";
+import { registerDataSources, registerIntegration } from "@radarboard/integration-sdk/registry";
 import { shippingDataSources } from "@radarboard/integration-shipping/data-sources";
 
 const INTEGRATIONS_INIT_KEY = "__radarboardAppIntegrationsInitialized__";
@@ -19,6 +20,8 @@ export function initializeIntegrations(): void {
   if (state[INTEGRATIONS_INIT_KEY]) return;
 
   state[INTEGRATIONS_INIT_KEY] = true;
+
+  registerIntegration(revenuecatDescriptor);
 
   // Virtual integrations — composite data sources with no IntegrationDescriptor.
   registerDataSources("shipping", shippingDataSources);

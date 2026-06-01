@@ -158,6 +158,23 @@ describe("withCache", () => {
 
     expect(result).toEqual(expect.objectContaining({ data: { stillReturned: true } }));
   });
+
+  it("does not return or write explicitly unconfigured responses from cache", async () => {
+    const cached: CacheEntry = {
+      key: "test:key",
+      data: JSON.stringify({ configured: false }),
+      fetchedAt: 1_000_000_000 - 100,
+      ttlSeconds: 300,
+    };
+    mockRepo.get.mockResolvedValue(cached);
+    const fetchFn = vi.fn().mockResolvedValue({ configured: false });
+
+    const result = await withCache({ ...baseOptions, fetchFn });
+
+    expect(fetchFn).toHaveBeenCalledOnce();
+    expect(result).toEqual(expect.objectContaining({ data: { configured: false } }));
+    expect(mockRepo.set).not.toHaveBeenCalled();
+  });
 });
 
 describe("getCacheEntry", () => {
