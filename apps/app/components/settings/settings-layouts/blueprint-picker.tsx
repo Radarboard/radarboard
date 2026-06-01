@@ -166,7 +166,10 @@ function BlueprintCard({
               const descriptor = getIntegration(id);
               const label = descriptor?.name ?? id;
               const isMissing = missingSet.has(id);
-              const faviconUrl = getServiceFaviconUrl(id, 32);
+              const faviconUrl = getServiceFaviconUrl(
+                descriptor?.homepage ?? descriptor?.auth.docsUrl,
+                32
+              );
               return (
                 <Tooltip key={id}>
                   <TooltipTrigger asChild>

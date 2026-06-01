@@ -12,6 +12,7 @@ import { WIDGET_REGISTRY } from "@radarboard/widget-engine/widgets/registry";
 import { Blocks } from "lucide-react";
 import { parseAsString, useQueryState } from "nuqs";
 import { useMemo, useState } from "react";
+import { initializeWidgetDescriptors } from "@/lib/widgets-init";
 import { getAuthList } from "../../widgets/widget-config-panel";
 import { WidgetDetailDialog } from "../../widgets/widget-detail-dialog";
 import { CommunityExtensionDiscovery } from "../community-discovery";
@@ -234,7 +235,10 @@ export function SettingsWidgets({
     [visibleCellIds, widgetLayout]
   );
 
-  const allRegisteredWidgets = useMemo(() => Array.from(WIDGET_REGISTRY.values()), []);
+  const allRegisteredWidgets = useMemo(() => {
+    initializeWidgetDescriptors();
+    return Array.from(WIDGET_REGISTRY.values());
+  }, []);
 
   const intendedIntegrations = useMemo(
     () => new Set(preferences.intendedIntegrations ?? []),

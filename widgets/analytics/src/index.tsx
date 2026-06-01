@@ -260,6 +260,7 @@ export const analyticsDescriptor = createTemplateDescriptor(
       {
         id: "umami",
         name: "Umami",
+        homepage: "https://umami.is",
         description:
           "Web analytics: pageviews, visitors, top pages, and audience breakdown from Umami.",
         type: "api_key",

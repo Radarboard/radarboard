@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { ServiceEntry, WidgetRegistryDescriptor } from "../types";
-import { mergeWidgetAuthServices } from "../utils";
+import { collectServices, mergeWidgetAuthServices } from "../utils";
 
 function widgetDescriptor(authId: string, widgetName = "Example Widget"): WidgetRegistryDescriptor {
   return {
@@ -26,12 +26,20 @@ function serviceEntry(credKey: string): ServiceEntry {
 }
 
 describe("settings integrations service collection", () => {
-  it("skips widget-only auth cards when no integration route backs the provider", () => {
+  it("initializes widget descriptors before collecting the settings catalog", () => {
+    const serviceIds = collectServices().map((service) => service.credKey);
+
+    expect(serviceIds).toEqual(
+      expect.arrayContaining(["github", "sentry", "revenuecat", "openpanel"])
+    );
+  });
+
+  it("includes widget-only auth cards so settings shows every configurable provider", () => {
     const serviceMap = new Map<string, ServiceEntry>();
 
     mergeWidgetAuthServices(serviceMap, widgetDescriptor("sentry"));
 
-    expect(serviceMap.has("sentry")).toBe(false);
+    expect(serviceMap.get("sentry")?.usedByWidgets).toEqual(["Example Widget"]);
   });
 
   it("keeps app-shell virtual auth cards for providers with core data sources", () => {

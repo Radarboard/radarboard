@@ -8,8 +8,8 @@ import type { PlatformIntegrations } from "@radarboard/types/project";
 import type { WidgetAuth } from "@radarboard/widget-engine/widgets/registry";
 import { WIDGET_REGISTRY } from "@radarboard/widget-engine/widgets/registry";
 import type { IntegrationProviderDefinition } from "@/hooks/settings/use-integration-connections";
-import { isAppShellWidgetAuthServiceId } from "@/lib/integration-data-invalidation";
 import { buildCredentialReference } from "@/lib/mcp/mcp-server-config";
+import { initializeWidgetDescriptors } from "@/lib/widgets-init";
 import { readStoredIntegrationModalTab } from "../settings-storage";
 import { CATEGORY_ORDER, INTEGRATION_CATEGORY_LABELS, WEBHOOK_SERVICE_CONFIG } from "./constants";
 import type {
@@ -169,6 +169,9 @@ export function collectRegistryServices(serviceMap: Map<string, ServiceEntry>) {
       if (!existing.description && descriptor.description) {
         existing.description = descriptor.description;
       }
+      if (!existing.homepage && descriptor.homepage) {
+        existing.homepage = descriptor.homepage;
+      }
       existing.pollingSourceIds = Array.from(
         new Set([...existing.pollingSourceIds, ...pollingSourceIds])
       );
@@ -183,6 +186,7 @@ export function collectRegistryServices(serviceMap: Map<string, ServiceEntry>) {
       category: descriptor.category,
       descriptorId: descriptor.id,
       description: descriptor.description,
+      homepage: descriptor.homepage,
       defaultRssFeedUrl: descriptor.defaultRssFeedUrl,
       defaultStatusPageUrl: descriptor.defaultStatusPageUrl,
       mcpConfig: descriptor.mcp,
@@ -221,10 +225,9 @@ export function mergeWidgetAuthServices(
       if (!existing.description && auth.description) {
         existing.description = auth.description;
       }
-      continue;
-    }
-
-    if (!isAppShellWidgetAuthServiceId(auth.id)) {
+      if (!existing.homepage && auth.homepage) {
+        existing.homepage = auth.homepage;
+      }
       continue;
     }
 
@@ -235,6 +238,7 @@ export function mergeWidgetAuthServices(
       pollingSourceIds: [],
       category: descriptor.catalogCategory,
       description: auth.description,
+      homepage: auth.homepage,
     });
   }
 }
@@ -252,6 +256,8 @@ export function mergeWidgetRequiredServices(
 }
 
 export function mergeWidgetServices(serviceMap: Map<string, ServiceEntry>) {
+  initializeWidgetDescriptors();
+
   for (const descriptor of WIDGET_REGISTRY.values()) {
     mergeWidgetAuthServices(serviceMap, descriptor);
     mergeWidgetRequiredServices(serviceMap, descriptor);

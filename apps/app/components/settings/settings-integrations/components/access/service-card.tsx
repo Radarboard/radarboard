@@ -10,10 +10,31 @@ import type { ServiceEntry } from "@/components/settings/settings-integrations/t
 import { RemoteServiceIcon } from "@/components/shared/remote-service-icon";
 import { getServiceFaviconUrl } from "@/lib/service-favicons";
 
-function getStatusText(connectionCount: number) {
-  return connectionCount > 0
-    ? `${connectionCount} ${connectionCount === 1 ? "connection" : "connections"}`
-    : "Not configured";
+const SERVICE_CARD_ICON_SIZE = 28;
+const SELECTABLE_SERVICE_ICON_SIZE = 28;
+
+function ServiceIconFallback() {
+  return <span className="inline-block h-full w-full rounded-item border border-border bg-muted" />;
+}
+
+function getStatusText({
+  apiConfigured,
+  connectionCount,
+  mcpReady,
+}: {
+  apiConfigured: boolean;
+  connectionCount: number;
+  mcpReady: boolean;
+}) {
+  if (connectionCount > 0) {
+    return `${connectionCount} ${connectionCount === 1 ? "connection" : "connections"}`;
+  }
+
+  if (apiConfigured && mcpReady) return "API + MCP configured";
+  if (apiConfigured) return "API configured";
+  if (mcpReady) return "MCP configured";
+
+  return "Not configured";
 }
 
 function ReadinessBadges({
@@ -46,9 +67,9 @@ export function ServiceCard({
   mcpReady: boolean;
   onClick: () => void;
 }) {
-  const faviconUrl = getServiceFaviconUrl(service.credKey, 32);
+  const faviconUrl = getServiceFaviconUrl(service.homepage ?? service.auth.docsUrl, 32);
   const isConfigured = apiConfigured || mcpReady;
-  const statusText = getStatusText(connectionCount);
+  const statusText = getStatusText({ apiConfigured, connectionCount, mcpReady });
 
   return (
     <SettingsCatalogCard
@@ -63,14 +84,16 @@ export function ServiceCard({
       openAriaLabel={`Configure ${service.auth.name ?? service.credKey}`}
       icon={
         <div className="relative">
-          {faviconUrl ? (
-            <RemoteServiceIcon src={faviconUrl} alt="" size={20} />
-          ) : (
-            <span className="icon-base inline-block bg-muted" />
-          )}
+          <RemoteServiceIcon
+            src={faviconUrl}
+            alt=""
+            size={SERVICE_CARD_ICON_SIZE}
+            className="rounded-item"
+            fallback={<ServiceIconFallback />}
+          />
           <span
             className={cn(
-              "absolute -right-0.5 -bottom-0.5 h-2 w-2 rounded-full border-2 border-surface-raised",
+              "absolute -right-0.5 -bottom-0.5 h-2.5 w-2.5 rounded-full border-2 border-surface-raised",
               isConfigured ? "bg-success" : "bg-dim"
             )}
           />
@@ -90,7 +113,7 @@ export function SelectableServiceCard({
   selected: boolean;
   onToggle: () => void;
 }) {
-  const faviconUrl = getServiceFaviconUrl(service.credKey, 32);
+  const faviconUrl = getServiceFaviconUrl(service.homepage ?? service.auth.docsUrl, 32);
   const inputId = `service-select-${service.credKey}`;
   const descriptor =
     (service.descriptorId ? getIntegration(service.descriptorId) : undefined) ??
@@ -113,11 +136,13 @@ export function SelectableServiceCard({
         className="sr-only"
       />
       <div className="relative shrink-0">
-        {faviconUrl ? (
-          <RemoteServiceIcon src={faviconUrl} alt="" size={25} />
-        ) : (
-          <span className="icon-base inline-block bg-muted" />
-        )}
+        <RemoteServiceIcon
+          src={faviconUrl}
+          alt=""
+          size={SELECTABLE_SERVICE_ICON_SIZE}
+          className="rounded-item"
+          fallback={<ServiceIconFallback />}
+        />
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">

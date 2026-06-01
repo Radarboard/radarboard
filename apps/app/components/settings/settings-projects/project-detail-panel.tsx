@@ -96,33 +96,33 @@ const INTEGRATION_META: Record<
   keyof PlatformIntegrations,
   {
     label: string;
-    faviconKey: string;
+    homepage: string;
     fields: { key: string; label: string; placeholder?: string }[];
   }
 > = {
   revenuecat: {
     label: "RevenueCat",
-    faviconKey: "revenuecat",
+    homepage: "https://www.revenuecat.com",
     fields: [{ key: "projectId", label: "Project ID", placeholder: "proj1ab2c3d4" }],
   },
   appStoreConnect: {
     label: "App Store Connect",
-    faviconKey: "app-store-connect",
+    homepage: "https://developer.apple.com/app-store-connect/",
     fields: [{ key: "appId", label: "App ID", placeholder: "123456789" }],
   },
   openPanel: {
     label: "OpenPanel",
-    faviconKey: "openpanel",
+    homepage: "https://openpanel.dev",
     fields: [{ key: "projectId", label: "Project ID", placeholder: "my-project" }],
   },
   googleSearchConsole: {
     label: "Google Search Console",
-    faviconKey: "google-search-console",
+    homepage: "https://search.google.com/search-console",
     fields: [{ key: "siteUrl", label: "Site URL", placeholder: "https://example.com" }],
   },
   healthCheck: {
     label: "Health Check",
-    faviconKey: "",
+    homepage: "",
     fields: [
       { key: "url", label: "URL", placeholder: "https://example.com" },
       { key: "expectedStatus", label: "Expected Status", placeholder: "200" },
@@ -130,12 +130,12 @@ const INTEGRATION_META: Record<
   },
   openCollective: {
     label: "Open Collective",
-    faviconKey: "opencollective",
+    homepage: "https://opencollective.com",
     fields: [{ key: "slug", label: "Slug", placeholder: "my-project" }],
   },
   github: {
     label: "GitHub",
-    faviconKey: "github",
+    homepage: "https://github.com",
     fields: [
       { key: "owner", label: "Owner", placeholder: "my-org" },
       { key: "repo", label: "Repo", placeholder: "my-repo" },
@@ -143,7 +143,7 @@ const INTEGRATION_META: Record<
   },
   linear: {
     label: "Linear",
-    faviconKey: "linear",
+    homepage: "https://linear.app",
     fields: [
       { key: "teamId", label: "Team ID", placeholder: "TEAM" },
       { key: "labelNames", label: "Label Names", placeholder: "idea, bug" },
@@ -151,27 +151,27 @@ const INTEGRATION_META: Record<
   },
   vercel: {
     label: "Vercel",
-    faviconKey: "vercel",
+    homepage: "https://vercel.com",
     fields: [{ key: "projectId", label: "Project ID", placeholder: "prj_..." }],
   },
   sentry: {
     label: "Sentry",
-    faviconKey: "sentry",
+    homepage: "https://sentry.io",
     fields: [{ key: "projectSlug", label: "Project Slug", placeholder: "my-project" }],
   },
   betterstack: {
     label: "Betterstack",
-    faviconKey: "betterstack",
+    homepage: "https://betterstack.com",
     fields: [{ key: "monitorNamePattern", label: "Monitor Name Pattern", placeholder: "my-site*" }],
   },
   npm: {
     label: "npm",
-    faviconKey: "",
+    homepage: "https://www.npmjs.com",
     fields: [{ key: "packageName", label: "Package Name", placeholder: "@my-org/package" }],
   },
   astro: {
     label: "Astro (ASO)",
-    faviconKey: "",
+    homepage: "",
     fields: [
       { key: "appId", label: "App Store ID", placeholder: "6746737093" },
       { key: "store", label: "Store", placeholder: "us" },
@@ -680,7 +680,7 @@ function IntegrationRow({
   if (!meta) return null;
 
   const baseConfig = platform.integrations[integrationKey] as Record<string, unknown> | undefined;
-  const faviconUrl = meta.faviconKey ? getServiceFaviconUrl(meta.faviconKey, 24) : "";
+  const faviconUrl = getServiceFaviconUrl(meta.homepage, 24);
 
   const enabledRaw = getIntegration(projectSlug, platform.id, `${integrationKey}._enabled`);
   const isEnabled = enabledRaw === null ? true : Boolean(enabledRaw);
@@ -996,7 +996,10 @@ function PlatformIntegrationPickerDialog({
                 const isConfigured =
                   getServiceApiConfigured(service, connections, connectedKeys) ||
                   getServiceMcpReady(service, connections, mcpServers);
-                const faviconUrl = getServiceFaviconUrl(service.credKey, 32);
+                const faviconUrl = getServiceFaviconUrl(
+                  service.homepage ?? service.auth.docsUrl,
+                  32
+                );
 
                 return (
                   <Button

@@ -254,6 +254,7 @@ export const revenueDescriptor: WidgetDescriptor<RevenueWidgetConfig> = {
     {
       id: "stripe",
       name: "Stripe",
+      homepage: "https://stripe.com",
       type: "api_key",
       fields: [{ key: "secretKey", label: "Secret Key", type: "password", placeholder: "sk_..." }],
       testEndpoint: API_ROUTES.credentialsTest,

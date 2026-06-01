@@ -114,7 +114,11 @@ function PreferenceCard({
   const faviconUrl =
     preference.id === "global" || preference.id === "alerts"
       ? null
-      : getServiceFaviconUrl(preference.id, 32);
+      : getServiceFaviconUrl(
+          INTEGRATION_REGISTRY.get(preference.id)?.homepage ??
+            INTEGRATION_REGISTRY.get(preference.id)?.auth.docsUrl,
+          32
+        );
 
   return (
     <div className="min-w-0 space-y-3 rounded-item border border-border bg-surface p-4">

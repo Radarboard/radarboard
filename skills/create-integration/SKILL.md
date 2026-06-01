@@ -74,6 +74,7 @@ export const statuscakeDescriptor: IntegrationDescriptor = {
   description: "Uptime checks, incidents, and alerts from StatusCake.",
   icon: Globe,
   category: "monitoring",
+  homepage: "https://www.statuscake.com/",
   apiDocsUrl: "https://developers.statuscake.com/api/",
   auth: {
     id: "statuscake",
@@ -101,10 +102,13 @@ export const statuscakeDescriptor: IntegrationDescriptor = {
 Rules:
 
 - Keep the description tight and concrete.
+- Put provider-owned brand metadata on the descriptor, especially `homepage`; app UI derives favicons from descriptor/auth URLs and should not require central service-id maps.
+- If a service is exposed through widget `auth` before it has a standalone integration descriptor, put the provider homepage on that `auth` object too.
 - Only expose auth fields the user actually needs to enter.
 - If the integration can also connect through MCP, add the `mcp` block instead of inventing custom wiring.
 - Remove placeholder metadata you do not intend to maintain. Do not ship `example.com`.
 - Add `capabilities` whenever the integration should power an existing canonical widget or any shared cross-service surface.
+- Do not add provider-specific favicon, label, docs, category, or brand metadata to centralized app registries when the integration descriptor can own it.
 
 Capability rules:
 

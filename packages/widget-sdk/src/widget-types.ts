@@ -81,6 +81,8 @@ export interface WidgetAuth {
   name?: string;
   /** Short description of this service shown on onboarding cards. */
   description?: string;
+  /** Product homepage used for service-owned brand metadata such as favicons. */
+  homepage?: string;
   /** Auth method: "api_key" = manual token entry, "oauth" = OAuth redirect flow, "none" = no auth. */
   type: "api_key" | "oauth" | "none";
   /** For api_key and oauth: fields to show in the credential input UI (client ID/secret for OAuth). */

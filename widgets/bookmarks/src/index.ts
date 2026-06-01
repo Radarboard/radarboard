@@ -277,6 +277,7 @@ export const raindropDescriptor = createTemplateDescriptor(
     auth: {
       id: "raindrop",
       name: "Raindrop",
+      homepage: "https://raindrop.io",
       type: "api_key",
       fields: [
         {

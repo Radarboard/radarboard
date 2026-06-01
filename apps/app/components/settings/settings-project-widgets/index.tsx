@@ -103,7 +103,7 @@ function getWidgetCategoryId(descriptor: WidgetDescriptor): string {
 }
 
 function getWidgetServiceRequirements(descriptor: WidgetDescriptor) {
-  const services = new Map<string, { id: string; label: string }>();
+  const services = new Map<string, { id: string; label: string; docsUrl?: string }>();
 
   for (const integrationKey of descriptor.requiredIntegrations) {
     const serviceId = REQUIRED_INTEGRATION_TO_SERVICE_ID[integrationKey] ?? integrationKey;
@@ -112,6 +112,7 @@ function getWidgetServiceRequirements(descriptor: WidgetDescriptor) {
       services.set(serviceId, {
         id: serviceId,
         label: integration?.name ?? integrationKey,
+        docsUrl: integration?.homepage ?? integration?.auth?.docsUrl,
       });
     }
   }
@@ -124,6 +125,7 @@ function getWidgetServiceRequirements(descriptor: WidgetDescriptor) {
         services.set(auth.id, {
           id: auth.id,
           label: auth.name ?? auth.id,
+          docsUrl: auth.homepage ?? auth.docsUrl,
         });
       }
     }
@@ -341,7 +343,7 @@ function LibraryWidgetRow({
   connectedServices: number;
   totalServices: number;
   connectedKeys: string[];
-  serviceRequirements: Array<{ id: string; label: string }>;
+  serviceRequirements: Array<{ id: string; label: string; docsUrl?: string }>;
   dragProps: {
     ref: (node: HTMLElement | null) => void;
     style?: React.CSSProperties;
@@ -381,7 +383,7 @@ function LibraryWidgetRow({
                   <TooltipTrigger asChild>
                     <div className="flex shrink-0 items-center gap-1">
                       {visibleServices.map((service) => {
-                        const faviconUrl = getServiceFaviconUrl(service.id, 32);
+                        const faviconUrl = getServiceFaviconUrl(service.docsUrl, 32);
                         const isConnected = connectedKeys.includes(service.id);
                         return (
                           <span
@@ -479,7 +481,7 @@ function LibraryWidgetDragPreview({
   connectedServices: number;
   totalServices: number;
   connectedKeys: string[];
-  serviceRequirements: Array<{ id: string; label: string }>;
+  serviceRequirements: Array<{ id: string; label: string; docsUrl?: string }>;
 }) {
   return (
     <div className="w-64 rounded-item border border-accent bg-surface-raised shadow-xl">

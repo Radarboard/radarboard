@@ -20,6 +20,8 @@ export interface ServiceEntry {
   descriptorId?: string;
   /** Human-readable description shown on onboarding cards. */
   description?: string;
+  /** Integration-owned product homepage used for brand metadata such as favicons. */
+  homepage?: string;
   mcpConfig?: IntegrationMcpConnectionConfig;
   /** Guided setup flow from the integration descriptor. */
   configFlow?: IntegrationConfigFlow;

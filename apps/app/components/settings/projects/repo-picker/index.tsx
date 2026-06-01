@@ -217,7 +217,7 @@ async function githubFetcher<T>(url: string): Promise<T> {
 export function RepoPicker({ currentRepo, onSelect }: RepoPickerProps) {
   const { connectedKeys } = useCredentials();
   const isGithubConnected = connectedKeys.includes("github");
-  const faviconUrl = getServiceFaviconUrl("github", 32);
+  const faviconUrl = getServiceFaviconUrl("https://github.com", 32);
   const [ui, setUi] = useState<RepoPickerUiState>({
     browserPath: "",
     debouncedSearch: "",

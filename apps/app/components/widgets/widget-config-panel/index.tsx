@@ -83,7 +83,7 @@ function ServiceRow({
   disabledServices,
   onToggle,
 }: {
-  service: { id?: string; name?: string; type: string };
+  service: { id?: string; name?: string; type: string; docsUrl?: string; homepage?: string };
   connectedKeys: string[];
   disabledServices: string[];
   onToggle: (credKey: string, enabled: boolean) => void;
@@ -91,7 +91,7 @@ function ServiceRow({
   const credKey = service.id ?? "";
   const isConnected = connectedKeys.includes(credKey);
   const isEnabled = !disabledServices.includes(credKey);
-  const faviconUrl = getServiceFaviconUrl(credKey, 32);
+  const faviconUrl = getServiceFaviconUrl(service.homepage ?? service.docsUrl, 32);
 
   return (
     <div
