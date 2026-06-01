@@ -22,6 +22,7 @@ export function ApiCredentialAccessCard({
   values,
   setValues,
   onCredentialSaved,
+  onCredentialSaveSuccess,
   onCredentialChange,
 }: {
   service: ServiceEntry;
@@ -32,6 +33,7 @@ export function ApiCredentialAccessCard({
     credentialKey: string;
     values: Record<string, string>;
   }) => Promise<void> | void;
+  onCredentialSaveSuccess?: () => void;
   onCredentialChange: () => Promise<void> | void;
 }) {
   const [testing, setTesting] = useState(false);
@@ -83,13 +85,21 @@ export function ApiCredentialAccessCard({
         setSaveResult({ ok: true });
         await onCredentialChange();
         await revalidateCredentialData();
+        onCredentialSaveSuccess?.();
       } else {
         setSaveResult({ ok: false, error: "Failed to save credentials" });
       }
     } finally {
       setSaving(false);
     }
-  }, [credentialKey, onCredentialChange, onCredentialSaved, revalidateCredentialData, values]);
+  }, [
+    credentialKey,
+    onCredentialChange,
+    onCredentialSaved,
+    onCredentialSaveSuccess,
+    revalidateCredentialData,
+    values,
+  ]);
 
   const handleDisconnect = useCallback(async () => {
     setDisconnecting(true);

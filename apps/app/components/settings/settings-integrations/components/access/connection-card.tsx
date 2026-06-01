@@ -64,6 +64,7 @@ export function IntegrationConnectionCard({
   saveConnection,
   removeConnection,
   onCredentialChange,
+  onCredentialSaveSuccess,
 }: {
   service: ServiceEntry;
   connections: IntegrationConnection[];
@@ -75,6 +76,7 @@ export function IntegrationConnectionCard({
   saveConnection: (connection: IntegrationConnection) => Promise<void>;
   removeConnection: (connectionId: string) => Promise<void>;
   onCredentialChange: () => Promise<void> | void;
+  onCredentialSaveSuccess?: () => void;
 }) {
   const isOAuth = service.auth.type === "oauth" && service.auth.oauth && service.auth.fields;
   const isApiKey = service.auth.type === "api_key" && service.auth.fields;
@@ -253,6 +255,7 @@ export function IntegrationConnectionCard({
                   }))
                 }
                 onCredentialSaved={handleCredentialSaved}
+                onCredentialSaveSuccess={onCredentialSaveSuccess}
                 onCredentialChange={onCredentialChange}
               />
             )}

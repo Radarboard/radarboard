@@ -215,6 +215,7 @@ export function ServiceDetailModal({
                   saveConnection={saveConnection}
                   removeConnection={removeConnection}
                   onCredentialChange={onCredentialChange}
+                  onCredentialSaveSuccess={() => onOpenChange(false)}
                 />
               </>
             ) : null}
