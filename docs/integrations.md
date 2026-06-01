@@ -287,9 +287,9 @@ Content-Type: application/json
 
 **Powers:** SEO Performance widget (top search queries, clicks, impressions, CTR, position)
 
-### 1. Get Credentials
+### 1. Configure OAuth Broker
 
-This integration uses OAuth2 with a refresh token. The setup is more involved than other services.
+This integration uses Radarboard's hosted OAuth broker. Users connect their own Google account. The hosted broker stores the Google refresh token; local and desktop clients store only an opaque broker token.
 
 #### a) Create OAuth2 credentials
 
@@ -299,27 +299,15 @@ This integration uses OAuth2 with a refresh token. The setup is more involved th
 4. Go to **APIs & Services > Credentials**
 5. Click **Create Credentials > OAuth client ID**
 6. Select **Web application**
-7. Add `http://localhost` to Authorized redirect URIs
+7. Add `https://app.radarboard.app/api/auth/google/callback` to Authorized redirect URIs
 8. Copy the **Client ID** and **Client Secret**
-
-#### b) Get a refresh token
-
-Use the [OAuth 2.0 Playground](https://developers.google.com/oauthplayground/):
-
-1. Click the gear icon (Settings) in the top right
-2. Check **Use your own OAuth credentials**
-3. Enter your Client ID and Client Secret
-4. In the left panel, find **Search Console API v1** and select `https://www.googleapis.com/auth/webmasters.readonly`
-5. Click **Authorize APIs** and sign in
-6. Click **Exchange authorization code for tokens**
-7. Copy the **Refresh Token**
 
 ### 2. Set Environment Variables
 
 ```env
-GOOGLE_CLIENT_ID=xxxxxxxxxxxx.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=GOCSPX-xxxxxxxxxxxx
-GOOGLE_REFRESH_TOKEN=1//xxxxxxxxxxxx
+OAUTH_GOOGLE_CLIENT_ID=xxxxxxxxxxxx.apps.googleusercontent.com
+OAUTH_GOOGLE_CLIENT_SECRET=GOCSPX-xxxxxxxxxxxx
+RADARBOARD_OAUTH_BROKER_URL=https://app.radarboard.app
 ```
 
 ### 3. Update Project Config

@@ -12,9 +12,9 @@ Google Search Console provides search analytics data: top queries with clicks, i
 - **SEO Performance widget** -- Top queries table with all metrics
 - **SEO expanded view** -- Click/impression trend charts and summary KPIs
 
-## Getting your credentials
+## OAuth setup
 
-Google Search Console uses OAuth2 with a refresh token. This requires a one-time setup with a Google Cloud project.
+Google Search Console uses Radarboard's hosted OAuth broker. Users connect their own Google account, and the hosted Radarboard app stores the Google refresh token. Local or desktop clients store only an opaque broker token and request short-lived access tokens when they fetch Search Console data.
 
 <Steps>
   <Step title="Create a Google Cloud project">
@@ -26,31 +26,25 @@ Google Search Console uses OAuth2 with a refresh token. This requires a one-time
   <Step title="Create OAuth2 credentials">
     Go to **APIs & Services** > **Credentials** > **Create Credentials** > **OAuth 2.0 Client ID**.
     
-    Select **Web application** as the application type. Add the exact callback URL Radarboard shows in the integration UI.
-
-    For the default local `portless` setup, that callback is:
+    Select **Web application** as the application type. Add this Authorized redirect URI:
 
     ```text
-    https://localhost:1355/api/auth/google/callback
+    https://app.radarboard.app/api/auth/google/callback
     ```
     
-    Note the **Client ID** and **Client Secret**.
+    Note the **Client ID** and **Client Secret** for the hosted Radarboard deployment.
   </Step>
-  <Step title="Get a refresh token">
-    Use the OAuth2 Playground or a script to authorize with the scope `https://www.googleapis.com/auth/webmasters.readonly` and obtain a **refresh token**.
-    
-    <Tip>
-      You can use [Google's OAuth2 Playground](https://developers.google.com/oauthplayground/) -- set your own OAuth credentials in the settings gear, authorize the Search Console scope, and exchange for a refresh token.
-    </Tip>
+  <Step title="Configure the broker">
+    Set the OAuth client values on the hosted Radarboard app. Local and desktop clients can use the default broker URL.
   </Step>
 </Steps>
 
 ## Environment variables
 
 ```bash .env.local
-GOOGLE_CLIENT_ID=xxxxxxxxxxxx.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=GOCSPX-xxxxxxxxxxxx
-GOOGLE_REFRESH_TOKEN=1//xxxxxxxxxxxx
+OAUTH_GOOGLE_CLIENT_ID=xxxxxxxxxxxx.apps.googleusercontent.com
+OAUTH_GOOGLE_CLIENT_SECRET=GOCSPX-xxxxxxxxxxxx
+RADARBOARD_OAUTH_BROKER_URL=https://app.radarboard.app
 ```
 
 ## API details
@@ -60,7 +54,7 @@ GOOGLE_REFRESH_TOKEN=1//xxxxxxxxxxxx
 | API base URL | `https://searchconsole.googleapis.com/webmasters/v3` |
 | Rate limit | Standard Google API quotas |
 | Cache TTL | 5 minutes |
-| Authentication | OAuth2 with refresh token |
+| Authentication | OAuth2 through hosted broker |
 
 ## Widgets that use this service
 
