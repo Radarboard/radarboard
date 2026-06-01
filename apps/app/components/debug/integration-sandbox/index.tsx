@@ -7,6 +7,7 @@ import { Badge } from "@radarboard/ui/badge";
 import { Button } from "@radarboard/ui/button";
 import { cn } from "@radarboard/utils/cn";
 import { useCallback, useMemo, useState } from "react";
+import "@/lib/integrations-init";
 
 // ---------------------------------------------------------------------------
 // Section tabs
@@ -346,85 +347,70 @@ export function IntegrationSandbox() {
   const descriptor = integrations.find((i) => i.id === selectedIntegration) ?? null;
 
   return (
-    <div className="min-h-screen overflow-y-auto bg-background p-8 text-foreground-secondary">
-      <div className="mx-auto max-w-[1440px] space-y-6">
-        <header className="space-y-2">
-          <div className="font-mono text-dim text-w-sm uppercase tracking-[0.2em]">
-            Integration Sandbox
-          </div>
-          <h1 className="font-semibold text-3xl text-foreground tracking-tight">
-            Inspect Integration Descriptors
-          </h1>
-          <p className="max-w-3xl text-muted-foreground text-w-sm leading-relaxed">
-            Browse integration auth configs, data sources, MCP tools, and test data source fetches
-            with mock or real credentials.
-          </p>
-        </header>
-
-        {/* Controls */}
-        <div className="flex flex-wrap items-center gap-4 border-border border-b pb-4">
-          <label className="text-dim text-w-sm" htmlFor="sandbox-integration-select">
-            Integration:
-          </label>
-          <select
-            id="sandbox-integration-select"
-            value={selectedIntegration ?? ""}
-            onChange={(e) => setSelectedIntegration(e.target.value || null)}
-            className="rounded border border-input bg-surface px-2 py-1 text-foreground text-w-sm"
-          >
-            <option value="">Select an integration...</option>
-            {integrations.map((i) => (
-              <option key={i.id} value={i.id}>
-                {i.name} ({i.category})
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {descriptor ? (
-          <div className="space-y-4">
-            {/* Section tabs */}
-            <div className="flex gap-1 border-border border-b">
-              {(Object.entries(SECTION_LABELS) as Array<[SandboxSection, string]>).map(
-                ([id, label]) => (
-                  <Button
-                    key={id}
-                    type="button"
-                    variant="ghost"
-                    onClick={() => setActiveSection(id)}
-                    className={cn(
-                      "h-auto rounded-none border-b-2 px-3 py-2 font-mono text-w-sm transition-colors",
-                      activeSection === id
-                        ? "border-accent text-foreground"
-                        : "border-transparent text-dim hover:text-foreground-secondary"
-                    )}
-                  >
-                    {label}
-                    {id === "data-sources" && descriptor.dataSources
-                      ? ` (${descriptor.dataSources.length})`
-                      : ""}
-                    {id === "mcp-tools" && descriptor.mcpTools
-                      ? ` (${descriptor.mcpTools.length})`
-                      : ""}
-                  </Button>
-                )
-              )}
-            </div>
-
-            {/* Section content */}
-            <div className="min-h-[300px]">
-              {activeSection === "auth" && <AuthFormPreview descriptor={descriptor} />}
-              {activeSection === "data-sources" && <DataSourceTable descriptor={descriptor} />}
-              {activeSection === "mcp-tools" && <McpToolsListing descriptor={descriptor} />}
-              {activeSection === "fetch-test" && <DataSourceFetchTester descriptor={descriptor} />}
-            </div>
-          </div>
-        ) : (
-          <div className="py-20 text-center text-dim">
-            Select an integration to inspect its descriptor.
-          </div>
-        )}
+    <div className="space-y-5 text-foreground-secondary">
+      {/* Controls */}
+      <div className="flex flex-wrap items-center gap-4 border-border border-b pb-4">
+        <label className="text-dim text-w-sm" htmlFor="sandbox-integration-select">
+          Integration:
+        </label>
+        <select
+          id="sandbox-integration-select"
+          value={selectedIntegration ?? ""}
+          onChange={(e) => setSelectedIntegration(e.target.value || null)}
+          className="rounded border border-input bg-surface px-2 py-1 text-foreground text-w-sm"
+        >
+          <option value="">Select an integration...</option>
+          {integrations.map((i) => (
+            <option key={i.id} value={i.id}>
+              {i.name} ({i.category})
+            </option>
+          ))}
+        </select>
       </div>
+
+      {descriptor ? (
+        <div className="space-y-4">
+          {/* Section tabs */}
+          <div className="flex gap-1 border-border border-b">
+            {(Object.entries(SECTION_LABELS) as Array<[SandboxSection, string]>).map(
+              ([id, label]) => (
+                <Button
+                  key={id}
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setActiveSection(id)}
+                  className={cn(
+                    "h-auto rounded-none border-b-2 px-3 py-2 font-mono text-w-sm transition-colors",
+                    activeSection === id
+                      ? "border-accent text-foreground"
+                      : "border-transparent text-dim hover:text-foreground-secondary"
+                  )}
+                >
+                  {label}
+                  {id === "data-sources" && descriptor.dataSources
+                    ? ` (${descriptor.dataSources.length})`
+                    : ""}
+                  {id === "mcp-tools" && descriptor.mcpTools
+                    ? ` (${descriptor.mcpTools.length})`
+                    : ""}
+                </Button>
+              )
+            )}
+          </div>
+
+          {/* Section content */}
+          <div style={{ minHeight: 300 }}>
+            {activeSection === "auth" && <AuthFormPreview descriptor={descriptor} />}
+            {activeSection === "data-sources" && <DataSourceTable descriptor={descriptor} />}
+            {activeSection === "mcp-tools" && <McpToolsListing descriptor={descriptor} />}
+            {activeSection === "fetch-test" && <DataSourceFetchTester descriptor={descriptor} />}
+          </div>
+        </div>
+      ) : (
+        <div className="py-20 text-center text-dim">
+          Select an integration to inspect its descriptor.
+        </div>
+      )}
     </div>
   );
 }

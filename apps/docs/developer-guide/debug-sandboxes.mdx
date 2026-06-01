@@ -1,0 +1,74 @@
+---
+title: "Debug Sandboxes"
+description: "Preview and inspect Radarboard extensions in isolated development surfaces"
+---
+
+## Overview
+
+Debug sandboxes are local development surfaces under `/debug/*`. They help you inspect extension descriptors and render extension UI without leaving the app shell.
+
+Use sandboxes after the extension appears in **Extension Health**. If a sandbox is empty, check that the generated extension init files are current and that the extension is listed in `radarboard.config.ts`.
+
+## Navigation model
+
+The sandbox order follows the extension development flow:
+
+1. **Integration Sandbox** - confirm provider contracts and data source descriptors.
+2. **Widget Sandbox** - confirm user-facing widget states.
+3. **Widget Composition** - confirm shared template recipe behavior.
+4. **Plugin Sandbox** - confirm optional workflows and overlay presentation modes.
+
+This order scales better than sorting alphabetically because future sandboxes can be inserted near the workflow they support.
+
+## Integration Sandbox
+
+The **Integration Sandbox** shows each registered integration descriptor:
+
+- credential fields and placeholders
+- data source actions
+- MCP tools
+- mock fetch tester output
+
+Use it when validating a new integration or checking whether a provider exposes the data sources widgets expect.
+
+## Widget Sandbox
+
+The **Widget Sandbox** renders every template-backed widget with generated data in four states:
+
+- happy path
+- empty
+- loading
+- error
+
+Use it to catch visual regressions, empty states, layout overflow, and error handling before wiring a widget into a live dashboard.
+
+## Widget Composition
+
+The **Widget Composition** sandbox renders deterministic widget recipe examples from the template engine. Use it when changing recipe composition, section synchronization, or shared template primitives.
+
+## Plugin Sandbox
+
+The **Plugin Sandbox** renders every registered plugin with a mock plugin API across runtime states and presentation modes.
+
+Use it to verify side panel, modal, fullscreen, and mini HUD behavior without invoking the plugin from a production surface.
+
+## Recommended order
+
+When building a provider-backed experience, move through the sandboxes in this order:
+
+1. **Integration Sandbox** - confirm auth fields and data source descriptors.
+2. **Widget Sandbox** - confirm the widget renders all states.
+3. **Widget Composition** - confirm shared recipe behavior if the widget uses template composition.
+4. **Plugin Sandbox** - confirm optional plugin workflows and presentation modes.
+
+## Adding a new sandbox
+
+Add new sandbox routes to the central debug registry so the shared debug shell can provide the same title, description, docs link, sidebar entry, and active state.
+
+Use the workflow position to choose the order:
+
+- Provider contract or credentials surfaces belong near **Integration Sandbox**.
+- Widget rendering or template surfaces belong near **Widget Sandbox** and **Widget Composition**.
+- Plugin runtime, intent, overlay, or command surfaces belong near **Plugin Sandbox**.
+
+If a future sandbox supports a new workflow with multiple pages, create a new sidebar group instead of mixing unrelated pages into **Dev Sandboxes**.

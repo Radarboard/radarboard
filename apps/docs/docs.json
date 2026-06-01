@@ -140,6 +140,8 @@
               "developer-guide/extension-packages",
               "developer-guide/community-extensions",
               "developer-guide/developer-mode",
+              "developer-guide/debug-panels",
+              "developer-guide/debug-sandboxes",
               "developer-guide/mcp-extension-tutorial",
               "developer-guide/intent-bus-cookbook"
             ]

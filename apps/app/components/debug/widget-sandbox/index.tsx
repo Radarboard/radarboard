@@ -11,6 +11,7 @@ import { WIDGET_REGISTRY } from "@radarboard/widget-engine/widgets/registry";
 import { createEmptyWidgetData, createMockWidgetData } from "@radarboard/widget-sdk/testing";
 import type { WidgetTemplateConfig } from "@radarboard/widget-sdk/types";
 import { useEffect, useMemo, useState } from "react";
+import { initializeWidgetDescriptors } from "@/lib/widgets-init";
 
 // ---------------------------------------------------------------------------
 // State-aware resolver factory
@@ -82,11 +83,10 @@ function PreviewFrame({ children, state }: { children: React.ReactNode; state: P
   return (
     <div
       data-testid={`widget-preview-card-${state}`}
-      className="flex h-[280px] min-h-[280px] min-w-0 overflow-hidden border border-border bg-surface-raised"
+      className="flex min-w-0 overflow-hidden border border-border bg-surface-raised"
+      style={{ height: 280, minHeight: 280 }}
     >
-      <div className="flex h-full min-h-0 w-full min-w-0 [&>*]:h-full [&>*]:min-h-0 [&>*]:w-full [&>*]:min-w-0">
-        {children}
-      </div>
+      <div className="flex h-full min-h-0 w-full min-w-0">{children}</div>
     </div>
   );
 }
@@ -181,6 +181,8 @@ export function WidgetSandbox() {
   );
 
   const widgets = useMemo(() => {
+    initializeWidgetDescriptors();
+
     const entries: Array<{
       id: string;
       name: string;
@@ -217,103 +219,84 @@ export function WidgetSandbox() {
   const states = Array.from(selectedStates) as PreviewState[];
 
   return (
-    <div className="min-h-screen overflow-y-auto bg-background p-8 text-foreground-secondary">
-      <div className="mx-auto max-w-[1440px] space-y-6">
-        <header className="space-y-2">
-          <div className="font-mono text-dim text-w-sm uppercase tracking-[0.2em]">
-            Widget Sandbox
-          </div>
-          <h1 className="font-semibold text-3xl text-foreground tracking-tight">
-            Preview Widgets in All States
-          </h1>
-          <p className="max-w-3xl text-muted-foreground text-w-sm leading-relaxed">
-            Every registered widget rendered with auto-generated mock data. Use this to verify
-            layouts across happy path, empty, loading, and error states during development.
-          </p>
-        </header>
-
-        {/* Controls */}
-        <div className="flex flex-wrap items-center gap-4 border-border border-b pb-4">
-          <label className="text-dim text-w-sm" htmlFor="sandbox-widget-select">
-            Widget:
-          </label>
-          <select
-            id="sandbox-widget-select"
-            value={selectedWidget ?? "__all__"}
-            onChange={(e) =>
-              setSelectedWidget(e.target.value === "__all__" ? null : e.target.value)
-            }
-            className="rounded border border-input bg-surface px-2 py-1 text-foreground text-w-sm"
-          >
-            <option value="__all__">All widgets ({widgets.length})</option>
-            {widgets.map((w) => (
-              <option key={w.id} value={w.id}>
-                {w.name}
-              </option>
-            ))}
-          </select>
-
-          <span className="text-dim">|</span>
-          <span className="text-dim text-w-sm">States:</span>
-          {(
-            Object.entries(PREVIEW_LABELS) as Array<
-              [PreviewState, { label: string; color: string }]
-            >
-          ).map(([state, { label, color }]) => (
-            <Button
-              key={state}
-              variant="outline"
-              size="sm"
-              onClick={() => toggleState(state)}
-              className={`font-mono text-w-xs ${
-                selectedStates.has(state) ? `bg-surface-raised ${color}` : "text-dim"
-              }`}
-            >
-              {label}
-            </Button>
+    <div className="space-y-5 text-foreground-secondary">
+      {/* Controls */}
+      <div className="flex flex-wrap items-center gap-4 border-border border-b pb-4">
+        <label className="text-dim text-w-sm" htmlFor="sandbox-widget-select">
+          Widget:
+        </label>
+        <select
+          id="sandbox-widget-select"
+          value={selectedWidget ?? "__all__"}
+          onChange={(e) => setSelectedWidget(e.target.value === "__all__" ? null : e.target.value)}
+          className="rounded border border-input bg-surface px-2 py-1 text-foreground text-w-sm"
+        >
+          <option value="__all__">All widgets ({widgets.length})</option>
+          {widgets.map((w) => (
+            <option key={w.id} value={w.id}>
+              {w.name}
+            </option>
           ))}
-        </div>
+        </select>
 
-        {/* Widget grid */}
-        {visibleWidgets.map((widget) => (
-          <section key={widget.id} className="space-y-3">
-            <div>
-              <h2 className="font-medium text-foreground text-lg">{widget.name}</h2>
-              <p className="font-mono text-dim text-w-xs">{widget.id}</p>
-              {widget.description && (
-                <p className="mt-0.5 text-muted-foreground text-w-sm">{widget.description}</p>
-              )}
-            </div>
-
-            <div
-              data-testid={`widget-state-grid-${widget.id}`}
-              className="grid gap-3"
-              style={{
-                gridTemplateColumns: `repeat(${Math.min(states.length, 4)}, minmax(0, 1fr))`,
-              }}
-            >
-              {states.map((state) => (
-                <div key={state} className="min-w-0 space-y-1">
-                  <div
-                    className={`font-mono text-w-sm uppercase tracking-[0.16em] ${PREVIEW_LABELS[state].color}`}
-                  >
-                    {PREVIEW_LABELS[state].label}
-                  </div>
-                  {widget.config && (
-                    <WidgetPreviewCard widgetId={widget.id} config={widget.config} state={state} />
-                  )}
-                </div>
-              ))}
-            </div>
-          </section>
+        <span className="text-dim">|</span>
+        <span className="text-dim text-w-sm">States:</span>
+        {(
+          Object.entries(PREVIEW_LABELS) as Array<[PreviewState, { label: string; color: string }]>
+        ).map(([state, { label, color }]) => (
+          <Button
+            key={state}
+            variant="outline"
+            size="sm"
+            onClick={() => toggleState(state)}
+            className={`font-mono text-w-xs ${
+              selectedStates.has(state) ? `bg-surface-raised ${color}` : "text-dim"
+            }`}
+          >
+            {label}
+          </Button>
         ))}
-
-        {visibleWidgets.length === 0 && (
-          <div className="py-20 text-center text-dim">
-            No template-backed widgets found in the registry.
-          </div>
-        )}
       </div>
+
+      {/* Widget grid */}
+      {visibleWidgets.map((widget) => (
+        <section key={widget.id} className="space-y-3">
+          <div>
+            <h2 className="font-medium text-foreground text-lg">{widget.name}</h2>
+            <p className="font-mono text-dim text-w-xs">{widget.id}</p>
+            {widget.description && (
+              <p className="mt-0.5 text-muted-foreground text-w-sm">{widget.description}</p>
+            )}
+          </div>
+
+          <div
+            data-testid={`widget-state-grid-${widget.id}`}
+            className="grid gap-3"
+            style={{
+              gridTemplateColumns: `repeat(${Math.min(states.length, 4)}, minmax(0, 1fr))`,
+            }}
+          >
+            {states.map((state) => (
+              <div key={state} className="min-w-0 space-y-1">
+                <div
+                  className={`font-mono text-w-sm uppercase tracking-wide ${PREVIEW_LABELS[state].color}`}
+                >
+                  {PREVIEW_LABELS[state].label}
+                </div>
+                {widget.config && (
+                  <WidgetPreviewCard widgetId={widget.id} config={widget.config} state={state} />
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      ))}
+
+      {visibleWidgets.length === 0 && (
+        <div className="py-20 text-center text-dim">
+          No template-backed widgets found in the registry.
+        </div>
+      )}
     </div>
   );
 }

@@ -108,61 +108,46 @@ registerTemplateDataSource(
 
 export function WidgetCompositionGallery() {
   return (
-    <div className="min-h-screen overflow-y-auto bg-background p-8 text-foreground-secondary">
-      <div className="mx-auto max-w-[1440px] space-y-8">
-        <header className="space-y-2">
-          <div className="font-mono text-dim text-w-sm uppercase tracking-[0.2em]">
-            Widget Composition Gallery
-          </div>
-          <h1 className="font-semibold text-3xl text-foreground tracking-tight">
-            Canonical Recipe Examples
-          </h1>
-          <p className="max-w-3xl text-muted-foreground text-w-sm leading-relaxed">
-            Deterministic template-backed examples for authoring and visual coverage. Each example
-            maps to one canonical top-level recipe.
-          </p>
-        </header>
-
-        <div className="grid gap-4 xl:grid-cols-2">
-          {COMPOSITION_EXAMPLES.map((example) => {
-            const config = synchronizeTemplateConfig(example.config);
-            return (
-              <section
-                key={example.id}
-                data-testid={`composition-example-${example.recipeKind}`}
-                className="overflow-hidden border border-border bg-surface"
-              >
-                <div className="border-border border-b px-3 py-2">
-                  <div className="flex items-center justify-between gap-4">
-                    <div>
-                      <div className="font-mono text-dim text-w-sm uppercase tracking-[0.16em]">
-                        {example.recipeKind}
-                      </div>
-                      <h2 className="mt-1 font-medium text-foreground text-lg">{example.title}</h2>
+    <div className="space-y-5 text-foreground-secondary">
+      <div className="grid gap-4 xl:grid-cols-2">
+        {COMPOSITION_EXAMPLES.map((example) => {
+          const config = synchronizeTemplateConfig(example.config);
+          return (
+            <section
+              key={example.id}
+              data-testid={`composition-example-${example.recipeKind}`}
+              className="overflow-hidden border border-border bg-surface"
+            >
+              <div className="border-border border-b px-3 py-2">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <div className="font-mono text-dim text-w-sm uppercase tracking-wide">
+                      {example.recipeKind}
                     </div>
-                    <div className="border border-border px-2 py-0.5 font-mono text-dim/80 text-w-sm uppercase tracking-[0.16em]">
-                      v{config.version}
-                    </div>
+                    <h2 className="mt-1 font-medium text-foreground text-lg">{example.title}</h2>
                   </div>
-                  <ul className="mt-3 space-y-1 text-dim/80 text-w-xs">
-                    {example.notes.map((note) => (
-                      <li key={note}>{note}</li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="h-[360px] overflow-hidden p-3">
-                  <div className="h-full overflow-hidden border border-border bg-surface-raised">
-                    <TemplateWidget
-                      widgetId={`gallery:${example.id}`}
-                      projectSlug={null}
-                      config={config}
-                    />
+                  <div className="border border-border px-2 py-0.5 font-mono text-dim/80 text-w-sm uppercase tracking-wide">
+                    v{config.version}
                   </div>
                 </div>
-              </section>
-            );
-          })}
-        </div>
+                <ul className="mt-3 space-y-1 text-dim/80 text-w-xs">
+                  {example.notes.map((note) => (
+                    <li key={note}>{note}</li>
+                  ))}
+                </ul>
+              </div>
+              <div className="overflow-hidden p-3" style={{ height: 360 }}>
+                <div className="h-full overflow-hidden border border-border bg-surface-raised">
+                  <TemplateWidget
+                    widgetId={`gallery:${example.id}`}
+                    projectSlug={null}
+                    config={config}
+                  />
+                </div>
+              </div>
+            </section>
+          );
+        })}
       </div>
     </div>
   );

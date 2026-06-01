@@ -5,6 +5,10 @@ import { createElement } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { WidgetSandbox } from "../index";
 
+vi.mock("@/lib/widgets-init", () => ({
+  initializeWidgetDescriptors: vi.fn(),
+}));
+
 vi.mock("@radarboard/widget-engine/widgets/registry", () => ({
   WIDGET_REGISTRY: new Map([
     [
@@ -46,8 +50,8 @@ describe("WidgetSandbox", () => {
 
     for (const state of states) {
       const card = screen.getByTestId(`widget-preview-card-${state}`);
-      expect(card.className).toContain("h-[280px]");
-      expect(card.className).toContain("min-h-[280px]");
+      expect(card.getAttribute("style")).toContain("height: 280px");
+      expect(card.getAttribute("style")).toContain("min-height: 280px");
       expect(card.className).toContain("min-w-0");
       expect(card.className).toContain("overflow-hidden");
     }
