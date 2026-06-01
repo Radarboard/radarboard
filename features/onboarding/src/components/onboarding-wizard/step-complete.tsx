@@ -1,5 +1,6 @@
 "use client";
 
+import { getAllPlugins } from "@radarboard/plugin-sdk/registry";
 import { Button } from "@radarboard/ui/button";
 import { cn } from "@radarboard/utils/cn";
 import {
@@ -13,7 +14,9 @@ import {
   User,
 } from "lucide-react";
 import type { ComponentType } from "react";
+import { useMemo } from "react";
 import { PROFILE_GROUPS } from "./profile-config";
+import { ESSENTIAL_PLUGIN_IDS } from "./step-plugins";
 import type { OnboardingState } from "./types";
 
 interface StepCompleteProps {
@@ -32,7 +35,17 @@ export function StepComplete({
   finishError,
 }: StepCompleteProps) {
   const integrationCount = state.connectedIntegrations.length;
-  const pluginCount = state.enabledPlugins.length;
+  const essentialPluginIds = useMemo(() => new Set(ESSENTIAL_PLUGIN_IDS), []);
+  const enabledPluginIds = useMemo(() => {
+    const selectedIds = new Set(state.enabledPlugins);
+    for (const plugin of getAllPlugins()) {
+      if (essentialPluginIds.has(plugin.id)) {
+        selectedIds.add(plugin.id);
+      }
+    }
+    return selectedIds;
+  }, [essentialPluginIds, state.enabledPlugins]);
+  const pluginCount = enabledPluginIds.size;
   const profileLabel = state.profile
     ? PROFILE_GROUPS.flatMap((g) => g.profiles).find((p) => p.id === state.profile)?.label
     : null;

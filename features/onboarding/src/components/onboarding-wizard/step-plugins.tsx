@@ -18,7 +18,7 @@ interface StepPluginsProps {
   onBack: () => void;
 }
 
-/** Essential plugins — always enabled, not shown in onboarding. */
+/** Essential plugins are always enabled and cannot be deselected during onboarding. */
 export const ESSENTIAL_PLUGIN_IDS = ["backup", "embeddings"];
 
 const CATEGORY_ORDER = ["productivity", "monitoring", "data"];
@@ -29,14 +29,16 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 export function StepPlugins({ state, onChange, onNext, onBack }: StepPluginsProps) {
+  const plugins = useMemo(() => getAllPlugins(), []);
+  const essentialIds = useMemo(() => new Set(ESSENTIAL_PLUGIN_IDS), []);
   const optionalPlugins = useMemo(
-    () => getAllPlugins().filter((p) => !ESSENTIAL_PLUGIN_IDS.includes(p.id)),
-    []
+    () => plugins.filter((plugin) => !essentialIds.has(plugin.id)),
+    [essentialIds, plugins]
   );
 
   const groupedPlugins = useMemo(() => {
-    const groups = new Map<string, typeof optionalPlugins>();
-    for (const plugin of optionalPlugins) {
+    const groups = new Map<string, typeof plugins>();
+    for (const plugin of plugins) {
       const cat = plugin.category ?? "other";
       const list = groups.get(cat) ?? [];
       list.push(plugin);
@@ -53,7 +55,7 @@ export function StepPlugins({ state, onChange, onNext, onBack }: StepPluginsProp
         plugins: groups.get(cat) ?? [],
       }))
       .filter((g) => g.plugins.length > 0);
-  }, [optionalPlugins]);
+  }, [plugins]);
 
   const enabled = new Set(state.enabledPlugins);
 
@@ -68,7 +70,9 @@ export function StepPlugins({ state, onChange, onNext, onBack }: StepPluginsProp
   };
 
   const allOptionalIds = useMemo(() => optionalPlugins.map((p) => p.id), [optionalPlugins]);
-  const selectedCount = enabled.size;
+  const selectedCount = plugins.filter(
+    (plugin) => essentialIds.has(plugin.id) || enabled.has(plugin.id)
+  ).length;
   const allSelected = allOptionalIds.every((id) => enabled.has(id));
 
   const toggleAll = () => {
@@ -81,12 +85,12 @@ export function StepPlugins({ state, onChange, onNext, onBack }: StepPluginsProp
         <span className="font-mono text-dim text-w-sm uppercase tracking-widest">Plugins</span>
         <div className="flex items-center gap-3">
           {selectedCount > 0 ? (
-            <span className="font-mono text-accent text-w-sm">{selectedCount} selected</span>
+            <span className="font-mono text-accent text-w-sm">{selectedCount} enabled</span>
           ) : null}
           <button
             type="button"
             onClick={toggleAll}
-            className="font-mono text-accent text-w-sm underline underline-offset-2 transition-colors hover:text-foreground"
+            className="font-mono text-accent text-w-sm underline underline-offset-2 transition-interactive hover:text-foreground"
           >
             {allSelected ? "Deselect all" : "Select all"}
           </button>
@@ -96,7 +100,7 @@ export function StepPlugins({ state, onChange, onNext, onBack }: StepPluginsProp
         Choose which plugins to enable. Essential plugins (Backup, Embeddings) are always active.
       </p>
 
-      <div className="@container min-h-0 flex-1 space-y-5 overflow-y-auto pr-1">
+      <div className="@container min-h-0 flex-1 space-y-5 overflow-y-auto pr-1 scrollbar-thin">
         {groupedPlugins.map((group) => (
           <fieldset key={group.id}>
             <legend className="mb-2 font-mono text-dim/60 text-w-sm uppercase tracking-widest">
@@ -104,7 +108,8 @@ export function StepPlugins({ state, onChange, onNext, onBack }: StepPluginsProp
             </legend>
             <OnboardingGrid className={GRID_CLASS}>
               {group.plugins.map((plugin) => {
-                const isSelected = enabled.has(plugin.id);
+                const isEssential = essentialIds.has(plugin.id);
+                const isSelected = isEssential || enabled.has(plugin.id);
                 const inputId = `plugin-${plugin.id}`;
                 const Icon = plugin.icon;
                 return (
@@ -112,32 +117,40 @@ export function StepPlugins({ state, onChange, onNext, onBack }: StepPluginsProp
                     key={plugin.id}
                     htmlFor={inputId}
                     className={cn(
-                      "flex cursor-pointer items-start gap-3 rounded-item border px-3 py-2.5 text-left transition-colors",
+                      "flex items-start gap-3 rounded-item border px-3 py-2.5 text-left transition-interactive",
+                      isEssential ? "cursor-default" : "cursor-pointer",
                       isSelected
                         ? "border-accent/30 bg-accent/10"
                         : "border-border bg-surface hover:bg-muted"
                     )}
+                    aria-disabled={isEssential}
                   >
                     <input
                       id={inputId}
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => togglePlugin(plugin.id)}
+                      disabled={isEssential}
                       className="sr-only"
                     />
-                    <Icon className="mt-0.5 h-5 w-5 shrink-0 text-foreground-secondary" />
+                    <Icon className="mt-0.5 icon-base shrink-0 text-foreground-secondary" />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1.5">
                         <span className="font-medium text-foreground text-w-base">
                           {plugin.name}
                         </span>
                         {isSelected ? (
-                          <CheckCircle className="ml-auto h-4 w-4 shrink-0 text-accent" />
+                          <CheckCircle className="ml-auto icon-sm shrink-0 text-accent" />
                         ) : null}
                       </div>
                       <div className="mt-1 text-foreground-secondary text-w-sm leading-snug">
                         {plugin.description}
                       </div>
+                      {isEssential ? (
+                        <div className="mt-2 font-mono text-accent text-w-xs uppercase tracking-widest">
+                          Always active
+                        </div>
+                      ) : null}
                     </div>
                   </label>
                 );

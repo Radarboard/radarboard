@@ -175,21 +175,40 @@ describe("StepPlugins", () => {
     expect(screen.getByText("Productivity")).toBeTruthy();
   });
 
-  it("shows optional plugins (not essential ones)", () => {
+  it("shows optional and essential plugins", () => {
     render(
       <StepPlugins state={INITIAL_ONBOARDING_STATE} onChange={noop} onNext={noop} onBack={noop} />
     );
-    // Tasks and Notes are optional, should be visible
     expect(screen.getByText("Tasks")).toBeTruthy();
     expect(screen.getByText("Notes")).toBeTruthy();
+    expect(screen.getByText("Backup")).toBeTruthy();
+    expect(screen.getByText("Embeddings")).toBeTruthy();
+    expect(screen.getAllByText("Always active")).toHaveLength(2);
   });
 
-  it("hides essential plugins (backup, embeddings)", () => {
+  it("keeps essential plugins locked when optional plugins are deselected", async () => {
+    const onChange = vi.fn();
     render(
-      <StepPlugins state={INITIAL_ONBOARDING_STATE} onChange={noop} onNext={noop} onBack={noop} />
+      <StepPlugins
+        state={{
+          ...INITIAL_ONBOARDING_STATE,
+          enabledPlugins: ["tasks", "notes", "bookmarks", "rss-reader"],
+        }}
+        onChange={onChange}
+        onNext={noop}
+        onBack={noop}
+      />
     );
-    expect(screen.queryByText("Backup")).toBeNull();
-    expect(screen.queryByText("Embeddings")).toBeNull();
+
+    await userEvent.click(screen.getByRole("button", { name: "Deselect all" }));
+
+    expect(onChange).toHaveBeenCalledWith({ enabledPlugins: [] });
+    expect(screen.getByRole("checkbox", { name: /Backup/ }).hasAttribute("disabled")).toBe(
+      true
+    );
+    expect(screen.getByRole("checkbox", { name: /Embeddings/ }).hasAttribute("disabled")).toBe(
+      true
+    );
   });
 
   it("calls onBack when back is clicked", async () => {
