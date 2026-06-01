@@ -39,7 +39,7 @@ test.describe("dashboard data flows — seeded state", () => {
 
     const timeRangeTrigger = page.getByLabel("Metric time range");
     await expect(timeRangeTrigger).toBeVisible();
-    await expect(timeRangeTrigger).toContainText("TODAY");
+    await expect(timeRangeTrigger).toContainText("30D");
 
     await expect(page.getByRole("button", { name: "All Projects" })).toBeVisible();
 
@@ -65,11 +65,17 @@ test.describe("dashboard data flows — seeded state", () => {
     const timeRangeTrigger = page.getByLabel("Metric time range");
     await expect(timeRangeTrigger).toBeVisible({ timeout: TIMEOUT.dialog });
 
-    const ranges = ["7D", "30D", "1Y"];
+    const ranges = ["TODAY", "7D", "30D", "1Y"];
     for (const range of ranges) {
       await timeRangeTrigger.click();
       await page.getByRole("option", { name: range, exact: true }).click();
       await expect(timeRangeTrigger).toContainText(range);
+
+      const expectedRangeParam =
+        range === "TODAY" ? "today" : range === "30D" ? null : range.toLowerCase();
+      await expect
+        .poll(() => new URL(page.url()).searchParams.get("range"))
+        .toBe(expectedRangeParam);
     }
 
     await assertNoRuntimeErrors(consoleErrors, pageErrors);

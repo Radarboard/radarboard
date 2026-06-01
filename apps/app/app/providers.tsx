@@ -5,7 +5,7 @@ import { DashboardProvider } from "@radarboard/hooks/use-dashboard";
 import { PluginHost } from "@radarboard/plugin-sdk/host";
 import { setPluginSelection } from "@radarboard/plugin-sdk/store";
 import type { AssistantHandoffItem } from "@radarboard/types/assistant";
-import type { TimeRange } from "@radarboard/types/dashboard";
+import { DEFAULT_DASHBOARD_TIME_RANGE, type TimeRange } from "@radarboard/types/dashboard";
 import type { IntentPayloadInput } from "@radarboard/types/intent";
 // Register all first-party plugins, widgets, integrations, and polling sources
 import "@/lib/integrations-init";
@@ -139,7 +139,7 @@ export function Providers({ children }: { children: ReactNode }) {
   const [activePageSlug] = useQueryState("page", parseAsString);
   const [timeRange, setTimeRange] = useQueryState(
     "range",
-    parseAsStringLiteral(TIME_RANGE_VALUES).withDefault("today")
+    parseAsStringLiteral(TIME_RANGE_VALUES).withDefault(DEFAULT_DASHBOARD_TIME_RANGE)
   );
 
   useEffect(() => {
@@ -266,7 +266,7 @@ export function Providers({ children }: { children: ReactNode }) {
 
   const handleTimeRangeChange = useCallback(
     (range: TimeRange) => {
-      setTimeRange(range === "today" ? null : range).catch(() => {
+      setTimeRange(range === DEFAULT_DASHBOARD_TIME_RANGE ? null : range).catch(() => {
         /* fire-and-forget */
       });
     },

@@ -4,6 +4,7 @@ import { DEFAULT_THEME_FAMILY_ID, DEFAULT_THEME_MODE } from "@radarboard/themes"
 import {
   AUTO_LOCALE,
   AUTO_TIMEZONE,
+  DEFAULT_DASHBOARD_TIME_RANGE,
   type DisplayCurrency,
   type TimeRange,
 } from "@radarboard/types/dashboard";
@@ -62,7 +63,9 @@ function useDashboardProviderState({
   onExpandedWidgetIdChange: DashboardProviderProps["onExpandedWidgetIdChange"];
   onTimeRangeChange: DashboardProviderProps["onTimeRangeChange"];
 }) {
-  const [internalTimeRange, setInternalTimeRange] = useState<TimeRange>("today");
+  const [internalTimeRange, setInternalTimeRange] = useState<TimeRange>(
+    DEFAULT_DASHBOARD_TIME_RANGE
+  );
   const [currency, setCurrency] = useState<DisplayCurrency>("USD");
   const [internalActiveProjectSlug, setInternalActiveProjectSlug] = useState<string | null>(null);
   const [internalActivePageSlug, setInternalActivePageSlug] = useState<string | null>(null);

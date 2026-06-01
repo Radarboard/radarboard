@@ -1,6 +1,10 @@
 // @vitest-environment jsdom
 import { DashboardProvider, useDashboard } from "@radarboard/hooks/use-dashboard";
-import { ALL_PROJECTS_SLUG, AUTO_LOCALE } from "@radarboard/types/dashboard";
+import {
+  ALL_PROJECTS_SLUG,
+  AUTO_LOCALE,
+  DEFAULT_DASHBOARD_TIME_RANGE,
+} from "@radarboard/types/dashboard";
 import type { WidgetLayoutConfig } from "@radarboard/types/database";
 import { act, renderHook } from "@testing-library/react";
 import { createElement, type ReactNode, useState } from "react";
@@ -225,6 +229,12 @@ describe("useDashboard — active page", () => {
 });
 
 describe("useDashboard — time range", () => {
+  it("defaults uncontrolled dashboards to the canonical time range", () => {
+    const { result } = renderHook(() => useDashboard(), { wrapper: staticWrapper });
+
+    expect(result.current.timeRange).toBe(DEFAULT_DASHBOARD_TIME_RANGE);
+  });
+
   it("uses the externally controlled time range when provided", () => {
     const wrapper = ({ children }: { children: ReactNode }) =>
       createElement(DashboardProvider, { projects: [], timeRange: "today" }, children);

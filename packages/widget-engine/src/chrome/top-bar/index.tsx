@@ -14,6 +14,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@radar
 import { cn } from "@radarboard/utils/cn";
 import {
   BotIcon,
+  CalendarRange,
   FlaskConical,
   LayoutTemplate,
   PenLine,
@@ -74,6 +75,10 @@ const CURRENCIES: { value: DisplayCurrency; label: string }[] = [
   { value: "CAD", label: "CAD" },
 ];
 
+function getTimeRangeLabel(value: TimeRange): string {
+  return TIME_RANGES.find((range) => range.value === value)?.label ?? value.toUpperCase();
+}
+
 type TopBarActionLabelVisibility = "always" | "priority" | "wide" | "never";
 
 const TOP_BAR_INACTIVE_STATE_CLASSNAME =
@@ -88,7 +93,7 @@ const TOP_BAR_SEGMENT_ITEM_CLASSNAME = cn(
 const TOP_BAR_ACTION_BUTTON_CLASSNAME =
   "inline-flex h-7 shrink-0 items-center gap-2 border border-border dark:bg-surface px-2.5 text-w-sm font-mono uppercase tracking-wider whitespace-nowrap transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent disabled:pointer-events-none disabled:opacity-50";
 const TOP_BAR_TIME_RANGE_TRIGGER_CLASSNAME =
-  "h-7 w-20 shrink-0 border-border bg-surface px-3 font-mono text-foreground text-w-sm uppercase tracking-wider";
+  "h-7 w-24 shrink-0 gap-2 border-border bg-surface px-2.5 font-mono text-foreground text-w-sm uppercase tracking-wider lg:w-32";
 
 export function getTopBarActionLabelClassName(visibility: TopBarActionLabelVisibility): string {
   switch (visibility) {
@@ -230,7 +235,10 @@ export function TopBar({
                     rounded="none"
                     className={TOP_BAR_TIME_RANGE_TRIGGER_CLASSNAME}
                   >
-                    <SelectValue />
+                    <CalendarRange className="icon-xs shrink-0 text-dim" aria-hidden="true" />
+                    <span className="hidden shrink-0 text-dim lg:inline">Range</span>
+                    <span className="min-w-0 truncate">{getTimeRangeLabel(timeRange)}</span>
+                    <SelectValue className="sr-only" />
                   </SelectTrigger>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">

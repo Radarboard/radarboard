@@ -1,3 +1,5 @@
+import { DEFAULT_DASHBOARD_TIME_RANGE } from "@radarboard/types/dashboard";
+
 /**
  * Dashboard session model.
  *
@@ -29,7 +31,7 @@ export function createSession(overrides?: Partial<DashboardSession>): DashboardS
   return {
     id: crypto.randomUUID(),
     projectSlug: null,
-    timeRange: "30d",
+    timeRange: DEFAULT_DASHBOARD_TIME_RANGE,
     activePluginId: null,
     createdAt: Date.now(),
     lastActiveAt: Date.now(),

@@ -1,5 +1,6 @@
 export type TimeRange = "today" | "7d" | "15d" | "30d" | "3m" | "1y" | "all";
 export type DisplayCurrency = "USD" | "CAD";
+export const DEFAULT_DASHBOARD_TIME_RANGE = "30d" satisfies TimeRange;
 export const AUTO_TIMEZONE = "auto";
 export const AUTO_LOCALE = "auto";
 export type DashboardTimezonePreference = string;

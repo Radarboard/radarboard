@@ -40,7 +40,7 @@ function parseButtons(html: string): { ariaLabel: string | null; title: string |
 function renderTopBarHtml(overrides: Partial<ComponentProps<typeof TopBar>> = {}): string {
   return renderToStaticMarkup(
     createElement(TopBar, {
-      timeRange: "today",
+      timeRange: "30d",
       currency: "USD",
       onTimeRangeChange: vi.fn(),
       onCurrencyChange: vi.fn(),
@@ -100,6 +100,14 @@ describe("Dashboard DnD ID prefix parsing", () => {
 // ---------------------------------------------------------------------------
 
 describe("TopBar — edit mode button contract", () => {
+  it("shows the time range control as a labeled metric range filter", () => {
+    const html = renderTopBarHtml();
+
+    expect(html).toContain('aria-label="Metric time range"');
+    expect(html).toContain("Range");
+    expect(html).toContain("30D");
+  });
+
   it("uses TODAY in the time range options, renames 3M to 90D, and removes All", () => {
     const labels = ["TODAY", "7D", "15D", "30D", "90D", "1Y"];
     expect(labels).toContain("TODAY");
