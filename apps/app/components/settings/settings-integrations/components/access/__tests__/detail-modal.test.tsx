@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import "@testing-library/jest-dom/vitest";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ServiceEntry } from "@/components/settings/settings-integrations/types";
@@ -80,7 +80,18 @@ vi.mock("@/lib/service-favicons", () => ({
 }));
 
 vi.mock("../connection-card", () => ({
-  IntegrationConnectionCard: () => <div data-testid="connection-card" />,
+  IntegrationConnectionCard: ({
+    onCredentialSaveSuccess,
+  }: {
+    onCredentialSaveSuccess?: () => void;
+  }) => (
+    <div>
+      <div data-testid="connection-card" />
+      <button type="button" onClick={() => onCredentialSaveSuccess?.()}>
+        Trigger Credential Save Success
+      </button>
+    </div>
+  ),
 }));
 
 vi.mock("../flow-wizard", () => ({
@@ -137,7 +148,7 @@ const assistantService = {
   },
 } as ServiceEntry;
 
-function renderServiceDetailModal(service: ServiceEntry) {
+function renderServiceDetailModal(service: ServiceEntry, onOpenChange = vi.fn()) {
   return render(
     <ServiceDetailModal
       service={service}
@@ -147,7 +158,7 @@ function renderServiceDetailModal(service: ServiceEntry) {
       connectedKeys={[]}
       relayUrl=""
       open
-      onOpenChange={vi.fn()}
+      onOpenChange={onOpenChange}
       onManageRelay={vi.fn()}
       apiConfigured={false}
       mcpReady={false}
@@ -207,5 +218,14 @@ describe("ServiceDetailModal", () => {
     renderServiceDetailModal(assistantService);
 
     expect(screen.getByTestId("dialog-content")).toHaveAttribute("data-size", "content");
+  });
+
+  it("closes after credentials are saved successfully", () => {
+    const onOpenChange = vi.fn();
+    renderServiceDetailModal(simpleService, onOpenChange);
+
+    fireEvent.click(screen.getByRole("button", { name: "Trigger Credential Save Success" }));
+
+    expect(onOpenChange).toHaveBeenCalledWith(false);
   });
 });

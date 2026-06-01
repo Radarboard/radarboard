@@ -44,6 +44,7 @@ describe("ApiCredentialAccessCard", () => {
   it("shows a success confirmation after saving credentials", async () => {
     saveCredentialValuesMock.mockResolvedValue(true);
     const onCredentialChange = vi.fn();
+    const onCredentialSaveSuccess = vi.fn();
     const user = userEvent.setup();
 
     render(
@@ -53,6 +54,7 @@ describe("ApiCredentialAccessCard", () => {
         values={{ clientId: "cid", clientSecret: "secret" }}
         setValues={() => {}}
         onCredentialChange={onCredentialChange}
+        onCredentialSaveSuccess={onCredentialSaveSuccess}
       />
     );
 
@@ -61,6 +63,7 @@ describe("ApiCredentialAccessCard", () => {
     await waitFor(() => {
       expect(screen.getByText("Credentials saved")).toBeInTheDocument();
       expect(onCredentialChange).toHaveBeenCalledTimes(1);
+      expect(onCredentialSaveSuccess).toHaveBeenCalledTimes(1);
     });
   });
 
