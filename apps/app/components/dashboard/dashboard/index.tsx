@@ -12,7 +12,10 @@ import {
 } from "@dnd-kit/core";
 import { ChatDrawer } from "@radarboard/assistant-ui/chat-drawer";
 import { useChatDrawer } from "@radarboard/assistant-ui/use-chat-drawer";
-import { resolveDashboardProjectView } from "@radarboard/hooks/dashboard-layout";
+import {
+  createDefaultDashboardPage,
+  resolveDashboardProjectView,
+} from "@radarboard/hooks/dashboard-layout";
 import { prefetchProjectData } from "@radarboard/hooks/prefetch-project-data";
 import { useDashboard } from "@radarboard/hooks/use-dashboard";
 import { API_ROUTES } from "@radarboard/types/api-routes";
@@ -523,6 +526,24 @@ function isDemoDataKey(key: unknown): key is string {
   return DEMO_REVALIDATE_ROUTES.some((route) => key.includes(route));
 }
 
+function getUniquePageSlug(name: string, pages: ReturnType<typeof useDashboard>["pages"]): string {
+  const baseSlug =
+    name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "") || "page";
+  const existingSlugs = new Set(pages.map((page) => page.slug));
+  let candidate = baseSlug;
+  let suffix = 2;
+
+  while (existingSlugs.has(candidate)) {
+    candidate = `${baseSlug}-${suffix}`;
+    suffix += 1;
+  }
+
+  return candidate;
+}
+
 function getDesktopCellStyle(
   cell: LayoutCell,
   rect: LayoutCellRect,
@@ -719,6 +740,7 @@ interface DashboardSurfaceProps extends DashboardGridAreaProps {
   handleDebugClick: () => void;
   handleEditModeToggle: () => void;
   handleAddProject: () => void;
+  handleAddPage: () => void;
   handlePageSelect: (slug: string) => void;
   handlePluginClose: () => void;
   handlePluginLaunch: (pluginId: string) => void;
@@ -781,6 +803,7 @@ function DashboardSurface({
   handleDebugClick,
   handleEditModeToggle,
   handleAddProject,
+  handleAddPage,
   handlePageSelect,
   handlePluginClose,
   handlePluginLaunch,
@@ -920,6 +943,7 @@ function DashboardSurface({
               pages={isProjectSwitching ? visualProjectView.pages : pages}
               activeSlug={isProjectSwitching ? visualProjectView.activePageSlug : activePageSlug}
               onSelect={handlePageSelect}
+              onAddPage={isProjectSwitching ? undefined : handleAddPage}
             />
           </div>
 
@@ -1537,6 +1561,7 @@ function DashboardContent({
     setCurrency,
     setActiveProject,
     setActivePage,
+    addProjectPage,
     activeLayout,
     appearance,
     isEditMode,
@@ -1635,6 +1660,19 @@ function DashboardContent({
     handleSettingsOpen("projects");
     setProjectDialogParam("new");
   }, [handleSettingsOpen, setProjectDialogParam]);
+
+  const handleAddPage = useCallback(() => {
+    const name = `Page ${pages.length + 1}`;
+    const slug = getUniquePageSlug(name, pages);
+    addProjectPage(
+      activeProjectSlug ?? ALL_PROJECTS_SLUG,
+      createDefaultDashboardPage({
+        name,
+        slug,
+      })
+    );
+    setActivePage(slug);
+  }, [activeProjectSlug, addProjectPage, pages, setActivePage]);
 
   const {
     handleConfigureWidget,
@@ -1738,6 +1776,7 @@ function DashboardContent({
       handleDebugClick={() => router.push("/debug")}
       handleKnowledgeClick={() => router.push("/knowledge")}
       handleAddProject={handleAddProject}
+      handleAddPage={handleAddPage}
       handleDragCancel={handleDragCancel}
       handleDragEnd={handleDragEnd}
       handleDragStart={handleDragStart}
