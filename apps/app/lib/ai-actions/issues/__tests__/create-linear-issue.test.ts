@@ -7,9 +7,9 @@ import {
 } from "../create-linear-issue";
 
 describe("executeCreateLinearIssue", () => {
-  it("reports that Linear issue creation lives in the extension", async () => {
+  it("reports that Linear issue creation lives in the integration", async () => {
     const result = await executeCreateLinearIssue({ apiKey: "test" }, { title: "Bug report" });
-    expect(result.error).toContain("Linear issue creation requires the Linear extension");
+    expect(result.error).toContain("Linear issue creation requires the Linear integration");
   });
 });
 

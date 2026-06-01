@@ -8,11 +8,11 @@ afterEach(() => {
 });
 
 describe("executeSendSlackMessage", () => {
-  it("reports that Slack delivery lives in the extension", async () => {
+  it("reports that Slack delivery lives in the integration", async () => {
     const result = await executeSendSlackMessage(
       { webhookUrl: "https://hooks.slack.com/test" },
       { text: "Alert: revenue dropped!" }
     );
-    expect(result.error).toContain("Slack message sending requires the Slack extension");
+    expect(result.error).toContain("Slack message sending requires the Slack integration");
   });
 });

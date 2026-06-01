@@ -120,7 +120,7 @@ export async function installExtensionPackage(
     onProgress?.({
       step: "extract",
       status: "running",
-      message: `Installing ${manifest.extensions.length} extension(s)...`,
+      message: `Installing ${manifest.extensions.length} item(s)...`,
     });
 
     for (const entry of manifest.extensions) {

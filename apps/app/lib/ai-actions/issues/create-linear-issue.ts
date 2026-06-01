@@ -11,7 +11,7 @@ export interface CreateIssueInput {
 }
 
 export async function executeCreateLinearIssue(_config: LinearConfig, _input: CreateIssueInput) {
-  return { error: "Linear issue creation requires the Linear extension." };
+  return { error: "Linear issue creation requires the Linear integration." };
 }
 
 export async function executeListLinearTeams(_config: LinearConfig) {

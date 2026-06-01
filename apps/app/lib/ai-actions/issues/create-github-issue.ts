@@ -11,5 +11,5 @@ export interface CreateIssueInput {
 }
 
 export async function executeCreateGithubIssue(_config: GitHubConfig, _input: CreateIssueInput) {
-  return { error: "GitHub issue creation requires the GitHub extension." };
+  return { error: "GitHub issue creation requires the GitHub integration." };
 }

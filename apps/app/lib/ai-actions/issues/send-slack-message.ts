@@ -8,5 +8,5 @@ export interface SendMessageInput {
 }
 
 export async function executeSendSlackMessage(_config: SlackConfig, _input: SendMessageInput) {
-  return { error: "Slack message sending requires the Slack extension." };
+  return { error: "Slack message sending requires the Slack integration." };
 }

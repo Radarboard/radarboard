@@ -20,7 +20,7 @@ export async function handleSendAlert(request: Request): Promise<Response> {
   try {
     const parsed = await parseBody(request, alertBodySchema);
     if (!parsed.ok) return parsed.response;
-    return errorJson(404, "Resend alert delivery requires the Resend extension", {
+    return errorJson(404, "Resend alert delivery requires the Resend integration", {
       configured: Boolean(config),
       sent: false,
     });

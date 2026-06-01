@@ -327,8 +327,8 @@ function ValidationDetails({
 
   const typeLabels = validation.extensionTypes.map((t) => CATEGORY_LABELS[t] ?? t);
   const installLabel = validation.isPackage
-    ? `Install Package (${validation.extensionCount} extension${validation.extensionCount > 1 ? "s" : ""})`
-    : `Install ${CATEGORY_LABELS[validation.category ?? ""] ?? "Extension"}`;
+    ? "Install Package"
+    : `Install ${CATEGORY_LABELS[validation.category ?? ""] ?? "Item"}`;
 
   return (
     <div className="space-y-3 rounded-md border border-border bg-card p-4">
@@ -621,7 +621,7 @@ export function InstallExtensionDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Download className="h-5 w-5" />
-            Install Extension
+            Install from GitHub
           </DialogTitle>
         </DialogHeader>
         <DialogBody className="space-y-4">

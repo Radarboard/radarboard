@@ -46,7 +46,7 @@ export async function handleInstallExtension(request: Request) {
 
         send({
           type: "info",
-          message: `Installing extension package "${pkgResult.manifest.name}" with ${pkgResult.manifest.extensions.length} extension(s)`,
+          message: `Installing package "${pkgResult.manifest.name}" with ${pkgResult.manifest.extensions.length} item(s)`,
         });
 
         const result = await installExtensionPackage(repo, pkgResult.manifest, (progress) =>
@@ -61,7 +61,7 @@ export async function handleInstallExtension(request: Request) {
           send({
             type: "result",
             success: false,
-            error: "Extension validation failed",
+            error: "Installation validation failed",
             validation: singleResult,
           });
           controller.close();

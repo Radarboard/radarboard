@@ -31,6 +31,25 @@ import { getDashboardPollingPreferences, resolvePollingTtlSeconds } from "@/lib/
 const log = createLogger("api/integrations");
 const ANALYTICS_PROVIDERS = ["openpanel", "umami"] as const;
 const VALID_RANGES = new Set(["today", "7d", "15d", "30d", "3m", "1y", "all"]);
+const INTEGRATION_LABELS: Record<string, string> = {
+  "app-store-connect": "App Store Connect",
+  betterstack: "Better Stack",
+  github: "GitHub",
+  "github-sponsors": "GitHub Sponsors",
+  "google-search-console": "Google Search Console",
+  linear: "Linear",
+  npm: "npm",
+  "open-collective": "Open Collective",
+  openpanel: "OpenPanel",
+  raindrop: "Raindrop",
+  resend: "Resend",
+  revenuecat: "RevenueCat",
+  sentry: "Sentry",
+  slack: "Slack",
+  stripe: "Stripe",
+  umami: "Umami",
+  vercel: "Vercel",
+};
 const DEMO_CACHE_KEY_PREFIXES: Record<string, string[]> = {
   "/api/integrations/app-store-connect/data": ["app-store:"],
   "/api/integrations/betterstack/data": ["betterstack:"],
@@ -77,6 +96,17 @@ type ParsedIntegrationDemoParams =
 
 function parseRange(raw: string | null): TimeRange {
   return VALID_RANGES.has(raw ?? "") ? (raw as TimeRange) : "30d";
+}
+
+function formatIntegrationLabel(integration: string): string {
+  return (
+    INTEGRATION_LABELS[integration] ??
+    integration
+      .split("-")
+      .filter(Boolean)
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(" ")
+  );
 }
 
 function parseCommonIntegrationParams(
@@ -161,8 +191,8 @@ export async function handleAnalyticsAction(request: Request, action: string) {
   if (!resolved) {
     return NextResponse.json({
       configured: false,
-      setupMessage: "Install an analytics provider extension to enable analytics.",
-      ctaLabel: "Install extension",
+      setupMessage: "Add an analytics integration to enable analytics.",
+      ctaLabel: "Add integration",
       ctaTarget: "/settings?section=integrations",
     });
   }
@@ -320,10 +350,11 @@ async function handleRegistryIntegrationAction(
       status: "rejected",
       metadata: { integration, action },
     });
+    const integrationLabel = formatIntegrationLabel(integration);
     return NextResponse.json({
       configured: false,
-      setupMessage: `Install the ${integration} extension to enable this data source.`,
-      ctaLabel: "Install extension",
+      setupMessage: `Add the ${integrationLabel} integration to enable this data source.`,
+      ctaLabel: `Add ${integrationLabel} integration`,
       ctaTarget: "/settings?section=integrations",
     });
   }
