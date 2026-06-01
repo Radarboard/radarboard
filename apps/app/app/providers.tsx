@@ -59,6 +59,7 @@ const SWR_OPTIONS = {
 };
 
 const TIME_RANGE_VALUES = ["today", "7d", "15d", "30d", "3m", "1y", "all"] as const;
+const SERVICE_WORKER_CACHE_PREFIX = "radarboard-";
 
 interface PendingProjectState {
   active: boolean;
@@ -88,6 +89,30 @@ function applyPluginSelectionFromUpdates(updates: Record<string, string>) {
   if (itemId) {
     setPluginSelection(updates.plugin, itemId);
   }
+}
+
+function clearDevServiceWorkerCaches() {
+  if (typeof window === "undefined" || !("serviceWorker" in navigator)) return;
+  if (process.env.NODE_ENV === "production") return;
+
+  navigator.serviceWorker
+    .getRegistrations()
+    .then((registrations) => {
+      return Promise.all(registrations.map((registration) => registration.unregister()));
+    })
+    .catch(() => undefined);
+
+  if (!("caches" in window)) return;
+  window.caches
+    .keys()
+    .then((cacheNames) => {
+      return Promise.all(
+        cacheNames
+          .filter((cacheName) => cacheName.startsWith(SERVICE_WORKER_CACHE_PREFIX))
+          .map((cacheName) => window.caches.delete(cacheName))
+      );
+    })
+    .catch(() => undefined);
 }
 
 function buildHandoffItem(payload: IntentPayloadInput): AssistantHandoffItem {
@@ -172,6 +197,7 @@ export function Providers({ children }: { children: ReactNode }) {
   }, [pendingProjectState, routeProjectSlug]);
 
   useEffect(() => {
+    clearDevServiceWorkerCaches();
     if ("serviceWorker" in navigator && process.env.NODE_ENV === "production") {
       window.addEventListener("load", () => {
         navigator.serviceWorker.register("/sw.js").catch(() => {

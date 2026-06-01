@@ -1,5 +1,13 @@
-const CACHE_NAME = "radarboard-v1";
-const ASSETS_TO_CACHE = ["/", "/favicon.svg", "/manifest.json"];
+const CACHE_NAME = "radarboard-v2";
+const ASSETS_TO_CACHE = [
+  "/favicon.svg",
+  "/favicon-16x16.png",
+  "/favicon-32x32.png",
+  "/apple-touch-icon.png",
+  "/icon-192x192.png",
+  "/icon-512x512.png",
+  "/manifest.json",
+];
 
 // Install event: cache initial assets
 self.addEventListener("install", (event) => {
@@ -23,12 +31,27 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
-// Fetch event: Stale-While-Revalidate for non-API calls
+// Fetch event: cache only stable public assets. Never cache the app shell or
+// Next.js chunks, because dev restarts and new deploys can invalidate chunk URLs.
 self.addEventListener("fetch", (event) => {
+  if (event.request.method !== "GET") {
+    return;
+  }
+
   const url = new URL(event.request.url);
 
-  // Skip API calls (handled by SWR client-side) and chrome-extension
-  if (url.pathname.startsWith("/api") || url.protocol === "chrome-extension:") {
+  if (
+    url.origin !== self.location.origin ||
+    url.pathname.startsWith("/api") ||
+    url.pathname.startsWith("/_next") ||
+    url.protocol === "chrome-extension:" ||
+    event.request.mode === "navigate" ||
+    event.request.destination === "document"
+  ) {
+    return;
+  }
+
+  if (!ASSETS_TO_CACHE.includes(url.pathname)) {
     return;
   }
 
