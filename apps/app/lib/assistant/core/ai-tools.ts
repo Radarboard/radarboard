@@ -982,7 +982,7 @@ export function buildActionTools() {
       },
     }),
 
-    // --- T11: Daily Briefing (from @radarboard/feature-briefing) ---
+    // --- T11: Daily Briefing ---
     // biome-ignore lint/suspicious/noExplicitAny: tool() overload strictness
     generate_daily_briefing: (tool as any)({
       description:
@@ -1013,7 +1013,7 @@ export function buildActionTools() {
       },
     }),
 
-    // --- T4: Workflow CRUD (from @radarboard/feature-workflows) ---
+    // --- T4: Workflow CRUD ---
     // biome-ignore lint/suspicious/noExplicitAny: tool() overload strictness
     create_workflow: (tool as any)({
       description:

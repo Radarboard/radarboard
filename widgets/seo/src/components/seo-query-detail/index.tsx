@@ -18,16 +18,16 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@radar
 import { cn } from "@radarboard/utils/cn";
 import { formatNumber } from "@radarboard/utils/format-number";
 import { useCurrentWidgetModalSize } from "@radarboard/widget-engine/widget-modal";
+import type React from "react";
+import { useMemo } from "react";
+import { useSeoQuery } from "../../hooks/use-seo-query";
 import {
   buildSeoQueryDiagnosis,
   type DiagnosisConfidence,
   type DiagnosisPriority,
   type DiagnosisTone,
   type SeoQueryDiagnosis,
-} from "@radarboard/widget-seo";
-import type React from "react";
-import { useMemo } from "react";
-import { useSeoQuery } from "../../hooks/use-seo-query";
+} from "../seo-query-diagnosis";
 
 interface SeoQueryDetailProps {
   query: SearchQuery;

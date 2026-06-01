@@ -11,7 +11,26 @@ export const WIDGET_REGISTRY = new Map<string, WidgetDescriptor<Record<string, u
 
 const MAX_DESCRIPTION_LENGTH = 120;
 
+function isClientReferenceServerCall(error: unknown): boolean {
+  return (
+    error instanceof Error &&
+    error.message.includes("from the server") &&
+    error.message.includes("client")
+  );
+}
+
 function validateWidgetDescriptor(descriptor: AnyWidgetDescriptor): void {
+  if (
+    !descriptor ||
+    typeof descriptor !== "object" ||
+    typeof descriptor.id !== "string" ||
+    typeof descriptor.description !== "string"
+  ) {
+    throw new Error(
+      `Invalid widget descriptor received by registerWidget. Widget package roots must export server-safe descriptor objects; keep "use client" directives in client-only component, hook, resolver, or init modules.`
+    );
+  }
+
   if (descriptor.description.length > MAX_DESCRIPTION_LENGTH) {
     throw new Error(
       `Widget "${descriptor.id}" description exceeds ${MAX_DESCRIPTION_LENGTH} characters (${descriptor.description.length}). Keep it concise for the settings UI.`
@@ -21,11 +40,17 @@ function validateWidgetDescriptor(descriptor: AnyWidgetDescriptor): void {
     throw new Error(`Widget "${descriptor.id}" must use the shared template visual editor.`);
   }
 
-  const editorConfig = descriptor.visualEditor.getConfig({
-    projectSlug: null,
-    projects: [],
-    config: descriptor.defaultConfig,
-  });
+  let editorConfig: unknown;
+  try {
+    editorConfig = descriptor.visualEditor.getConfig({
+      projectSlug: null,
+      projects: [],
+      config: descriptor.defaultConfig,
+    });
+  } catch (error) {
+    if (isClientReferenceServerCall(error)) return;
+    throw error;
+  }
 
   if (!isTemplateConfig(editorConfig)) {
     throw new Error(`Widget "${descriptor.id}" must resolve to a template-backed config.`);

@@ -1,5 +1,3 @@
-"use client";
-
 import { API_ROUTES } from "@radarboard/types/api-routes";
 import type { WidgetTemplateConfig } from "@radarboard/widget-engine/templates";
 import { createTemplateDescriptor } from "@radarboard/widget-engine/templates/create-template-descriptor";

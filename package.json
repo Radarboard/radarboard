@@ -66,6 +66,7 @@
     "measure:dx": "tsx scripts/measure-dx.ts",
     "check:architecture": "tsx scripts/check-architecture.ts",
     "check:modularity": "tsx scripts/check-modularity.ts",
+    "check:extension-health": "pnpm --filter @radarboard/app exec vitest run lib/extensions/runtime/__tests__/extension-health-contract.test.ts",
     "check:app-structure": "tsx scripts/check-app-structure.ts",
     "check:app-ownership": "tsx scripts/check-app-ownership.ts",
     "check:api-route-literals": "tsx scripts/check-api-route-literals.ts",
@@ -80,7 +81,7 @@
     "scaffold:extension-repo": "tsx scripts/scaffold-extension-repo.ts",
     "docs:sdk": "tsx scripts/generate-sdk-docs.ts",
     "docs:sdk:check": "tsx scripts/generate-sdk-docs.ts --check",
-    "test:extensions": "turbo run test --filter='./integrations/*' --filter='./plugins/*' --filter='./widgets/*'",
+    "test:extensions": "turbo run test --filter='./integrations/*' --filter='./plugins/*' --filter='./features/*' --filter='./widgets/*'",
     "catalog:generate": "tsx scripts/generate-extension-catalog.ts",
     "prepare": "lefthook install"
   },

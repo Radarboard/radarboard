@@ -12,7 +12,7 @@ import { fileURLToPath } from "node:url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, "..");
 
-type ExtensionCategory = "integration" | "plugin" | "widget";
+type ExtensionCategory = "integration" | "plugin" | "widget" | "feature";
 
 interface CheckResult {
   name: string;
@@ -53,12 +53,26 @@ const ALLOWED_WORKSPACE_DEPS: Record<ExtensionCategory, string[]> = {
     "@radarboard/hooks",
     "@radarboard/assistant-ui",
   ],
+  feature: [
+    "@radarboard/feature-sdk",
+    "@radarboard/types",
+    "@radarboard/utils",
+    "@radarboard/ui",
+    "@radarboard/hooks",
+    "@radarboard/integration-sdk",
+    "@radarboard/plugin-sdk",
+    "@radarboard/widget-engine",
+    "@radarboard/assistant-core",
+    "@radarboard/llm",
+    "@radarboard/llm-adapter-vercel",
+  ],
 };
 
 const FORBIDDEN_IMPORT_PREFIXES: Record<ExtensionCategory, string[]> = {
   integration: ["@radarboard/plugin-", "@radarboard/widget-", "@radarboard/feature-"],
   plugin: ["@radarboard/integration-", "@radarboard/widget-", "@radarboard/feature-"],
   widget: ["@radarboard/integration-", "@radarboard/plugin-", "@radarboard/feature-"],
+  feature: ["@radarboard/integration-", "@radarboard/plugin-", "@radarboard/widget-", "@radarboard/feature-"],
 };
 
 const ALWAYS_ALLOWED_DEV_DEPS = new Set(["@radarboard/tsconfig"]);
@@ -82,9 +96,11 @@ const CONFORMANCE_FUNCTIONS: Record<ExtensionCategory, string> = {
   integration: "runIntegrationConformance",
   plugin: "runPluginConformance",
   widget: "runWidgetConformance",
+  feature: "",
 };
 
 type RadarboardConfig = {
+  features: string[];
   integrations: string[];
   virtualIntegrations: string[];
   plugins: string[];
@@ -154,6 +170,23 @@ function checkPackageStructure(dir: string, category: ExtensionCategory, id: str
       results.push({ name: "entry file exists", status: "error", message: `Export "." points to "${entryPath}" but file does not exist` });
     } else {
       results.push({ name: "entry file exists", status: "pass" });
+
+      if (category === "widget") {
+        const entryContent = readFileSync(resolved, "utf8").trimStart();
+        if (
+          entryContent.startsWith('"use client";') ||
+          entryContent.startsWith("'use client';")
+        ) {
+          results.push({
+            name: "server-safe widget entry",
+            status: "error",
+            message:
+              'Widget package roots export descriptors used by server diagnostics and must not start with "use client". Move client directives to components, hooks, data resolvers, or init modules.',
+          });
+        } else {
+          results.push({ name: "server-safe widget entry", status: "pass" });
+        }
+      }
     }
   }
   return results;
@@ -240,6 +273,16 @@ function checkTestExistence(dir: string, category: ExtensionCategory): CheckResu
 
   const testFiles = findFiles(dir, /\.(test|spec)\.(ts|tsx)$/);
   if (testFiles.length === 0) {
+    if (category === "feature" && isDescriptorOnlyPackage(dir)) {
+      results.push({
+        name: "test files exist",
+        status: "pass",
+        message: "Descriptor-only feature is covered by the runtime extension health contract",
+      });
+      results.push({ name: "conformance test", status: "pass" });
+      return results;
+    }
+
     results.push({
       name: "test files exist",
       status: "warn",
@@ -251,6 +294,10 @@ function checkTestExistence(dir: string, category: ExtensionCategory): CheckResu
 
   // Check for conformance test usage
   const conformanceFn = CONFORMANCE_FUNCTIONS[category];
+  if (!conformanceFn) {
+    results.push({ name: "conformance test", status: "pass" });
+    return results;
+  }
   const hasConformance = testFiles.some((file) => {
     const content = readFileSync(file, "utf8");
     return content.includes(conformanceFn);
@@ -287,7 +334,9 @@ function checkBundleImpact(dir: string): CheckResult[] {
       ? `widget/${dir.split("/").pop() ?? ""}`
       : dir.includes("/integrations/")
         ? `integration/${dir.split("/").pop() ?? ""}`
-        : "";
+        : dir.includes("/features/")
+          ? `feature/${dir.split("/").pop() ?? ""}`
+          : "";
 
   // Count non-workspace external deps
   const externalDeps = Object.keys(deps).filter(
@@ -338,6 +387,7 @@ function checkDescriptorQuality(dir: string, category: ExtensionCategory): Check
     integration: /export\s+(?:const|let)\s+\w+Descriptor/,
     plugin: /export\s+(?:const|let)\s+\w+Descriptor/,
     widget: /export\s+(?:const|let)\s+\w+Descriptor/,
+    feature: /export\s+(?:const|let)\s+\w+Descriptor/,
   };
 
   if (!descriptorPatterns[category].test(content)) {
@@ -362,6 +412,11 @@ function checkDescriptorQuality(dir: string, category: ExtensionCategory): Check
   }
 
   return results;
+}
+
+function isDescriptorOnlyPackage(dir: string): boolean {
+  const sourceFiles = collectSourceFiles(dir).map((file) => file.replace(`${dir}/`, ""));
+  return sourceFiles.length === 1 && sourceFiles[0] === "src/index.ts";
 }
 
 function collectSourceFiles(dir: string): string[] {
@@ -422,6 +477,12 @@ async function main() {
   const extensions: { pkg: string; category: ExtensionCategory; dir: string; id: string }[] = [];
 
   // Collect all active extensions
+  if (!filterCategory || filterCategory === "feature") {
+    for (const pkg of config.features) {
+      const id = extractId(pkg, "@radarboard/feature-");
+      extensions.push({ pkg, category: "feature", dir: join(ROOT, "features", id), id });
+    }
+  }
   if (!filterCategory || filterCategory === "integration") {
     for (const pkg of [...config.integrations, ...config.virtualIntegrations]) {
       const id = extractId(pkg, "@radarboard/integration-");

@@ -65,7 +65,7 @@ let widgetsInitialized = false;
 
 function ensureWidgetChromeRuntime() {
   if (widgetsInitialized) return;
-  initializeWidgets();
+  initializeWidgets().catch(() => undefined);
   widgetsInitialized = true;
 }
 

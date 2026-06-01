@@ -7,8 +7,8 @@ import {
 import { beforeAll, describe, expect, it } from "vitest";
 import { initializeWidgets } from "../runtime/widgets-init";
 
-beforeAll(() => {
-  initializeWidgets();
+beforeAll(async () => {
+  await initializeWidgets();
 });
 
 type Auth = NonNullable<(typeof WIDGET_REGISTRY extends Map<string, infer V> ? V : never)["auth"]>;

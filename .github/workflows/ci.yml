@@ -92,6 +92,9 @@ jobs:
       - name: Extension Compatibility Tests
         run: pnpm test:extensions
 
+      - name: Extension Runtime Health Contract
+        run: pnpm check:extension-health
+
       - name: Architecture Regression Check
         run: pnpm check:architecture
 

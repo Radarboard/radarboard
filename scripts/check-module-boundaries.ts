@@ -76,6 +76,9 @@ const FORBIDDEN_IMPORT_PREFIXES: Record<ExtensionCategory, string[]> = {
   ],
   feature: [
     "@radarboard/integration-",
+    "@radarboard/plugin-",
+    "@radarboard/widget-",
+    "@radarboard/feature-",
   ],
 };
 

@@ -1,5 +1,3 @@
-"use client";
-
 import { API_ROUTES } from "@radarboard/types/api-routes";
 import {
   createTemplateConfig,

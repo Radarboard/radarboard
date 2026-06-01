@@ -12,29 +12,11 @@ export async function ensureWorkflowSchedulerStarted(): Promise<void> {
   }
 
   startPromise = (async () => {
-    const { initWorkflowContext, startWorkflowScheduler } = await import(
-      "@radarboard/feature-workflows"
+    const { getFeatureServerBackground } = await import(
+      "@/lib/extensions/runtime/server/feature-server"
     );
-    const { getSettingsRepo, getCredentialRepo } = await import("@/data/core/repository");
-    const { buildDataSourceContext } = await import("@/lib/data-source-context");
-    const { emitNotificationEvents } = await import("@/lib/notifications");
-    const { emitDebugEvent } = await import("@/lib/debug-events");
-    const repo = getSettingsRepo();
-
-    initWorkflowContext({
-      getWorkflows: () =>
-        repo.getWorkflows() as Promise<
-          Record<string, import("@radarboard/feature-workflows/types").Workflow>
-        >,
-      setWorkflows: (workflows) => repo.setWorkflows(workflows),
-      getCredentialRepo,
-      buildDataSourceContext,
-      emitNotification: (events) =>
-        emitNotificationEvents(events as Parameters<typeof emitNotificationEvents>[0]),
-      emitDebugEvent: (event) => emitDebugEvent(event).catch(() => undefined),
-    });
-
-    startWorkflowScheduler();
+    const startScheduler = getFeatureServerBackground("workflows", "scheduler");
+    startScheduler?.();
   })().catch((error) => {
     startPromise = null;
     throw error;

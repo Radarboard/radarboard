@@ -23,9 +23,8 @@ const MAX_DESCRIPTION_LENGTH = 120;
  */
 export function registerIntegration(descriptor: IntegrationDescriptor): void {
   if (INTEGRATION_REGISTRY.has(descriptor.id)) {
-    throw new Error(
-      `Integration "${descriptor.id}" is already registered. Each integration ID must be unique.`
-    );
+    // Idempotent — allow re-registration during HMR and across Next.js route chunks.
+    return;
   }
   if (descriptor.description.length > MAX_DESCRIPTION_LENGTH) {
     throw new Error(

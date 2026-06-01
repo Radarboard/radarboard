@@ -10,8 +10,10 @@ const mockedDataSourceFetches = vi.hoisted(() => ({
     getLlmConfig: vi.fn(),
     getProjectContextMap: vi.fn(),
     getProjectOrder: vi.fn(),
+    getWorkflows: vi.fn(),
     setLlmConfig: vi.fn(),
     setProjectContextMap: vi.fn(),
+    setWorkflows: vi.fn(),
   },
   sentry: vi.fn(),
   seo: vi.fn(),
@@ -28,6 +30,7 @@ vi.mock("../data-source-context", () => ({
 }));
 
 vi.mock("@/data/core/repository", () => ({
+  getCredentialRepo: () => ({ listCredentialKeys: vi.fn() }),
   getSettingsRepo: () => mockedDataSourceFetches.settingsRepo,
 }));
 
@@ -66,9 +69,11 @@ describe("ai-tools", () => {
     }
     mockedDataSourceFetches.settingsRepo.getProjectContextMap.mockResolvedValue({});
     mockedDataSourceFetches.settingsRepo.getProjectOrder.mockResolvedValue([]);
+    mockedDataSourceFetches.settingsRepo.getWorkflows.mockResolvedValue({});
     mockedDataSourceFetches.settingsRepo.getLlmConfig.mockResolvedValue({});
     mockedDataSourceFetches.settingsRepo.setProjectContextMap.mockResolvedValue(undefined);
     mockedDataSourceFetches.settingsRepo.setLlmConfig.mockResolvedValue(undefined);
+    mockedDataSourceFetches.settingsRepo.setWorkflows.mockResolvedValue(undefined);
   });
 
   describe("AI_TOOL_REGISTRY", () => {

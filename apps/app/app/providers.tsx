@@ -143,7 +143,7 @@ export function Providers({ children }: { children: ReactNode }) {
   );
 
   useEffect(() => {
-    initializeWidgets();
+    initializeWidgets().catch(() => undefined);
     initializeDevExtensions();
   }, []);
 

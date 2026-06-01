@@ -1,5 +1,3 @@
-"use client";
-
 import type { TimeRange } from "@radarboard/types/dashboard";
 import type { ReactElement } from "react";
 
@@ -25,6 +23,14 @@ export type DataSourceResolver = (props: DataSourceResolverProps) => ReactElemen
 /** Global registry mapping data source IDs to their resolver components. */
 export const DATA_SOURCE_REGISTRY = new Map<string, DataSourceResolver>();
 
+/** Server-safe registry of known template data source IDs. */
+export const DATA_SOURCE_ID_REGISTRY = new Set<string>();
+
+/** Register a template data source ID without importing its client resolver. */
+export function registerTemplateDataSourceId(id: string) {
+  DATA_SOURCE_ID_REGISTRY.add(id);
+}
+
 /**
  * Register a data source resolver so the template engine can fetch its data.
  *
@@ -34,6 +40,7 @@ export const DATA_SOURCE_REGISTRY = new Map<string, DataSourceResolver>();
  * ```
  */
 export function registerTemplateDataSource(id: string, resolver: DataSourceResolver) {
+  registerTemplateDataSourceId(id);
   DATA_SOURCE_REGISTRY.set(id, resolver);
 }
 

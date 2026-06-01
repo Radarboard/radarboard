@@ -6,13 +6,44 @@
  */
 
 import type { FeatureDescriptor } from "@radarboard/feature-sdk/types";
+import type { DataSourceContext } from "@radarboard/integration-sdk/types";
+import type { CredentialRepository } from "@radarboard/types/database";
+import { initWorkflowContext } from "./context";
 import {
   createWorkflowRoute,
   deleteWorkflowRoute,
   listWorkflowsRoute,
 } from "./server/routes";
+import { startWorkflowScheduler } from "./scheduler";
 import { buildWorkflowToolExecutors } from "./tools";
-import type { WorkflowStep, WorkflowTrigger } from "./types";
+import type { Workflow, WorkflowStep, WorkflowTrigger } from "./types";
+
+interface WorkflowServerServices {
+  getWorkflows(): Promise<Record<string, Workflow>>;
+  setWorkflows(workflows: Record<string, Workflow>): Promise<void>;
+  getCredentialRepo(): CredentialRepository;
+  buildDataSourceContext(): DataSourceContext;
+  emitNotificationEvents(events: Array<{
+    source: string;
+    type: string;
+    severity: "critical" | "warning" | "info" | "success";
+    title: string;
+    body?: string | null;
+    projectSlug?: string | null;
+    metadata?: Record<string, unknown>;
+  }>): void;
+  emitDebugEvent(event: {
+    level: "info" | "warn" | "error" | "debug";
+    source: string;
+    eventType: string;
+    message: string;
+    metadata?: Record<string, unknown>;
+  }): Promise<string | null>;
+}
+
+function getWorkflowServerServices(services: Record<string, unknown>): WorkflowServerServices {
+  return services as unknown as WorkflowServerServices;
+}
 
 export const workflowsDescriptor: FeatureDescriptor = {
   id: "workflows",
@@ -26,6 +57,19 @@ export const workflowsDescriptor: FeatureDescriptor = {
   settingsSections: ["workflows"],
   gatedTools: ["create_workflow", "list_workflows", "delete_workflow"],
   server: {
+    configure: ({ services }) => {
+      const workflowServices = getWorkflowServerServices(services);
+      initWorkflowContext({
+        getWorkflows: workflowServices.getWorkflows,
+        setWorkflows: workflowServices.setWorkflows,
+        getCredentialRepo: workflowServices.getCredentialRepo,
+        buildDataSourceContext: workflowServices.buildDataSourceContext,
+        emitNotification: (events) => workflowServices.emitNotificationEvents(events),
+        emitDebugEvent: (event) => {
+          void workflowServices.emitDebugEvent(event);
+        },
+      });
+    },
     routes: {
       list: async () => ({ status: 200, payload: await listWorkflowsRoute() }),
       create: async ({ body }) => ({
@@ -41,6 +85,9 @@ export const workflowsDescriptor: FeatureDescriptor = {
         status: 200,
         payload: await deleteWorkflowRoute(String(body.id ?? "")),
       }),
+    },
+    background: {
+      scheduler: () => startWorkflowScheduler(),
     },
   },
   assistant: {

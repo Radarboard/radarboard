@@ -151,13 +151,6 @@ function generateIntegrationsInit(config: RadarboardConfig): string {
     lines.push(`import { ${camel}Descriptor } from "${pkg}";`);
   }
 
-  // Imports for virtual integrations (data sources only)
-  for (const pkg of config.virtualIntegrations) {
-    const id = extractId(pkg, "@radarboard/integration-");
-    const camel = toCamelCase(id);
-    lines.push(`import { ${camel}DataSources } from "${pkg}/data-sources";`);
-  }
-
   const registryImports = ["registerDataSources"];
   if (config.integrations.length > 0) {
     registryImports.push("registerIntegration");
@@ -166,19 +159,14 @@ function generateIntegrationsInit(config: RadarboardConfig): string {
     `import { ${registryImports.join(", ")} } from "@radarboard/integration-sdk/registry";`
   );
 
-  lines.push("");
-  lines.push('const INTEGRATIONS_INIT_KEY = "__radarboardAppIntegrationsInitialized__";');
-  lines.push("");
-  lines.push("type IntegrationsInitState = typeof globalThis & {");
-  lines.push("  __radarboardAppIntegrationsInitialized__?: boolean;");
-  lines.push("};");
-  lines.push("");
+  // Imports for virtual integrations (data sources only)
+  for (const pkg of config.virtualIntegrations) {
+    const id = extractId(pkg, "@radarboard/integration-");
+    const camel = toCamelCase(id);
+    lines.push(`import { ${camel}DataSources } from "${pkg}/data-sources";`);
+  }
+
   lines.push("export function initializeIntegrations(): void {");
-  lines.push("  const state = globalThis as IntegrationsInitState;");
-  lines.push("  if (state[INTEGRATIONS_INIT_KEY]) return;");
-  lines.push("");
-  lines.push("  state[INTEGRATIONS_INIT_KEY] = true;");
-  lines.push("");
 
   // Register standard integrations
   for (const pkg of config.integrations) {
@@ -197,7 +185,6 @@ function generateIntegrationsInit(config: RadarboardConfig): string {
     lines.push(`  registerDataSources("${id}", ${camel}DataSources);`);
   }
 
-  lines.push("");
   lines.push("}");
   lines.push("");
   lines.push("initializeIntegrations();");
@@ -265,53 +252,124 @@ function generateWidgetsInit(config: RadarboardConfig): string {
 
   // Descriptor imports
   lines.push("// ─── Widget descriptors ──────────────────────────────────────────────────────");
+  const widgetImports: Array<{ specifier: string; line: string }> = [];
   for (const pkg of config.widgets) {
     const id = extractId(pkg, "@radarboard/widget-");
     const camel = toCamelCase(id);
-    lines.push(`import { ${camel}Descriptor } from "${pkg}";`);
+    widgetImports.push({ specifier: pkg, line: `import { ${camel}Descriptor } from "${pkg}";` });
 
-    // Optional init import
-    if (hasExport(pkg, "init")) {
-      const initFn = `initialize${camel.charAt(0).toUpperCase()}${camel.slice(1)}Widget`;
-      lines.push(`import { ${initFn} } from "${pkg}/init";`);
-    }
   }
+  widgetImports.push({
+    specifier: "@radarboard/widget-engine/widgets/registry",
+    line: `import { registerWidget } from "@radarboard/widget-engine/widgets/registry";`,
+  });
+  widgetImports.push({
+    specifier: "@radarboard/widget-sdk/data-source-registry",
+    line: `import { registerTemplateDataSourceId } from "@radarboard/widget-sdk/data-source-registry";`,
+  });
+  widgetImports.push({
+    specifier: "@radarboard/widget-sdk/widget-types",
+    line: `import type { WidgetDescriptor } from "@radarboard/widget-sdk/widget-types";`,
+  });
+  lines.push(
+    ...widgetImports
+      .sort((left, right) => left.specifier.localeCompare(right.specifier))
+      .map((item) => item.line)
+  );
 
-  lines.push(`import { registerWidget } from "@radarboard/widget-engine/widgets/registry";`);
-
-  // Data resolver side-effect imports
+  // Export widget descriptor registration separately so server routes can inspect
+  // the widget registry without invoking client-only widget initializers.
   lines.push("");
-  lines.push("// ─── Widget data resolvers (self-registering side effects) ────────────────────");
-  for (const pkg of config.widgets) {
-    if (hasExport(pkg, "data-resolver")) {
-      lines.push(`import "${pkg}/data-resolver";`);
-    }
-  }
-
-  // Export initializeWidgets function
+  lines.push("function templateDataSourceIds(configValue: unknown): string[] {");
+  lines.push('  if (configValue === null || typeof configValue !== "object") return [];');
+  lines.push("  const dataSources = (configValue as { dataSources?: unknown }).dataSources;");
+  lines.push("  if (!Array.isArray(dataSources)) return [];");
   lines.push("");
-  lines.push("export function initializeWidgets() {");
+  lines.push("  return dataSources");
+  lines.push("    .map((dataSource) =>");
+  lines.push('      dataSource !== null && typeof dataSource === "object"');
+  lines.push("        ? (dataSource as { id?: unknown }).id");
+  lines.push("        : null");
+  lines.push("    )");
+  lines.push('    .filter((id): id is string => typeof id === "string" && id.length > 0);');
+  lines.push("}");
+  lines.push("");
+  lines.push("function registerWidgetTemplateDataSources<TConfig>(");
+  lines.push("  descriptor: Pick<WidgetDescriptor<TConfig>, \"defaultConfig\" | \"variants\" | \"visualEditor\">");
+  lines.push(") {");
+  lines.push("  const configs: unknown[] = [");
+  lines.push("    descriptor.defaultConfig,");
+  lines.push("    ...(descriptor.variants ?? []).map((variant) => variant.config),");
+  lines.push("  ];");
+  lines.push("");
+  lines.push("  try {");
+  lines.push("    configs.push(");
+  lines.push("      descriptor.visualEditor?.getConfig?.({");
+  lines.push("        projectSlug: null,");
+  lines.push("        projects: [],");
+  lines.push("        config: descriptor.defaultConfig,");
+  lines.push("      })");
+  lines.push("    );");
+  lines.push("  } catch (error) {");
+  lines.push("    if (");
+  lines.push("      !(");
+  lines.push("        error instanceof Error &&");
+  lines.push('        error.message.includes("from the server") &&');
+  lines.push('        error.message.includes("client")');
+  lines.push("      )");
+  lines.push("    ) {");
+  lines.push("      throw error;");
+  lines.push("    }");
+  lines.push("  }");
+  lines.push("");
+  lines.push("  for (const sourceId of new Set(configs.flatMap(templateDataSourceIds))) {");
+  lines.push("    registerTemplateDataSourceId(sourceId);");
+  lines.push("  }");
+  lines.push("}");
+  lines.push("");
+  lines.push("export function initializeWidgetDescriptors() {");
   lines.push("  // Register Descriptors");
   for (const pkg of config.widgets) {
     const id = extractId(pkg, "@radarboard/widget-");
     const camel = toCamelCase(id);
     lines.push(`  registerWidget(${camel}Descriptor);`);
+    lines.push(`  registerWidgetTemplateDataSources(${camel}Descriptor);`);
   }
+  lines.push("}");
 
   // Collect widgets with init functions
   const widgetsWithInit = config.widgets.filter((pkg) => hasExport(pkg, "init"));
+  const widgetsWithDataResolvers = config.widgets.filter((pkg) => hasExport(pkg, "data-resolver"));
+  lines.push("");
+  lines.push("export function initializeWidgets(): Promise<void> {");
+  lines.push("  initializeWidgetDescriptors();");
+  const asyncInitializers: string[] = [];
+  if (widgetsWithDataResolvers.length > 0) {
+    for (const pkg of widgetsWithDataResolvers) {
+      asyncInitializers.push(`import("${pkg}/data-resolver")`);
+    }
+  }
   if (widgetsWithInit.length > 0) {
-    lines.push("");
-    lines.push("  // Initialize Widget-specific logic (Detail Renderers, etc.)");
     for (const pkg of widgetsWithInit) {
       const id = extractId(pkg, "@radarboard/widget-");
       const camel = toCamelCase(id);
       const initFn = `initialize${camel.charAt(0).toUpperCase()}${camel.slice(1)}Widget`;
-      lines.push(`  ${initFn}();`);
+      asyncInitializers.push(`import("${pkg}/init").then((mod) => mod.${initFn}())`);
     }
   }
-
+  if (asyncInitializers.length > 0) {
+    lines.push("");
+    lines.push("  return Promise.all([");
+    for (const initializer of asyncInitializers) {
+      lines.push(`    ${initializer},`);
+    }
+    lines.push("  ]).then(() => undefined);");
+  } else {
+    lines.push("");
+    lines.push("  return Promise.resolve();");
+  }
   lines.push("}");
+
   lines.push("");
   return lines.join("\n");
 }

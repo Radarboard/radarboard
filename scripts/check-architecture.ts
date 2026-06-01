@@ -200,6 +200,10 @@ function checkExtensionDirectoriesExist(config: RadarboardConfig) {
       pkg,
       dir: join(ROOT, "integrations", extractId(pkg, "@radarboard/integration-")),
     })),
+    ...config.features.map((pkg) => ({
+      pkg,
+      dir: join(ROOT, "features", extractId(pkg, "@radarboard/feature-")),
+    })),
     ...config.virtualIntegrations.map((pkg) => ({
       pkg,
       dir: join(ROOT, "integrations", extractId(pkg, "@radarboard/integration-")),

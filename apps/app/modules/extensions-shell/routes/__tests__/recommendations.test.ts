@@ -1,7 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/lib/integrations-init", () => ({}));
-vi.mock("@/lib/widgets-init", () => ({}));
+vi.mock("@/lib/widgets-init", () => ({
+  initializeWidgetDescriptors: vi.fn(),
+}));
 
 const getAllIntegrationsMock = vi.fn();
 const checkDependenciesWithCredentialsMock = vi.fn();

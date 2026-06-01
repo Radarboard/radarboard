@@ -1,3 +1,4 @@
+import { findDataSource } from "@radarboard/integration-sdk/registry";
 import { integrationRoute } from "@radarboard/integration-sdk/routes";
 import type { DashboardPollingPreferences, PollingSourceId } from "@radarboard/types/polling";
 import type { Project } from "@radarboard/types/project";
@@ -14,8 +15,6 @@ export interface BackupTask {
 
 /**
  * Helper to create a backup task that calls a data-source via the unified handler pattern.
- * Instead of importing fetch functions directly from the deleted fetchers.ts,
- * we dynamically import the data-source descriptor and call its fetch method.
  */
 function dsTask(
   key: string,
@@ -34,10 +33,7 @@ function dsTask(
     ttlSeconds: resolvePollingTtlSeconds(pollingSourceId, ttlSeconds, pollingPreferences),
     rateLimitGroup,
     fetchFn: async () => {
-      const mod = await import(`@radarboard/integration-${integration}/data-sources`);
-      // biome-ignore lint/complexity/noBannedTypes: dynamic data-source fetch signature
-      const sources = Object.values(mod).flat() as Array<{ action: string; fetch: Function }>;
-      const ds = sources.find((s) => s.action === action);
+      const ds = findDataSource(integration, action);
       if (!ds) throw new Error(`Data source ${integration}/${action} not found`);
       const ctx = buildDataSourceContext();
       return ds.fetch(

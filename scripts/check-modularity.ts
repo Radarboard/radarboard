@@ -176,7 +176,8 @@ function scanFile(filePath: string, relPath: string): Violation[] {
   const content = readFileSync(filePath, "utf8");
   const lines = content.split("\n");
   const violations: Violation[] = [];
-  const importRegex = /(?:from|import)\s+["'](@radarboard\/[^"']+)["']/g;
+  const importRegex =
+    /(?:from\s+|import\s+|import\s*\(\s*)["'`](@radarboard\/[^"'`]+)["'`]/g;
 
   for (let i = 0; i < lines.length; i++) {
     let match: RegExpExecArray | null;

@@ -1,5 +1,4 @@
 import "@/lib/integrations-init";
-import "@/lib/widgets-init";
 import { getAllIntegrations } from "@radarboard/integration-sdk/registry";
 import { checkDependenciesWithCredentials } from "@radarboard/integration-sdk/resolver";
 import { createLogger } from "@radarboard/logger/logger";
@@ -12,6 +11,7 @@ import {
   getCanonicalWidgetMap,
   getCapabilityProvidingWidgets,
 } from "@/lib/extensions/capability-governance";
+import { initializeWidgetDescriptors } from "@/lib/widgets-init";
 
 const log = createLogger("api/extensions/recommendations");
 
@@ -146,6 +146,8 @@ function collectIntegrationRecommendations(
 
 export async function handleGetExtensionRecommendations() {
   try {
+    initializeWidgetDescriptors();
+
     const integrations = getAllIntegrations();
     const integrationIds = integrations.map((i) => i.id);
     const statuses = await checkDependenciesWithCredentials(integrationIds, safeGetCredential);

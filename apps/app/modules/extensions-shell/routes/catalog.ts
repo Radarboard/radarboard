@@ -1,6 +1,5 @@
 import "@/lib/integrations-init";
 import "@/lib/plugins-init";
-import "@/lib/widgets-init";
 import { getAllIntegrations } from "@radarboard/integration-sdk/registry";
 import { createLogger } from "@radarboard/logger/logger";
 import { getAllPlugins } from "@radarboard/plugin-sdk/registry";
@@ -15,6 +14,7 @@ import { WIDGET_REGISTRY } from "@radarboard/widget-engine/widgets/registry";
 import { NextResponse } from "next/server";
 import { getAllInstalledExtensions } from "@/data/extensions/sqlite-installed-extensions";
 import { getWebEnv, WEB_ENV_KEYS } from "@/lib/system/runtime/env";
+import { initializeWidgetDescriptors } from "@/lib/widgets-init";
 
 const log = createLogger("api/extensions/catalog");
 
@@ -283,6 +283,8 @@ async function fetchCommunityCatalog(
 }
 
 export async function handleGetExtensionCatalog() {
+  initializeWidgetDescriptors();
+
   const officialIds = new Set<string>();
   for (const integration of getAllIntegrations()) officialIds.add(integration.id);
   for (const plugin of getAllPlugins()) officialIds.add(plugin.id);

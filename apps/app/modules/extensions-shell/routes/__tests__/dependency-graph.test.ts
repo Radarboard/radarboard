@@ -8,7 +8,9 @@ const { WIDGET_REGISTRY_MOCK } = vi.hoisted(() => ({
 }));
 
 vi.mock("@/lib/integrations-init", () => ({}));
-vi.mock("@/lib/widgets-init", () => ({}));
+vi.mock("@/lib/widgets-init", () => ({
+  initializeWidgetDescriptors: vi.fn(),
+}));
 
 vi.mock("@radarboard/integration-sdk/registry", () => ({
   getAllIntegrations: (...args: unknown[]) => getAllIntegrationsMock(...args),

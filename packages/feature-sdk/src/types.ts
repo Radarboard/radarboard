@@ -71,13 +71,17 @@ export interface FeatureAssistantRuntime {
   services: Record<string, unknown>;
 }
 
+// biome-ignore lint/suspicious/noExplicitAny: assistant tool executors have heterogeneous schemas
+export type FeatureAssistantToolExecutor = (params: any) => Promise<unknown>;
+
 /** Assistant extension points exposed by a feature descriptor. */
 export interface FeatureAssistantDefinition {
   /** Extra system-prompt sections contributed by this feature. */
   promptContext?: (runtime: FeatureAssistantRuntime) => string[];
   /** Assistant tool execute functions contributed by this feature, keyed by tool ID. */
-  // biome-ignore lint/suspicious/noExplicitAny: assistant tool executors have heterogeneous schemas
-  toolExecutors?: (runtime: FeatureAssistantRuntime) => Record<string, (params: any) => Promise<unknown>>;
+  toolExecutors?: (
+    runtime: FeatureAssistantRuntime
+  ) => Record<string, FeatureAssistantToolExecutor>;
 }
 
 // ---------------------------------------------------------------------------
@@ -88,6 +92,11 @@ export interface FeatureAssistantDefinition {
 export interface FeatureServerRuntime {
   services: Record<string, unknown>;
 }
+
+/** Feature-owned background task started by the host runtime. */
+export type FeatureServerBackgroundHandler = (
+  runtime: FeatureServerRuntime
+) => undefined | (() => void);
 
 /** Input passed to a feature-owned server route handler. */
 export interface FeatureServerRouteInput {
@@ -109,8 +118,12 @@ export type FeatureServerRouteHandler = (
 
 /** Server-side extension points exposed by a feature descriptor. */
 export interface FeatureServerDefinition {
+  /** Configure feature-owned server internals with host services. */
+  configure?: (runtime: FeatureServerRuntime) => void;
   /** Named route handlers delegated to by app shell routes. */
   routes?: Record<string, FeatureServerRouteHandler>;
+  /** Named background workers started by host-owned runtime gates. */
+  background?: Record<string, FeatureServerBackgroundHandler>;
 }
 
 // ---------------------------------------------------------------------------

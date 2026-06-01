@@ -1,5 +1,4 @@
 import "@/lib/integrations-init";
-import "@/lib/widgets-init";
 import { getAllIntegrations } from "@radarboard/integration-sdk/registry";
 import { createLogger } from "@radarboard/logger/logger";
 import { getAllPlugins } from "@radarboard/plugin-sdk/registry";
@@ -11,6 +10,7 @@ import {
   formatCapabilityLabel,
   getCanonicalWidgetMap,
 } from "@/lib/extensions/capability-governance";
+import { initializeWidgetDescriptors } from "@/lib/widgets-init";
 
 const log = createLogger("api/extensions/dependency-graph");
 
@@ -125,6 +125,8 @@ function collectWidgetNodesAndEdges(): { nodes: GraphNode[]; edges: GraphEdge[] 
 
 export async function handleGetDependencyGraph() {
   try {
+    initializeWidgetDescriptors();
+
     const integrations = getAllIntegrations();
     const widgets = Array.from(WIDGET_REGISTRY.values());
     const canonicalByCapability = getCanonicalWidgetMap(widgets);
