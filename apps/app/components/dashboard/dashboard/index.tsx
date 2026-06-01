@@ -479,6 +479,7 @@ function useDashboardModalState() {
     setActivePluginId,
     setDetailParam,
     setIntegrationIntentParam,
+    setProjectDialogParam,
     setSettingsProject,
     setServiceParam,
     setWidgetConfigId,
@@ -717,6 +718,7 @@ interface DashboardSurfaceProps extends DashboardGridAreaProps {
   handleKnowledgeClick: () => void;
   handleDebugClick: () => void;
   handleEditModeToggle: () => void;
+  handleAddProject: () => void;
   handlePageSelect: (slug: string) => void;
   handlePluginClose: () => void;
   handlePluginLaunch: (pluginId: string) => void;
@@ -778,6 +780,7 @@ function DashboardSurface({
   handleKnowledgeClick,
   handleDebugClick,
   handleEditModeToggle,
+  handleAddProject,
   handlePageSelect,
   handlePluginClose,
   handlePluginLaunch,
@@ -884,6 +887,7 @@ function DashboardSurface({
                   pendingSlug={pendingProjectSlug}
                   isPending={isProjectSwitching}
                   onSelect={handleProjectSelect}
+                  onAddProject={handleAddProject}
                   onPrefetch={handleProjectPrefetch}
                   variant="header"
                 />
@@ -1602,6 +1606,7 @@ function DashboardContent({
     setActivePluginId,
     setDetailParam,
     setIntegrationIntentParam,
+    setProjectDialogParam,
     setSettingsProject,
     setServiceParam,
     setWidgetConfigId,
@@ -1625,6 +1630,11 @@ function DashboardContent({
   const handlePluginClose = useCallback(() => {
     setActivePluginId(null);
   }, [setActivePluginId]);
+
+  const handleAddProject = useCallback(() => {
+    handleSettingsOpen("projects");
+    setProjectDialogParam("new");
+  }, [handleSettingsOpen, setProjectDialogParam]);
 
   const {
     handleConfigureWidget,
@@ -1727,6 +1737,7 @@ function DashboardContent({
       handleConnectService={handleConnectService}
       handleDebugClick={() => router.push("/debug")}
       handleKnowledgeClick={() => router.push("/knowledge")}
+      handleAddProject={handleAddProject}
       handleDragCancel={handleDragCancel}
       handleDragEnd={handleDragEnd}
       handleDragStart={handleDragStart}

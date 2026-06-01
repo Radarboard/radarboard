@@ -4,6 +4,7 @@ import type { Project } from "@radarboard/types/project";
 import { Button } from "@radarboard/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@radarboard/ui/tooltip";
 import { cn } from "@radarboard/utils/cn";
+import { Plus } from "lucide-react";
 import type { CSSProperties } from "react";
 
 const PROJECT_TABS_MASK_STYLE: CSSProperties = {
@@ -19,6 +20,7 @@ interface ProjectTabsProps {
   isPending?: boolean;
   variant?: "default" | "header";
   onSelect: (slug: string | null) => void;
+  onAddProject?: () => void;
   onPrefetch?: (slug: string | null) => void;
 }
 
@@ -197,6 +199,29 @@ function TabButton({
   );
 }
 
+function AddProjectButton({ onAddProject }: { onAddProject: () => void }) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          uppercase={false}
+          rounded="none"
+          aria-label="Add project"
+          data-testid="project-tabs-add-project"
+          onClick={onAddProject}
+          className="h-7 w-7 shrink-0 border-border border-r text-dim transition-interactive hover:text-foreground-secondary"
+        >
+          <Plus className="icon-sm" aria-hidden="true" />
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent side="bottom">Add project</TooltipContent>
+    </Tooltip>
+  );
+}
+
 export function ProjectTabs({
   projects,
   activeSlug,
@@ -204,11 +229,13 @@ export function ProjectTabs({
   isPending = false,
   variant = "default",
   onSelect,
+  onAddProject,
   onPrefetch,
 }: ProjectTabsProps) {
   return (
     <TooltipProvider delayDuration={300}>
       <div
+        data-testid="project-tabs-scroller"
         className={cn(
           "scrollbar-thin flex items-center gap-0 overflow-x-auto",
           variant === "header" ? "min-w-0 flex-1" : ""
@@ -239,6 +266,7 @@ export function ProjectTabs({
             onPrefetch={onPrefetch}
           />
         ))}
+        {onAddProject ? <AddProjectButton onAddProject={onAddProject} /> : null}
       </div>
     </TooltipProvider>
   );

@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import type { Project } from "@radarboard/types/project";
 import { ProjectTabs } from "@radarboard/widget-engine/project-tabs";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { createElement } from "react";
 import { describe, expect, it, vi } from "vitest";
 
@@ -86,7 +86,7 @@ describe("ProjectTabs", () => {
   });
 
   it("uses the header variant as a compact horizontal scroller", () => {
-    const { container } = render(
+    render(
       createElement(ProjectTabs, {
         projects: PROJECTS,
         activeSlug: null,
@@ -97,9 +97,51 @@ describe("ProjectTabs", () => {
       })
     );
 
-    expect(container.firstElementChild?.className).toContain("min-w-0");
-    expect(container.firstElementChild?.className).toContain("overflow-x-auto");
-    expect(container.firstElementChild?.className).toContain("scrollbar-thin");
+    const scroller = screen.getByTestId("project-tabs-scroller");
+    expect(scroller.className).toContain("min-w-0");
+    expect(scroller.className).toContain("overflow-x-auto");
+    expect(scroller.className).toContain("scrollbar-thin");
     expect(screen.getByText("Goshuin Atlas").className).toContain("max-w-28");
+  });
+
+  it("does not render the add project action without a handler", () => {
+    render(
+      createElement(ProjectTabs, {
+        projects: PROJECTS,
+        activeSlug: null,
+        pendingSlug: null,
+        isPending: false,
+        variant: "header",
+        onSelect: vi.fn(),
+      })
+    );
+
+    expect(screen.queryByRole("button", { name: "Add project" })).toBeNull();
+  });
+
+  it("renders the add project action after the last tab when a handler is provided", () => {
+    const onAddProject = vi.fn();
+
+    render(
+      createElement(ProjectTabs, {
+        projects: PROJECTS,
+        activeSlug: null,
+        pendingSlug: null,
+        isPending: false,
+        variant: "header",
+        onSelect: vi.fn(),
+        onAddProject,
+      })
+    );
+
+    const scroller = screen.getByTestId("project-tabs-scroller");
+    const addButton = screen.getByRole("button", { name: "Add project" });
+    expect(scroller.className).toContain("overflow-x-auto");
+    expect(addButton.className).toContain("shrink-0");
+    expect(scroller.lastElementChild).toBe(addButton);
+
+    fireEvent.click(addButton);
+
+    expect(onAddProject).toHaveBeenCalledOnce();
   });
 });

@@ -84,7 +84,6 @@ export function SettingsProjects({
     VIEW_STATE_QUERY_KEYS.projectDialog,
     parseAsString
   );
-  const [showNewProjectForm, setShowNewProjectForm] = useState(false);
 
   const userProjects = deriveUserProjects(integrations);
   const userProjectSlugSet = new Set(userProjects.map((p) => p.slug));
@@ -102,7 +101,7 @@ export function SettingsProjects({
     updateIntegration(`@@proj_${slug}`, "_", "name", name);
     updateIntegration(`@@proj_${slug}`, "_", "color", color);
     onOrderChange([...projectOrder, slug]);
-    setShowNewProjectForm(false);
+    setProjectDialogParam(null);
     setSelectedSlug(slug);
   }
 
@@ -168,12 +167,12 @@ export function SettingsProjects({
           orderedProjects={orderedProjects}
           selectedSlug={selectedSlug}
           userProjectSlugSet={userProjectSlugSet}
-          showNewProjectForm={showNewProjectForm}
+          showNewProjectForm={projectDialogParam === "new"}
           projectSearch={projectSearch}
           onSearchChange={setProjectSearch}
-          onShowNewProjectForm={() => setShowNewProjectForm(true)}
+          onShowNewProjectForm={() => setProjectDialogParam("new")}
           onCreateProject={handleCreateProject}
-          onCancelNewProject={() => setShowNewProjectForm(false)}
+          onCancelNewProject={() => setProjectDialogParam(null)}
           onSelectSlug={setSelectedSlug}
           onOrderChange={onOrderChange}
           onDeleteProject={(slug) => setProjectDialogParam(`delete:${slug}`)}
