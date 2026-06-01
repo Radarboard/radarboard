@@ -160,6 +160,13 @@ export type WidgetExpandAction =
   | { type: "expanded-view" }
   | { type: "open-plugin"; pluginId: string };
 
+// biome-ignore lint/suspicious/noExplicitAny: Widget chrome hooks are extension-owned hook contracts with heterogeneous signatures.
+export type WidgetChromeHook = (...args: any[]) => unknown;
+
+export interface WidgetChromeContribution {
+  hooks?: Record<string, WidgetChromeHook>;
+}
+
 /** Describes a widget template in the registry. */
 export interface WidgetDescriptor<TConfig = Record<string, unknown>> extends ExtensionMeta {
   /** Unique identifier. Used as registry key and WidgetCard widgetId. */
@@ -195,6 +202,8 @@ export interface WidgetDescriptor<TConfig = Record<string, unknown>> extends Ext
   getDisplayName?: (context: WidgetDisplayContext<TConfig>) => string;
   /** Optional dynamic description used in config dialogs. */
   getDisplayDescription?: (context: WidgetDisplayContext<TConfig>) => string;
+  /** Optional app chrome data hooks exposed through the widget registry. */
+  chrome?: WidgetChromeContribution;
   /** Optional visual editor binding for structured config editing. */
   visualEditor?: WidgetVisualEditorBinding<TConfig>;
   /** Auth requirements. Omit for widgets that don't need external API access. */

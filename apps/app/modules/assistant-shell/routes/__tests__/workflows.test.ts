@@ -1,13 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const listWorkflowsRouteMock = vi.fn();
-const createWorkflowRouteMock = vi.fn();
-const deleteWorkflowRouteMock = vi.fn();
+const getFeatureServerRouteMock = vi.fn();
+const listRouteMock = vi.fn();
+const createRouteMock = vi.fn();
+const deleteRouteMock = vi.fn();
 
-vi.mock("@radarboard/feature-workflows/server/routes", () => ({
-  listWorkflowsRoute: (...args: unknown[]) => listWorkflowsRouteMock(...args),
-  createWorkflowRoute: (...args: unknown[]) => createWorkflowRouteMock(...args),
-  deleteWorkflowRoute: (...args: unknown[]) => deleteWorkflowRouteMock(...args),
+vi.mock("@/lib/extensions/runtime/server/feature-server", () => ({
+  getFeatureServerRoute: (...args: unknown[]) => getFeatureServerRouteMock(...args),
 }));
 
 import {
@@ -17,9 +16,16 @@ import {
 } from "@/modules/assistant-shell/routes/workflows";
 
 beforeEach(() => {
-  listWorkflowsRouteMock.mockReset();
-  createWorkflowRouteMock.mockReset();
-  deleteWorkflowRouteMock.mockReset();
+  getFeatureServerRouteMock.mockReset();
+  listRouteMock.mockReset();
+  createRouteMock.mockReset();
+  deleteRouteMock.mockReset();
+  getFeatureServerRouteMock.mockImplementation((_featureId: string, routeId: string) => {
+    if (routeId === "list") return listRouteMock;
+    if (routeId === "create") return createRouteMock;
+    if (routeId === "delete") return deleteRouteMock;
+    return null;
+  });
 });
 
 describe("GET /api/assistant/workflows", () => {
@@ -28,7 +34,7 @@ describe("GET /api/assistant/workflows", () => {
       { id: "wf1", name: "Deploy notifier", steps: [] },
       { id: "wf2", name: "Daily briefing", steps: [] },
     ];
-    listWorkflowsRouteMock.mockResolvedValue(workflows);
+    listRouteMock.mockResolvedValue({ status: 200, payload: workflows });
 
     const res = await GET();
     const body = await res.json();
@@ -38,7 +44,7 @@ describe("GET /api/assistant/workflows", () => {
   });
 
   it("returns empty array when no workflows exist", async () => {
-    listWorkflowsRouteMock.mockResolvedValue([]);
+    listRouteMock.mockResolvedValue({ status: 200, payload: [] });
 
     const res = await GET();
     const body = await res.json();
@@ -58,7 +64,7 @@ describe("POST /api/assistant/workflows", () => {
 
   it("creates a new workflow and returns 201", async () => {
     const created = { id: "wf3", name: "New workflow" };
-    createWorkflowRouteMock.mockResolvedValue(created);
+    createRouteMock.mockResolvedValue({ status: 201, payload: created });
 
     const res = await POST(
       makeRequest({
@@ -72,16 +78,14 @@ describe("POST /api/assistant/workflows", () => {
 
     expect(res.status).toBe(201);
     expect(body.id).toBe("wf3");
-    expect(createWorkflowRouteMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        name: "New workflow",
-        description: "Does stuff",
-      })
-    );
+    expect(createRouteMock).toHaveBeenCalledWith({
+      request: expect.any(Request),
+      body: expect.objectContaining({ name: "New workflow", description: "Does stuff" }),
+    });
   });
 
   it("passes empty description when not provided", async () => {
-    createWorkflowRouteMock.mockResolvedValue({ id: "wf4" });
+    createRouteMock.mockResolvedValue({ status: 201, payload: { id: "wf4" } });
 
     await POST(
       makeRequest({
@@ -91,15 +95,16 @@ describe("POST /api/assistant/workflows", () => {
       })
     );
 
-    expect(createWorkflowRouteMock).toHaveBeenCalledWith(
-      expect.objectContaining({ description: "" })
-    );
+    expect(createRouteMock).toHaveBeenCalledWith({
+      request: expect.any(Request),
+      body: expect.not.objectContaining({ description: expect.anything() }),
+    });
   });
 });
 
 describe("DELETE /api/assistant/workflows", () => {
   it("deletes a workflow by id", async () => {
-    deleteWorkflowRouteMock.mockResolvedValue({ deleted: true });
+    deleteRouteMock.mockResolvedValue({ status: 200, payload: { deleted: true } });
 
     const req = new Request("http://localhost/api/assistant/workflows?id=wf1", {
       method: "DELETE",
@@ -108,7 +113,10 @@ describe("DELETE /api/assistant/workflows", () => {
     const body = await res.json();
 
     expect(body.deleted).toBe(true);
-    expect(deleteWorkflowRouteMock).toHaveBeenCalledWith("wf1");
+    expect(deleteRouteMock).toHaveBeenCalledWith({
+      request: expect.any(Request),
+      body: { id: "wf1" },
+    });
   });
 
   it("returns 400 when id is missing", async () => {

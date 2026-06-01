@@ -12,7 +12,6 @@ import {
 } from "@dnd-kit/core";
 import { ChatDrawer } from "@radarboard/assistant-ui/chat-drawer";
 import { useChatDrawer } from "@radarboard/assistant-ui/use-chat-drawer";
-import { OnboardingWizard } from "@radarboard/feature-onboarding";
 import { resolveDashboardProjectView } from "@radarboard/hooks/dashboard-layout";
 import { prefetchProjectData } from "@radarboard/hooks/prefetch-project-data";
 import { useDashboard } from "@radarboard/hooks/use-dashboard";
@@ -72,6 +71,7 @@ import { WidgetConfigFromUrl } from "@/components/widgets/widget-detail-dialog";
 import { useFormattedAppShortcutLabel } from "@/hooks/app/use-app-shortcuts";
 import { useSyncDisabledPluginIdsCache } from "@/hooks/plugins/use-disabled-plugins";
 import { useDemoModeActions } from "@/lib/demo-data";
+import { getFeatureUiComponent } from "@/lib/extensions/runtime/ui/feature-ui";
 import { isFeatureEnabled } from "@/lib/features";
 import { swapWidgetSlots } from "@/lib/layout-utils";
 import { getDashboardPath } from "@/lib/project-routes";
@@ -102,6 +102,17 @@ const snapOverlayToCursor: Modifier = ({ activatorEvent, transform, activeNodeRe
     y: event.clientY - activeNodeRect.top + transform.y - activeNodeRect.height / 2,
   };
 };
+
+interface OnboardingWizardProps {
+  mode: "first-run" | "returning" | "preview";
+  open: boolean;
+  onComplete: () => void;
+  onPluginsConfigured?: (disabledPluginIds: string[]) => void;
+  StepIntegrations: typeof StepIntegrations;
+  StepLayout: typeof StepLayout;
+}
+
+const OnboardingWizard = getFeatureUiComponent<OnboardingWizardProps>("onboarding", "wizard");
 
 interface DatabaseConfigResponse {
   hasConfig?: boolean;
@@ -1789,7 +1800,7 @@ function DashboardOnboardingShell({
   return (
     <>
       <SetupWizard open={showSetup} onComplete={handleSetupComplete} />
-      {showOnboarding && !showSetup && (
+      {showOnboarding && !showSetup && OnboardingWizard && (
         <OnboardingWizard
           mode={activeOnboardingMode}
           open={showOnboarding && !showSetup}

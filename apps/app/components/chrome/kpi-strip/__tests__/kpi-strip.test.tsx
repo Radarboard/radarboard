@@ -20,18 +20,12 @@ vi.mock("@radarboard/hooks/use-dashboard", async (importOriginal) => {
   };
 });
 
-vi.mock("@radarboard/widget-observability", () => ({
-  useHealth: () => useHealthMock(),
-  useSentry: (...args: unknown[]) => useSentryMock(...args),
-  useAppStore: (...args: unknown[]) => useAppStoreMock(...args),
-}));
-
-vi.mock("@radarboard/widget-shipping", () => ({
-  useShipping: (...args: unknown[]) => useShippingMock(...args),
-}));
-
-vi.mock("@radarboard/widget-analytics", () => ({
-  useAnalytics: (...args: unknown[]) => useAnalyticsMock(...args),
+vi.mock("@/lib/extensions/runtime/ui/widget-chrome", () => ({
+  useWidgetChromeHealth: () => useHealthMock(),
+  useWidgetChromeSentry: (...args: unknown[]) => useSentryMock(...args),
+  useWidgetChromeAppStore: (...args: unknown[]) => useAppStoreMock(...args),
+  useWidgetChromeShipping: (...args: unknown[]) => useShippingMock(...args),
+  useWidgetChromeAnalytics: (...args: unknown[]) => useAnalyticsMock(...args),
 }));
 
 describe("KPIStrip", () => {

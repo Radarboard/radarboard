@@ -5,6 +5,8 @@
  * by combining env-var gates with optional user preferences.
  */
 
+import type { ComponentType } from "react";
+
 // ---------------------------------------------------------------------------
 // Plan tiers — which subscription plan unlocks a feature
 // ---------------------------------------------------------------------------
@@ -45,6 +47,70 @@ export interface FeatureDescriptor {
   gatedTools?: string[];
   /** Other feature IDs this feature depends on. If a dependency is disabled, this is too. */
   requires?: string[];
+  /**
+   * Optional server-side hooks and route handlers owned by this feature.
+   * App routes look these up through FEATURE_REGISTRY instead of importing
+   * feature internals directly.
+   */
+  server?: FeatureServerDefinition;
+  /** Optional assistant prompt/tool contributions owned by this feature. */
+  assistant?: FeatureAssistantDefinition;
+  /** Optional UI components exposed by this feature, keyed by host surface ID. */
+  // biome-ignore lint/suspicious/noExplicitAny: feature UI surfaces have heterogeneous props
+  ui?: Record<string, ComponentType<any>>;
+  /** Optional non-UI helper resources exposed to host-owned surfaces. */
+  resources?: Record<string, unknown>;
+}
+
+// ---------------------------------------------------------------------------
+// Feature Assistant Hooks
+// ---------------------------------------------------------------------------
+
+/** Server-side assistant services provided by the host app to feature hooks. */
+export interface FeatureAssistantRuntime {
+  services: Record<string, unknown>;
+}
+
+/** Assistant extension points exposed by a feature descriptor. */
+export interface FeatureAssistantDefinition {
+  /** Extra system-prompt sections contributed by this feature. */
+  promptContext?: (runtime: FeatureAssistantRuntime) => string[];
+  /** Assistant tool execute functions contributed by this feature, keyed by tool ID. */
+  // biome-ignore lint/suspicious/noExplicitAny: assistant tool executors have heterogeneous schemas
+  toolExecutors?: (runtime: FeatureAssistantRuntime) => Record<string, (params: any) => Promise<unknown>>;
+}
+
+// ---------------------------------------------------------------------------
+// Feature Server Hooks
+// ---------------------------------------------------------------------------
+
+/** Server services provided by the host app to feature-owned server handlers. */
+export interface FeatureServerRuntime {
+  services: Record<string, unknown>;
+}
+
+/** Input passed to a feature-owned server route handler. */
+export interface FeatureServerRouteInput {
+  request: Request;
+  body: Record<string, unknown>;
+  runtime: FeatureServerRuntime;
+}
+
+/** Standard response shape returned by feature-owned server route handlers. */
+export interface FeatureServerRouteResult {
+  status: number;
+  payload: unknown;
+}
+
+/** Feature-owned server route handler. */
+export type FeatureServerRouteHandler = (
+  input: FeatureServerRouteInput
+) => Promise<FeatureServerRouteResult>;
+
+/** Server-side extension points exposed by a feature descriptor. */
+export interface FeatureServerDefinition {
+  /** Named route handlers delegated to by app shell routes. */
+  routes?: Record<string, FeatureServerRouteHandler>;
 }
 
 // ---------------------------------------------------------------------------

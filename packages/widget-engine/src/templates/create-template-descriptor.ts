@@ -34,6 +34,7 @@ export function createTemplateDescriptor(
       setConfig: ({ editorConfig }) => editorConfig as WidgetTemplateConfig,
     },
     auth: options?.auth,
+    chrome: options?.chrome,
     expandedSize: options?.expandedSize,
     defaultPollInterval: options?.defaultPollInterval,
     polling: options?.pollingSourceIds ? { sourceIds: options.pollingSourceIds } : undefined,

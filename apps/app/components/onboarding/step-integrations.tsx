@@ -1,11 +1,5 @@
 "use client";
 
-import { OnboardingGrid } from "@radarboard/feature-onboarding/components/onboarding-grid";
-import {
-  getProfileDefinition,
-  getSuggestedIntegrations,
-} from "@radarboard/feature-onboarding/profile-config";
-import type { OnboardingState } from "@radarboard/feature-onboarding/types";
 import { Button } from "@radarboard/ui/button";
 import { Input } from "@radarboard/ui/input";
 import { cn } from "@radarboard/utils/cn";
@@ -21,6 +15,14 @@ import {
   collectServices,
   getIntegrationCategories,
 } from "@/components/settings/settings-integrations/utils";
+import { getFeatureResources } from "@/lib/extensions/runtime/ui/feature-ui";
+import type { OnboardingState } from "./types";
+
+interface OnboardingResources {
+  getSuggestedIntegrations: (profiles: string[]) => string[];
+}
+
+const onboardingResources = getFeatureResources<OnboardingResources>("onboarding");
 
 interface StepIntegrationsProps {
   state: OnboardingState;
@@ -34,12 +36,11 @@ export function StepIntegrations({ state, onChange, onNext, onBack }: StepIntegr
   const serviceMap = useMemo(() => new Map(services.map((s) => [s.credKey, s])), [services]);
   const categories = useMemo(() => getIntegrationCategories(services), [services]);
   const [searchQuery, setSearchQuery] = useState("");
-  const _selectedProfileDef = useMemo(
-    () => (state.profile ? getProfileDefinition(state.profile) : undefined),
-    [state.profile]
-  );
   const suggestedIntegrationIds = useMemo(
-    () => (state.profile ? getSuggestedIntegrations([state.profile]) : []),
+    () =>
+      state.profile && onboardingResources
+        ? onboardingResources.getSuggestedIntegrations([state.profile])
+        : [],
     [state.profile]
   );
   const suggestedServices = useMemo(
@@ -153,7 +154,7 @@ export function StepIntegrations({ state, onChange, onNext, onBack }: StepIntegr
             <legend className="mb-2 font-mono text-accent text-w-sm uppercase tracking-widest">
               Suggested First
             </legend>
-            <OnboardingGrid className={ONBOARDING_GRID_CLASS}>
+            <div className={ONBOARDING_GRID_CLASS}>
               {suggestedServices
                 .filter((service) => !filteredServiceIds || filteredServiceIds.has(service.credKey))
                 .map((service) => (
@@ -164,7 +165,7 @@ export function StepIntegrations({ state, onChange, onNext, onBack }: StepIntegr
                     onToggle={() => toggleIntegration(service.credKey)}
                   />
                 ))}
-            </OnboardingGrid>
+            </div>
           </fieldset>
         ) : null}
 
@@ -180,7 +181,7 @@ export function StepIntegrations({ state, onChange, onNext, onBack }: StepIntegr
               <legend className="mb-2 font-mono text-dim text-w-sm uppercase tracking-widest">
                 {category.label}
               </legend>
-              <OnboardingGrid className={ONBOARDING_GRID_CLASS}>
+              <div className={ONBOARDING_GRID_CLASS}>
                 {categoryServices.map((service) => (
                   <SelectableServiceCard
                     key={service.credKey}
@@ -189,7 +190,7 @@ export function StepIntegrations({ state, onChange, onNext, onBack }: StepIntegr
                     onToggle={() => toggleIntegration(service.credKey)}
                   />
                 ))}
-              </OnboardingGrid>
+              </div>
             </fieldset>
           );
         })}

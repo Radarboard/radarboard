@@ -7,6 +7,7 @@ import {
   createSummaryContentRecipe,
   createSummaryListRecipe,
 } from "@radarboard/widget-engine/templates/recipes";
+import { useAnalytics } from "./hooks/use-analytics";
 
 const ANALYTICS_TEMPLATE_CONFIG: WidgetTemplateConfig = {
   dataSources: [{ id: "analytics" }],
@@ -237,6 +238,11 @@ export const analyticsDescriptor = createTemplateDescriptor(
     requiredIntegrations: [],
     defaultPollInterval: 60_000,
     pollingSourceIds: ["analytics"],
+    chrome: {
+      hooks: {
+        analytics: useAnalytics,
+      },
+    },
     variants: [
       { id: "pages", name: "Pages", config: ANALYTICS_TEMPLATE_CONFIG, isDefault: true },
       { id: "kpi", name: "KPI Overview", config: ANALYTICS_KPI_CONFIG },
@@ -275,4 +281,4 @@ export const analyticsDescriptor = createTemplateDescriptor(
     ],
   }
 );
-export { useAnalytics } from "./hooks/use-analytics";
+export { useAnalytics };

@@ -1,9 +1,9 @@
 "use client";
 
-import { NotificationItem } from "@radarboard/feature-notifications";
 import { useNotifications } from "@radarboard/hooks/use-notifications";
 import type { NotificationFeedItem } from "@radarboard/types/notifications";
 import { useEffect } from "react";
+import { getFeatureUiComponent } from "@/lib/extensions/runtime/ui/feature-ui";
 
 const _SEVERITY_DOT: Record<string, string> = {
   critical: "bg-destructive",
@@ -11,6 +11,15 @@ const _SEVERITY_DOT: Record<string, string> = {
   success: "bg-success",
   info: "bg-accent",
 };
+
+interface NotificationItemProps {
+  item: NotificationFeedItem;
+  compact?: boolean;
+  onMarkRead?: (deliveryId: string) => void;
+  onClick?: () => void;
+}
+
+const NotificationItem = getFeatureUiComponent<NotificationItemProps>("notifications", "item");
 
 function TrayNotificationItem({
   item,
@@ -25,7 +34,9 @@ function TrayNotificationItem({
     }
   };
 
-  return <NotificationItem item={item} compact onMarkRead={onMarkRead} onClick={handleClick} />;
+  return NotificationItem ? (
+    <NotificationItem item={item} compact onMarkRead={onMarkRead} onClick={handleClick} />
+  ) : null;
 }
 
 export function TrayPanelPageClient() {

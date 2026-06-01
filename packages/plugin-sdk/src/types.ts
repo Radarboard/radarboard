@@ -269,6 +269,48 @@ export interface PluginDescriptor extends ExtensionMeta {
    * Params are validated with the declared Zod schema at call time.
    */
   services?: PluginServiceDefinition[];
+
+  /**
+   * Optional server-side hooks and route handlers owned by this plugin.
+   * App routes look these up through PLUGIN_REGISTRY instead of importing plugin
+   * internals directly.
+   */
+  server?: PluginServerDefinition;
+}
+
+// ---------------------------------------------------------------------------
+// Plugin Server Hooks
+// ---------------------------------------------------------------------------
+
+/** Server services provided by the host app to plugin-owned server handlers. */
+export interface PluginServerRuntime {
+  services: Record<string, unknown>;
+}
+
+/** Input passed to a plugin-owned server route handler. */
+export interface PluginServerRouteInput {
+  request: Request;
+  body: Record<string, unknown>;
+  runtime: PluginServerRuntime;
+}
+
+/** Standard response shape returned by plugin-owned server route handlers. */
+export interface PluginServerRouteResult {
+  status: number;
+  payload: unknown;
+}
+
+/** Plugin-owned server route handler. */
+export type PluginServerRouteHandler = (
+  input: PluginServerRouteInput
+) => Promise<PluginServerRouteResult>;
+
+/** Server-side extension points exposed by a plugin descriptor. */
+export interface PluginServerDefinition {
+  /** Called once by the host app to pass server-only services to the plugin. */
+  configure?: (runtime: PluginServerRuntime) => void;
+  /** Named route handlers delegated to by app shell routes. */
+  routes?: Record<string, PluginServerRouteHandler>;
 }
 
 // ---------------------------------------------------------------------------

@@ -12,8 +12,6 @@ import {
   scanCorrelations,
 } from "@radarboard/assistant-core/correlation-scanner";
 import { analyzeTrend } from "@radarboard/assistant-core/trend-analyzer";
-import { buildBriefingToolExecutor } from "@radarboard/feature-briefing/tools";
-import { buildWorkflowToolExecutors } from "@radarboard/feature-workflows/tools";
 import { findDataSource } from "@radarboard/integration-sdk/registry";
 import type { LlmRepository } from "@radarboard/types/database";
 import { tool, zodSchema } from "ai";
@@ -44,6 +42,7 @@ import {
 import { thinkStep } from "@/lib/ai-actions/memory/think-step";
 import { generateReport } from "@/lib/ai-actions/reports/export-report";
 import { buildDataSourceContext } from "@/lib/data-source-context";
+import { getFeatureAssistantToolExecutors } from "@/lib/extensions/runtime/server/feature-server";
 import type { MemoryService } from "@/lib/memory-service";
 
 /** Call a registered data-source's fetch function with default common params. */
@@ -113,6 +112,11 @@ const listProjectParam = projectSlugParam.extend({
 });
 
 const emptyParam = z.object({});
+const featureToolExecutors = getFeatureAssistantToolExecutors();
+
+async function unavailableFeatureTool() {
+  return { error: "Feature tool is not registered" };
+}
 
 // ---------------------------------------------------------------------------
 // Tool Descriptor
@@ -984,7 +988,7 @@ export function buildActionTools() {
       description:
         "Generate a comprehensive daily briefing across all connected integrations. Runs anomaly detection and trend analysis on each, returns a formatted markdown summary.",
       inputSchema: zodSchema(emptyParam),
-      execute: buildBriefingToolExecutor(buildDataSourceContext).generate_daily_briefing,
+      execute: featureToolExecutors.generate_daily_briefing ?? unavailableFeatureTool,
     }),
 
     // --- T13: Suggest Next Actions ---
@@ -1025,14 +1029,14 @@ export function buildActionTools() {
           steps: z.array(z.record(z.string(), z.unknown())).describe("Workflow steps"),
         })
       ),
-      execute: buildWorkflowToolExecutors().create_workflow,
+      execute: featureToolExecutors.create_workflow ?? unavailableFeatureTool,
     }),
 
     // biome-ignore lint/suspicious/noExplicitAny: tool() overload strictness
     list_workflows: (tool as any)({
       description: "List all saved automation workflows.",
       inputSchema: zodSchema(emptyParam),
-      execute: buildWorkflowToolExecutors().list_workflows,
+      execute: featureToolExecutors.list_workflows ?? unavailableFeatureTool,
     }),
 
     // biome-ignore lint/suspicious/noExplicitAny: tool() overload strictness
@@ -1041,7 +1045,7 @@ export function buildActionTools() {
       inputSchema: zodSchema(
         z.object({ workflowId: z.string().describe("Workflow ID to delete") })
       ),
-      execute: buildWorkflowToolExecutors().delete_workflow,
+      execute: featureToolExecutors.delete_workflow ?? unavailableFeatureTool,
     }),
 
     // --- T5: Export Report ---

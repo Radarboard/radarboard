@@ -1,4 +1,6 @@
 import type { FeatureDescriptor } from "@radarboard/feature-sdk/types";
+import { NotificationCenterView } from "./components/notification-center-view";
+import { NotificationItem } from "./components/notification-item";
 export { NotificationCenterView } from "./components/notification-center-view";
 export { NotificationDropdown } from "./components/notification-dropdown";
 export { NotificationItem } from "./components/notification-item";
@@ -15,4 +17,8 @@ export const notificationsDescriptor: FeatureDescriptor = {
   plan: "free",
   category: "infrastructure",
   settingsSections: ["notifications"],
+  ui: {
+    center: NotificationCenterView,
+    item: NotificationItem,
+  },
 };

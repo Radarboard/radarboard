@@ -1,23 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const getBriefingRouteMock = vi.fn();
+const getFeatureServerRouteMock = vi.fn();
+const routeHandlerMock = vi.fn();
 
-vi.mock("@radarboard/feature-briefing", () => ({
-  getBriefingRoute: (...args: unknown[]) => getBriefingRouteMock(...args),
-}));
-
-vi.mock("@/db/repository", () => ({
-  getCredentialRepo: () => ({
-    listCredentialKeys: vi.fn().mockResolvedValue([]),
-  }),
-}));
-
-vi.mock("@/lib/data-source-context", () => ({
-  buildDataSourceContext: vi.fn(),
-}));
-
-vi.mock("@/lib/notifications", () => ({
-  emitNotificationEvents: vi.fn(),
+vi.mock("@/lib/extensions/runtime/server/feature-server", () => ({
+  getFeatureServerRoute: (...args: unknown[]) => getFeatureServerRouteMock(...args),
 }));
 
 vi.mock("@radarboard/logger/logger", () => ({
@@ -31,7 +18,8 @@ vi.mock("@radarboard/logger/logger", () => ({
 import { handleGetBriefing as GET } from "@/modules/assistant-shell/routes/briefing";
 
 beforeEach(() => {
-  getBriefingRouteMock.mockReset();
+  getFeatureServerRouteMock.mockReset();
+  routeHandlerMock.mockReset();
 });
 
 describe("GET /api/briefing", () => {
@@ -40,7 +28,8 @@ describe("GET /api/briefing", () => {
       summary: "All systems operational",
       sections: [{ title: "GitHub", highlights: ["3 PRs merged"] }],
     };
-    getBriefingRouteMock.mockResolvedValue({ ok: true, briefing });
+    getFeatureServerRouteMock.mockReturnValue(routeHandlerMock);
+    routeHandlerMock.mockResolvedValue({ status: 200, payload: briefing });
 
     const res = await GET();
     const body = await res.json();
@@ -51,10 +40,10 @@ describe("GET /api/briefing", () => {
   });
 
   it("returns error status when getBriefingRoute fails", async () => {
-    getBriefingRouteMock.mockResolvedValue({
-      ok: false,
-      error: "No LLM provider configured",
+    getFeatureServerRouteMock.mockReturnValue(routeHandlerMock);
+    routeHandlerMock.mockResolvedValue({
       status: 503,
+      payload: { error: "No LLM provider configured" },
     });
 
     const res = await GET();
@@ -64,23 +53,22 @@ describe("GET /api/briefing", () => {
     expect(body.error).toBe("No LLM provider configured");
   });
 
-  it("passes required dependencies to getBriefingRoute", async () => {
-    getBriefingRouteMock.mockResolvedValue({ ok: true, briefing: {} });
+  it("delegates to the registered briefing feature route", async () => {
+    getFeatureServerRouteMock.mockReturnValue(routeHandlerMock);
+    routeHandlerMock.mockResolvedValue({ status: 200, payload: {} });
 
     await GET();
 
-    expect(getBriefingRouteMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        listCredentialKeys: expect.any(Function),
-        buildDataSourceContext: expect.any(Function),
-        emitNotificationEvents: expect.any(Function),
-        onSourceError: expect.any(Function),
-      })
-    );
+    expect(getFeatureServerRouteMock).toHaveBeenCalledWith("briefing", "briefing");
+    expect(routeHandlerMock).toHaveBeenCalledWith({
+      request: expect.any(Request),
+      body: {},
+    });
   });
 
   it("returns 500 on unexpected error", async () => {
-    getBriefingRouteMock.mockRejectedValue(new Error("LLM timeout"));
+    getFeatureServerRouteMock.mockReturnValue(routeHandlerMock);
+    routeHandlerMock.mockRejectedValue(new Error("LLM timeout"));
 
     const res = await GET();
     const body = await res.json();

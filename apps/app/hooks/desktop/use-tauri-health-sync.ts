@@ -1,7 +1,7 @@
 "use client";
 
-import { useHealth } from "@radarboard/widget-observability";
 import { useEffect } from "react";
+import { useWidgetChromeHealth } from "@/lib/extensions/runtime/ui/widget-chrome";
 import { isTauri } from "@/lib/platform";
 
 /**
@@ -9,7 +9,7 @@ import { isTauri } from "@/lib/platform";
  * Only runs when in Tauri environment.
  */
 export function useTauriHealthSync() {
-  const { checks, incidents, configured, loading, error } = useHealth();
+  const { checks, incidents, configured, loading, error } = useWidgetChromeHealth();
 
   useEffect(() => {
     if (!isTauri() || loading || !configured) return;

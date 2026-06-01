@@ -48,10 +48,6 @@ const KNOWN_TECH_DEBT: Record<string, string> = {
   // --- Current app/module shell accepted debt ---
   "app/providers.tsx":
     "Direct plugin-webhook-relay background poller import. Fix: register background pollers via plugin lifecycle descriptors.",
-  "app/tray-panel/tray-panel-page-client.tsx":
-    "Direct feature-notifications import. Fix: expose notification center through feature registry.",
-  "components/onboarding/__stories__/layout-step-regression.stories.tsx":
-    "Direct feature-onboarding type import in a story. Fix: expose story-safe types through a shared onboarding contract.",
   "components/widgets/widget-config-panel/index.tsx":
     "Direct widget-github-stars config import. Fix: expose widget configuration through descriptor metadata.",
   "data/core/client.ts":
@@ -60,32 +56,16 @@ const KNOWN_TECH_DEBT: Record<string, string> = {
     "Direct integration-github star-history import for database repository typing. Fix: move shared repository contracts to integration-sdk.",
   "data/providers/sqlite/sqlite-migrate.ts":
     "Direct integration-github star-history import for migrations. Fix: register extension-owned migrations through integration capabilities.",
-  "hooks/desktop/use-tauri-health-sync.ts":
-    "Direct widget-observability import. Fix: register health data source via descriptor.",
   "lib/ai-actions/issues/create-github-issue.ts":
     "Direct integration-github import. Fix: use integration registry client lookup.",
   "lib/ai-actions/issues/create-linear-issue.ts":
     "Direct integration-linear import. Fix: use integration registry client lookup.",
   "lib/ai-actions/issues/send-slack-message.ts":
     "Direct integration-slack import. Fix: use integration registry client lookup.",
-  "lib/assistant/core/ai-tools.ts":
-    "Direct feature imports for briefing/workflows tools. Fix: register AI tools via feature descriptor.",
-  "lib/assistant/core/assistant-route-runtime.ts":
-    "Direct integration-shipping import + hardcoded plugin behavior. Fix: use findDataSource() + registry.",
-  "lib/assistant/core/plugin-tool-bridge.ts":
-    "Direct plugin-embeddings import. Fix: register embedding resolver via plugin descriptor.",
   "lib/assistant/integration/credential-resolver.ts":
     "Imports type-only configs from integrations. Fix: define a generic CredentialConfig in integration-sdk.",
   "lib/integrations/content/changelog-server.ts":
     "Direct integration-github and plugin-changelog imports. Fix: expose content changelog capability through descriptors.",
-  "modules/assistant-shell/routes/briefing.ts":
-    "Direct feature-briefing import. Part of briefing feature route coupling until feature route registration exists.",
-  "modules/assistant-shell/routes/chat.ts":
-    "Direct feature-briefing import. Fix: register chat tools via feature descriptor.",
-  "modules/assistant-shell/routes/embeddings.ts":
-    "Direct plugin-embeddings route import. Fix: expose via plugin descriptor route handler.",
-  "modules/assistant-shell/routes/workflows.ts":
-    "Direct feature-workflows imports. Part of workflows feature route coupling until feature route registration exists.",
   "modules/database-shell/routes/migrate.ts":
     "Direct integration-github star-history import for migration route. Fix: register extension-owned migrations through integration capabilities.",
   "modules/integration-shell/routes/data.ts":
@@ -98,8 +78,6 @@ const KNOWN_TECH_DEBT: Record<string, string> = {
     "Direct plugin-status-page project health import. Fix: expose project health through plugin descriptor capability.",
   "modules/plugin-shell/routes/webhook-relay-poll.ts":
     "Direct plugin-webhook-relay poll import. Fix: expose poller through plugin descriptor route handler.",
-  "modules/provider-shell/notification-center.tsx":
-    "Direct feature-notifications import. Fix: expose provider UI through feature registry.",
   "modules/provider-shell/plugin-dock.tsx":
     "Direct plugin-status-page import. Fix: read status page config from plugin registry.",
   "modules/provider-shell/rss-reader-background-poller.tsx":
@@ -135,12 +113,6 @@ const KNOWN_TECH_DEBT: Record<string, string> = {
   "lib/credential-resolver.ts":
     "Imports type-only configs from all integrations. Fix: define a generic CredentialConfig in integration-sdk.",
 
-  // --- Chrome UI components that consume extension data ---
-  "components/chrome/bottom-ticker/index.tsx":
-    "Direct widget imports for observability/shipping hooks. Fix: register ticker data sources via descriptor.",
-  "components/chrome/kpi-strip/index.tsx":
-    "Direct widget imports for analytics/observability/shipping hooks. Fix: register KPI sources via descriptor.",
-
   // --- Plugin-specific UI coupling ---
   "components/plugins/plugin-dock/index.tsx":
     "Direct plugin-status-page imports. Fix: read status page config from plugin registry.",
@@ -148,16 +120,8 @@ const KNOWN_TECH_DEBT: Record<string, string> = {
     "Direct plugin-status-page imports. Fix: register background poller via plugin descriptor lifecycle.",
 
   // --- Dashboard/onboarding ---
-  "components/dashboard/dashboard/index.tsx":
-    "Direct feature-onboarding imports. Fix: register onboarding UI via feature descriptor.",
-  "components/onboarding/step-integrations.tsx":
-    "Direct feature-onboarding imports. Part of onboarding feature — acceptable coupling.",
-  "components/onboarding/step-layout.tsx":
-    "Direct feature-onboarding imports. Part of onboarding feature — acceptable coupling.",
 
   // --- Settings that reference specific features ---
-  "components/settings/settings-workflows/index.tsx":
-    "Direct feature-workflows imports. Fix: register settings UI via feature descriptor.",
 
   // --- Extension-specific API routes ---
   "app/api/github/star-tracking/route.ts":

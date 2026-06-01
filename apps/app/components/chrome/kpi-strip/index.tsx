@@ -3,11 +3,15 @@
 import { useDashboard } from "@radarboard/hooks/use-dashboard";
 import { cn } from "@radarboard/utils/cn";
 import { formatTimeAgo } from "@radarboard/utils/format-time-ago";
-import { useAnalytics } from "@radarboard/widget-analytics";
 import { resolveCompactProjectBadgeLabel } from "@radarboard/widget-engine/compact-project-badge";
-import { useAppStore, useHealth, useSentry } from "@radarboard/widget-observability";
-import { useShipping } from "@radarboard/widget-shipping";
 import type React from "react";
+import {
+  useWidgetChromeAnalytics,
+  useWidgetChromeAppStore,
+  useWidgetChromeHealth,
+  useWidgetChromeSentry,
+  useWidgetChromeShipping,
+} from "@/lib/extensions/runtime/ui/widget-chrome";
 
 // --- Types ---
 
@@ -188,14 +192,17 @@ function LiveVisitorsKPICell({ count }: { count: number }) {
 
 function useKPIData(projectSlug: string | null) {
   const { timeRange } = useDashboard();
-  const { checks, configured: healthConfigured } = useHealth();
-  const { data: sentryData, configured: sentryConfigured } = useSentry(projectSlug, timeRange);
-  const { data: appStoreData } = useAppStore(projectSlug, timeRange);
-  const { items: shippingItems, configured: shippingConfigured } = useShipping(
+  const { checks, configured: healthConfigured } = useWidgetChromeHealth();
+  const { data: sentryData, configured: sentryConfigured } = useWidgetChromeSentry(
     projectSlug,
     timeRange
   );
-  const { data: analyticsData } = useAnalytics(timeRange, projectSlug);
+  const { data: appStoreData } = useWidgetChromeAppStore(projectSlug, timeRange);
+  const { items: shippingItems, configured: shippingConfigured } = useWidgetChromeShipping(
+    projectSlug,
+    timeRange
+  );
+  const { data: analyticsData } = useWidgetChromeAnalytics(timeRange, projectSlug);
 
   const health: HealthKPI | null =
     healthConfigured && checks.length > 0

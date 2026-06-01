@@ -6,6 +6,13 @@
  */
 
 import type { FeatureDescriptor } from "@radarboard/feature-sdk/types";
+import { OnboardingWizard } from "./components/onboarding-wizard";
+import {
+  getProfileDefinition,
+  getSuggestedBlueprints,
+  getSuggestedIntegrations,
+  PROFILE_GROUPS,
+} from "./components/onboarding-wizard/profile-config";
 
 export const onboardingDescriptor: FeatureDescriptor = {
   id: "onboarding",
@@ -15,6 +22,15 @@ export const onboardingDescriptor: FeatureDescriptor = {
   defaultEnabled: true,
   tier: "system",
   plan: "free",
+  ui: {
+    wizard: OnboardingWizard,
+  },
+  resources: {
+    PROFILE_GROUPS,
+    getProfileDefinition,
+    getSuggestedBlueprints,
+    getSuggestedIntegrations,
+  },
 };
 
 export { OnboardingWizard } from "./components/onboarding-wizard";

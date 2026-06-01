@@ -5,11 +5,24 @@
  * topic clustering. Any integration can send data for embedding via intents.
  */
 
-import type { PluginDescriptor } from "@radarboard/plugin-sdk/types";
+import type { EmbeddingService } from "@radarboard/embedding-service";
+import type { PluginDescriptor, PluginServerRuntime } from "@radarboard/plugin-sdk/types";
 import { BrainCircuit } from "lucide-react";
+import { handleEmbeddingsRoute, type EmbeddingsRouteBody } from "./server/routes";
 import { EmbeddingsOverlay } from "./components/embeddings-overlay";
-import { embeddingsMcpTools } from "./mcp-tools";
+import { embeddingsMcpTools, setEmbeddingServiceResolver } from "./mcp-tools";
 import { EMBEDDING_MODEL_GROUPS } from "./types";
+
+type EmbeddingServiceResolver = (options?: {
+  modelId?: string;
+  providerId?: string;
+  dimensions?: number;
+}) => Promise<EmbeddingService | null>;
+
+function getEmbeddingServiceResolver(runtime: PluginServerRuntime): EmbeddingServiceResolver | null {
+  const resolver = runtime.services.getEmbeddingService;
+  return typeof resolver === "function" ? (resolver as EmbeddingServiceResolver) : null;
+}
 
 export const embeddingsDescriptor: PluginDescriptor = {
   id: "embeddings",
@@ -26,6 +39,40 @@ export const embeddingsDescriptor: PluginDescriptor = {
   component: EmbeddingsOverlay,
 
   mcpTools: embeddingsMcpTools,
+
+  server: {
+    configure: (runtime) => {
+      const resolver = getEmbeddingServiceResolver(runtime);
+      if (resolver) setEmbeddingServiceResolver(resolver);
+    },
+    routes: {
+      embeddings: async ({ body, runtime }) => {
+        const typedBody = body as unknown as EmbeddingsRouteBody;
+        const resolver = getEmbeddingServiceResolver(runtime);
+        if (!resolver) {
+          return {
+            status: 503,
+            payload: { error: "Embedding service unavailable — no LLM provider configured" },
+          };
+        }
+
+        const service = await resolver({
+          modelId: typedBody.modelId,
+          providerId: typedBody.providerId,
+          dimensions:
+            typedBody.dimensions && typedBody.dimensions > 0 ? typedBody.dimensions : undefined,
+        });
+        if (!service) {
+          return {
+            status: 503,
+            payload: { error: "Embedding service unavailable — no LLM provider configured" },
+          };
+        }
+
+        return handleEmbeddingsRoute(service, typedBody);
+      },
+    },
+  },
 
   intents: [
     {

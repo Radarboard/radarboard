@@ -1,6 +1,12 @@
 import type { PollingSourceId } from "@radarboard/types/polling";
 import type { TemplateRecipeModel } from "./recipe-model";
-import type { GridSlot, WidgetAuth, WidgetCapability, WidgetModalSize } from "./widget-types";
+import type {
+  GridSlot,
+  WidgetAuth,
+  WidgetCapability,
+  WidgetChromeContribution,
+  WidgetModalSize,
+} from "./widget-types";
 
 /**
  * How a data value should be formatted when rendered.
@@ -579,6 +585,7 @@ export interface CreateTemplateDescriptorOptions {
   requiredIntegrations?: string[];
   defaultSlot?: GridSlot;
   auth?: WidgetAuth | WidgetAuth[];
+  chrome?: WidgetChromeContribution;
   expandedSize?: WidgetModalSize;
   defaultPollInterval?: number;
   pollingSourceIds?: PollingSourceId[];

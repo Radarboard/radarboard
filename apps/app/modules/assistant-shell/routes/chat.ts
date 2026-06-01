@@ -15,7 +15,6 @@ import {
   buildBaseSystemPrompt as coreBuildBaseSystemPrompt,
   instrumentTools as coreInstrumentTools,
 } from "@radarboard/assistant-core/tool-evidence";
-import { buildBriefingPromptContext } from "@radarboard/feature-briefing";
 import type { LlmMessage } from "@radarboard/llm/types";
 import { createVercelAdapter } from "@radarboard/llm-adapter-vercel/adapter";
 import { createLogger } from "@radarboard/logger/logger";
@@ -31,6 +30,7 @@ import {
   loadAttachedNotes as webLoadAttachedNotes,
 } from "@/lib/assistant-route-runtime";
 import { emitDebugEvent } from "@/lib/debug-events";
+import { getFeatureAssistantPromptSections } from "@/lib/extensions/runtime/server/feature-server";
 import { featureNotFound, isFeatureEnabled } from "@/lib/features";
 import { isExpiredOAuthToken, refreshOAuthToken } from "@/lib/oauth/refresh";
 import {
@@ -190,7 +190,7 @@ export async function handleChatRequest(request: Request) {
       extraSections: [
         ...attachedContextSections,
         ...(pluginToolGuidance ? [pluginToolGuidance] : []),
-        ...buildBriefingPromptContext(),
+        ...getFeatureAssistantPromptSections(),
       ],
     });
 

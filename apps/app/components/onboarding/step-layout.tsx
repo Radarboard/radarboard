@@ -1,6 +1,5 @@
 "use client";
 
-import type { OnboardingState } from "@radarboard/feature-onboarding/types";
 import type { LayoutDefinition } from "@radarboard/types/database";
 import { Button } from "@radarboard/ui/button";
 import { cn } from "@radarboard/utils/cn";
@@ -19,6 +18,7 @@ import {
   ColumnSelector,
   useDetectedColumns,
 } from "@/components/settings/settings-layouts/preset-picker";
+import type { OnboardingState } from "./types";
 
 interface StepLayoutProps {
   state: OnboardingState;

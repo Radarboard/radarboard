@@ -1,6 +1,5 @@
 "use client";
 
-import type { Workflow, WorkflowTrigger } from "@radarboard/feature-workflows/types";
 import { useEffectiveLocale } from "@radarboard/hooks/use-effective-locale";
 import { useEffectiveTimeZone } from "@radarboard/hooks/use-effective-timezone";
 import { API_ROUTES, buildApiRoute } from "@radarboard/types/api-routes";
@@ -15,6 +14,28 @@ import { CollapsibleListPanel, ListPanelHeader } from "../settings-list-panel";
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
+
+type WorkflowTrigger =
+  | { type: "schedule"; cron: string }
+  | { type: "event"; channel: string; eventType: string }
+  | { type: "threshold"; dataSource: string; operator: string; value: unknown }
+  | { type: string; [key: string]: unknown };
+
+interface WorkflowStep {
+  type: string;
+  [key: string]: unknown;
+}
+
+interface Workflow {
+  id: string;
+  name: string;
+  description?: string;
+  trigger: WorkflowTrigger;
+  steps: WorkflowStep[];
+  enabled: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
 
 function triggerLabel(trigger: WorkflowTrigger): string {
   switch (trigger.type) {
@@ -140,7 +161,7 @@ function WorkflowDetailPanel({
                 <span className="text-dim">#{i + 1}</span>{" "}
                 <span className="font-semibold">{step.type}</span>
                 {"outputVar" in step && (
-                  <span className="text-dim"> → {(step as { outputVar: string }).outputVar}</span>
+                  <span className="text-dim"> → {String(step.outputVar)}</span>
                 )}
               </div>
             ))}

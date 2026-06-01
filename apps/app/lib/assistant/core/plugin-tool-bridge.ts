@@ -1,13 +1,11 @@
 import { PLUGIN_REGISTRY } from "@radarboard/plugin-sdk/registry";
 import type { McpToolDefinition, PluginAPI, PluginUserConfig } from "@radarboard/plugin-sdk/types";
 import "@/lib/plugins-init";
-import { setEmbeddingServiceResolver } from "@radarboard/plugin-embeddings/mcp-tools";
 import { tool as aiTool, zodSchema } from "ai";
 import { getPluginRepo } from "@/data/core/repository";
-import { getEmbeddingService } from "@/lib/embedding-service-singleton";
+import { configurePluginServerRuntime } from "@/lib/extensions/runtime/server/plugin-server";
 
-// Wire the embedding service resolver so MCP tools can access it
-setEmbeddingServiceResolver(getEmbeddingService);
+configurePluginServerRuntime();
 
 const CONFIG_KEY = "_config";
 const DISABLED_PLUGINS_KEY = "disabled-plugins";

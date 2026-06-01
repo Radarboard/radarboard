@@ -3,15 +3,17 @@
 /* biome-ignore-all lint/style/noDefaultExport: Storybook CSF requires a default export. */
 /* biome-ignore-all lint/style/useNamingConvention: Storybook story exports follow Storybook conventions. */
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { INITIAL_ONBOARDING_STATE } from "@radarboard/feature-onboarding/types";
 import { renderScaffoldStory } from "@radarboard/storybook-scaffold";
 import { expect, fn, userEvent } from "storybook/test";
 import { StepLayout } from "../step-layout";
 
-const baseState = {
-  ...INITIAL_ONBOARDING_STATE,
-  profile: "marketing" as const,
+const baseState: Parameters<typeof StepLayout>[0]["state"] = {
+  demoMode: false,
+  profile: "marketing",
+  databaseProvider: "sqlite",
+  credentials: {},
   connectedIntegrations: ["github"],
+  enabledPlugins: ["tasks", "notes", "bookmarks"],
   blueprintId: "growth-dashboard",
 };
 

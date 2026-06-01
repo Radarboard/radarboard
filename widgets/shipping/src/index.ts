@@ -12,6 +12,7 @@ import {
   ShippingCompact,
 } from "./components/shipping-compact";
 import { ShippingExpanded } from "./components/shipping-expanded";
+import { useShipping } from "./hooks/use-shipping";
 
 export const shippingDescriptor: WidgetDescriptor<WidgetTemplateConfig> = {
   id: "shipping",
@@ -31,6 +32,11 @@ export const shippingDescriptor: WidgetDescriptor<WidgetTemplateConfig> = {
   expandedComponent: ShippingExpanded,
   defaultConfig: SHIPPING_TEMPLATE_CONFIG,
   polling: { sourceIds: ["shipping"] },
+  chrome: {
+    hooks: {
+      shipping: useShipping,
+    },
+  },
   visualEditor: {
     kind: "template",
     getConfig: ({ config }) => (isTemplateConfig(config) ? config : SHIPPING_TEMPLATE_CONFIG),
@@ -80,4 +86,4 @@ export const shippingDescriptor: WidgetDescriptor<WidgetTemplateConfig> = {
     },
   ],
 };
-export * from "./hooks/use-shipping";
+export { useShipping };

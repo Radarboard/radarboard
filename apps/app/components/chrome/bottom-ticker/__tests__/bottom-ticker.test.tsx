@@ -5,8 +5,6 @@ import { getPluginToken } from "@radarboard/plugin-sdk/host";
 import { PLUGIN_REGISTRY } from "@radarboard/plugin-sdk/registry";
 import type { PluginDescriptor } from "@radarboard/plugin-sdk/types";
 import type { Project } from "@radarboard/types/project";
-import { useHealth } from "@radarboard/widget-observability";
-import { useShipping } from "@radarboard/widget-shipping";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import { createElement } from "react";
 import { SWRConfig } from "swr";
@@ -21,16 +19,16 @@ vi.mock("@radarboard/hooks/use-dashboard", async () => {
   };
 });
 
-vi.mock("@radarboard/widget-observability", () => ({
-  useHealth: vi.fn(),
-}));
-
 vi.mock("@radarboard/hooks/use-routing-config", () => ({
   useRoutingConfig: vi.fn(),
 }));
 
-vi.mock("@radarboard/widget-shipping", () => ({
-  useShipping: vi.fn(),
+const useWidgetChromeHealthMock = vi.fn();
+const useWidgetChromeShippingMock = vi.fn();
+
+vi.mock("@/lib/extensions/runtime/ui/widget-chrome", () => ({
+  useWidgetChromeHealth: () => useWidgetChromeHealthMock(),
+  useWidgetChromeShipping: (...args: unknown[]) => useWidgetChromeShippingMock(...args),
 }));
 
 vi.mock("@radarboard/plugin-sdk/host", () => ({
@@ -133,13 +131,13 @@ describe("BottomTicker", () => {
       timeRange: "today",
     } as ReturnType<typeof useDashboard>);
 
-    vi.mocked(useHealth).mockReturnValue({
+    useWidgetChromeHealthMock.mockReturnValue({
       checks: [],
-    } as ReturnType<typeof useHealth>);
+    });
 
-    vi.mocked(useShipping).mockReturnValue({
+    useWidgetChromeShippingMock.mockReturnValue({
       items: [],
-    } as ReturnType<typeof useShipping>);
+    });
 
     vi.mocked(useRoutingConfig).mockReturnValue({
       routingConfig: {
@@ -343,7 +341,7 @@ describe("BottomTicker", () => {
       timeRange: "today",
     } as ReturnType<typeof useDashboard>);
 
-    vi.mocked(useShipping).mockReturnValue({
+    useWidgetChromeShippingMock.mockReturnValue({
       items: [
         {
           id: "gh-1",
@@ -356,7 +354,7 @@ describe("BottomTicker", () => {
           timeAgo: "1h",
         },
       ],
-    } as ReturnType<typeof useShipping>);
+    });
 
     vi.mocked(useRoutingConfig).mockReturnValue({
       routingConfig: {
@@ -389,7 +387,7 @@ describe("BottomTicker", () => {
   });
 
   it("hides a ticker item when routing denies an otherwise enabled source", async () => {
-    vi.mocked(useShipping).mockReturnValue({
+    useWidgetChromeShippingMock.mockReturnValue({
       items: [
         {
           id: "gh-2",
@@ -402,7 +400,7 @@ describe("BottomTicker", () => {
           timeAgo: "1h",
         },
       ],
-    } as ReturnType<typeof useShipping>);
+    });
 
     vi.mocked(useRoutingConfig).mockReturnValue({
       routingConfig: {

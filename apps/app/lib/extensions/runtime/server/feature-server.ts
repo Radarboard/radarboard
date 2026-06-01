@@ -1,0 +1,64 @@
+import { getAllFeatures, getFeature } from "@radarboard/feature-sdk/registry";
+import type {
+  FeatureAssistantRuntime,
+  FeatureServerRouteInput,
+  FeatureServerRouteResult,
+  FeatureServerRuntime,
+} from "@radarboard/feature-sdk/types";
+import { getCredentialRepo } from "@/db/repository";
+import { buildDataSourceContext } from "@/lib/data-source-context";
+import "@/lib/features";
+import { createLogger } from "@radarboard/logger/logger";
+import { emitNotificationEvents } from "@/lib/notifications";
+
+const log = createLogger("feature-server");
+
+type HostFeatureServerRouteHandler = (
+  input: Omit<FeatureServerRouteInput, "runtime">
+) => Promise<FeatureServerRouteResult>;
+
+const featureServerRuntime: FeatureServerRuntime = {
+  services: {
+    listCredentialKeys: () => getCredentialRepo().listCredentialKeys(),
+    buildDataSourceContext,
+    emitNotificationEvents,
+    onSourceError: (integration: string, action: string) => {
+      log.warn("feature source failed", { integration, action });
+    },
+  },
+};
+
+const featureAssistantRuntime: FeatureAssistantRuntime = {
+  services: featureServerRuntime.services,
+};
+
+export function getFeatureServerRoute(
+  featureId: string,
+  routeId: string
+): HostFeatureServerRouteHandler | null {
+  const route = getFeature(featureId)?.server?.routes?.[routeId];
+  if (!route) return null;
+
+  return (input) => route({ ...input, runtime: featureServerRuntime });
+}
+
+export function getFeatureAssistantPromptSections(): string[] {
+  return getAllFeatures().flatMap(
+    (descriptor) => descriptor.assistant?.promptContext?.(featureAssistantRuntime) ?? []
+  );
+}
+
+export function getFeatureAssistantToolExecutors(): Record<
+  string,
+  // biome-ignore lint/suspicious/noExplicitAny: assistant tool executors have heterogeneous schemas
+  (params: any) => Promise<unknown>
+> {
+  // biome-ignore lint/suspicious/noExplicitAny: assistant tool executors have heterogeneous schemas
+  const executors: Record<string, (params: any) => Promise<unknown>> = {};
+
+  for (const descriptor of getAllFeatures()) {
+    Object.assign(executors, descriptor.assistant?.toolExecutors?.(featureAssistantRuntime) ?? {});
+  }
+
+  return executors;
+}

@@ -5,7 +5,8 @@ import {
   recommendNextMode,
 } from "@radarboard/assistant-core/assistant-workflows";
 import type { AttachedNoteRecord } from "@radarboard/assistant-core/tool-evidence";
-import { shippingDataSource } from "@radarboard/integration-shipping/data-sources";
+import "@/lib/integrations-init";
+import { findDataSource } from "@radarboard/integration-sdk/registry";
 import { createVercelAdapter } from "@radarboard/llm-adapter-vercel/adapter";
 import type {
   AssistantArtifactRow,
@@ -63,7 +64,10 @@ export async function autoTitleConversation(
 async function loadRecentShippingCount(projectSlug: string | null): Promise<number> {
   if (!projectSlug) return 0;
   try {
-    const result = (await shippingDataSource.fetch(
+    const dataSource = findDataSource("shipping", "data");
+    if (!dataSource) return 0;
+
+    const result = (await dataSource.fetch(
       {
         projectSlug,
         limit: 5,

@@ -11,13 +11,15 @@ import type { ShippingSource } from "@radarboard/types/shipping";
 import { filterByProject, resolveProjectName } from "@radarboard/utils/project-helpers";
 import { resolveRoutingSurfaceAccess } from "@radarboard/utils/routing";
 import { isDateInTimeRange } from "@radarboard/utils/timezone";
-import { useHealth } from "@radarboard/widget-observability";
-import { useShipping } from "@radarboard/widget-shipping";
 import { AlertTriangle, ExternalLink } from "lucide-react";
 import type React from "react";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import useSWR from "swr";
+import {
+  useWidgetChromeHealth,
+  useWidgetChromeShipping,
+} from "@/lib/extensions/runtime/ui/widget-chrome";
 
 interface BottomTickerProps {
   projectSlug: string | null;
@@ -253,8 +255,8 @@ function HoverCard({ item, anchorRect }: HoverCardProps) {
 export function BottomTicker({ projectSlug }: BottomTickerProps) {
   const { projects, appearance, timeRange } = useDashboard();
   const effectiveTimezone = useEffectiveTimeZone();
-  const { checks: healthChecks } = useHealth();
-  const { items: shippingItems } = useShipping(projectSlug, timeRange);
+  const { checks: healthChecks } = useWidgetChromeHealth();
+  const { items: shippingItems } = useWidgetChromeShipping(projectSlug, timeRange);
   const { routingConfig } = useRoutingConfig();
   const [hoveredItem, setHoveredItem] = useState<{
     item: TickerActivityItem;

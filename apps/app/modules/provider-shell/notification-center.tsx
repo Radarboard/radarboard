@@ -1,6 +1,5 @@
 "use client";
 
-import { NotificationCenterView } from "@radarboard/feature-notifications";
 import { useDemoMode } from "@radarboard/hooks/use-demo-mode";
 import { useNotifications } from "@radarboard/hooks/use-notifications";
 import type {
@@ -13,6 +12,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useFormattedAppShortcutLabel } from "@/hooks/app/use-app-shortcuts";
 import { useTauriTraySync } from "@/hooks/desktop/use-tauri-tray-sync";
 import { isClientE2EMode } from "@/lib/e2e";
+import { getFeatureUiComponent } from "@/lib/extensions/runtime/ui/feature-ui";
 
 const DEMO_NOTIFICATION_SEVERITY: Record<string, NotificationSeverity> = {
   github: "info",
@@ -20,6 +20,22 @@ const DEMO_NOTIFICATION_SEVERITY: Record<string, NotificationSeverity> = {
   stripe: "success",
   vercel: "success",
 };
+
+interface NotificationCenterViewProps {
+  notifications: NotificationFeedItem[];
+  unreadCount: number;
+  connected: boolean;
+  liveUpdatesEnabled?: boolean;
+  tooltipLabel?: string;
+  markRead: (deliveryId: string) => void;
+  dismiss: (deliveryId: string) => void;
+  markAllRead: () => void;
+}
+
+const NotificationCenterView = getFeatureUiComponent<NotificationCenterViewProps>(
+  "notifications",
+  "center"
+);
 
 export function toDemoNotificationFeedItem(
   statusById: Record<string, NotificationDeliveryStatus>,
@@ -107,15 +123,17 @@ export function NotificationCenter() {
     : "Notifications";
 
   return (
-    <NotificationCenterView
-      notifications={visibleNotifications}
-      unreadCount={visibleUnreadCount}
-      connected={visibleConnected}
-      liveUpdatesEnabled={liveUpdatesEnabled}
-      tooltipLabel={tooltipLabel}
-      markRead={handleMarkRead}
-      dismiss={handleDismiss}
-      markAllRead={handleMarkAllRead}
-    />
+    NotificationCenterView && (
+      <NotificationCenterView
+        notifications={visibleNotifications}
+        unreadCount={visibleUnreadCount}
+        connected={visibleConnected}
+        liveUpdatesEnabled={liveUpdatesEnabled}
+        tooltipLabel={tooltipLabel}
+        markRead={handleMarkRead}
+        dismiss={handleDismiss}
+        markAllRead={handleMarkAllRead}
+      />
+    )
   );
 }

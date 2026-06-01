@@ -21,6 +21,9 @@ import {
   SENTRY_SUMMARY_CONFIG,
 } from "./components/observability-compact";
 import { DetailExpanded } from "./components/observability-expanded";
+import { useAppStore } from "./hooks/use-app-store";
+import { useHealth } from "./hooks/use-health";
+import { useSentry } from "./hooks/use-sentry";
 
 export const observabilityDescriptor: WidgetDescriptor = {
   id: "observability",
@@ -68,6 +71,13 @@ export const observabilityDescriptor: WidgetDescriptor = {
   },
   getDisplayName: ({ projectSlug, projects }) => getDetailTitle(projects, projectSlug),
   getDisplayDescription: ({ projectSlug, projects }) => getDetailDescription(projects, projectSlug),
+  chrome: {
+    hooks: {
+      "app-store": useAppStore,
+      health: useHealth,
+      sentry: useSentry,
+    },
+  },
   visualEditor: {
     kind: "template",
     getConfig: ({ projectSlug, projects, config }) => {
@@ -126,6 +136,4 @@ export const observabilityDescriptor: WidgetDescriptor = {
     },
   ],
 };
-export { useAppStore } from "./hooks/use-app-store";
-export { useHealth } from "./hooks/use-health";
-export { useSentry } from "./hooks/use-sentry";
+export { useAppStore, useHealth, useSentry };
