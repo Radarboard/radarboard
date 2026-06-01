@@ -33,6 +33,9 @@ const envSchema = z.object({
   // OAuth (optional — OpenAI provider auth disabled if not set)
   OAUTH_OPENAI_CLIENT_ID: z.string().optional(),
   OAUTH_OPENAI_CLIENT_SECRET: z.string().optional(),
+  OAUTH_GOOGLE_CLIENT_ID: z.string().optional(),
+  OAUTH_GOOGLE_CLIENT_SECRET: z.string().optional(),
+  RADARBOARD_OAUTH_BROKER_URL: z.string().url().optional(),
 
   // MCP & API (required for plugin token signing and MCP OAuth)
   NEXT_PUBLIC_APP_URL: z.string().optional(),
@@ -121,6 +124,9 @@ export const WEB_ENV_KEYS = {
   oauth: {
     openaiClientId: "OAUTH_OPENAI_CLIENT_ID",
     openaiClientSecret: "OAUTH_OPENAI_CLIENT_SECRET",
+    googleClientId: "OAUTH_GOOGLE_CLIENT_ID",
+    googleClientSecret: "OAUTH_GOOGLE_CLIENT_SECRET",
+    brokerUrl: "RADARBOARD_OAUTH_BROKER_URL",
   },
   mcp: {
     appUrl: "NEXT_PUBLIC_APP_URL",

@@ -4,6 +4,10 @@ import {
   getGitHubStarHistoryRepo,
   getSettingsRepo,
 } from "@/data/core/repository";
+import {
+  isOAuthBrokerCredential,
+  resolveGoogleSearchConsoleBrokerCredential,
+} from "@/lib/auth/oauth-broker-client";
 import { getMcpClient } from "@/lib/mcp/mcp-client";
 import { callNamedMcpToolJson, listNamedMcpTools } from "@/lib/mcp/named-mcp-client";
 import { deriveAllProjects } from "@/lib/projects/derived-projects";
@@ -19,6 +23,9 @@ export function buildDataSourceContext(): DataSourceContext {
       try {
         const repo = getCredentialRepo();
         const creds = await repo.getCredential(key);
+        if (key === "google-search-console" && isOAuthBrokerCredential(creds)) {
+          return await resolveGoogleSearchConsoleBrokerCredential(creds);
+        }
         if (creds) return creds;
       } catch {
         // Credential store not available

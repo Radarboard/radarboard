@@ -5,12 +5,24 @@ import { z } from "zod";
 import { getCredentialRepo } from "@/db/repository";
 import { errorJson, parseSearchParams } from "@/lib/api";
 import { OAUTH_PROVIDERS } from "@/lib/auth/oauth-providers";
-import { normalizeOAuthOrigin } from "@/lib/auth/oauth-redirect";
+import {
+  getOAuthBrokerOrigin,
+  isAllowedBrokerReturnOrigin,
+  isBrokerOrigin,
+  randomToken,
+  resolveBrokerGoogleClientCredentials,
+  resolveRequestOrigin,
+  sha256Base64Url,
+} from "./broker";
+import { getBrokerLocalCookieNames } from "./broker-local-callback";
 
 const providerRedirectQuerySchema = z.object({
   credKey: z.string().optional(),
   scopes: z.string().optional(),
   debug: z.string().optional(),
+  handoffId: z.string().optional(),
+  handoffChallenge: z.string().optional(),
+  returnOrigin: z.string().optional(),
 });
 
 export async function handleIntegrationProviderRedirect(request: Request, provider: string) {
@@ -28,10 +40,71 @@ export async function handleIntegrationProviderRedirect(request: Request, provid
     return errorJson(400, "Missing credKey param");
   }
 
-  const repo = getCredentialRepo();
-  const creds = await repo.getCredential(credKey);
-  const clientId = creds?.clientId;
+  const url = new URL(request.url);
+  const referer = request.headers.get("referer");
+  const refererOrigin = referer ? new URL(referer).origin : null;
+  const requestOrigin = resolveRequestOrigin(request);
+  const effectiveOrigin = refererOrigin ?? requestOrigin;
+  const brokerOrigin = getOAuthBrokerOrigin();
+  const shouldUseBroker = provider === "google" && !isBrokerOrigin(effectiveOrigin);
 
+  if (shouldUseBroker) {
+    const handoffId = randomToken();
+    const verifier = randomToken();
+    const challenge = sha256Base64Url(verifier);
+    const cookieStore = await cookies();
+    const isSecure = url.protocol === "https:";
+    const names = getBrokerLocalCookieNames();
+
+    cookieStore.set(names.handoffId, handoffId, {
+      httpOnly: true,
+      secure: isSecure,
+      sameSite: "lax",
+      maxAge: 600,
+      path: "/",
+    });
+    cookieStore.set(names.verifier, verifier, {
+      httpOnly: true,
+      secure: isSecure,
+      sameSite: "lax",
+      maxAge: 600,
+      path: "/",
+    });
+    cookieStore.set(names.credKey, credKey, {
+      httpOnly: true,
+      secure: isSecure,
+      sameSite: "lax",
+      maxAge: 600,
+      path: "/",
+    });
+
+    const brokerUrl = new URL(`/api/auth/${provider}/redirect`, brokerOrigin);
+    brokerUrl.searchParams.set("credKey", credKey);
+    brokerUrl.searchParams.set("scopes", scopes);
+    brokerUrl.searchParams.set("handoffId", handoffId);
+    brokerUrl.searchParams.set("handoffChallenge", challenge);
+    brokerUrl.searchParams.set("returnOrigin", effectiveOrigin);
+    return NextResponse.redirect(brokerUrl.toString());
+  }
+
+  const handoffId = parsed.data.handoffId;
+  const handoffChallenge = parsed.data.handoffChallenge;
+  const returnOrigin = parsed.data.returnOrigin;
+  const isBrokerHandoff = Boolean(handoffId || handoffChallenge || returnOrigin);
+  if (isBrokerHandoff) {
+    if (!handoffId || !handoffChallenge || !returnOrigin) {
+      return errorJson(400, "Incomplete OAuth broker handoff");
+    }
+    if (!isAllowedBrokerReturnOrigin(returnOrigin)) {
+      return errorJson(400, "OAuth broker return origin is not allowed");
+    }
+  }
+
+  const repo = getCredentialRepo();
+  const brokerGoogleCreds =
+    provider === "google" ? await resolveBrokerGoogleClientCredentials(credKey) : null;
+  const storedCreds = brokerGoogleCreds ? null : await repo.getCredential(credKey);
+  const clientId = brokerGoogleCreds?.clientId ?? storedCreds?.clientId;
   if (!clientId) {
     return errorJson(400, "Client credentials not configured. Save client ID and secret first.");
   }
@@ -55,17 +128,7 @@ export async function handleIntegrationProviderRedirect(request: Request, provid
     path: "/",
   });
 
-  const url = new URL(request.url);
-  const referer = request.headers.get("referer");
-  const refererOrigin = referer ? new URL(referer).origin : null;
-  const forwardedHost = request.headers.get("x-forwarded-host");
-  const forwardedProto = request.headers.get("x-forwarded-proto") ?? url.protocol.replace(":", "");
-  const hostHeader = forwardedHost ?? request.headers.get("host");
-  const effectiveOrigin =
-    refererOrigin ?? (hostHeader ? `${forwardedProto}://${hostHeader}` : url.origin);
-  const origin = providerConfig.normalizeOrigin
-    ? normalizeOAuthOrigin(effectiveOrigin)
-    : effectiveOrigin;
+  const origin = effectiveOrigin;
   const redirectUri = `${origin}/api/auth/${provider}/callback`;
 
   cookieStore.set("oauth_origin", origin, {
@@ -75,6 +138,29 @@ export async function handleIntegrationProviderRedirect(request: Request, provid
     maxAge: 300,
     path: "/",
   });
+  if (isBrokerHandoff) {
+    cookieStore.set("oauth_broker_handoff_id", handoffId!, {
+      httpOnly: true,
+      secure: isSecure,
+      sameSite: "lax",
+      maxAge: 600,
+      path: "/",
+    });
+    cookieStore.set("oauth_broker_challenge", handoffChallenge!, {
+      httpOnly: true,
+      secure: isSecure,
+      sameSite: "lax",
+      maxAge: 600,
+      path: "/",
+    });
+    cookieStore.set("oauth_broker_return_origin", returnOrigin!, {
+      httpOnly: true,
+      secure: isSecure,
+      sameSite: "lax",
+      maxAge: 600,
+      path: "/",
+    });
+  }
 
   const authUrl = new URL(providerConfig.authorizationUrl);
   authUrl.searchParams.set("client_id", clientId);

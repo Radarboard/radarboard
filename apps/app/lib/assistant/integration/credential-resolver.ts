@@ -1,4 +1,5 @@
 import { getCredentialRepo } from "@/data/core/repository";
+import { resolveOAuthBrokerAccessToken } from "@/lib/auth/oauth-broker-client";
 
 interface ASCConfig {
   keyId: string;
@@ -156,6 +157,16 @@ export async function resolveASCConfig(): Promise<ASCConfig | null> {
 
 export async function resolveGSCConfig() {
   const creds = await resolveCredential("google-search-console");
+  if (creds?.authMethod === "oauth_broker" && creds.brokerUrl && creds.brokerCredentialToken) {
+    const accessToken = await resolveOAuthBrokerAccessToken("google", creds);
+    if (!accessToken) return null;
+    return {
+      authMethod: "oauth_broker",
+      brokerUrl: creds.brokerUrl,
+      brokerCredentialToken: creds.brokerCredentialToken,
+      accessToken,
+    };
+  }
   if (creds?.refreshToken && creds?.clientId && creds?.clientSecret) {
     return {
       clientId: creds.clientId,

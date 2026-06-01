@@ -10,8 +10,9 @@ export interface OAuthProviderConfig {
   authParams?: Record<string, string>;
   /**
    * Whether to normalize *.localhost subdomains to plain localhost in the redirect URI.
-   * Google Cloud Console rejects custom subdomains, so this must be true for Google.
-   * GitHub accepts *.localhost URLs as-is, so leave false.
+   * Keep this false for providers used through portless unless the app is also
+   * reachable at plain localhost, because OAuth state cookies and callbacks
+   * must share the same host.
    */
   normalizeOrigin?: boolean;
 }
@@ -35,6 +36,6 @@ export const OAUTH_PROVIDERS: Record<string, OAuthProviderConfig> = {
       access_type: "offline",
       prompt: "consent",
     },
-    normalizeOrigin: true,
+    normalizeOrigin: false,
   },
 };

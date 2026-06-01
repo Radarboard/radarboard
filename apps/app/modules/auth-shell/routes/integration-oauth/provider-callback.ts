@@ -5,7 +5,7 @@ import { z } from "zod";
 import { getCredentialRepo } from "@/db/repository";
 import { parseSearchParams } from "@/lib/api";
 import { OAUTH_PROVIDERS, type OAuthProviderConfig } from "@/lib/auth/oauth-providers";
-import { normalizeOAuthOrigin } from "@/lib/auth/oauth-redirect";
+import { persistBrokerHandoffCredential, resolveBrokerGoogleClientCredentials } from "./broker";
 
 const providerCallbackQuerySchema = z.object({
   code: z.string().optional(),
@@ -97,10 +97,7 @@ async function exchangeCodeForTokens(
   };
 }
 
-async function resolveOrigin(
-  request: Request,
-  providerConfig: OAuthProviderConfig | undefined
-): Promise<string> {
+async function resolveOrigin(request: Request): Promise<string> {
   const cookieStore = await cookies();
   const storedOrigin = cookieStore.get("oauth_origin")?.value;
   if (storedOrigin) return storedOrigin;
@@ -109,10 +106,7 @@ async function resolveOrigin(
   const forwardedHost = request.headers.get("x-forwarded-host");
   const forwardedProto = request.headers.get("x-forwarded-proto") ?? url.protocol.replace(":", "");
   const hostHeader = forwardedHost ?? request.headers.get("host");
-  const effectiveOrigin = hostHeader ? `${forwardedProto}://${hostHeader}` : url.origin;
-  return providerConfig?.normalizeOrigin === true
-    ? normalizeOAuthOrigin(effectiveOrigin)
-    : effectiveOrigin;
+  return hostHeader ? `${forwardedProto}://${hostHeader}` : url.origin;
 }
 
 async function validateCallbackParams(
@@ -164,14 +158,22 @@ async function validateCsrfAndCredentials(
 
   const repo = getCredentialRepo();
   const existingCreds = await repo.getCredential(credKey);
+  const brokerGoogleCreds =
+    provider === "google" ? await resolveBrokerGoogleClientCredentials(credKey) : null;
 
-  if (!existingCreds?.clientId || !existingCreds?.clientSecret) {
+  if (
+    !brokerGoogleCreds &&
+    (!existingCreds?.clientId || !existingCreds?.clientSecret)
+  ) {
     return { error: await errorRedirect(origin, provider, "Client credentials not found") };
   }
 
   return {
     credKey,
-    existingCreds: existingCreds as Record<string, string> & {
+    existingCreds: {
+      ...(existingCreds ?? {}),
+      ...(brokerGoogleCreds ?? {}),
+    } as Record<string, string> & {
       clientId: string;
       clientSecret: string;
     },
@@ -181,7 +183,7 @@ async function validateCsrfAndCredentials(
 export async function handleIntegrationProviderCallback(request: Request, provider: string) {
   const providerConfig = OAUTH_PROVIDERS[provider];
 
-  const origin = await resolveOrigin(request, providerConfig);
+  const origin = await resolveOrigin(request);
 
   if (!providerConfig) {
     return errorRedirect(origin, provider, "Unknown provider");
@@ -212,6 +214,36 @@ export async function handleIntegrationProviderCallback(request: Request, provid
     return errorRedirect(origin, provider, "No token in response");
   }
 
+  const cookieStore = await cookies();
+  const handoffId = cookieStore.get("oauth_broker_handoff_id")?.value;
+  const handoffChallenge = cookieStore.get("oauth_broker_challenge")?.value;
+  const handoffReturnOrigin = cookieStore.get("oauth_broker_return_origin")?.value;
+
+  if (handoffId && handoffChallenge && handoffReturnOrigin && tokens.refreshToken) {
+    await persistBrokerHandoffCredential({
+      handoffId,
+      challenge: handoffChallenge,
+      returnOrigin: handoffReturnOrigin,
+      provider,
+      credKey,
+      clientId: existingCreds.clientId,
+      clientSecret: existingCreds.clientSecret,
+      refreshToken: tokens.refreshToken,
+      accessToken: tokens.accessToken,
+    });
+
+    cookieStore.delete("oauth_state");
+    cookieStore.delete("oauth_cred_key");
+    cookieStore.delete("oauth_origin");
+    cookieStore.delete("oauth_broker_handoff_id");
+    cookieStore.delete("oauth_broker_challenge");
+    cookieStore.delete("oauth_broker_return_origin");
+
+    const brokerCallbackUrl = new URL(`/api/auth/broker/${provider}/callback`, origin);
+    brokerCallbackUrl.searchParams.set("handoffId", handoffId);
+    return NextResponse.redirect(brokerCallbackUrl.toString());
+  }
+
   const mergedCreds = { ...existingCreds };
   if (tokens.accessToken) mergedCreds.token = tokens.accessToken;
   if (tokens.refreshToken) mergedCreds.refreshToken = tokens.refreshToken;
@@ -219,7 +251,6 @@ export async function handleIntegrationProviderCallback(request: Request, provid
   const repo = getCredentialRepo();
   await repo.setCredential(credKey, mergedCreds);
 
-  const cookieStore = await cookies();
   cookieStore.delete("oauth_state");
   cookieStore.delete("oauth_cred_key");
   cookieStore.delete("oauth_origin");

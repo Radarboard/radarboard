@@ -1,27 +1,31 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+const mocks = vi.hoisted(() => ({
+  defaultCredentials: {
+    revenuecat: { apiKey: "rc_key", projectId: "rc_proj" },
+    sentry: { authToken: "sentry_tok", orgSlug: "my-org" },
+    openpanel: { clientId: "op_id", clientSecret: "op_secret" },
+    betterstack: { apiToken: "bs_tok" },
+    opencollective: { apiToken: "oc_tok" },
+    linear: { apiKey: "lin_key" },
+    vercel: { token: "vrc_tok", teamId: "team_1" },
+    github: { token: "gh_tok" },
+    "app-store-connect": { keyId: "k1", issuerId: "i1", privateKey: "pk\\nline2" },
+    "google-search-console": {
+      clientId: "gc_id",
+      clientSecret: "gc_secret",
+      refreshToken: "gc_refresh",
+    },
+    resend: { apiKey: "rs_key", fromEmail: "a@b.com", toEmail: "c@d.com" },
+  } as Record<string, Record<string, string>>,
+  credentials: {} as Record<string, Record<string, string>>,
+}));
 
 // Mock the repository module
 vi.mock("@/data/core/repository", () => ({
   getCredentialRepo: () => ({
     getCredential: vi.fn().mockImplementation(async (key: string) => {
-      const store: Record<string, Record<string, string>> = {
-        revenuecat: { apiKey: "rc_key", projectId: "rc_proj" },
-        sentry: { authToken: "sentry_tok", orgSlug: "my-org" },
-        openpanel: { clientId: "op_id", clientSecret: "op_secret" },
-        betterstack: { apiToken: "bs_tok" },
-        opencollective: { apiToken: "oc_tok" },
-        linear: { apiKey: "lin_key" },
-        vercel: { token: "vrc_tok", teamId: "team_1" },
-        github: { token: "gh_tok" },
-        "app-store-connect": { keyId: "k1", issuerId: "i1", privateKey: "pk\\nline2" },
-        "google-search-console": {
-          clientId: "gc_id",
-          clientSecret: "gc_secret",
-          refreshToken: "gc_refresh",
-        },
-        resend: { apiKey: "rs_key", fromEmail: "a@b.com", toEmail: "c@d.com" },
-      };
-      return store[key] ?? null;
+      return mocks.credentials[key] ?? null;
     }),
   }),
 }));
@@ -40,6 +44,16 @@ import {
 } from "../credential-resolver";
 
 describe("credential resolvers", () => {
+  beforeEach(() => {
+    mocks.credentials = Object.fromEntries(
+      Object.entries(mocks.defaultCredentials).map(([key, value]) => [key, { ...value }])
+    );
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it("resolves RevenueCat config with projectId override", async () => {
     const config = await resolveRevenueCatConfig("override_proj");
     expect(config).toEqual({ apiKey: "rc_key", projectId: "override_proj" });
@@ -96,6 +110,35 @@ describe("credential resolvers", () => {
       clientId: "gc_id",
       clientSecret: "gc_secret",
       refreshToken: "gc_refresh",
+    });
+  });
+
+  it("resolves broker-backed GSC config with a short-lived access token", async () => {
+    mocks.credentials["google-search-console"] = {
+      authMethod: "oauth_broker",
+      brokerUrl: "https://app.radarboard.app/",
+      brokerCredentialToken: "broker-token",
+    };
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ accessToken: "broker_access_token" }),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const config = await resolveGSCConfig();
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://app.radarboard.app/api/auth/broker/google/access-token",
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({ brokerCredentialToken: "broker-token" }),
+      })
+    );
+    expect(config).toEqual({
+      authMethod: "oauth_broker",
+      brokerUrl: "https://app.radarboard.app/",
+      brokerCredentialToken: "broker-token",
+      accessToken: "broker_access_token",
     });
   });
 

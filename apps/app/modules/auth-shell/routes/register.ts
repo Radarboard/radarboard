@@ -1,6 +1,12 @@
 /* biome-ignore-all lint/style/useNamingConvention: Route handler maps intentionally use HTTP method keys. */
 import { API_ROUTE_PATTERNS, API_ROUTES } from "@radarboard/types/api-routes";
 import { registerRoutes } from "@/lib/router/registry";
+import {
+  handleBrokerAccessToken,
+  handleBrokerCallback,
+  handleBrokerRedeem,
+} from "./integration-oauth/broker";
+import { handleBrokerLocalCallback } from "./integration-oauth/broker-local-callback";
 import { handleIntegrationOAuthCallback } from "./integration-oauth/callback";
 import { handleDisabledLlmOAuth } from "./integration-oauth/disabled";
 import { handleGwsImport } from "./integration-oauth/gws-import";
@@ -24,6 +30,42 @@ registerRoutes([
       GET: async (request: Request, context?: unknown) => {
         const { provider } = await (context as ParamsContext<{ provider: string }>).params;
         return handleIntegrationProviderCallback(request, provider);
+      },
+    },
+  },
+  {
+    path: API_ROUTE_PATTERNS.authProviderBrokerCallback,
+    handlers: {
+      GET: async (request: Request, context?: unknown) => {
+        const { provider } = await (context as ParamsContext<{ provider: string }>).params;
+        return handleBrokerLocalCallback(request, provider);
+      },
+    },
+  },
+  {
+    path: API_ROUTE_PATTERNS.authProviderBrokerHostedCallback,
+    handlers: {
+      GET: async (request: Request, context?: unknown) => {
+        const { provider } = await (context as ParamsContext<{ provider: string }>).params;
+        return handleBrokerCallback(request, provider);
+      },
+    },
+  },
+  {
+    path: API_ROUTE_PATTERNS.authProviderBrokerRedeem,
+    handlers: {
+      POST: async (request: Request, context?: unknown) => {
+        const { provider } = await (context as ParamsContext<{ provider: string }>).params;
+        return handleBrokerRedeem(request, provider);
+      },
+    },
+  },
+  {
+    path: API_ROUTE_PATTERNS.authProviderBrokerAccessToken,
+    handlers: {
+      POST: async (request: Request, context?: unknown) => {
+        const { provider } = await (context as ParamsContext<{ provider: string }>).params;
+        return handleBrokerAccessToken(request, provider);
       },
     },
   },

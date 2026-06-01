@@ -4,6 +4,7 @@ import { API_ROUTES } from "@radarboard/types/api-routes";
 import { Button } from "@radarboard/ui/button";
 import type { WidgetAuth } from "@radarboard/widget-engine/widgets/registry";
 import { WIDGET_REGISTRY } from "@radarboard/widget-engine/widgets/registry";
+import { cn } from "@radarboard/utils/cn";
 import { Check, Copy, ExternalLink } from "lucide-react";
 import {
   type Dispatch,
@@ -14,7 +15,8 @@ import {
   useState,
 } from "react";
 import { normalizeOAuthOrigin } from "@/lib/auth/oauth-redirect";
-import { handleExternalLinkClick } from "@/lib/system/ui/external-url";
+import { isTauri } from "@/lib/platform";
+import { handleExternalLinkClick, openExternalUrl } from "@/lib/system/ui/external-url";
 import { CredentialFields } from "../credential-fields";
 
 function resolveOAuthCardState(
@@ -129,41 +131,51 @@ function InstructionText({ text }: { text: string }) {
 
 // --- Google gws CLI import button ---
 
-function GwsImportButton({ onCredentialChange }: { onCredentialChange: () => void }) {
+type GwsImportResult = { ok: boolean; message: string };
+
+function GwsImportButton({
+  onCredentialChange,
+  onImportSuccess,
+  onResult,
+}: {
+  onCredentialChange: () => Promise<void> | void;
+  onImportSuccess?: () => Promise<void> | void;
+  onResult: (result: GwsImportResult | null) => void;
+}) {
   const [importing, setImporting] = useState(false);
-  const [result, setResult] = useState<string | null>(null);
 
   const handleImport = useCallback(async () => {
     setImporting(true);
-    setResult(null);
+    onResult(null);
     try {
       const res = await fetch(API_ROUTES.authGwsImport, { method: "POST" });
       const data = (await res.json()) as { imported: boolean; error?: string };
-      setResult(data.imported ? "Imported from gws CLI" : (data.error ?? "Import failed"));
-      if (data.imported) onCredentialChange();
+      if (res.ok && data.imported) {
+        await onImportSuccess?.();
+        await onCredentialChange();
+        onResult({ ok: true, message: "Imported from gws CLI. Credentials are ready." });
+        return;
+      }
+      onResult({ ok: false, message: data.error ?? "Import failed" });
     } catch {
-      setResult("Import failed");
+      onResult({ ok: false, message: "Import failed" });
     } finally {
       setImporting(false);
-      setTimeout(() => setResult(null), 5000);
     }
-  }, [onCredentialChange]);
+  }, [onCredentialChange, onImportSuccess, onResult]);
 
   return (
-    <>
-      <Button
-        type="button"
-        onClick={handleImport}
-        disabled={importing}
-        variant="outline"
-        uppercase={false}
-        fullWidth
-        className="text-dim hover:text-muted-foreground"
-      >
-        {importing ? "Importing..." : "Or import from gws CLI"}
-      </Button>
-      {Boolean(result) && <div className="font-mono text-success text-w-sm">{result}</div>}
-    </>
+    <Button
+      type="button"
+      onClick={handleImport}
+      disabled={importing}
+      variant="outline"
+      uppercase={false}
+      fullWidth
+      className="text-dim hover:text-muted-foreground"
+    >
+      {importing ? "Importing..." : "Or import from gws CLI"}
+    </Button>
   );
 }
 
@@ -174,12 +186,16 @@ function OAuthConnectState({
   service,
   onEditCreds,
   onCredentialChange,
+  onImportSuccess,
+  onImportResult,
   showNextStep,
 }: {
   credKey: string;
   service: WidgetAuth;
   onEditCreds: () => void;
   onCredentialChange: () => void;
+  onImportSuccess?: () => Promise<void> | void;
+  onImportResult: (result: GwsImportResult | null) => void;
   showNextStep?: boolean;
 }) {
   const isGoogle = service.oauth?.provider === "google";
@@ -192,7 +208,16 @@ function OAuthConnectState({
   const handleConnect = useCallback(() => {
     const origin = window.location.origin;
     const scopes = mergedScopes.join(" ");
-    window.location.href = `${origin}/api/auth/${service.oauth?.provider}/redirect?credKey=${encodeURIComponent(credKey)}&scopes=${encodeURIComponent(scopes)}`;
+    const authUrl = `${origin}/api/auth/${service.oauth?.provider}/redirect?credKey=${encodeURIComponent(credKey)}&scopes=${encodeURIComponent(scopes)}`;
+
+    if (isTauri()) {
+      openExternalUrl(authUrl).catch(() => {
+        window.location.href = authUrl;
+      });
+      return;
+    }
+
+    window.location.href = authUrl;
   }, [credKey, mergedScopes, service.oauth?.provider]);
 
   return (
@@ -215,7 +240,13 @@ function OAuthConnectState({
       >
         Connect with {service.name}
       </Button>
-      {isGoogle && <GwsImportButton onCredentialChange={onCredentialChange} />}
+      {isGoogle && (
+        <GwsImportButton
+          onCredentialChange={onCredentialChange}
+          onImportSuccess={onImportSuccess}
+          onResult={onImportResult}
+        />
+      )}
       <Button
         type="button"
         onClick={onEditCreds}
@@ -241,6 +272,8 @@ function OAuthNoCredsForm({
   saving,
   onSave,
   onCredentialChange,
+  onImportSuccess,
+  onImportResult,
 }: {
   credKey: string;
   service: WidgetAuth;
@@ -251,6 +284,8 @@ function OAuthNoCredsForm({
   saving: boolean;
   onSave: () => void;
   onCredentialChange: () => void;
+  onImportSuccess?: () => Promise<void> | void;
+  onImportResult: (result: GwsImportResult | null) => void;
 }) {
   const isGoogle = service.oauth?.provider === "google";
 
@@ -293,7 +328,11 @@ function OAuthNoCredsForm({
       {isGoogle && (
         <>
           <div className="text-center text-dim text-w-sm">or</div>
-          <GwsImportButton onCredentialChange={onCredentialChange} />
+          <GwsImportButton
+            onCredentialChange={onCredentialChange}
+            onImportSuccess={onImportSuccess}
+            onResult={onImportResult}
+          />
         </>
       )}
     </div>
@@ -319,6 +358,49 @@ export function OAuthServiceCard({
   const [saving, setSaving] = useState(false);
   const [clientCredsSaved, setClientCredsSaved] = useState(isConnected);
   const [hasOAuthToken, setHasOAuthToken] = useState(false);
+  const [gwsImportResult, setGwsImportResult] = useState<GwsImportResult | null>(null);
+
+  const applyStoredCredentialValues = useCallback(
+    (storedValues: Record<string, string> | null, overwriteValues: boolean) => {
+      if (!storedValues) {
+        setHasOAuthToken(false);
+        if (!isConnected) {
+          setClientCredsSaved(false);
+        }
+        return;
+      }
+
+      const restoredValues = (service.fields ?? []).reduce<Record<string, string>>(
+        (acc, field) => {
+          const value = storedValues[field.key] ?? "";
+          if (value.trim().length > 0) {
+            acc[field.key] = value;
+          }
+          return acc;
+        },
+        {}
+      );
+
+      if (Object.keys(restoredValues).length > 0) {
+        setValues((current) =>
+          overwriteValues || Object.keys(current).length === 0 ? restoredValues : current
+        );
+        setClientCredsSaved(true);
+      }
+
+      setHasOAuthToken(Boolean(storedValues.token?.trim() || storedValues.refreshToken?.trim()));
+    },
+    [isConnected, service.fields]
+  );
+
+  const reloadCredentialState = useCallback(
+    async (overwriteValues = false) => {
+      const res = await fetch(`${API_ROUTES.credentials}?key=${encodeURIComponent(credKey)}`);
+      const data = (await res.json()) as { values?: Record<string, string> | null };
+      applyStoredCredentialValues(data.values ?? null, overwriteValues);
+    },
+    [applyStoredCredentialValues, credKey]
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -327,26 +409,9 @@ export function OAuthServiceCard({
       try {
         const res = await fetch(`${API_ROUTES.credentials}?key=${encodeURIComponent(credKey)}`);
         const data = (await res.json()) as { values?: Record<string, string> | null };
-        const storedValues = data.values ?? null;
-        if (cancelled || !storedValues) return;
-
-        const restoredValues = (service.fields ?? []).reduce<Record<string, string>>(
-          (acc, field) => {
-            const value = storedValues[field.key] ?? "";
-            if (value.trim().length > 0) {
-              acc[field.key] = value;
-            }
-            return acc;
-          },
-          {}
-        );
-
-        if (Object.keys(restoredValues).length > 0) {
-          setValues((current) => (Object.keys(current).length > 0 ? current : restoredValues));
-          setClientCredsSaved(true);
+        if (!cancelled) {
+          applyStoredCredentialValues(data.values ?? null, false);
         }
-
-        setHasOAuthToken(Boolean(storedValues.token?.trim() || storedValues.refreshToken?.trim()));
       } catch {
         if (!cancelled) {
           setHasOAuthToken(false);
@@ -359,7 +424,13 @@ export function OAuthServiceCard({
     return () => {
       cancelled = true;
     };
-  }, [credKey, service.fields]);
+  }, [applyStoredCredentialValues, credKey]);
+
+  useEffect(() => {
+    if (isConnected) {
+      setClientCredsSaved(true);
+    }
+  }, [isConnected]);
 
   const handleSaveClientCreds = useCallback(async () => {
     setSaving(true);
@@ -416,10 +487,23 @@ export function OAuthServiceCard({
     service.oauth?.normalizeOrigin === true ? normalizeOAuthOrigin(rawOrigin) : rawOrigin;
   const instructions = service.oauth?.setupInstructions?.replaceAll("{origin}", instructionOrigin);
 
-  const cardState = resolveOAuthCardState(hasOAuthToken, clientCredsSaved);
+  const usesHostedBroker = service.oauth?.provider === "google";
+  const cardState = resolveOAuthCardState(hasOAuthToken, clientCredsSaved || usesHostedBroker);
 
   return (
     <div className="space-y-3">
+      {gwsImportResult ? (
+        <div
+          role={gwsImportResult.ok ? "status" : "alert"}
+          className={cn(
+            "py-1 font-mono text-w-sm",
+            gwsImportResult.ok ? "text-success" : "text-destructive"
+          )}
+        >
+          {gwsImportResult.message}
+        </div>
+      ) : null}
+
       {cardState === "connected" && (
         <div className="space-y-2">
           <OAuthConnectState
@@ -427,6 +511,8 @@ export function OAuthServiceCard({
             service={service}
             onEditCreds={handleDisconnect}
             onCredentialChange={onCredentialChange}
+            onImportSuccess={() => reloadCredentialState(true)}
+            onImportResult={setGwsImportResult}
           />
           <Button
             type="button"
@@ -446,7 +532,9 @@ export function OAuthServiceCard({
           service={service}
           onEditCreds={() => setClientCredsSaved(false)}
           onCredentialChange={onCredentialChange}
-          showNextStep
+          onImportSuccess={() => reloadCredentialState(true)}
+          onImportResult={setGwsImportResult}
+          showNextStep={!usesHostedBroker}
         />
       )}
 
@@ -461,6 +549,8 @@ export function OAuthServiceCard({
           saving={saving}
           onSave={handleSaveClientCreds}
           onCredentialChange={onCredentialChange}
+          onImportSuccess={() => reloadCredentialState(true)}
+          onImportResult={setGwsImportResult}
         />
       )}
     </div>

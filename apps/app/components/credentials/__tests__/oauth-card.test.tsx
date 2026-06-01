@@ -28,6 +28,22 @@ const githubService = {
   },
 };
 
+const googleService = {
+  name: "Google Search Console",
+  type: "oauth",
+  docsUrl: "https://console.cloud.google.com/apis/credentials",
+  fields: [
+    { key: "clientId", label: "Client ID", type: "text" as const },
+    { key: "clientSecret", label: "Client Secret", type: "password" as const },
+  ],
+  oauth: {
+    provider: "google",
+    scopes: ["https://www.googleapis.com/auth/webmasters.readonly"],
+    setupInstructions:
+      "Create OAuth credentials in Google Cloud Console. Set the callback URL to:\n{origin}/api/auth/google/callback",
+  },
+};
+
 describe("OAuthServiceCard", () => {
   beforeEach(() => {
     copyTextMock.mockReset();
@@ -145,5 +161,71 @@ describe("OAuthServiceCard", () => {
     await waitFor(() => {
       expect(copyTextMock).toHaveBeenCalledWith(origin);
     });
+  });
+
+  it("refreshes the card state after importing Google credentials from gws CLI", async () => {
+    const onCredentialChange = vi.fn();
+    fetchMock
+      .mockResolvedValueOnce({
+        json: async () => ({ values: null }),
+        ok: true,
+      } as Response)
+      .mockResolvedValueOnce({
+        json: async () => ({ imported: true }),
+        ok: true,
+      } as Response)
+      .mockResolvedValueOnce({
+        json: async () => ({
+          values: {
+            clientId: "google-client-id",
+            clientSecret: "google-client-secret",
+            refreshToken: "google-refresh-token",
+          },
+        }),
+        ok: true,
+      } as Response);
+
+    render(
+      <OAuthServiceCard
+        credKey="google-search-console"
+        service={googleService}
+        isConnected={false}
+        onCredentialChange={onCredentialChange}
+      />
+    );
+
+    fireEvent.click(await screen.findByRole("button", { name: "Or import from gws CLI" }));
+
+    expect(
+      await screen.findByText("Imported from gws CLI. Credentials are ready.")
+    ).toBeInTheDocument();
+    expect(onCredentialChange).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("button", { name: "Connect with Google Search Console" }));
+    expect(screen.queryByRole("button", { name: "Save & Continue" })).not.toBeInTheDocument();
+  });
+
+  it("keeps gws CLI import errors visible", async () => {
+    fetchMock
+      .mockResolvedValueOnce({
+        json: async () => ({ values: null }),
+        ok: true,
+      } as Response)
+      .mockResolvedValueOnce({
+        json: async () => ({ imported: false, error: "gws CLI not authenticated" }),
+        ok: false,
+      } as Response);
+
+    render(
+      <OAuthServiceCard
+        credKey="google-search-console"
+        service={googleService}
+        isConnected={false}
+        onCredentialChange={vi.fn()}
+      />
+    );
+
+    fireEvent.click(await screen.findByRole("button", { name: "Or import from gws CLI" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("gws CLI not authenticated");
   });
 });
