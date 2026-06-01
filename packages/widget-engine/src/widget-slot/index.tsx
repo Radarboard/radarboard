@@ -3,10 +3,12 @@
 import type { DraggableAttributes, DraggableSyntheticListeners } from "@dnd-kit/core";
 import { useDraggable, useDroppable } from "@dnd-kit/core";
 import { useDashboard } from "@radarboard/hooks/use-dashboard";
+import { ALL_PROJECTS_SLUG } from "@radarboard/types/dashboard";
 import { ConfirmationDialog, DialogDescription } from "@radarboard/ui/app-dialog";
 import { Button } from "@radarboard/ui/button";
 import { ErrorBoundary } from "@radarboard/ui/error-boundary";
 import { cn } from "@radarboard/utils/cn";
+import { canPlaceWidgetInScope, type DashboardScope } from "@radarboard/widget-sdk/dashboard-scope";
 import { emitWidgetDebugEvent } from "@radarboard/widget-sdk/debug-events";
 import {
   extractInstanceOverrides,
@@ -105,6 +107,10 @@ export function WidgetSlot({
   } = useDashboard();
 
   const widgetId = widgetLayout[cellId] ?? null;
+  const dashboardScope: DashboardScope =
+    activeProjectSlug === null || activeProjectSlug === ALL_PROJECTS_SLUG
+      ? "all-projects"
+      : "project";
 
   const { setNodeRef: setDropRef, isOver } = useDroppable({
     id: `cell-${cellId}`,
@@ -170,7 +176,9 @@ export function WidgetSlot({
     setSlotUi((current) => ({ ...current, removeDialogOpen: false }));
   }, [cellId, updateWidgetLayout, widgetLayout]);
 
-  const descriptor = widgetId ? (WIDGET_REGISTRY.get(widgetId) ?? null) : null;
+  const rawDescriptor = widgetId ? (WIDGET_REGISTRY.get(widgetId) ?? null) : null;
+  const descriptor =
+    rawDescriptor && canPlaceWidgetInScope(rawDescriptor, dashboardScope) ? rawDescriptor : null;
   const descriptorId = descriptor?.id ?? null;
   const handleManualRefetch = useCallback(async () => {
     if (!slotUi.refetch || !descriptorId) return;
@@ -186,25 +194,7 @@ export function WidgetSlot({
     }
   }, [activeProjectSlug, cellId, descriptorId, slotUi.refetch]);
 
-  if (!widgetId) {
-    return (
-      <EmptySlot
-        setDropRef={setDropRef}
-        style={style}
-        className={className}
-        isEditMode={isEditMode}
-        isOver={isOver}
-        pickerOpen={slotUi.pickerOpen}
-        setPickerOpen={(pickerOpen) => setSlotUi((current) => ({ ...current, pickerOpen }))}
-        widgetLayout={widgetLayout}
-        onSelect={handlePickWidget}
-        suggestedWidgetId={suggestedWidgetId}
-        onConnectService={onConnectService}
-      />
-    );
-  }
-
-  if (!descriptor) {
+  if (widgetId && !rawDescriptor) {
     return (
       <div
         ref={setDropRef}
@@ -219,7 +209,26 @@ export function WidgetSlot({
     );
   }
 
-  const instanceConfig = widgetConfigs[widgetId] ?? {};
+  if (!descriptor) {
+    return (
+      <EmptySlot
+        setDropRef={setDropRef}
+        style={style}
+        className={className}
+        isEditMode={isEditMode}
+        isOver={isOver}
+        pickerOpen={slotUi.pickerOpen}
+        setPickerOpen={(pickerOpen) => setSlotUi((current) => ({ ...current, pickerOpen }))}
+        widgetLayout={{ ...widgetLayout, [cellId]: null }}
+        dashboardScope={dashboardScope}
+        onSelect={handlePickWidget}
+        suggestedWidgetId={suggestedWidgetId}
+        onConnectService={onConnectService}
+      />
+    );
+  }
+
+  const instanceConfig = widgetConfigs[descriptor.id] ?? {};
   const baseConfig = resolveVariantConfig(descriptor, instanceConfig);
   const mergedConfig = {
     ...(baseConfig as Record<string, unknown>),
@@ -295,6 +304,7 @@ function EmptySlot({
   pickerOpen,
   setPickerOpen,
   widgetLayout,
+  dashboardScope,
   onSelect,
   suggestedWidgetId,
   onConnectService,
@@ -307,11 +317,16 @@ function EmptySlot({
   pickerOpen: boolean;
   setPickerOpen: (open: boolean) => void;
   widgetLayout: Record<string, string | null>;
+  dashboardScope: DashboardScope;
   onSelect: (widgetId: string) => void;
   suggestedWidgetId?: string | null;
   onConnectService?: (serviceId: string) => void;
 }) {
-  const suggestedDescriptor = suggestedWidgetId ? WIDGET_REGISTRY.get(suggestedWidgetId) : null;
+  const rawSuggestedDescriptor = suggestedWidgetId ? WIDGET_REGISTRY.get(suggestedWidgetId) : null;
+  const suggestedDescriptor =
+    rawSuggestedDescriptor && canPlaceWidgetInScope(rawSuggestedDescriptor, dashboardScope)
+      ? rawSuggestedDescriptor
+      : null;
   const missingService =
     suggestedDescriptor && onConnectService
       ? (suggestedDescriptor.requiredIntegrations[0] ?? null)
@@ -367,6 +382,7 @@ function EmptySlot({
         open={pickerOpen}
         onOpenChange={setPickerOpen}
         widgetLayout={widgetLayout}
+        dashboardScope={dashboardScope}
         onSelect={onSelect}
       />
     </div>

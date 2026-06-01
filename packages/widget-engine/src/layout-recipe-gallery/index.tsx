@@ -330,7 +330,7 @@ const layoutRecipes: LayoutRecipeDescriptor[] = [
       { cellId: "cell-12", title: "Stars", subtitle: "Community growth", kind: "chart" },
       { cellId: "cell-13", title: "Commits", subtitle: "Activity stream", kind: "stream" },
       { cellId: "cell-14", title: "PRs", subtitle: "Review queue", kind: "list" },
-      { cellId: "cell-15", title: "Shipping", subtitle: "Release log", kind: "detail" },
+      { cellId: "cell-15", title: "Release Activity", subtitle: "Release log", kind: "detail" },
       { cellId: "cell-16", title: "Bookmarks", subtitle: "Curated links", kind: "grid" },
     ],
   },

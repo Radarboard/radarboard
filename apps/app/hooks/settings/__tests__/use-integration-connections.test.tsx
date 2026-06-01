@@ -8,10 +8,14 @@ const useSWRMock = vi.fn();
 const mutateSWRMock = vi.fn();
 const localMutateMock = vi.fn();
 const fetchMock = vi.fn();
+let dashboardCache: Map<string, unknown>;
 
 vi.mock("swr", () => ({
   default: (...args: unknown[]) => useSWRMock(...args),
-  mutate: (...args: unknown[]) => mutateSWRMock(...args),
+  useSWRConfig: () => ({
+    cache: dashboardCache,
+    mutate: (...args: unknown[]) => mutateSWRMock(...args),
+  }),
 }));
 
 vi.stubGlobal("fetch", fetchMock);
@@ -34,6 +38,11 @@ describe("useIntegrationConnections", () => {
     fetchMock.mockReset();
     localMutateMock.mockResolvedValue(undefined);
     mutateSWRMock.mockResolvedValue(undefined);
+    dashboardCache = new Map([
+      ["/api/integrations/openpanel/data?range=30d", {}],
+      ["/api/analytics/data?range=30d", {}],
+      ["/api/system/integration-connections", {}],
+    ]);
     useSWRMock.mockReturnValue({
       data: { connections: [], providers: [] },
       error: null,
@@ -43,9 +52,17 @@ describe("useIntegrationConnections", () => {
   });
 
   it("revalidates dashboard data after saving a connection", async () => {
-    fetchMock.mockResolvedValue({
-      ok: true,
-      json: async () => ({ success: true }),
+    fetchMock.mockImplementation(async (_url: string, init?: RequestInit) => {
+      if (init?.method === "POST") {
+        return {
+          ok: true,
+          json: async () => ({ success: true }),
+        };
+      }
+      return {
+        ok: true,
+        json: async () => ({ configured: true }),
+      };
     });
 
     const { result } = renderHook(() => useIntegrationConnections());
@@ -55,20 +72,37 @@ describe("useIntegrationConnections", () => {
     });
 
     expect(localMutateMock).toHaveBeenCalledTimes(1);
-    expect(mutateSWRMock).toHaveBeenCalledWith(expect.any(Function), undefined, {
-      revalidate: true,
-    });
-
-    const matcher = mutateSWRMock.mock.calls[0]?.[0] as (key: unknown) => boolean;
-    expect(matcher("/api/integrations/openpanel/data?range=30d")).toBe(true);
-    expect(matcher("/api/analytics/data?range=30d")).toBe(true);
-    expect(matcher("/api/system/integration-connections")).toBe(false);
+    expect(fetchMock).toHaveBeenCalledWith("/api/integrations/openpanel/data?range=30d&refresh=1");
+    expect(fetchMock).toHaveBeenCalledWith("/api/analytics/data?range=30d&refresh=1");
+    expect(mutateSWRMock).toHaveBeenCalledWith(
+      "/api/integrations/openpanel/data?range=30d",
+      { configured: true },
+      { populateCache: true, revalidate: false }
+    );
+    expect(mutateSWRMock).toHaveBeenCalledWith(
+      "/api/analytics/data?range=30d",
+      { configured: true },
+      { populateCache: true, revalidate: false }
+    );
+    expect(mutateSWRMock).not.toHaveBeenCalledWith(
+      "/api/system/integration-connections",
+      expect.anything(),
+      expect.anything()
+    );
   });
 
   it("revalidates dashboard data after deleting a connection", async () => {
-    fetchMock.mockResolvedValue({
-      ok: true,
-      json: async () => ({ success: true }),
+    fetchMock.mockImplementation(async (_url: string, init?: RequestInit) => {
+      if (init?.method === "DELETE") {
+        return {
+          ok: true,
+          json: async () => ({ success: true }),
+        };
+      }
+      return {
+        ok: true,
+        json: async () => ({ configured: true }),
+      };
     });
 
     const { result } = renderHook(() => useIntegrationConnections());
@@ -78,13 +112,22 @@ describe("useIntegrationConnections", () => {
     });
 
     expect(localMutateMock).toHaveBeenCalledTimes(1);
-    expect(mutateSWRMock).toHaveBeenCalledWith(expect.any(Function), undefined, {
-      revalidate: true,
-    });
-
-    const matcher = mutateSWRMock.mock.calls[0]?.[0] as (key: unknown) => boolean;
-    expect(matcher("/api/integrations/openpanel/data?range=30d")).toBe(true);
-    expect(matcher("/api/analytics/data?range=30d")).toBe(true);
-    expect(matcher("/api/system/integration-connections")).toBe(false);
+    expect(fetchMock).toHaveBeenCalledWith("/api/integrations/openpanel/data?range=30d&refresh=1");
+    expect(fetchMock).toHaveBeenCalledWith("/api/analytics/data?range=30d&refresh=1");
+    expect(mutateSWRMock).toHaveBeenCalledWith(
+      "/api/integrations/openpanel/data?range=30d",
+      { configured: true },
+      { populateCache: true, revalidate: false }
+    );
+    expect(mutateSWRMock).toHaveBeenCalledWith(
+      "/api/analytics/data?range=30d",
+      { configured: true },
+      { populateCache: true, revalidate: false }
+    );
+    expect(mutateSWRMock).not.toHaveBeenCalledWith(
+      "/api/system/integration-connections",
+      expect.anything(),
+      expect.anything()
+    );
   });
 });

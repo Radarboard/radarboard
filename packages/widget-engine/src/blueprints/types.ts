@@ -1,4 +1,5 @@
 import type { LayoutDefinition, UserProfile } from "@radarboard/types/database";
+import type { DashboardScope } from "@radarboard/widget-sdk/dashboard-scope";
 
 /** A single cell-to-widget mapping within a blueprint. */
 export interface BlueprintWidgetSlot {
@@ -41,4 +42,9 @@ export interface ApplyBlueprintResult {
   filledCells: string[];
   /** Blueprint widgets skipped because they're already placed elsewhere. */
   skippedDuplicates: string[];
+}
+
+export interface BlueprintScopeOptions {
+  dashboardScope?: DashboardScope;
+  canPlaceWidget?: (widgetId: string, scope: DashboardScope) => boolean;
 }

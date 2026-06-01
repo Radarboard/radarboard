@@ -22,6 +22,7 @@
     "./section-utils": "./src/section-utils.ts",
     "./composition-catalog": "./src/composition-catalog/index.ts",
     "./debug-events": "./src/debug-events.ts",
+    "./dashboard-scope": "./src/dashboard-scope.ts",
     "./utils/get-by-path": "./src/utils/get-by-path.ts",
     "./utils/selection": "./src/utils/selection.ts",
     "./utils/evaluate-condition": "./src/utils/evaluate-condition.ts",

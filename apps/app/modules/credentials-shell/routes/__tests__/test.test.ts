@@ -117,6 +117,55 @@ describe("handleTestCredentials", () => {
     });
   });
 
+  describe("raindrop", () => {
+    it("normalizes a pasted bearer header value before testing", async () => {
+      fetchMock.mockResolvedValue({ ok: true, status: 200 });
+
+      const res = await handleTestCredentials(
+        makeRequest({
+          key: "raindrop",
+          values: { accessToken: " Bearer rd_test_token " },
+        })
+      );
+      const body = await res.json();
+      const requestInit = fetchMock.mock.calls[0]?.[1] as { headers: Headers };
+
+      expect(body.ok).toBe(true);
+      expect(requestInit.headers.get("Authorization")).toBe("Bearer rd_test_token");
+    });
+
+    it("returns a token-specific hint when Raindrop returns 401", async () => {
+      fetchMock.mockResolvedValue({ ok: false, status: 401 });
+
+      const res = await handleTestCredentials(
+        makeRequest({
+          key: "raindrop",
+          values: { accessToken: "bad-token" },
+        })
+      );
+      const body = await res.json();
+
+      expect(body.ok).toBe(false);
+      expect(body.error).toContain("Raindrop returned 401");
+      expect(body.error).toContain("Test token");
+      expect(body.error).toContain("expired OAuth tokens");
+    });
+
+    it("rejects an empty Raindrop token without calling the API", async () => {
+      const res = await handleTestCredentials(
+        makeRequest({
+          key: "raindrop",
+          values: { accessToken: " " },
+        })
+      );
+      const body = await res.json();
+
+      expect(body.ok).toBe(false);
+      expect(body.error).toContain("access token");
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+  });
+
   describe("revenuecat", () => {
     it("checks documented overview and chart endpoints", async () => {
       fetchMock.mockResolvedValue({ ok: true, status: 200 });

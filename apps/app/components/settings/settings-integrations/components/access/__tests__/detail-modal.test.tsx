@@ -23,7 +23,7 @@ vi.mock("nuqs", () => ({
 }));
 
 vi.mock("@radarboard/ui/app-dialog", () => ({
-  APP_DIALOG_SIZES: ["sm", "content", "md", "lg"],
+  APP_DIALOG_SIZES: ["sm", "md", "lg", "xl"],
   Dialog: ({ children, open }: { children: ReactNode; open: boolean }) =>
     open ? <div>{children}</div> : null,
   DialogBody: ({ children }: { children: ReactNode }) => <div>{children}</div>,
@@ -32,7 +32,7 @@ vi.mock("@radarboard/ui/app-dialog", () => ({
     size,
   }: {
     children: ReactNode;
-    size: "sm" | "content" | "md" | "lg";
+    size: "sm" | "content" | "md" | "lg" | "xl";
   }) => (
     <div data-size={size} data-testid="dialog-content">
       {children}

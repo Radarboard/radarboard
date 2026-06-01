@@ -192,6 +192,18 @@ const PLATFORM_TYPE_LABEL: Record<string, string> = Object.fromEntries(
   PLATFORM_TYPES.map(({ value, label }) => [value, label])
 );
 
+type ProjectSetupIntent = string | null;
+
+const SPONSORSHIP_SETUP_INTENT = "sponsorship-project";
+const SPONSORSHIP_RECOMMENDED_INTEGRATIONS = new Set<keyof PlatformIntegrations>([
+  "openCollective",
+  "github",
+]);
+
+function isSponsorshipSetupIntent(intent: ProjectSetupIntent): boolean {
+  return intent === SPONSORSHIP_SETUP_INTENT;
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -879,6 +891,7 @@ function PlatformIntegrationPickerDialog({
   onOpenChange,
   availableKeys,
   platformName,
+  projectSetupIntent,
   onAttachIntegration,
   onOpenIntegrationSettings,
 }: {
@@ -886,6 +899,7 @@ function PlatformIntegrationPickerDialog({
   onOpenChange: (open: boolean) => void;
   availableKeys: Set<keyof PlatformIntegrations>;
   platformName: string;
+  projectSetupIntent?: ProjectSetupIntent;
   onAttachIntegration: (key: keyof PlatformIntegrations) => void;
   onOpenIntegrationSettings?: (serviceId: string) => void;
 }) {
@@ -893,6 +907,7 @@ function PlatformIntegrationPickerDialog({
   const { connectedKeys } = useCredentials();
   const { servers: mcpServers } = useMcpServers();
   const { connections } = useIntegrationConnections();
+  const isSponsorshipSetup = isSponsorshipSetupIntent(projectSetupIntent ?? null);
 
   const services = useMemo(() => {
     return collectServices()
@@ -903,6 +918,14 @@ function PlatformIntegrationPickerDialog({
           availableKeys.has(service.integrationKey)
       )
       .sort((left, right) => {
+        if (isSponsorshipSetup) {
+          const leftRecommended = SPONSORSHIP_RECOMMENDED_INTEGRATIONS.has(left.integrationKey);
+          const rightRecommended = SPONSORSHIP_RECOMMENDED_INTEGRATIONS.has(right.integrationKey);
+          if (leftRecommended !== rightRecommended) {
+            return leftRecommended ? -1 : 1;
+          }
+        }
+
         const leftConfigured =
           getServiceApiConfigured(left, connections, connectedKeys) ||
           getServiceMcpReady(left, connections, mcpServers);
@@ -922,7 +945,7 @@ function PlatformIntegrationPickerDialog({
 
         return (left.auth.name ?? left.credKey).localeCompare(right.auth.name ?? right.credKey);
       });
-  }, [availableKeys, connectedKeys, connections, mcpServers]);
+  }, [availableKeys, connectedKeys, connections, isSponsorshipSetup, mcpServers]);
 
   const filteredServices = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
@@ -1000,6 +1023,9 @@ function PlatformIntegrationPickerDialog({
                   service.homepage ?? service.auth.docsUrl,
                   32
                 );
+                const isRecommended =
+                  isSponsorshipSetup &&
+                  SPONSORSHIP_RECOMMENDED_INTEGRATIONS.has(service.integrationKey);
 
                 return (
                   <Button
@@ -1041,6 +1067,11 @@ function PlatformIntegrationPickerDialog({
                           >
                             {isConfigured ? "Configured" : "Not configured"}
                           </Badge>
+                          {isRecommended ? (
+                            <Badge variant="accent" size="xs" className="shrink-0">
+                              Recommended
+                            </Badge>
+                          ) : null}
                         </div>
                         {service.description ? (
                           <div className="mt-1 line-clamp-2 text-foreground-secondary text-w-sm leading-relaxed">
@@ -1073,6 +1104,7 @@ export function PlatformSection({
   allProjects,
   isUserPlatform,
   onDeletePlatform,
+  projectSetupIntent,
   onOpenIntegrationSettings,
   getIntegration,
   updateIntegration,
@@ -1082,6 +1114,7 @@ export function PlatformSection({
   allProjects: Project[];
   isUserPlatform: boolean;
   onDeletePlatform: (() => void) | undefined;
+  projectSetupIntent?: ProjectSetupIntent;
   onOpenIntegrationSettings?: (serviceId: string) => void;
   getIntegration: (projectSlug: string, platformId: string, key: string) => unknown;
   updateIntegration: (projectSlug: string, platformId: string, key: string, value: unknown) => void;
@@ -1199,6 +1232,7 @@ export function PlatformSection({
               onOpenChange={setShowAddIntegrationDialog}
               availableKeys={new Set(availableToAdd)}
               platformName={displayName}
+              projectSetupIntent={projectSetupIntent}
               onAttachIntegration={handleAttachIntegration}
               onOpenIntegrationSettings={onOpenIntegrationSettings}
             />
@@ -1227,7 +1261,9 @@ export function PlatformSection({
       <div className="space-y-4 border-border border-t bg-background/50 px-3 py-3">
         {visibleKeys.length === 0 && (
           <p className="font-mono text-dim text-w-sm">
-            No integrations configured for this platform.
+            {isSponsorshipSetupIntent(projectSetupIntent ?? null)
+              ? "Use Add integration to attach Open Collective or GitHub to this platform."
+              : "No integrations configured for this platform."}
           </p>
         )}
         {visibleKeys.map((integrationKey) => (
@@ -2040,6 +2076,7 @@ function PlatformsTabContent({
   allPlatforms,
   userPlatformIdSet,
   showAddPlatform,
+  projectSetupIntent,
   onShowAddPlatformChange,
   onAddPlatform,
   onDeletePlatform,
@@ -2053,6 +2090,7 @@ function PlatformsTabContent({
   allPlatforms: Platform[];
   userPlatformIdSet: Set<string>;
   showAddPlatform: boolean;
+  projectSetupIntent?: ProjectSetupIntent;
   onShowAddPlatformChange: (show: boolean) => void;
   onAddPlatform: (name: string, type: PlatformType) => void;
   onDeletePlatform: (platformId: string) => void;
@@ -2060,6 +2098,8 @@ function PlatformsTabContent({
   getIntegration: (projectSlug: string, platformId: string, key: string) => unknown;
   updateIntegration: (projectSlug: string, platformId: string, key: string, value: unknown) => void;
 }) {
+  const isSponsorshipSetup = isSponsorshipSetupIntent(projectSetupIntent ?? null);
+
   return (
     <div className="overflow-x-hidden px-5 py-4">
       <div className="mb-3 flex items-center gap-2">
@@ -2078,6 +2118,8 @@ function PlatformsTabContent({
           Add Platform
         </Button>
       </div>
+
+      {isSponsorshipSetup ? <SponsorshipProjectSetupBanner /> : null}
 
       <div className="space-y-1.5">
         {showAddPlatform ? (
@@ -2099,6 +2141,7 @@ function PlatformsTabContent({
             onDeletePlatform={
               userPlatformIdSet.has(platform.id) ? () => onDeletePlatform(platform.id) : undefined
             }
+            projectSetupIntent={projectSetupIntent}
             onOpenIntegrationSettings={onOpenIntegrationSettings}
             getIntegration={getIntegration}
             updateIntegration={updateIntegration}
@@ -2107,10 +2150,26 @@ function PlatformsTabContent({
 
         {allPlatforms.length === 0 && !showAddPlatform ? (
           <p className="font-mono text-dim text-w-sm">
-            No platforms yet. Use "Add Platform" above.
+            {isSponsorshipSetup
+              ? "Add a platform first, then attach Open Collective or GitHub."
+              : 'No platforms yet. Use "Add Platform" above.'}
           </p>
         ) : null}
       </div>
+    </div>
+  );
+}
+
+function SponsorshipProjectSetupBanner() {
+  return (
+    <div className="mb-3 rounded-item border border-accent/20 bg-accent/5 px-3 py-2">
+      <div className="font-mono text-accent text-w-sm uppercase tracking-wider">
+        Finish Sponsorship Setup
+      </div>
+      <p className="mt-1 font-mono text-muted-foreground text-w-sm leading-relaxed">
+        Sponsorship can use an Open Collective slug or a GitHub owner/repo. Use Add integration on
+        the right platform to attach one of those sources.
+      </p>
     </div>
   );
 }
@@ -2125,6 +2184,7 @@ export function ProjectDetailPanel({
   integrations,
   isUserCreated,
   onDeleteProject,
+  projectSetupIntent,
   onOpenIntegrationSettings,
   getIntegration,
   updateIntegration,
@@ -2134,6 +2194,7 @@ export function ProjectDetailPanel({
   integrations: ProjectIntegrationsMap;
   isUserCreated: boolean;
   onDeleteProject: () => void;
+  projectSetupIntent?: ProjectSetupIntent;
   onOpenIntegrationSettings?: (serviceId: string) => void;
   getIntegration: (projectSlug: string, platformId: string, key: string) => unknown;
   updateIntegration: (projectSlug: string, platformId: string, key: string, value: unknown) => void;
@@ -2252,6 +2313,7 @@ export function ProjectDetailPanel({
             allPlatforms={allPlatforms}
             userPlatformIdSet={userPlatformIdSet}
             showAddPlatform={showAddPlatform}
+            projectSetupIntent={projectSetupIntent}
             onShowAddPlatformChange={setShowAddPlatform}
             onAddPlatform={handleAddPlatform}
             onDeletePlatform={handleDeletePlatform}

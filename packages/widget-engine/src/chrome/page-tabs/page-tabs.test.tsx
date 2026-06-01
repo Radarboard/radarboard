@@ -52,4 +52,39 @@ describe("PageTabs", () => {
 
     expect(onAddPage).toHaveBeenCalledOnce();
   });
+
+  it("renders delete actions in edit mode and calls the delete handler", () => {
+    const onDeletePage = vi.fn();
+    const onSelect = vi.fn();
+
+    render(
+      createElement(PageTabs, {
+        pages: PAGES,
+        activeSlug: "overview",
+        isEditMode: true,
+        onSelect,
+        onDeletePage,
+      })
+    );
+
+    expect(screen.queryByRole("button", { name: "Delete Overview" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Delete Revenue" }));
+
+    expect(onDeletePage).toHaveBeenCalledWith("revenue");
+    expect(onSelect).not.toHaveBeenCalled();
+  });
+
+  it("does not render delete actions for a single page", () => {
+    render(
+      createElement(PageTabs, {
+        pages: [PAGES[0]],
+        activeSlug: "overview",
+        isEditMode: true,
+        onSelect: vi.fn(),
+        onDeletePage: vi.fn(),
+      })
+    );
+
+    expect(screen.queryByRole("button", { name: "Delete Overview" })).toBeNull();
+  });
 });

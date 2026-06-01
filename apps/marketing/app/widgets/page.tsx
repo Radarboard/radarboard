@@ -15,7 +15,7 @@ const starterBoards = [
   {
     title: "Maintainer board",
     description: "Releases, stars, sponsors, packages, and issues.",
-    widgets: ["Shipping", "GitHub Stars", "Sponsorship"],
+    widgets: ["Release Activity", "GitHub Stars", "Sponsorship"],
   },
   {
     title: "Creator board",
@@ -25,7 +25,7 @@ const starterBoards = [
   {
     title: "Launch board",
     description: "Revenue, deploys, roadmap, and service health.",
-    widgets: ["Revenue", "Shipping", "Service Monitor"],
+    widgets: ["Revenue", "Release Activity", "Service Monitor"],
   },
 ] as const;
 

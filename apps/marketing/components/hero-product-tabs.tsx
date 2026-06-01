@@ -53,7 +53,7 @@ function TabVisual({ tab }: { tab: Tab }) {
     return (
       <Image
         src="/media/radarboard-dashboard.png"
-        alt="Radarboard dashboard showing revenue, shipping, growth, and health widgets"
+        alt="Radarboard dashboard showing revenue, release activity, growth, and health widgets"
         width={1600}
         height={1000}
         priority

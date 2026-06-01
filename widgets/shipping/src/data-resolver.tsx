@@ -31,20 +31,30 @@ function genericStatusColor(value: string): string {
 
 function ShippingResolver({ projectSlug, onState }: DataSourceResolverProps) {
   const { timeRange } = useDashboard();
-  const { items, configured, fetchedAt, loading, error, refetch } = useShipping(
-    projectSlug,
-    timeRange
-  );
+  const {
+    items,
+    configured,
+    fetchedAt,
+    loading,
+    error,
+    setupMessage,
+    ctaLabel,
+    ctaTarget,
+    refetch,
+  } = useShipping(projectSlug, timeRange);
 
   const resolvedData = useMemo(
     () => ({
       configured,
+      setupMessage: setupMessage ?? "Connect GitHub, Linear, or Vercel to show release activity.",
+      ctaLabel: ctaLabel ?? "Choose integration",
+      ctaTarget: ctaTarget ?? "intent:release-activity",
       items: items.map((item) => ({
         ...item,
         sourceColor: genericStatusColor(item.source),
       })),
     }),
-    [configured, items]
+    [configured, ctaLabel, ctaTarget, items, setupMessage]
   );
 
   useEffect(() => {

@@ -96,7 +96,7 @@ const SettingsPostSchema = z
           layout: z.record(z.string(), z.string().nullable()).optional(),
           configs: z.record(z.string(), z.record(z.string(), z.unknown())),
           modalPrefs: z
-            .record(z.string(), z.record(z.string(), z.enum(["sm", "content", "md", "lg"])))
+            .record(z.string(), z.record(z.string(), z.enum(["sm", "content", "md", "lg", "xl"])))
             .optional(),
           layouts: z.array(z.unknown()).optional(),
           projectLayouts: z.record(z.string(), projectLayoutConfigSchema).optional(),

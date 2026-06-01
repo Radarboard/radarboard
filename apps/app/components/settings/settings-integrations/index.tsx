@@ -39,10 +39,17 @@ import {
 
 const INTEGRATION_INTENT_SERVICE_IDS: Record<string, string[]> = {
   analytics: ["openpanel", "umami"],
+  "release-activity": ["github", "linear", "vercel"],
 };
 
 const INTEGRATION_INTENT_LABELS: Record<string, string> = {
   analytics: "Analytics",
+  "release-activity": "Release Activity",
+};
+
+const INTEGRATION_INTENT_PROVIDER_TITLES: Record<string, string> = {
+  analytics: "Choose an Analytics provider",
+  "release-activity": "Choose a Release Activity provider",
 };
 
 function ServiceGrid({
@@ -273,7 +280,10 @@ export function SettingsIntegrations({
       >
         {integrationIntentParam && activeIntentServiceIds ? (
           <SettingsCardSection
-            title={`Choose an ${INTEGRATION_INTENT_LABELS[integrationIntentParam] ?? integrationIntentParam} provider`}
+            title={
+              INTEGRATION_INTENT_PROVIDER_TITLES[integrationIntentParam] ??
+              `Choose an ${INTEGRATION_INTENT_LABELS[integrationIntentParam] ?? integrationIntentParam} provider`
+            }
             badge={
               <Button
                 type="button"

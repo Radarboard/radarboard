@@ -3,6 +3,10 @@
 import { Button } from "@radarboard/ui/button";
 import { Input } from "@radarboard/ui/input";
 import { cn } from "@radarboard/utils/cn";
+import {
+  type DashboardScope,
+  filterWidgetsForDashboardScope,
+} from "@radarboard/widget-sdk/dashboard-scope";
 import type { GridSlot } from "@radarboard/widget-sdk/widget-types";
 import { Search } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -15,6 +19,8 @@ interface WidgetPickerPopoverProps {
   onOpenChange: (open: boolean) => void;
   /** Current widget layout — used to determine which widgets are already placed. */
   widgetLayout: Record<GridSlot, string | null>;
+  /** Target dashboard scope for hiding widgets that cannot run in the current layer. */
+  dashboardScope: DashboardScope;
   /** Called when the user selects a widget. */
   onSelect: (widgetId: string) => void;
 }
@@ -23,6 +29,7 @@ export function WidgetPickerPopover({
   open,
   onOpenChange,
   widgetLayout,
+  dashboardScope,
   onSelect,
 }: WidgetPickerPopoverProps) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -72,7 +79,8 @@ export function WidgetPickerPopover({
 
   // Get available (unplaced) widgets
   const allWidgets = Array.from(WIDGET_REGISTRY.values());
-  const availableWidgets = allWidgets.filter((w) => !placedWidgetIds.has(w.id));
+  const scopedWidgets = filterWidgetsForDashboardScope(allWidgets, dashboardScope);
+  const availableWidgets = scopedWidgets.filter((w) => !placedWidgetIds.has(w.id));
 
   // Filter by search query
   const filteredWidgets = searchQuery.trim()
@@ -122,7 +130,7 @@ export function WidgetPickerPopover({
           <div className="py-6 text-center">
             <p className="font-mono text-dim text-w-sm">
               {availableWidgets.length === 0
-                ? "All widgets are placed"
+                ? "All widgets for this layer are placed"
                 : "No widgets match your search"}
             </p>
           </div>

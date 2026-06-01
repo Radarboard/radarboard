@@ -52,7 +52,7 @@ describe("ShippingLog", () => {
 
     expect(screen.getByText("goshuin-atlas")).toBeTruthy();
     expect(screen.getAllByText("1h ago").length).toBeGreaterThan(0);
-    expect(screen.getByText("Shipping Detail")).toBeTruthy();
+    expect(screen.getByText("Release Activity Detail")).toBeTruthy();
     expect(screen.getAllByText("Ship template detail selection").length).toBeGreaterThan(1);
   });
 });

@@ -33,6 +33,14 @@ export {
   RECIPE_CATALOG,
   SECTION_PRIMITIVE_CATALOG,
 } from "./composition-catalog";
+// Dashboard scope helpers
+export {
+  canPlaceWidgetInScope,
+  DASHBOARD_SCOPES,
+  type DashboardScope,
+  filterWidgetsForDashboardScope,
+  getWidgetSupportedScopes,
+} from "./dashboard-scope";
 // Data source registry
 export {
   DATA_SOURCE_REGISTRY,

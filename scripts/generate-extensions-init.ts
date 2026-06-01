@@ -11,7 +11,7 @@
  */
 
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import { basename, dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -133,6 +133,48 @@ function hasExport(pkg: string, subpath: string): boolean {
   return false;
 }
 
+function resolveDevExtensionImportPath(entryPath: string): string {
+  const absolutePath = resolve(ROOT, entryPath);
+  const packageJsonPath = join(absolutePath, "package.json");
+  if (!existsSync(packageJsonPath)) return absolutePath;
+
+  const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8")) as {
+    exports?: Record<string, string>;
+    main?: string;
+  };
+  const entry = packageJson.exports?.["."] ?? packageJson.main ?? "src/index.ts";
+  return join(absolutePath, entry).replace(/\.(ts|tsx|js|jsx)$/, "");
+}
+
+function toImportSpecifier(fromDir: string, targetPath: string): string {
+  const specifier = relative(fromDir, targetPath).replaceAll("\\", "/");
+  return specifier.startsWith(".") ? specifier : `./${specifier}`;
+}
+
+function getDevExtensionDescriptorExportName(entry: DevExtensionEntry): string {
+  const absolutePath = resolve(ROOT, entry.path);
+  const packageJsonPath = join(absolutePath, "package.json");
+  let id = basename(absolutePath);
+
+  if (existsSync(packageJsonPath)) {
+    const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8")) as {
+      name?: string;
+    };
+    const packageName = packageJson.name ?? "";
+    const prefix =
+      entry.type === "integration"
+        ? "@radarboard/integration-"
+        : entry.type === "plugin"
+          ? "@radarboard/plugin-"
+          : "@radarboard/widget-";
+    if (packageName.startsWith(prefix)) {
+      id = extractId(packageName, prefix);
+    }
+  }
+
+  return `${toCamelCase(id)}Descriptor`;
+}
+
 // ---------------------------------------------------------------------------
 // Generate integrations-init.ts
 // ---------------------------------------------------------------------------
@@ -158,7 +200,6 @@ function generateIntegrationsInit(config: RadarboardConfig): string {
   lines.push(
     `import { ${registryImports.join(", ")} } from "@radarboard/integration-sdk/registry";`
   );
-
   // Imports for virtual integrations (data sources only)
   for (const pkg of config.virtualIntegrations) {
     const id = extractId(pkg, "@radarboard/integration-");
@@ -166,6 +207,14 @@ function generateIntegrationsInit(config: RadarboardConfig): string {
     lines.push(`import { ${camel}DataSources } from "${pkg}/data-sources";`);
   }
 
+  if ((config.devExtensions ?? []).some((entry) => entry.type === "integration")) {
+    lines.push(`import { initializeDevExtensions } from "./dev-extensions-init";`);
+  }
+  lines.push(
+    `import { googleSearchConsoleDataSources } from "./server/google-search-console-data-sources";`
+  );
+  lines.push(`import { openPanelDataSources } from "./server/openpanel-data-sources";`);
+  lines.push("");
   lines.push("export function initializeIntegrations(): void {");
 
   // Register standard integrations
@@ -177,12 +226,20 @@ function generateIntegrationsInit(config: RadarboardConfig): string {
 
   lines.push("");
   lines.push("  // Virtual integrations — composite data sources with no IntegrationDescriptor.");
+  lines.push(`  registerDataSources("google-search-console", googleSearchConsoleDataSources);`);
+  lines.push(`  registerDataSources("openpanel", openPanelDataSources);`);
 
   // Register virtual integrations
   for (const pkg of config.virtualIntegrations) {
     const id = extractId(pkg, "@radarboard/integration-");
     const camel = toCamelCase(id);
     lines.push(`  registerDataSources("${id}", ${camel}DataSources);`);
+  }
+
+  if ((config.devExtensions ?? []).some((entry) => entry.type === "integration")) {
+    lines.push("");
+    lines.push("  // Local development integrations are explicit opt-ins from .radarboard/dev-extensions.json.");
+    lines.push("  initializeDevExtensions();");
   }
 
   lines.push("}");
@@ -556,25 +613,12 @@ function generateDevExtensionsInit(config: RadarboardConfig): string {
   const lines: string[] = [HEADER];
   lines.push("/**");
   lines.push(" * Registers local dev extensions from filesystem paths.");
-  lines.push(" * Only loaded when NODE_ENV !== 'production'.");
-  lines.push(" * Configure in radarboard.config.ts → devExtensions.");
+  lines.push(" * Configure with explicit local opt-ins in .radarboard/dev-extensions.json.");
   lines.push(" */\n");
 
   const integrations = devExts.filter((e) => e.type === "integration");
   const plugins = devExts.filter((e) => e.type === "plugin");
   const widgets = devExts.filter((e) => e.type === "widget");
-
-  // Generate import aliases from paths
-  let idx = 0;
-  const aliases: Array<{ alias: string; entry: DevExtensionEntry }> = [];
-
-  for (const entry of devExts) {
-    const alias = `devExt${idx++}`;
-    aliases.push({ alias, entry });
-    // Use relative path from apps/app/lib/ to the dev extension
-    const relativePath = resolve(ROOT, entry.path);
-    lines.push(`import { default as ${alias}Module } from "${relativePath}";`);
-  }
 
   // Registry imports
   if (integrations.length > 0) {
@@ -587,13 +631,22 @@ function generateDevExtensionsInit(config: RadarboardConfig): string {
     lines.push(`import { registerWidget } from "@radarboard/widget-engine/widgets/registry";`);
   }
 
+  // Generate import aliases from paths.
+  let idx = 0;
+  const aliases: Array<{ alias: string; entry: DevExtensionEntry }> = [];
+
+  for (const entry of devExts) {
+    const alias = `devExt${idx++}`;
+    aliases.push({ alias, entry });
+    const exportName = getDevExtensionDescriptorExportName(entry);
+    const importPath = toImportSpecifier(WEB_LIB, resolveDevExtensionImportPath(entry.path));
+    lines.push(`import { ${exportName} as ${alias}Descriptor } from "${importPath}";`);
+  }
+
   lines.push("");
   lines.push("export function initializeDevExtensions(): void {");
-  lines.push('  if (process.env.NODE_ENV === "production") return;\n');
 
-  for (const { alias, entry } of aliases) {
-    // Each dev extension module is expected to have a default export with a descriptor
-    // or a named export matching the pattern: *Descriptor
+  aliases.forEach(({ alias, entry }, index) => {
     const registerFn =
       entry.type === "integration"
         ? "registerIntegration"
@@ -602,15 +655,9 @@ function generateDevExtensionsInit(config: RadarboardConfig): string {
           : "registerWidget";
 
     lines.push(`  // Dev extension: ${entry.path} (${entry.type})`);
-    lines.push(`  const ${alias}Descriptor = ${alias}Module.descriptor ?? ${alias}Module.default ?? Object.values(${alias}Module).find((v: any) => v?.id && v?.name);`);
-    lines.push(`  if (${alias}Descriptor) {`);
-    lines.push(`    console.log("[dev-ext] Registering ${entry.type}: " + ${alias}Descriptor.name);`);
-    lines.push(`    ${registerFn}(${alias}Descriptor);`);
-    lines.push(`  } else {`);
-    lines.push(`    console.warn("[dev-ext] No descriptor found in ${entry.path}");`);
-    lines.push(`  }`);
-    lines.push("");
-  }
+    lines.push(`  ${registerFn}(${alias}Descriptor);`);
+    if (index < aliases.length - 1) lines.push("");
+  });
 
   lines.push("}");
   lines.push("");

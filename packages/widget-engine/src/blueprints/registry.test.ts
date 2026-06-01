@@ -203,4 +203,16 @@ describe("scoreBlueprintFit", () => {
     });
     expect(score).toBe(0);
   });
+
+  it("returns 0 when no blueprint widgets can be placed in the target scope", () => {
+    const bp = getBlueprintById("oss-command-center")!;
+    const score = scoreBlueprintFit(bp, {
+      personas: ["opensource"],
+      connectedIntegrations: [],
+      dashboardScope: "all-projects",
+      canPlaceWidget: () => false,
+    });
+
+    expect(score).toBe(0);
+  });
 });

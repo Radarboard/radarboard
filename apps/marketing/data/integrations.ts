@@ -39,7 +39,7 @@ export const categoryLabels: Record<IntegrationCategory, string> = {
   analytics: "Analytics",
   seo: "SEO",
   monitoring: "Monitoring",
-  shipping: "Shipping & DevOps",
+  shipping: "Release Activity",
   sponsorship: "Sponsorship",
   "app-store": "App Store",
   distribution: "Distribution",
@@ -118,7 +118,7 @@ const MARKETING_DATA: Record<string, Omit<Integration, "slug">> = {
   },
   vercel: {
     name: "Vercel",
-    description: "Deployment tracking with shipping log and deploy history",
+    description: "Deployment tracking with release activity and deploy history",
     category: "shipping",
     domain: "vercel.com",
     url: "https://vercel.com",
@@ -128,7 +128,7 @@ const MARKETING_DATA: Record<string, Omit<Integration, "slug">> = {
   },
   linear: {
     name: "Linear",
-    description: "Issue tracking for ideas, bugs, and shipped features",
+    description: "Issue tracking for ideas, bugs, and released features",
     category: "shipping",
     domain: "linear.app",
     url: "https://linear.app",

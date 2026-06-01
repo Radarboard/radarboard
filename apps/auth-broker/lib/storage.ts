@@ -1,4 +1,4 @@
-import { createClient } from "@libsql/client";
+import { createClient } from "@libsql/client/web";
 import { decrypt, encrypt } from "@/lib/crypto";
 import { getEncryptionKey, getTursoConfig } from "@/lib/env";
 

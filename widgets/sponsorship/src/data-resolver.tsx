@@ -114,12 +114,72 @@ const SPONSORSHIP_NOT_CONFIGURED_STATE = {
   ctaLabel: "Configure sponsorship",
 };
 
+function getProjectRequiredState(projectSlug: string | null) {
+  if (!projectSlug) {
+    return {
+      configured: false,
+      setupMessage:
+        "Select a project to view sponsorship data. Sponsorship currently needs an Open Collective slug or GitHub owner on a project.",
+      ctaLabel: "Open Project Settings",
+      ctaTarget: "intent:sponsorship-project",
+    };
+  }
+
+  return {
+    configured: false,
+    setupMessage:
+      "This project has no sponsorship source. Add an Open Collective slug or GitHub owner in Project Settings.",
+    ctaLabel: "Open Project Settings",
+    ctaTarget: "intent:sponsorship-project",
+  };
+}
+
+function resolveCtaTarget(target: string | null, fallback: string) {
+  if (!target || target.startsWith("/")) return fallback;
+  return target;
+}
+
+function resolveProviderSetupMessage(message: string, providerName: string) {
+  if (message === `Add the ${providerName} integration to enable this data source.`) {
+    return `${providerName} credentials can be connected, but this build does not have a registered ${providerName} data source. Enable the provider integration before this widget can fetch sponsorship data.`;
+  }
+
+  return message;
+}
+
+function getProviderSetupState(
+  openCollective: ReturnType<typeof useOpenCollective>,
+  githubSponsors: ReturnType<typeof useGitHubSponsors>,
+  openCollectiveSlug: string | null,
+  githubLogin: string | null
+) {
+  if (openCollectiveSlug && !openCollective.configured && openCollective.setupMessage) {
+    return {
+      configured: false,
+      setupMessage: resolveProviderSetupMessage(openCollective.setupMessage, "Open Collective"),
+      ctaLabel: openCollective.ctaLabel ?? "Configure Open Collective",
+      ctaTarget: resolveCtaTarget(openCollective.ctaTarget, "opencollective"),
+    };
+  }
+
+  if (githubLogin && !githubSponsors.configured && githubSponsors.setupMessage) {
+    return {
+      configured: false,
+      setupMessage: resolveProviderSetupMessage(githubSponsors.setupMessage, "GitHub Sponsors"),
+      ctaLabel: githubSponsors.ctaLabel ?? "Configure GitHub Sponsors",
+      ctaTarget: resolveCtaTarget(githubSponsors.ctaTarget, "github"),
+    };
+  }
+
+  return SPONSORSHIP_NOT_CONFIGURED_STATE;
+}
+
 function SponsorshipResolver({ projectSlug, onState }: DataSourceResolverProps) {
   const { projects, timeRange } = useDashboard();
   const openCollectiveSlug = resolveOcSlug(projects, projectSlug);
   const githubLogin = resolveGitHubLogin(projects, projectSlug);
   const openCollective = useOpenCollective(openCollectiveSlug, timeRange);
-  const githubSponsors = useGitHubSponsors(githubLogin);
+  const githubSponsors = useGitHubSponsors(githubLogin, Boolean(githubLogin));
 
   const fetchedAt = useMemo(() => {
     if (openCollective.fetchedAt && githubSponsors.fetchedAt) {
@@ -133,16 +193,32 @@ function SponsorshipResolver({ projectSlug, onState }: DataSourceResolverProps) 
     await Promise.all([openCollective.refetch(), githubSponsors.refetch()]);
   }, [openCollective.refetch, githubSponsors.refetch]);
 
-  const data = useMemo(
-    () =>
+  const data = useMemo(() => {
+    if (!openCollectiveSlug && !githubLogin) {
+      return getProjectRequiredState(projectSlug);
+    }
+
+    if (
       !openCollective.loading &&
       !githubSponsors.loading &&
       openCollective.data == null &&
       githubSponsors.data == null
-        ? SPONSORSHIP_NOT_CONFIGURED_STATE
-        : computeSponsorshipSummary(openCollective.data, githubSponsors.data),
-    [openCollective.data, openCollective.loading, githubSponsors.data, githubSponsors.loading]
-  );
+    ) {
+      return getProviderSetupState(openCollective, githubSponsors, openCollectiveSlug, githubLogin);
+    }
+
+    return computeSponsorshipSummary(openCollective.data, githubSponsors.data);
+  }, [
+    projectSlug,
+    openCollectiveSlug,
+    githubLogin,
+    openCollective,
+    githubSponsors,
+    openCollective.data,
+    openCollective.loading,
+    githubSponsors.data,
+    githubSponsors.loading,
+  ]);
   const previousDataSnapshot = useRef<string | null>(null);
 
   useEffect(() => {

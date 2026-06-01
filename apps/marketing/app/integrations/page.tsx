@@ -41,7 +41,7 @@ export default async function IntegrationsPage() {
         countLabel={`${integrationCount} integrations`}
         title="Connect your work stack."
         subtitle="See every signal in one place."
-        description={`Browse integrations by workflow, then wire the services that already run your revenue, shipping, growth, and operations inside ${site.name}.`}
+        description={`Browse integrations by workflow, then wire the services that already run your revenue, release activity, growth, and operations inside ${site.name}.`}
         stats={[
           { label: "Best for", value: site.audiencesLabel },
           { label: "Auth mix", value: "API, OAuth, MCP, webhooks" },

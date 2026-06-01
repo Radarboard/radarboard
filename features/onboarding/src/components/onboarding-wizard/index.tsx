@@ -395,6 +395,11 @@ export function OnboardingWizard({
           "@radarboard/widget-engine/blueprints/registry"
         );
         const { applyBlueprint } = await import("@radarboard/widget-engine/blueprints");
+        const { WIDGET_REGISTRY } = await import("@radarboard/widget-engine/widgets/registry");
+        const canPlaceWidget = (widgetId: string, scope: "all-projects" | "project") => {
+          const descriptor = WIDGET_REGISTRY.get(widgetId);
+          return descriptor?.supportedDashboardScopes?.includes(scope) ?? true;
+        };
 
         let blueprint = state.blueprintId
           ? LAYOUT_BLUEPRINTS.find((b) => b.id === state.blueprintId)
@@ -407,13 +412,18 @@ export function OnboardingWizard({
             score: scoreBlueprintFit(b, {
               personas: state.profile ? [state.profile] : [],
               connectedIntegrations: state.connectedIntegrations,
+              dashboardScope: "all-projects",
+              canPlaceWidget,
             }),
           })).sort((a, b) => b.score - a.score);
           blueprint = scored[0]?.blueprint;
         }
 
         if (blueprint) {
-          const result = applyBlueprint(blueprint, state.connectedIntegrations);
+          const result = applyBlueprint(blueprint, state.connectedIntegrations, {
+            dashboardScope: "all-projects",
+            canPlaceWidget,
+          });
           newLayouts = [result.layout];
 
           // Store widget assignments in the default project page
@@ -437,8 +447,8 @@ export function OnboardingWizard({
           };
 
           const widgetMap: Record<string, string> = {};
-          for (const slot of blueprint.slots) {
-            widgetMap[slot.cellId] = slot.widgetId;
+          for (const [cellId, widgetId] of Object.entries(result.widgetAssignments)) {
+            if (widgetId) widgetMap[cellId] = widgetId;
           }
           newPreferences.blueprintWidgetMap = widgetMap;
         }

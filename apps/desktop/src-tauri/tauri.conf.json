@@ -25,7 +25,7 @@
         "fullscreen": false,
         "center": true,
         "visible": false,
-        "url": "about:blank"
+        "url": "splashscreen.html"
       },
       {
         "label": "splashscreen",

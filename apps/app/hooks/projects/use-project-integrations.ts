@@ -9,6 +9,7 @@ import {
 } from "@/modules/settings/store/settings-store";
 
 export type ProjectIntegrationsMap = Record<string, Record<string, Record<string, unknown>>>;
+type ProjectIntegrationsUpdater = (current: ProjectIntegrationsMap) => ProjectIntegrationsMap;
 
 /**
  * Hook to read/write per-project integration overrides (e.g., GitHub repo assignments).
@@ -24,22 +25,33 @@ export function useProjectIntegrations() {
     });
   }, []);
 
-  const updateIntegration = useCallback(
-    (projectSlug: string, platformId: string, key: string, value: unknown) => {
-      const next = {
-        ...integrations,
-        [projectSlug]: {
-          ...(integrations[projectSlug] ?? {}),
-          [platformId]: {
-            ...(integrations[projectSlug]?.[platformId] ?? {}),
-            [key]: value,
-          },
-        },
-      };
+  const updateIntegrations = useCallback(
+    (configOrUpdater: ProjectIntegrationsMap | ProjectIntegrationsUpdater) => {
+      const currentIntegrations = settingsStore.state.projectIntegrations;
+      const next =
+        typeof configOrUpdater === "function"
+          ? configOrUpdater(currentIntegrations)
+          : configOrUpdater;
 
       updateProjectIntegrations(next);
     },
-    [integrations]
+    []
+  );
+
+  const updateIntegration = useCallback(
+    (projectSlug: string, platformId: string, key: string, value: unknown) => {
+      updateIntegrations((currentIntegrations) => ({
+        ...currentIntegrations,
+        [projectSlug]: {
+          ...(currentIntegrations[projectSlug] ?? {}),
+          [platformId]: {
+            ...(currentIntegrations[projectSlug]?.[platformId] ?? {}),
+            [key]: value,
+          },
+        },
+      }));
+    },
+    [updateIntegrations]
   );
 
   const getIntegration = useCallback(
@@ -49,5 +61,5 @@ export function useProjectIntegrations() {
     [integrations]
   );
 
-  return { integrations, isLoading, updateIntegration, getIntegration };
+  return { integrations, isLoading, updateIntegrations, updateIntegration, getIntegration };
 }

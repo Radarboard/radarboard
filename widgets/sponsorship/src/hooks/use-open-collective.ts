@@ -22,6 +22,9 @@ interface OpenCollectiveResponse {
   topMembers?: OpenCollectiveMember[];
   _fetchedAt?: number;
   error?: string;
+  setupMessage?: string;
+  ctaLabel?: string;
+  ctaTarget?: string;
 }
 
 export interface OpenCollectiveOverviewData {
@@ -65,6 +68,9 @@ export function useOpenCollective(
   return {
     data: parsed,
     configured: data?.configured ?? false,
+    setupMessage: data?.setupMessage ?? null,
+    ctaLabel: data?.ctaLabel ?? null,
+    ctaTarget: data?.ctaTarget ?? null,
     fetchedAt: data?._fetchedAt ?? null,
     loading: isLoading && !error,
     error: error?.message ?? data?.error ?? null,

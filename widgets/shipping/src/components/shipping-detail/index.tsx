@@ -32,7 +32,7 @@ export function ShippingDetail({ item }: ShippingDetailProps) {
   return (
     <>
       <DialogHeader>
-        <DialogTitle>Shipping Detail</DialogTitle>
+        <DialogTitle>Release Activity Detail</DialogTitle>
       </DialogHeader>
       <DialogBody>
         <p className="mb-4 font-mono text-foreground text-w-lg">{item.title}</p>

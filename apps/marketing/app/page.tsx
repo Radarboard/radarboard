@@ -46,7 +46,7 @@ const usageTracks = [
   {
     title: "Founders and teams",
     description:
-      "Revenue, roadmap, shipping, customer-facing quality, and operating cadence become one board instead of a stack of tabs.",
+      "Revenue, roadmap, release activity, customer-facing quality, and operating cadence become one board instead of a stack of tabs.",
   },
 ] as const;
 
@@ -194,7 +194,7 @@ export default async function HomePage() {
             Every block answers a job.
           </h2>
           <p className="mt-5 text-muted text-w-base leading-relaxed">
-            Widgets keep the board focused: what shipped, what broke, what grew, what earned, what
+            Widgets keep the board focused: what released, what broke, what grew, what earned, what
             people are saying, and what needs attention next.
           </p>
           <div className="mt-7 grid gap-px overflow-hidden border border-border bg-border sm:grid-cols-2">

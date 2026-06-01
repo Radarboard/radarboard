@@ -80,8 +80,8 @@ export function ShippingExpanded({
         <div className="min-h-0 flex-1 overflow-y-auto">
           {!configured && (
             <EmptyState
-              message="Shipping log not configured"
-              subMessage="Connect GitHub, Linear, or Vercel in Settings → Integrations"
+              message="Release activity not configured"
+              subMessage="Connect GitHub, Linear, or Vercel in Settings > Integrations"
               variant="compact"
             />
           )}

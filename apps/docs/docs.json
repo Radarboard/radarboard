@@ -61,7 +61,7 @@
             "pages": ["services/openpanel", "services/google-search-console"]
           },
           {
-            "group": "Development & Shipping",
+            "group": "Development & Release Activity",
             "pages": ["services/github", "services/linear", "services/vercel"]
           },
           {

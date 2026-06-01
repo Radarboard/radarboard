@@ -49,7 +49,7 @@ describe("buildDataSourceContext", () => {
   it("converts broker-backed Google Search Console credentials to short-lived access tokens", async () => {
     mocks.credentials["google-search-console"] = {
       authMethod: "oauth_broker",
-      brokerUrl: "https://app.radarboard.app",
+      brokerUrl: "https://auth.radarboard.app",
       brokerCredentialToken: "broker-token",
     };
     const fetchMock = vi.fn().mockResolvedValue({
@@ -62,7 +62,7 @@ describe("buildDataSourceContext", () => {
       buildDataSourceContext().resolveCredential("google-search-console")
     ).resolves.toEqual({
       authMethod: "oauth_broker",
-      brokerUrl: "https://app.radarboard.app",
+      brokerUrl: "https://auth.radarboard.app",
       brokerCredentialToken: "broker-token",
       accessToken: "google-access-token",
       token: "google-access-token",

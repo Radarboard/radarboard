@@ -4,8 +4,8 @@ This guide covers how to configure each external service that powers the Radarbo
 
 ## Quick Start
 
-1. Copy the env template: `cp apps/app/.env.example apps/app/.env`
-2. Fill in the env vars for the services you want to connect (see sections below)
+1. Open Radarboard settings and connect the services you want to use.
+2. Configure hosted deployment settings only for services that need a managed server component.
 3. Add per-project config in `apps/app/config/projects.ts` (non-secret IDs, slugs, URLs)
 4. Run `pnpm dev` -- the dashboard will use real data for configured services, mock data for everything else
 
@@ -14,12 +14,12 @@ This guide covers how to configure each external service that powers the Radarbo
 Each integration follows the same architecture:
 
 ```
-.env (secrets)  +  projects.ts (IDs/slugs)  -->  API Client  -->  API Route  -->  React Hook  -->  Widget
+App settings  +  projects.ts (IDs/slugs)  -->  API Client  -->  API Route  -->  React Hook  -->  Widget
 ```
 
-- **Secrets** (API keys, tokens) go in `apps/app/.env`
+- **Secrets** (API keys, tokens) are stored through Radarboard settings or hosted deployment configuration.
 - **Non-secret identifiers** (project IDs, site URLs, repo names) go in `apps/app/config/projects.ts` under each platform's `integrations` field
-- The dashboard checks if env vars are present at runtime. If they're missing, the API route returns `{ configured: false }` and the widget shows mock data.
+- The dashboard checks whether credentials are present at runtime. If they're missing, the API route returns `{ configured: false }` and the widget shows mock data.
 
 ---
 
@@ -139,7 +139,7 @@ integrations: {
 
 ## Linear
 
-**Powers:** Ideas + Bugs widget (open issues categorized by labels), Shipping Log (completed issues)
+**Powers:** Ideas + Bugs widget (open issues categorized by labels), Release Activity (completed issues)
 
 ### 1. Get Credentials
 
@@ -182,7 +182,7 @@ query { teams { nodes { id name key } } }
 
 ### Notes
 
-- Both open issues (Ideas+Bugs widget) and completed issues (Shipping Log) are fetched
+- Both open issues (Ideas+Bugs widget) and completed issues (Release Activity) are fetched
 - Data cached for 2 minutes
 - If no `teamId` is provided, issues from all teams are shown
 
@@ -190,7 +190,7 @@ query { teams { nodes { id name key } } }
 
 ## GitHub
 
-**Powers:** Shipping Log (merged pull requests)
+**Powers:** Release Activity (merged pull requests)
 
 ### 1. Get Credentials
 
@@ -222,7 +222,7 @@ integrations: {
 
 ### Notes
 
-- Only merged PRs appear in the Shipping Log (open and unmerged PRs are filtered out)
+- Only merged PRs appear in Release Activity (open and unmerged PRs are filtered out)
 - Rate limit: 5,000 requests per hour (authenticated)
 - Data cached for 2 minutes
 
@@ -289,7 +289,9 @@ Content-Type: application/json
 
 ### 1. Configure OAuth Broker
 
-This integration uses Radarboard's hosted OAuth broker. Users connect their own Google account. The hosted broker stores the Google refresh token; local and desktop clients store only an opaque broker token.
+This integration uses an OAuth broker because Google requires a stable HTTPS redirect URL for public apps. Radarboard can use the managed broker at `https://auth.radarboard.app`, or advanced/self-hosted users can run their own broker and point app configuration at it.
+
+Users connect their own Google account. The managed broker stores the Google refresh token encrypted at rest; local and desktop clients store only an opaque broker token. The broker does not store Search Console reports, queries, clicks, impressions, CTR, rankings, or site performance data.
 
 #### a) Create OAuth2 credentials
 
@@ -299,16 +301,20 @@ This integration uses Radarboard's hosted OAuth broker. Users connect their own 
 4. Go to **APIs & Services > Credentials**
 5. Click **Create Credentials > OAuth client ID**
 6. Select **Web application**
-7. Add `https://app.radarboard.app/api/auth/google/callback` to Authorized redirect URIs
+7. Add `https://auth.radarboard.app/api/auth/google/callback` to Authorized redirect URIs
 8. Copy the **Client ID** and **Client Secret**
 
-### 2. Set Environment Variables
+### 2. Configure the Broker Deployment
 
-```env
+The broker deployment needs:
+
+```text
 OAUTH_GOOGLE_CLIENT_ID=xxxxxxxxxxxx.apps.googleusercontent.com
 OAUTH_GOOGLE_CLIENT_SECRET=GOCSPX-xxxxxxxxxxxx
-RADARBOARD_OAUTH_BROKER_URL=https://app.radarboard.app
+RADARBOARD_OAUTH_BROKER_URL=https://auth.radarboard.app
 ```
+
+Self-hosted brokers should use their own HTTPS broker origin for `RADARBOARD_OAUTH_BROKER_URL` and register that broker's callback URL in Google Cloud.
 
 ### 3. Update Project Config
 
@@ -333,7 +339,7 @@ integrations: {
 
 ## Vercel
 
-**Powers:** Shipping Log (production deployments), KPI strip "Last Deploy" indicator
+**Powers:** Release Activity (production deployments), KPI strip "Last Deploy" indicator
 
 ### 1. Get Credentials
 
@@ -371,7 +377,7 @@ Go to your project on Vercel > Settings > General. The Project ID is displayed n
 
 ### Notes
 
-- Only production deployments with `READY` status appear in the Shipping Log
+- Only production deployments with `READY` status appear in Release Activity
 - If a deployment has a linked GitHub commit, its commit message is used as the title
 - Rate limit: 500 requests per minute
 - Data cached for 2 minutes
@@ -550,16 +556,16 @@ All per-project config goes in `apps/app/config/projects.ts`. Here's a complete 
 ## Troubleshooting
 
 **Widget shows mock data instead of real data:**
-- Check that the env vars are set in `apps/app/.env` (not the root `.env`)
-- Restart the dev server after changing env vars
+- Check that the service is connected in Radarboard settings.
+- Restart the app after changing hosted deployment configuration.
 - Check the browser console for API errors (the hook will log fetch failures)
 
 **API route returns `{ configured: false }`:**
-- The required env vars for that service are missing or empty
+- The required service credentials are missing or empty.
 - For project-specific data, verify the project has the integration configured in `projects.ts`
 
 **"Token refresh failed" (Google Search Console):**
-- Your refresh token may have expired. Re-generate it using the OAuth Playground steps above.
+- The Google connection may have expired or been revoked. Disconnect and reconnect Google Search Console from Radarboard settings.
 - Make sure the Search Console API is enabled in your GCP project.
 
 **"HTTP 401" errors:**

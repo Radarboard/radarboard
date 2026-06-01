@@ -26,6 +26,7 @@ export const DIALOG_SIZE_CLASS: Record<ModalContentSize, string> = {
   content: "rb-dialog-size-content",
   md: "rb-dialog-size-md",
   lg: "rb-dialog-size-lg",
+  xl: "rb-dialog-size-xl",
 };
 
 export const Dialog = DialogPrimitiveRoot;

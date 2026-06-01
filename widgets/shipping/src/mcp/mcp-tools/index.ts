@@ -7,7 +7,7 @@ import { z } from "zod";
 export const shippingMcpTools = [
   {
     name: "get-shipping",
-    description: "Get shipping log data (deploys, commits, shipped features) for a project",
+    description: "Get release activity data (deploys, commits, released work) for a project",
     parameters: z.object({
       projectSlug: z.string().describe("The project slug to query"),
     }),

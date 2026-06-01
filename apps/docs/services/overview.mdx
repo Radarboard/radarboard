@@ -7,19 +7,15 @@ description: "Radarboard connects to 11 external services. Here's what each does
 
 Radarboard aggregates data from 11 external services. Each service is optional -- configure only the ones you use.
 
-## Environment variables
+## App configuration
 
-All service credentials are set via environment variables in `apps/app/.env.local`. Copy from the example:
-
-```bash
-cp apps/app/.env.example apps/app/.env.local
-```
+Service credentials are set through Radarboard's app configuration or the relevant hosted deployment settings. End users should connect services through the app UI whenever OAuth is available.
 
 ## Service catalog
 
 ### Revenue & Monetization
 
-| Service | What it provides | Required env vars |
+| Service | What it provides | Configuration |
 |---------|-----------------|-------------------|
 | [RevenueCat](/services/revenuecat) | Subscription revenue, MRR, gross/net revenue | `REVENUECAT_API_V2_SECRET_KEY`, `REVENUECAT_PROJECT_ID` |
 | [Open Collective](/services/open-collective) | Open-source funding: balance, backers, transactions | `OPENCOLLECTIVE_API_TOKEN` |
@@ -27,14 +23,14 @@ cp apps/app/.env.example apps/app/.env.local
 
 ### Analytics & SEO
 
-| Service | What it provides | Required env vars |
+| Service | What it provides | Configuration |
 |---------|-----------------|-------------------|
 | [OpenPanel](/services/openpanel) | Visitors, sessions, page views, live visitors, referrers | `OPENPANEL_CLIENT_ID`, `OPENPANEL_CLIENT_SECRET` |
-| [Google Search Console](/services/google-search-console) | Search queries, clicks, impressions, CTR, position | `OAUTH_GOOGLE_CLIENT_ID`, `OAUTH_GOOGLE_CLIENT_SECRET`, `RADARBOARD_OAUTH_BROKER_URL` |
+| [Google Search Console](/services/google-search-console) | Search queries, clicks, impressions, CTR, position | Managed or self-hosted OAuth broker |
 
-### Development & Shipping
+### Development & Release Activity
 
-| Service | What it provides | Required env vars |
+| Service | What it provides | Configuration |
 |---------|-----------------|-------------------|
 | [GitHub](/services/github) | Merged PRs, releases, commits | `GITHUB_TOKEN` |
 | [Linear](/services/linear) | Open issues (ideas/bugs), completed issues | `LINEAR_API_KEY` |
@@ -42,7 +38,7 @@ cp apps/app/.env.example apps/app/.env.local
 
 ### Monitoring & Alerts
 
-| Service | What it provides | Required env vars |
+| Service | What it provides | Configuration |
 |---------|-----------------|-------------------|
 | [Sentry](/services/sentry) | Unresolved errors, error count trends | `SENTRY_AUTH_TOKEN`, `SENTRY_ORG_SLUG` |
 | [BetterStack](/services/betterstack) | Uptime monitors, response times, incidents | `BETTERSTACK_API_TOKEN` |

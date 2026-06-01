@@ -16,6 +16,9 @@ interface ShippingResponse {
   items: ShippingItem[];
   _fetchedAt?: number;
   error?: string;
+  setupMessage?: string;
+  ctaLabel?: string;
+  ctaTarget?: string;
 }
 
 const EMPTY_SHIPPING_ITEMS: ShippingItem[] = [];
@@ -51,6 +54,9 @@ export function useShipping(projectSlug: string | null = null, timeRange: TimeRa
     fetchedAt: data?._fetchedAt ?? null,
     loading: isLoading && !error,
     error: error?.message ?? data?.error ?? null,
+    setupMessage: data?.setupMessage,
+    ctaLabel: data?.ctaLabel,
+    ctaTarget: data?.ctaTarget,
     refetch,
   };
 }

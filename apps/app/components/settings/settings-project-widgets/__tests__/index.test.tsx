@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { useCredentials } from "@radarboard/hooks/use-credentials";
 import { useDashboard } from "@radarboard/hooks/use-dashboard";
+import { ALL_PROJECTS_SLUG } from "@radarboard/types/dashboard";
 import type { LayoutDefinition } from "@radarboard/types/database";
 import { TooltipProvider } from "@radarboard/ui/tooltip";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
@@ -69,6 +70,28 @@ vi.mock("@radarboard/widget-engine/widgets/registry", () => {
         requiredIntegrations: ["revenuecat"],
         catalogCategory: "revenue",
         auth: [{ type: "api_key", id: "revenuecat", name: "RevenueCat" }],
+      },
+    ],
+    [
+      "sponsorship",
+      {
+        id: "sponsorship",
+        name: "Sponsorship",
+        description: "Track sponsorship revenue and members",
+        requiredIntegrations: [],
+        catalogCategory: "revenue",
+        supportedDashboardScopes: ["project"],
+      },
+    ],
+    [
+      "all-projects-summary",
+      {
+        id: "all-projects-summary",
+        name: "All Projects Summary",
+        description: "Aggregate-only dashboard summary",
+        requiredIntegrations: [],
+        catalogCategory: "other",
+        supportedDashboardScopes: ["all-projects"],
       },
     ],
     [
@@ -234,7 +257,22 @@ describe("ProjectWidgetPlacementModal", () => {
     renderModal();
 
     expect(screen.getByText("Widget Library")).toBeTruthy();
-    expect(screen.getByText("3 widgets")).toBeTruthy();
+    expect(screen.getByText("4 widgets")).toBeTruthy();
+  });
+
+  it("hides aggregate-only widgets on project dashboards", () => {
+    renderModal();
+
+    expect(screen.queryByText("All Projects Summary")).toBeNull();
+    expect(screen.getByText("Sponsorship")).toBeTruthy();
+  });
+
+  it("hides project-only widgets on All Projects", () => {
+    renderModal({ projectSlug: ALL_PROJECTS_SLUG, projectName: "All Projects" });
+
+    expect(screen.queryByText("Sponsorship")).toBeNull();
+    expect(screen.getByText("All Projects Summary")).toBeTruthy();
+    expect(screen.getByText(/Showing widgets that work on All Projects/i)).toBeTruthy();
   });
 
   it("shows layout preview section", () => {

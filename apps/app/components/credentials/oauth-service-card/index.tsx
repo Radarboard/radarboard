@@ -2,9 +2,9 @@
 
 import { API_ROUTES } from "@radarboard/types/api-routes";
 import { Button } from "@radarboard/ui/button";
+import { cn } from "@radarboard/utils/cn";
 import type { WidgetAuth } from "@radarboard/widget-engine/widgets/registry";
 import { WIDGET_REGISTRY } from "@radarboard/widget-engine/widgets/registry";
-import { cn } from "@radarboard/utils/cn";
 import { Check, Copy, ExternalLink } from "lucide-react";
 import {
   type Dispatch,
@@ -179,6 +179,21 @@ function GwsImportButton({
   );
 }
 
+function GoogleBrokerNotice() {
+  return (
+    <div className="space-y-1 rounded-item border border-border bg-surface px-3 py-2.5 text-muted-foreground text-w-sm leading-relaxed">
+      <p>
+        Uses Radarboard's managed OAuth broker by default. The broker stores an encrypted Google
+        refresh token so the local app can request short-lived Search Console access tokens.
+      </p>
+      <p>
+        The broker does not store Search Console reports. Self-hosted brokers can be used from app
+        configuration.
+      </p>
+    </div>
+  );
+}
+
 // --- OAuth "Ready to connect" state ---
 
 function OAuthConnectState({
@@ -205,19 +220,29 @@ function OAuthConnectState({
     [credKey, service.oauth?.scopes]
   );
 
-  const handleConnect = useCallback(() => {
+  const handleConnect = useCallback(async () => {
     const origin = window.location.origin;
     const scopes = mergedScopes.join(" ");
-    const authUrl = `${origin}/api/auth/${service.oauth?.provider}/redirect?credKey=${encodeURIComponent(credKey)}&scopes=${encodeURIComponent(scopes)}`;
+    const authUrl = new URL(`/api/auth/${service.oauth?.provider}/redirect`, origin);
+    authUrl.searchParams.set("credKey", credKey);
+    authUrl.searchParams.set("scopes", scopes);
 
     if (isTauri()) {
-      openExternalUrl(authUrl).catch(() => {
-        window.location.href = authUrl;
+      try {
+        const { invoke } = await import("@tauri-apps/api/core");
+        const scheme = await invoke<string>("get_deep_link_scheme");
+        authUrl.searchParams.set("desktopReturnScheme", scheme);
+      } catch {
+        authUrl.searchParams.set("desktopReturnScheme", "radarboard");
+      }
+
+      openExternalUrl(authUrl.toString()).catch(() => {
+        window.location.href = authUrl.toString();
       });
       return;
     }
 
-    window.location.href = authUrl;
+    window.location.href = authUrl.toString();
   }, [credKey, mergedScopes, service.oauth?.provider]);
 
   return (
@@ -240,6 +265,7 @@ function OAuthConnectState({
       >
         Connect with {service.name}
       </Button>
+      {isGoogle ? <GoogleBrokerNotice /> : null}
       {isGoogle && (
         <GwsImportButton
           onCredentialChange={onCredentialChange}
@@ -306,6 +332,8 @@ function OAuthNoCredsForm({
 
       {Boolean(instructions) && <InstructionText text={instructions!} />}
 
+      {isGoogle ? <GoogleBrokerNotice /> : null}
+
       <CredentialFields
         credKey={credKey}
         fields={service.fields ?? []}
@@ -370,16 +398,13 @@ export function OAuthServiceCard({
         return;
       }
 
-      const restoredValues = (service.fields ?? []).reduce<Record<string, string>>(
-        (acc, field) => {
-          const value = storedValues[field.key] ?? "";
-          if (value.trim().length > 0) {
-            acc[field.key] = value;
-          }
-          return acc;
-        },
-        {}
-      );
+      const restoredValues = (service.fields ?? []).reduce<Record<string, string>>((acc, field) => {
+        const value = storedValues[field.key] ?? "";
+        if (value.trim().length > 0) {
+          acc[field.key] = value;
+        }
+        return acc;
+      }, {});
 
       if (Object.keys(restoredValues).length > 0) {
         setValues((current) =>

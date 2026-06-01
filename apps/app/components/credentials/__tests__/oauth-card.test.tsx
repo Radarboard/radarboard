@@ -6,9 +6,27 @@ import { OAuthServiceCard } from "../oauth-service-card";
 
 const copyTextMock = vi.fn();
 const fetchMock = vi.fn<typeof fetch>();
+const platformMock = vi.hoisted(() => ({
+  isTauri: false,
+  openExternalUrl: vi.fn(),
+  invoke: vi.fn(),
+}));
 
 vi.mock("@/lib/clipboard", () => ({
   copyText: (text: string) => copyTextMock(text),
+}));
+
+vi.mock("@/lib/platform", () => ({
+  isTauri: () => platformMock.isTauri,
+}));
+
+vi.mock("@/lib/system/ui/external-url", () => ({
+  handleExternalLinkClick: vi.fn(),
+  openExternalUrl: (url: string) => platformMock.openExternalUrl(url),
+}));
+
+vi.mock("@tauri-apps/api/core", () => ({
+  invoke: (command: string) => platformMock.invoke(command),
 }));
 
 const githubService = {
@@ -48,6 +66,11 @@ describe("OAuthServiceCard", () => {
   beforeEach(() => {
     copyTextMock.mockReset();
     fetchMock.mockReset();
+    platformMock.isTauri = false;
+    platformMock.openExternalUrl.mockReset();
+    platformMock.openExternalUrl.mockResolvedValue(undefined);
+    platformMock.invoke.mockReset();
+    platformMock.invoke.mockResolvedValue("radarboard");
     vi.stubGlobal("fetch", fetchMock);
   });
 
@@ -227,5 +250,35 @@ describe("OAuthServiceCard", () => {
     fireEvent.click(await screen.findByRole("button", { name: "Or import from gws CLI" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("gws CLI not authenticated");
+  });
+
+  it("adds the desktop deep-link return scheme when connecting from Tauri", async () => {
+    platformMock.isTauri = true;
+    fetchMock.mockResolvedValue({
+      json: async () => ({ values: null }),
+      ok: true,
+    } as Response);
+
+    render(
+      <OAuthServiceCard
+        credKey="google-search-console"
+        service={googleService}
+        isConnected={false}
+        onCredentialChange={vi.fn()}
+      />
+    );
+
+    fireEvent.click(
+      await screen.findByRole("button", { name: "Connect with Google Search Console" })
+    );
+
+    await waitFor(() => {
+      expect(platformMock.invoke).toHaveBeenCalledWith("get_deep_link_scheme");
+      expect(platformMock.openExternalUrl).toHaveBeenCalledTimes(1);
+    });
+    const url = new URL(platformMock.openExternalUrl.mock.calls[0][0]);
+    expect(url.pathname).toBe("/api/auth/google/redirect");
+    expect(url.searchParams.get("credKey")).toBe("google-search-console");
+    expect(url.searchParams.get("desktopReturnScheme")).toBe("radarboard");
   });
 });

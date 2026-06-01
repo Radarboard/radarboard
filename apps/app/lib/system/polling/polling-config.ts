@@ -146,8 +146,8 @@ definePollingSource("seo", {
 });
 
 definePollingSource("shipping", {
-  label: "Shipping",
-  description: "Refreshes shipping and release readiness widgets.",
+  label: "Release Activity",
+  description: "Refreshes release activity and release readiness widgets.",
   category: "widget",
   defaultIntervalMs: 120_000,
   allowedIntervalsMs: [60_000, 120_000, 300_000, 600_000],

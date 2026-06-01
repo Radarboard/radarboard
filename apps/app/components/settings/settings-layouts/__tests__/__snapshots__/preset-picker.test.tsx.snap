@@ -13,7 +13,7 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
     <p
       class="mb-3 font-mono text-dim text-w-sm"
     >
-      Choose a layout for your dashboard. Blueprints include suggested widgets. Templates are empty grids you fill yourself.
+      Choose an All Projects layout. Project-only widgets can be added after you create a project. Templates are empty grids you fill yourself.
     </p>
     <div
       class="mb-4 flex items-center gap-4"
@@ -167,12 +167,12 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
               <div
                 class="absolute flex items-center justify-center border border-foreground/40 bg-foreground/[0.15]"
                 style="left: 75%; top: 33.33%; width: 25%; height: calc(33.33% - 1px);"
-                title="Shipping — Release cadence"
+                title="Release Activity — Release cadence"
               >
                 <span
                   class="truncate px-0.5 font-mono text-foreground/50 text-w-xs leading-none"
                 >
-                  Shipping
+                  Release Activity
                 </span>
               </div>
               <div
@@ -211,12 +211,12 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
               <div
                 class="absolute flex items-center justify-center border border-foreground/40 bg-foreground/[0.15]"
                 style="left: 75%; top: 66.66%; width: 25%; height: 33.34%;"
-                title="Shipping — Shipping activity"
+                title="Release Activity — Release activity"
               >
                 <span
                   class="truncate px-0.5 font-mono text-foreground/50 text-w-xs leading-none"
                 >
-                  Shipping
+                  Release Activity
                 </span>
               </div>
             </div>
@@ -324,12 +324,12 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
               <div
                 class="absolute flex items-center justify-center border border-foreground/40 bg-foreground/[0.15]"
                 style="left: 50%; top: 33.33%; width: calc(25% - 1px); height: calc(33.33% - 1px);"
-                title="Shipping — Content releases"
+                title="Release Activity — Content releases"
               >
                 <span
                   class="truncate px-0.5 font-mono text-foreground/50 text-w-xs leading-none"
                 >
-                  Shipping
+                  Release Activity
                 </span>
               </div>
               <div
@@ -458,12 +458,12 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
               <div
                 class="absolute flex items-center justify-center border border-foreground/40 bg-foreground/[0.15]"
                 style="left: 0%; top: 67%; width: calc(25% - 1px); height: 33%;"
-                title="Shipping — Release cadence"
+                title="Release Activity — Release cadence"
               >
                 <span
                   class="truncate px-0.5 font-mono text-foreground/50 text-w-xs leading-none"
                 >
-                  Shipping
+                  Release Activity
                 </span>
               </div>
               <div
@@ -480,12 +480,12 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
               <div
                 class="absolute flex items-center justify-center border border-foreground/40 bg-foreground/[0.15]"
                 style="left: 50%; top: 67%; width: calc(25% - 1px); height: 33%;"
-                title="Shipping — Shipping activity"
+                title="Release Activity — Release activity"
               >
                 <span
                   class="truncate px-0.5 font-mono text-foreground/50 text-w-xs leading-none"
                 >
-                  Shipping
+                  Release Activity
                 </span>
               </div>
               <div
@@ -516,7 +516,7 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
             <p
               class="line-clamp-2 font-mono text-dim text-w-xs leading-relaxed"
             >
-              Track sponsorship, roadmap, analytics, and shipping activity at a glance. Designed for open source maintainers who need community health metrics front and center.
+              Track sponsorship, roadmap, analytics, and release activity at a glance. Designed for open source maintainers who need community health metrics front and center.
             </p>
           </div>
         </button>
@@ -571,12 +571,12 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
               <div
                 class="absolute flex items-center justify-center border border-foreground/40 bg-foreground/[0.15]"
                 style="left: 0%; top: 33.33%; width: calc(25% - 1px); height: calc(33.33% - 1px);"
-                title="Shipping — Shipping timeline & releases"
+                title="Release Activity — Release timeline"
               >
                 <span
                   class="truncate px-0.5 font-mono text-foreground/50 text-w-xs leading-none"
                 >
-                  Shipping
+                  Release Activity
                 </span>
               </div>
               <div
@@ -620,12 +620,12 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
               <div
                 class="absolute flex items-center justify-center border border-foreground/40 bg-foreground/[0.15]"
                 style="left: 25%; top: 66.66%; width: calc(25% - 1px); height: 33.34%;"
-                title="Shipping — Shipping cadence"
+                title="Release Activity — Release cadence"
               >
                 <span
                   class="truncate px-0.5 font-mono text-foreground/50 text-w-xs leading-none"
                 >
-                  Shipping
+                  Release Activity
                 </span>
               </div>
               <div
@@ -706,12 +706,12 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
               <div
                 class="absolute flex items-center justify-center border border-foreground/40 bg-foreground/[0.15]"
                 style="left: 25%; top: 70%; width: calc(25% - 1px); height: 30%;"
-                title="Shipping — Shipping queue"
+                title="Release Activity — Release queue"
               >
                 <span
                   class="truncate px-0.5 font-mono text-foreground/50 text-w-xs leading-none"
                 >
-                  Shipping
+                  Release Activity
                 </span>
               </div>
               <div
@@ -753,7 +753,7 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
             <p
               class="line-clamp-2 font-mono text-dim text-w-xs leading-relaxed"
             >
-              Observability rail with service health and shipping activity. Designed for platform engineers who need operational awareness.
+              Observability rail with service health and release activity. Designed for platform engineers who need operational awareness.
             </p>
           </div>
         </button>
@@ -830,12 +830,12 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
               <div
                 class="absolute flex items-center justify-center border border-foreground/40 bg-foreground/[0.15]"
                 style="left: 50%; top: 33.33%; width: calc(25% - 1px); height: calc(33.33% - 1px);"
-                title="Shipping — Release history"
+                title="Release Activity — Release history"
               >
                 <span
                   class="truncate px-0.5 font-mono text-foreground/50 text-w-xs leading-none"
                 >
-                  Shipping
+                  Release Activity
                 </span>
               </div>
               <div
@@ -943,12 +943,12 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
               <div
                 class="absolute flex items-center justify-center border border-foreground/40 bg-foreground/[0.15]"
                 style="left: 50%; top: 0%; width: calc(25% - 1px); height: calc(33.33% - 1px);"
-                title="Shipping — Release cadence"
+                title="Release Activity — Release cadence"
               >
                 <span
                   class="truncate px-0.5 font-mono text-foreground/50 text-w-xs leading-none"
                 >
-                  Shipping
+                  Release Activity
                 </span>
               </div>
               <div
@@ -959,12 +959,12 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
               <div
                 class="absolute flex items-center justify-center border border-foreground/40 bg-foreground/[0.15]"
                 style="left: 0%; top: 33.33%; width: calc(25% - 1px); height: calc(33.33% - 1px);"
-                title="Shipping — Shipping activity"
+                title="Release Activity — Release activity"
               >
                 <span
                   class="truncate px-0.5 font-mono text-foreground/50 text-w-xs leading-none"
                 >
-                  Shipping
+                  Release Activity
                 </span>
               </div>
               <div
@@ -1019,12 +1019,12 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
               <div
                 class="absolute flex items-center justify-center border border-foreground/40 bg-foreground/[0.15]"
                 style="left: 50%; top: 66.66%; width: calc(25% - 1px); height: 33.34%;"
-                title="Shipping — Shipping cadence"
+                title="Release Activity — Release cadence"
               >
                 <span
                   class="truncate px-0.5 font-mono text-foreground/50 text-w-xs leading-none"
                 >
-                  Shipping
+                  Release Activity
                 </span>
               </div>
               <div
@@ -1055,7 +1055,7 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
             <p
               class="line-clamp-2 font-mono text-dim text-w-xs leading-relaxed"
             >
-              Roadmap progress, Roadmap throughput, builds, and shipping cadence. A manager's view of team output and project health.
+              Roadmap progress, Roadmap throughput, builds, and release cadence. A manager's view of team output and project health.
             </p>
           </div>
         </button>
@@ -1116,12 +1116,12 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
               <div
                 class="absolute flex items-center justify-center border border-foreground/40 bg-foreground/[0.15]"
                 style="left: 0%; top: 33.33%; width: calc(25% - 1px); height: calc(33.33% - 1px);"
-                title="Shipping — Content releases"
+                title="Release Activity — Content releases"
               >
                 <span
                   class="truncate px-0.5 font-mono text-foreground/50 text-w-xs leading-none"
                 >
-                  Shipping
+                  Release Activity
                 </span>
               </div>
               <div
@@ -1149,12 +1149,12 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
               <div
                 class="absolute flex items-center justify-center border border-foreground/40 bg-foreground/[0.15]"
                 style="left: 75%; top: 33.33%; width: 25%; height: calc(33.33% - 1px);"
-                title="Shipping — Shipping updates"
+                title="Release Activity — Release updates"
               >
                 <span
                   class="truncate px-0.5 font-mono text-foreground/50 text-w-xs leading-none"
                 >
-                  Shipping
+                  Release Activity
                 </span>
               </div>
               <div
@@ -1224,7 +1224,7 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
             <p
               class="line-clamp-2 font-mono text-dim text-w-xs leading-relaxed"
             >
-              Analytics, SEO, bookmarks, and shipping across 12 tiles. Track content reach and audience growth at a glance.
+              Analytics, SEO, bookmarks, and release activity across 12 tiles. Track content reach and audience growth at a glance.
             </p>
           </div>
         </button>
@@ -1261,7 +1261,7 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
     <p
       class="mb-3 font-mono text-dim text-w-sm"
     >
-      Choose a layout for your dashboard. Blueprints include suggested widgets. Templates are empty grids you fill yourself.
+      Choose an All Projects layout. Project-only widgets can be added after you create a project. Templates are empty grids you fill yourself.
     </p>
     <div
       class="mb-4 flex items-center gap-4"

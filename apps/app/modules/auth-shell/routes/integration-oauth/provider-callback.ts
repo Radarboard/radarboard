@@ -161,10 +161,7 @@ async function validateCsrfAndCredentials(
   const brokerGoogleCreds =
     provider === "google" ? await resolveBrokerGoogleClientCredentials(credKey) : null;
 
-  if (
-    !brokerGoogleCreds &&
-    (!existingCreds?.clientId || !existingCreds?.clientSecret)
-  ) {
+  if (!brokerGoogleCreds && (!existingCreds?.clientId || !existingCreds?.clientSecret)) {
     return { error: await errorRedirect(origin, provider, "Client credentials not found") };
   }
 

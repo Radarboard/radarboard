@@ -14,9 +14,17 @@ function trimString(value: unknown): string | null {
 
 function getUserProjectSlugs(projectIntegrations: ProjectIntegrationsMap): string[] {
   const ids = projectIntegrations[USER_PROJECTS_KEY]?._?.ids;
-  return Array.isArray(ids)
-    ? ids.filter((value): value is string => typeof value === "string")
-    : [];
+  const slugs = new Set(
+    Array.isArray(ids) ? ids.filter((value): value is string => typeof value === "string") : []
+  );
+
+  for (const key of Object.keys(projectIntegrations)) {
+    if (key.startsWith(USER_PROJECT_META_PREFIX)) {
+      slugs.add(key.slice(USER_PROJECT_META_PREFIX.length));
+    }
+  }
+
+  return Array.from(slugs);
 }
 
 function getProjectDisplayName(

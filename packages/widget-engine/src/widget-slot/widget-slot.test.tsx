@@ -41,7 +41,7 @@ vi.mock("@radarboard/ui/app-dialog", () => {
     createElement("div", null, children);
 
   return {
-    APP_DIALOG_SIZES: ["sm", "content", "md", "lg"],
+    APP_DIALOG_SIZES: ["sm", "md", "lg", "xl"],
     ConfirmationDialog: component,
     DialogContent: component,
     DialogDescription: component,

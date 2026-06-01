@@ -3,6 +3,7 @@ import type { SettingsSection } from "@/components/settings/settings-sections";
 export interface SettingsChildParamPreservation {
   preserveIntegrationIntent: boolean;
   preserveIntegrationTab: boolean;
+  preserveProject: boolean;
   preserveService: boolean;
 }
 
@@ -15,6 +16,11 @@ export interface ConnectServiceTarget {
   isProjectSettingsIntent: boolean;
 }
 
+export interface ProjectSettingsOpenState {
+  integrationIntent: string;
+  projectSlug: string | null;
+}
+
 export function resolveConnectServiceTarget(serviceId: string): ConnectServiceTarget {
   const integrationIntent =
     serviceId.startsWith("intent:") && serviceId.length > "intent:".length
@@ -24,6 +30,22 @@ export function resolveConnectServiceTarget(serviceId: string): ConnectServiceTa
   return {
     integrationIntent,
     isProjectSettingsIntent: integrationIntent?.endsWith("-project") ?? false,
+  };
+}
+
+export function resolveProjectSettingsOpenState(
+  serviceId: string,
+  activeProjectSlug: string | null
+): ProjectSettingsOpenState | null {
+  const { integrationIntent, isProjectSettingsIntent } = resolveConnectServiceTarget(serviceId);
+
+  if (!isProjectSettingsIntent || integrationIntent === null || integrationIntent.length === 0) {
+    return null;
+  }
+
+  return {
+    integrationIntent,
+    projectSlug: activeProjectSlug,
   };
 }
 
@@ -45,10 +67,15 @@ export function resolveSettingsChildParamPreservation(
     section === "integrations" &&
     typeof integrationIntent === "string" &&
     integrationIntent.length > 0;
+  const hasProjectSetupIntent =
+    section === "projects" &&
+    typeof integrationIntent === "string" &&
+    integrationIntent.endsWith("-project");
 
   return {
-    preserveIntegrationIntent: hasIntegrationIntent,
+    preserveIntegrationIntent: hasIntegrationIntent || hasProjectSetupIntent,
     preserveIntegrationTab: hasServiceDeepLink && integrationTab !== null,
+    preserveProject: hasProjectSetupIntent,
     preserveService: hasServiceDeepLink,
   };
 }

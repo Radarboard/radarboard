@@ -3,6 +3,7 @@
 import { cn } from "@radarboard/utils/cn";
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
+import { BalancedText } from "../balanced-text";
 
 export interface EmptyStateProps {
   icon?: LucideIcon;
@@ -28,9 +29,13 @@ export function EmptyState({
     return (
       <div className={cn("flex h-full items-center justify-center px-4 text-center", className)}>
         <div>
-          <p className="font-mono text-dim text-w-sm">{message}</p>
+          <BalancedText as="p" className="font-mono text-dim text-w-sm">
+            {message}
+          </BalancedText>
           {subMessage !== undefined && subMessage !== null ? (
-            <p className="mt-1 font-mono text-dim text-w-sm">{subMessage}</p>
+            <BalancedText as="p" className="mt-1 font-mono text-dim text-w-sm">
+              {subMessage}
+            </BalancedText>
           ) : null}
           {action !== undefined && action !== null ? <div className="mt-3">{action}</div> : null}
         </div>
@@ -49,9 +54,13 @@ export function EmptyState({
       {title !== undefined && title !== null ? (
         <h3 className="mb-1 font-medium text-foreground text-w-base">{title}</h3>
       ) : null}
-      <div className="mx-auto max-w-[280px] text-dim text-w-sm">{message}</div>
+      <BalancedText as="div" className="mx-auto max-w-[280px] text-dim text-w-sm">
+        {message}
+      </BalancedText>
       {subMessage !== undefined && subMessage !== null ? (
-        <div className="mx-auto mt-1 max-w-[280px] text-dim text-w-xs">{subMessage}</div>
+        <BalancedText as="div" className="mx-auto mt-1 max-w-[280px] text-dim text-w-xs">
+          {subMessage}
+        </BalancedText>
       ) : null}
       {action !== undefined && action !== null ? <div className="mt-4">{action}</div> : null}
     </div>

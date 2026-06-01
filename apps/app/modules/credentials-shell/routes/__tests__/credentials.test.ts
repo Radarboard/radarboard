@@ -86,4 +86,35 @@ describe("credentials route", () => {
     expect(cacheRepoMock.getKeysByRoute).toHaveBeenCalledWith("/api/integrations/analytics/data");
     expect(cacheRepoMock.delete).toHaveBeenCalledWith("analytics:data:all:30d:UTC");
   });
+
+  it("normalizes a pasted Raindrop bearer header value before saving", async () => {
+    credentialRepoMock.setCredential.mockResolvedValue(undefined);
+    cacheRepoMock.getKeysByRoute.mockResolvedValue([]);
+
+    const res = await handleSaveCredentials(
+      makeRequest({
+        key: "raindrop",
+        values: { accessToken: " Bearer rd_secret " },
+      })
+    );
+
+    expect(res.status).toBe(200);
+    expect(credentialRepoMock.setCredential).toHaveBeenCalledWith("raindrop", {
+      accessToken: "rd_secret",
+    });
+  });
+
+  it("rejects a Raindrop bearer prefix without a token", async () => {
+    const res = await handleSaveCredentials(
+      makeRequest({
+        key: "raindrop",
+        values: { accessToken: "Bearer " },
+      })
+    );
+    const body = await res.json();
+
+    expect(res.status).toBe(400);
+    expect(body.error).toContain("Raindrop access token");
+    expect(credentialRepoMock.setCredential).not.toHaveBeenCalled();
+  });
 });

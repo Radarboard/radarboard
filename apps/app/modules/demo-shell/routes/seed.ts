@@ -148,7 +148,7 @@ const MOCK_RAINDROP = {
       tags: ["release", "shipping"],
       important: true,
       collectionId: 3,
-      collectionTitle: "Shipping",
+      collectionTitle: "Release Activity",
       collectionUrl: "https://app.raindrop.io/my/3",
       raindropUrl: "https://app.raindrop.io/my/0/item/104",
       coverUrl: null,
@@ -175,7 +175,7 @@ const MOCK_RAINDROP = {
     },
     {
       id: 3,
-      title: "Shipping",
+      title: "Release Activity",
       count: 41,
       color: "#f5c542",
       parentId: null,

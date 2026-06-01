@@ -31,7 +31,7 @@ const CAPABILITY_LABELS: Record<CapabilityId, string> = {
   "app-reviews": "App Reviews",
   downloads: "Downloads",
   sponsorship: "Sponsorship",
-  shipping: "Shipping",
+  shipping: "Release Activity",
   analytics: "Analytics",
   seo: "SEO",
 };

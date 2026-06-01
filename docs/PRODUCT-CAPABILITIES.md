@@ -102,7 +102,7 @@ Each integration connects to an external service to pull data, expose widgets, a
 ### Composite
 | Integration | What It Provides |
 |---|---|
-| **Shipping** | Fulfillment tracking combining GitHub, Linear, and Vercel data |
+| **Release Activity** | Release tracking combining GitHub, Linear, and Vercel data |
 
 ---
 
@@ -148,7 +148,7 @@ Widgets are the visual building blocks of the dashboard. Each can be configured,
 |---|---|
 | **Roadmap** | Product roadmap with feature tracking |
 | **Raindrop** | Bookmark collections from Raindrop.io |
-| **Shipping** | Order fulfillment and delivery status |
+| **Release Activity** | Release and deployment status |
 
 ### Widget Capabilities
 - Every widget has a **detail dialog** for expanded views

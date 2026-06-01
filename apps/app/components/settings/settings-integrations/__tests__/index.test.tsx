@@ -21,6 +21,12 @@ const { querySetters, queryState, serviceEntries } = vi.hoisted(() => ({
       usedByWidgets: [],
     },
     {
+      auth: { name: "Linear" },
+      credKey: "linear",
+      pollingSourceIds: [],
+      usedByWidgets: [],
+    },
+    {
       auth: { name: "OpenPanel" },
       credKey: "openpanel",
       pollingSourceIds: [],
@@ -35,6 +41,12 @@ const { querySetters, queryState, serviceEntries } = vi.hoisted(() => ({
     {
       auth: { name: "Umami" },
       credKey: "umami",
+      pollingSourceIds: [],
+      usedByWidgets: [],
+    },
+    {
+      auth: { name: "Vercel" },
+      credKey: "vercel",
       pollingSourceIds: [],
       usedByWidgets: [],
     },
@@ -87,7 +99,11 @@ vi.mock("@/hooks/projects/use-project-integrations", () => ({
 vi.mock("../utils", () => ({
   collectServices: () => [...serviceEntries],
   getIntegrationCategories: () => [
-    { id: "developer-tools", label: "Developer Tools", serviceIds: ["github", "npm"] },
+    {
+      id: "developer-tools",
+      label: "Developer Tools",
+      serviceIds: ["github", "linear", "npm", "vercel"],
+    },
     { id: "analytics", label: "Analytics & SEO", serviceIds: ["openpanel", "umami"] },
   ],
   getServiceApiConfigured: () => false,
@@ -115,7 +131,12 @@ vi.mock("../../settings-category-tabs", () => ({
 }));
 
 vi.mock("../../settings-page-layout", () => ({
-  SettingsCardSection: ({ children }: { children: ReactNode }) => <div>{children}</div>,
+  SettingsCardSection: ({ children, title }: { children: ReactNode; title?: string }) => (
+    <section>
+      {title ? <h2>{title}</h2> : null}
+      {children}
+    </section>
+  ),
   SettingsGrid: ({ children }: { children: ReactNode }) => <div>{children}</div>,
   SettingsPageLayout: ({ children }: { children: ReactNode }) => <div>{children}</div>,
   SettingsPageToolbar: ({
@@ -175,6 +196,18 @@ describe("SettingsIntegrations", () => {
     expect(screen.getByText("openpanel")).toBeTruthy();
     expect(screen.getByText("umami")).toBeTruthy();
     expect(screen.queryByText("github")).toBeNull();
+    expect(screen.queryByTestId("service-detail-modal")).toBeNull();
+  });
+
+  it("shows a filtered chooser for release activity intent deep links", () => {
+    queryState.integrationIntent = "release-activity";
+    render(<SettingsIntegrations />);
+
+    expect(screen.getByText("Choose a Release Activity provider")).toBeTruthy();
+    expect(screen.getByText("github")).toBeTruthy();
+    expect(screen.getByText("linear")).toBeTruthy();
+    expect(screen.getByText("vercel")).toBeTruthy();
+    expect(screen.queryByText("openpanel")).toBeNull();
     expect(screen.queryByTestId("service-detail-modal")).toBeNull();
   });
 

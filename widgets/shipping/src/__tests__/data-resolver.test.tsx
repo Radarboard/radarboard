@@ -49,7 +49,7 @@ describe("shipping data resolver", () => {
     await waitFor(() => {
       expect(onState).toHaveBeenCalledWith(
         expect.objectContaining({
-          data: {
+          data: expect.objectContaining({
             configured: true,
             items: [
               expect.objectContaining({
@@ -58,7 +58,7 @@ describe("shipping data resolver", () => {
               }),
               expect.objectContaining({ projectName: "Radarboard", sourceColor: "#4ade80" }),
             ],
-          },
+          }),
         })
       );
     });
@@ -94,7 +94,12 @@ describe("shipping data resolver", () => {
       expect(call).toMatchObject({
         loading: true,
         error: "upstream",
-        data: { configured: false },
+        data: {
+          configured: false,
+          ctaLabel: "Choose integration",
+          ctaTarget: "intent:release-activity",
+          setupMessage: "Connect GitHub, Linear, or Vercel to show release activity.",
+        },
       });
       expect(call.data.items.map((item: { sourceColor: string }) => item.sourceColor)).toEqual([
         "#5b8af5",

@@ -3,8 +3,8 @@
 import { API_ROUTES } from "@radarboard/types/api-routes";
 import type { IntegrationConnection } from "@radarboard/types/database";
 import { useCallback } from "react";
-import useSWR, { mutate as mutateSWR } from "swr";
-import { isIntegrationBackedDashboardDataKey } from "@/lib/integration-data-invalidation";
+import useSWR, { useSWRConfig } from "swr";
+import { revalidateIntegrationBackedDashboardData } from "@/lib/integration-data-invalidation";
 
 export interface IntegrationProviderDefinition {
   provider: string;
@@ -31,16 +31,16 @@ async function apiFetcher<T>(url: string): Promise<T> {
   return (await res.json()) as T;
 }
 
-async function revalidateIntegrationBackedDashboardData(): Promise<void> {
-  await mutateSWR(isIntegrationBackedDashboardDataKey, undefined, { revalidate: true });
-}
-
 export function useIntegrationConnections() {
+  const { cache, mutate: mutateDashboardData } = useSWRConfig();
   const { data, error, isLoading, mutate } = useSWR<IntegrationConnectionsResponse>(
     API_ROUTES.integrationConnections,
     apiFetcher,
     { refreshInterval: 0 }
   );
+  const revalidateDashboardData = useCallback(async (): Promise<void> => {
+    await revalidateIntegrationBackedDashboardData(cache, mutateDashboardData);
+  }, [cache, mutateDashboardData]);
 
   const addOrUpdate = useCallback(
     async (
@@ -62,9 +62,9 @@ export function useIntegrationConnections() {
       }
 
       await mutate();
-      await revalidateIntegrationBackedDashboardData();
+      await revalidateDashboardData();
     },
-    [mutate]
+    [mutate, revalidateDashboardData]
   );
 
   const remove = useCallback(
@@ -81,9 +81,9 @@ export function useIntegrationConnections() {
       }
 
       await mutate();
-      await revalidateIntegrationBackedDashboardData();
+      await revalidateDashboardData();
     },
-    [mutate]
+    [mutate, revalidateDashboardData]
   );
 
   return {

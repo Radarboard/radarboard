@@ -3,7 +3,16 @@
  * a layout definition + widget assignment map.
  */
 
-import type { ApplyBlueprintResult, LayoutBlueprintDescriptor } from "./types";
+import type {
+  ApplyBlueprintResult,
+  BlueprintScopeOptions,
+  LayoutBlueprintDescriptor,
+} from "./types";
+
+function canApplyBlueprintSlot(slotWidgetId: string, options?: BlueprintScopeOptions): boolean {
+  if (!options?.dashboardScope || !options.canPlaceWidget) return true;
+  return options.canPlaceWidget(slotWidgetId, options.dashboardScope);
+}
 
 /**
  * Apply a blueprint as a fresh layout (no existing widgets).
@@ -11,7 +20,8 @@ import type { ApplyBlueprintResult, LayoutBlueprintDescriptor } from "./types";
  */
 export function applyBlueprint(
   blueprint: LayoutBlueprintDescriptor,
-  connectedIntegrations: string[]
+  connectedIntegrations: string[],
+  options?: BlueprintScopeOptions
 ): ApplyBlueprintResult {
   const widgetAssignments: Record<string, string | null> = {};
   const filledCells: string[] = [];
@@ -21,6 +31,7 @@ export function applyBlueprint(
   }
 
   for (const slot of blueprint.slots) {
+    if (!canApplyBlueprintSlot(slot.widgetId, options)) continue;
     widgetAssignments[slot.cellId] = slot.widgetId;
     filledCells.push(slot.cellId);
   }
@@ -51,7 +62,8 @@ export function applyBlueprint(
 export function smartMergeBlueprint(
   blueprint: LayoutBlueprintDescriptor,
   existingAssignments: Record<string, string | null>,
-  connectedIntegrations: string[]
+  connectedIntegrations: string[],
+  options?: BlueprintScopeOptions
 ): ApplyBlueprintResult {
   const widgetAssignments: Record<string, string | null> = { ...existingAssignments };
   const keptWidgets: string[] = [];
@@ -65,6 +77,7 @@ export function smartMergeBlueprint(
   }
 
   for (const slot of blueprint.slots) {
+    if (!canApplyBlueprintSlot(slot.widgetId, options)) continue;
     const currentWidget = widgetAssignments[slot.cellId];
 
     if (currentWidget) {

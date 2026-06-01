@@ -26,6 +26,9 @@ interface GitHubSponsorsResponse {
   limitedAccess?: boolean;
   _fetchedAt?: number;
   error?: string;
+  setupMessage?: string;
+  ctaLabel?: string;
+  ctaTarget?: string;
 }
 
 export interface GitHubSponsorsOverviewData {
@@ -56,12 +59,13 @@ export function useGitHubSponsors(login: string | null, enabled = true, demoMode
   });
 
   const refetch = useCallback(async () => {
+    if (!enabled) return;
     const forceUrl = login
       ? `${ROUTE}?login=${encodeURIComponent(login)}&refresh=1${demoMode ? "&demo=1" : ""}`
       : `${ROUTE}?refresh=1${demoMode ? "&demo=1" : ""}`;
     const fresh = await apiFetcher<GitHubSponsorsResponse>(forceUrl);
     await mutate(fresh, { revalidate: false });
-  }, [login, demoMode, mutate]);
+  }, [enabled, login, demoMode, mutate]);
 
   const parsed: GitHubSponsorsOverviewData | null =
     data?.configured && data?.stats
@@ -77,6 +81,9 @@ export function useGitHubSponsors(login: string | null, enabled = true, demoMode
   return {
     data: parsed,
     configured: data?.configured ?? false,
+    setupMessage: data?.setupMessage ?? null,
+    ctaLabel: data?.ctaLabel ?? null,
+    ctaTarget: data?.ctaTarget ?? null,
     fetchedAt: data?._fetchedAt ?? null,
     loading: isLoading && !error,
     error: error?.message ?? data?.error ?? null,

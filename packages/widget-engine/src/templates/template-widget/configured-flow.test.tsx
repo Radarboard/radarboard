@@ -307,6 +307,32 @@ describe("configured: false flow", () => {
     expect(onConnectService).toHaveBeenCalledWith("npm");
   });
 
+  it("routes release activity connect CTA to the integrations chooser", async () => {
+    registerTemplateDataSource(
+      "shipping",
+      createStaticResolver({
+        data: { configured: false },
+        fetchedAt: null,
+        loading: false,
+        error: null,
+      })
+    );
+
+    const onConnectService = vi.fn();
+    renderTemplate(
+      {
+        dataSources: [{ id: "shipping" }],
+        sections: [],
+      },
+      { onConnectService }
+    );
+
+    const button = await screen.findByRole("button", { name: "Connect Release Activity" });
+    await userEvent.click(button);
+
+    expect(onConnectService).toHaveBeenCalledWith("intent:release-activity");
+  });
+
   it("renders a project-settings CTA for mapping-required analytics state", async () => {
     registerTemplateDataSource(
       "analytics",

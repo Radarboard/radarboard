@@ -5,7 +5,7 @@ export const site = {
   name: PRODUCT_NAME,
   tagline: "A desktop board for code, ops, and growth signals.",
   description:
-    "Radarboard is a local-first desktop app for the revenue, shipping, growth, reliability, and open-source signals behind your work.",
+    "Radarboard is a local-first desktop app for the revenue, release activity, growth, reliability, and open-source signals behind your work.",
   audiencesLabel:
     "founders, indie operators, open-source maintainers, developers, DevOps, marketers, creators, and teams",
   hero: {

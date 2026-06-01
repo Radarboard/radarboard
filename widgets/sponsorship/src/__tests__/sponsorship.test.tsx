@@ -154,7 +154,9 @@ describe("sponsorshipDescriptor", () => {
     );
 
     expect(
-      await screen.findByText("Connect GitHub Sponsors or Open Collective to enable sponsorship data.")
+      await screen.findByText(
+        "Connect GitHub Sponsors or Open Collective to enable sponsorship data."
+      )
     ).toBeTruthy();
     expect(screen.queryByText("Monthly Income")).toBeNull();
   });

@@ -1,6 +1,7 @@
 "use client";
 
 import { useDemoMode } from "@radarboard/hooks/use-demo-mode";
+import { BalancedText } from "@radarboard/ui/balanced-text";
 import { DemoGuard } from "@radarboard/ui/demo-guard";
 import { Input } from "@radarboard/ui/input";
 import { cn } from "@radarboard/utils/cn";
@@ -57,7 +58,9 @@ export function SettingsPageLayout({
         {/* Header */}
         <div>
           <div className="mb-1 font-mono text-dim text-w-sm uppercase tracking-widest">{title}</div>
-          <div className="mb-1 text-muted-foreground text-w-sm">{description}</div>
+          <BalancedText as="div" className="mb-1 text-muted-foreground text-w-sm">
+            {description}
+          </BalancedText>
           {Boolean(statusText) && (
             <div className={cn("font-mono text-w-sm", STATUS_COLORS[statusColor])}>
               {statusText}
@@ -148,7 +151,9 @@ export function SettingsPanel({
       <div>
         <div className="font-mono text-dim text-w-sm uppercase tracking-widest">{title}</div>
         {description ? (
-          <div className="mt-1 text-muted-foreground text-w-sm leading-relaxed">{description}</div>
+          <BalancedText as="div" className="mt-1 text-muted-foreground text-w-sm leading-relaxed">
+            {description}
+          </BalancedText>
         ) : null}
       </div>
       {children}
@@ -190,7 +195,9 @@ export function SettingsStatCard({
     <div className="min-w-0 space-y-2 rounded-item border border-border bg-surface p-4">
       <div className="font-mono text-dim text-w-sm uppercase tracking-widest">{label}</div>
       <div className="font-mono text-foreground text-w-xl">{value}</div>
-      <div className="text-muted-foreground text-w-sm leading-relaxed">{caption}</div>
+      <BalancedText as="div" className="text-muted-foreground text-w-sm leading-relaxed">
+        {caption}
+      </BalancedText>
     </div>
   );
 }

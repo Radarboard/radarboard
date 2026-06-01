@@ -1,5 +1,6 @@
 "use client";
 
+import { BalancedText } from "@radarboard/ui/balanced-text";
 import { Button } from "@radarboard/ui/button";
 import { cn } from "@radarboard/utils/cn";
 import { Plug } from "lucide-react";
@@ -46,7 +47,12 @@ export function WidgetNotConfigured({
       )}
     >
       <Plug className="size-5 text-dim" />
-      <p className="font-mono text-dim text-w-sm">{message ?? `${serviceName} not connected`}</p>
+      <BalancedText
+        as="p"
+        className="max-w-md break-words font-mono text-dim text-w-sm leading-relaxed"
+      >
+        {message ?? `${serviceName} not connected`}
+      </BalancedText>
       {onConnect && (
         <div className="flex flex-wrap justify-center gap-2">
           {buttons.length > 0 ? (

@@ -116,7 +116,7 @@ describe("credential resolvers", () => {
   it("resolves broker-backed GSC config with a short-lived access token", async () => {
     mocks.credentials["google-search-console"] = {
       authMethod: "oauth_broker",
-      brokerUrl: "https://app.radarboard.app/",
+      brokerUrl: "https://auth.radarboard.app/",
       brokerCredentialToken: "broker-token",
     };
     const fetchMock = vi.fn().mockResolvedValue({
@@ -128,7 +128,7 @@ describe("credential resolvers", () => {
     const config = await resolveGSCConfig();
 
     expect(fetchMock).toHaveBeenCalledWith(
-      "https://app.radarboard.app/api/auth/broker/google/access-token",
+      "https://auth.radarboard.app/api/auth/broker/google/access-token",
       expect.objectContaining({
         method: "POST",
         body: JSON.stringify({ brokerCredentialToken: "broker-token" }),
@@ -136,7 +136,7 @@ describe("credential resolvers", () => {
     );
     expect(config).toEqual({
       authMethod: "oauth_broker",
-      brokerUrl: "https://app.radarboard.app/",
+      brokerUrl: "https://auth.radarboard.app/",
       brokerCredentialToken: "broker-token",
       accessToken: "broker_access_token",
     });

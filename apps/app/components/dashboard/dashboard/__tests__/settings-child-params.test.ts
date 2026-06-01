@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   resolveConnectServiceTarget,
+  resolveProjectSettingsOpenState,
   resolveSettingsChildParamPreservation,
 } from "../settings-params";
 
@@ -31,6 +32,26 @@ describe("resolveConnectServiceTarget", () => {
   });
 });
 
+describe("resolveProjectSettingsOpenState", () => {
+  it("preserves setup intent and keeps All Projects unselected", () => {
+    expect(resolveProjectSettingsOpenState("intent:sponsorship-project", null)).toEqual({
+      integrationIntent: "sponsorship-project",
+      projectSlug: null,
+    });
+  });
+
+  it("preserves the active project for project-mapping CTAs", () => {
+    expect(resolveProjectSettingsOpenState("intent:openpanel-project", "radarboard")).toEqual({
+      integrationIntent: "openpanel-project",
+      projectSlug: "radarboard",
+    });
+  });
+
+  it("ignores concrete service targets", () => {
+    expect(resolveProjectSettingsOpenState("github", "radarboard")).toBeNull();
+  });
+});
+
 describe("resolveSettingsChildParamPreservation", () => {
   it("preserves integration deep-link params when opening integrations", () => {
     expect(
@@ -42,6 +63,7 @@ describe("resolveSettingsChildParamPreservation", () => {
     ).toEqual({
       preserveIntegrationIntent: false,
       preserveIntegrationTab: true,
+      preserveProject: false,
       preserveService: true,
     });
   });
@@ -56,6 +78,7 @@ describe("resolveSettingsChildParamPreservation", () => {
     ).toEqual({
       preserveIntegrationIntent: false,
       preserveIntegrationTab: false,
+      preserveProject: false,
       preserveService: false,
     });
   });
@@ -70,6 +93,22 @@ describe("resolveSettingsChildParamPreservation", () => {
     ).toEqual({
       preserveIntegrationIntent: true,
       preserveIntegrationTab: false,
+      preserveProject: false,
+      preserveService: false,
+    });
+  });
+
+  it("preserves project setup params when opening projects from a project CTA", () => {
+    expect(
+      resolveSettingsChildParamPreservation("projects", {
+        integrationIntent: "sponsorship-project",
+        integrationTab: null,
+        service: null,
+      })
+    ).toEqual({
+      preserveIntegrationIntent: true,
+      preserveIntegrationTab: false,
+      preserveProject: true,
       preserveService: false,
     });
   });
@@ -84,6 +123,7 @@ describe("resolveSettingsChildParamPreservation", () => {
     ).toEqual({
       preserveIntegrationIntent: false,
       preserveIntegrationTab: false,
+      preserveProject: false,
       preserveService: false,
     });
   });

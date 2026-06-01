@@ -14,16 +14,21 @@ import { ChatDrawer } from "@radarboard/assistant-ui/chat-drawer";
 import { useChatDrawer } from "@radarboard/assistant-ui/use-chat-drawer";
 import {
   createDefaultDashboardPage,
+  DEFAULT_DASHBOARD_PAGE_SLUG,
   resolveDashboardProjectView,
 } from "@radarboard/hooks/dashboard-layout";
 import { prefetchProjectData } from "@radarboard/hooks/prefetch-project-data";
 import { useDashboard } from "@radarboard/hooks/use-dashboard";
 import { API_ROUTES } from "@radarboard/types/api-routes";
 import { ALL_PROJECTS_SLUG } from "@radarboard/types/dashboard";
-import type { LayoutCell } from "@radarboard/types/database";
+import type { DashboardPageConfig, LayoutCell, LayoutDefinition } from "@radarboard/types/database";
 import { VIEW_STATE_QUERY_KEYS } from "@radarboard/types/view-state";
+import { ConfirmationDialog, DialogDescription } from "@radarboard/ui/app-dialog";
+import type { LayoutBlueprintDescriptor } from "@radarboard/widget-engine/blueprints";
+import { applyBlueprint } from "@radarboard/widget-engine/blueprints/apply";
 import {
   applyColumnBoundaryDelta,
+  generateCellId,
   generateStackedGridAreas,
   getCellRect,
   getGridAreaName,
@@ -54,6 +59,7 @@ import { SetupWizard } from "@/components/dashboard/setup-wizard";
 import { StepIntegrations } from "@/components/onboarding/step-integrations";
 import { StepLayout } from "@/components/onboarding/step-layout";
 import { ProjectSwitchSkeletonOverlay } from "@/components/projects/project-switch-skeleton-overlay";
+import { LayoutPresetPicker } from "@/components/settings/settings-layouts/preset-picker";
 import { SettingsModal } from "@/components/settings/settings-modal";
 import type {
   AdvancedSettingsSection,
@@ -87,6 +93,7 @@ import { BottomTicker } from "../../chrome/bottom-ticker";
 import { KPIStrip } from "../../chrome/kpi-strip";
 import {
   resolveConnectServiceTarget,
+  resolveProjectSettingsOpenState,
   resolveSettingsChildParamPreservation,
   type SettingsSectionChangeOptions,
 } from "./settings-params";
@@ -106,14 +113,20 @@ const snapOverlayToCursor: Modifier = ({ activatorEvent, transform, activeNodeRe
   };
 };
 
-interface OnboardingWizardProps {
+interface OnboardingWizardBaseProps {
   mode: "first-run" | "returning" | "preview";
   open: boolean;
   onComplete: () => void;
   onPluginsConfigured?: (disabledPluginIds: string[]) => void;
-  StepIntegrations: typeof StepIntegrations;
-  StepLayout: typeof StepLayout;
 }
+
+type OnboardingWizardInjectedSteps = {
+  [StepName in "StepIntegrations" | "StepLayout"]: StepName extends "StepIntegrations"
+    ? typeof StepIntegrations
+    : typeof StepLayout;
+};
+
+type OnboardingWizardProps = OnboardingWizardBaseProps & OnboardingWizardInjectedSteps;
 
 const OnboardingWizard = getFeatureUiComponent<OnboardingWizardProps>("onboarding", "wizard");
 
@@ -303,10 +316,12 @@ function useDashboardModalState() {
     ({
       preserveIntegrationIntent = false,
       preserveIntegrationTab = false,
+      preserveProject = false,
       preserveService = false,
     }: Partial<{
       preserveIntegrationIntent: boolean;
       preserveIntegrationTab: boolean;
+      preserveProject: boolean;
       preserveService: boolean;
     }> = {}) => {
       setAiSkillEditorParam(null);
@@ -329,7 +344,9 @@ function useDashboardModalState() {
       setSettingsInstallerParam(null);
       setSettingsPluginParam(null);
       setSettingsPluginTabParam(null);
-      setSettingsProject(null);
+      if (!preserveProject) {
+        setSettingsProject(null);
+      }
       setSettingsRelayParam(null);
       setShortcutScopeParam(null);
       setWidgetCategoryParam(null);
@@ -392,6 +409,8 @@ function useDashboardModalState() {
         preserveIntegrationTab:
           options?.preserveChildParams?.preserveIntegrationTab ??
           resolvedPreservation.preserveIntegrationTab,
+        preserveProject:
+          options?.preserveChildParams?.preserveProject ?? resolvedPreservation.preserveProject,
         preserveService:
           options?.preserveChildParams?.preserveService ?? resolvedPreservation.preserveService,
       });
@@ -526,7 +545,7 @@ function isDemoDataKey(key: unknown): key is string {
   return DEMO_REVALIDATE_ROUTES.some((route) => key.includes(route));
 }
 
-function getUniquePageSlug(name: string, pages: ReturnType<typeof useDashboard>["pages"]): string {
+function getUniquePageSlug(name: string, pages: DashboardPageConfig[]): string {
   const baseSlug =
     name
       .toLowerCase()
@@ -542,6 +561,37 @@ function getUniquePageSlug(name: string, pages: ReturnType<typeof useDashboard>[
   }
 
   return candidate;
+}
+
+function cloneLayoutForNewPage(layout: LayoutDefinition): LayoutDefinition {
+  const columnRowSizes = resolveColumnRowSizes(layout);
+
+  return {
+    ...layout,
+    id: crypto.randomUUID(),
+    cells: layout.cells.map((cell) => ({ ...cell, id: generateCellId() })),
+    colSizes: [...resolveColSizes(layout)],
+    rowSizes: [...summarizeColumnRowSizes(columnRowSizes)],
+    columnRowSizes: columnRowSizes.map((sizes) => [...sizes]),
+  };
+}
+
+function remapWidgetAssignments(
+  sourceLayout: LayoutDefinition,
+  targetLayout: LayoutDefinition,
+  assignments: Record<string, string | null>
+): Record<string, string | null> {
+  const result: Record<string, string | null> = {};
+
+  for (let index = 0; index < sourceLayout.cells.length; index += 1) {
+    const sourceCell = sourceLayout.cells[index];
+    const targetCell = targetLayout.cells[index];
+    if (sourceCell && targetCell) {
+      result[targetCell.id] = assignments[sourceCell.id] ?? null;
+    }
+  }
+
+  return result;
 }
 
 function getDesktopCellStyle(
@@ -741,6 +791,7 @@ interface DashboardSurfaceProps extends DashboardGridAreaProps {
   handleEditModeToggle: () => void;
   handleAddProject: () => void;
   handleAddPage: () => void;
+  handleDeletePage: (slug: string) => void;
   handlePageSelect: (slug: string) => void;
   handlePluginClose: () => void;
   handlePluginLaunch: (pluginId: string) => void;
@@ -804,6 +855,7 @@ function DashboardSurface({
   handleEditModeToggle,
   handleAddProject,
   handleAddPage,
+  handleDeletePage,
   handlePageSelect,
   handlePluginClose,
   handlePluginLaunch,
@@ -942,8 +994,10 @@ function DashboardSurface({
             <PageTabs
               pages={isProjectSwitching ? visualProjectView.pages : pages}
               activeSlug={isProjectSwitching ? visualProjectView.activePageSlug : activePageSlug}
+              isEditMode={isEditMode}
               onSelect={handlePageSelect}
               onAddPage={isProjectSwitching ? undefined : handleAddPage}
+              onDeletePage={isProjectSwitching ? undefined : handleDeletePage}
             />
           </div>
 
@@ -1097,6 +1151,7 @@ function useDashboardGridState({
   pendingProjectSlug,
   projectLayouts,
   showTicker,
+  isEditMode,
   updateLayoutSizes,
   updateWidgetLayout,
   viewportWidth,
@@ -1111,6 +1166,7 @@ function useDashboardGridState({
   pendingProjectSlug: string | null;
   projectLayouts: ReturnType<typeof useDashboard>["projectLayouts"];
   showTicker: boolean;
+  isEditMode: boolean;
   updateLayoutSizes: ReturnType<typeof useDashboard>["updateLayoutSizes"];
   updateWidgetLayout: ReturnType<typeof useDashboard>["updateWidgetLayout"];
   viewportWidth: number | null;
@@ -1258,6 +1314,7 @@ function useDashboardGridState({
     if (visualProjectSlug === null) return "All Projects";
     return orderedProjects.find((project) => project.slug === visualProjectSlug)?.name ?? "Project";
   }, [orderedProjects, visualProjectSlug]);
+  const isDesktopLayout = viewportWidth === null || viewportWidth > 900;
 
   return {
     activeCellRects,
@@ -1271,12 +1328,12 @@ function useDashboardGridState({
     handleDragEnd,
     handleDragStart,
     horizontalHandles,
-    isDesktopLayout: viewportWidth === null || viewportWidth > 900,
+    isDesktopLayout,
     liveColSizes,
     pendingProjectName,
     sensors,
     setLiveColSizes,
-    showResizeHandles: viewportWidth === null || viewportWidth > 900,
+    showResizeHandles: isEditMode && isDesktopLayout,
     visualProjectSlug,
     visualProjectView,
     widgetAreaRef,
@@ -1323,13 +1380,21 @@ function useDashboardContentActions({
     (serviceId: string) => {
       const { integrationIntent, isProjectSettingsIntent } = resolveConnectServiceTarget(serviceId);
       if (isProjectSettingsIntent) {
+        const projectSettingsState = resolveProjectSettingsOpenState(serviceId, activeProjectSlug);
+        if (projectSettingsState === null) return;
+
         setServiceParam(null);
-        setIntegrationIntentParam(null);
+        setIntegrationIntentParam(projectSettingsState.integrationIntent);
         if (typeof window !== "undefined") {
           writeStoredProjectSettingsTab(window.localStorage, "platforms");
         }
-        setSettingsProject(activeProjectSlug ?? ALL_PROJECTS_SLUG);
-        handleSettingsOpen("projects");
+        setSettingsProject(projectSettingsState.projectSlug);
+        handleSettingsOpen("projects", {
+          preserveChildParams: {
+            preserveIntegrationIntent: true,
+            preserveProject: true,
+          },
+        });
         return;
       }
       const hasServiceId = integrationIntent === null && serviceId.length > 0;
@@ -1562,11 +1627,13 @@ function DashboardContent({
     setActiveProject,
     setActivePage,
     addProjectPage,
+    removeProjectPage,
     activeLayout,
     appearance,
     isEditMode,
     toggleEditMode,
     updateLayoutSizes,
+    updateLayouts,
     widgetLayout,
     updateWidgetLayout,
     collapseWidget,
@@ -1645,6 +1712,8 @@ function DashboardContent({
   const searchShortcutLabel = useFormattedAppShortcutLabel("search");
   const editShortcutLabel = useFormattedAppShortcutLabel("edit-layout");
   const assistantShortcutLabel = useFormattedAppShortcutLabel("assistant");
+  const [pagePresetPickerOpen, setPagePresetPickerOpen] = useState(false);
+  const [pendingDeletePageSlug, setPendingDeletePageSlug] = useState<string | null>(null);
   const handlePluginLaunch = useCallback(
     (pluginId: string) => {
       setActivePluginId((prev) => (prev === pluginId ? null : pluginId));
@@ -1662,18 +1731,112 @@ function DashboardContent({
   }, [handleSettingsOpen, setProjectDialogParam]);
 
   const handleAddPage = useCallback(() => {
-    const name = `Page ${pages.length + 1}`;
-    const slug = getUniquePageSlug(name, pages);
-    addProjectPage(
-      activeProjectSlug ?? ALL_PROJECTS_SLUG,
-      createDefaultDashboardPage({
-        layoutId: activeLayout.id,
-        name,
-        slug,
-      })
-    );
-    setActivePage(slug);
-  }, [activeLayout.id, activeProjectSlug, addProjectPage, pages, setActivePage]);
+    setPagePresetPickerOpen(true);
+  }, []);
+
+  const handleCreatePageFromLayout = useCallback(
+    (baseLayout: LayoutDefinition) => {
+      const name = `Page ${pages.length + 1}`;
+      const slug = getUniquePageSlug(name, pages);
+      const newLayout = cloneLayoutForNewPage(baseLayout);
+      const updatedLayouts = [...layouts, newLayout];
+
+      updateLayouts(updatedLayouts);
+      addProjectPage(
+        activeProjectSlug ?? ALL_PROJECTS_SLUG,
+        createDefaultDashboardPage(
+          {
+            layoutId: newLayout.id,
+            name,
+            slug,
+          },
+          updatedLayouts
+        )
+      );
+      setActivePage(slug);
+      setPagePresetPickerOpen(false);
+    },
+    [activeProjectSlug, addProjectPage, layouts, pages, setActivePage, updateLayouts]
+  );
+
+  const handleCreatePageFromBlueprint = useCallback(
+    (blueprint: LayoutBlueprintDescriptor) => {
+      const result = applyBlueprint(blueprint, []);
+      const name = `Page ${pages.length + 1}`;
+      const slug = getUniquePageSlug(name, pages);
+      const newLayout = cloneLayoutForNewPage({
+        ...result.layout,
+        name: blueprint.name,
+      });
+      const widgetAssignments = remapWidgetAssignments(
+        result.layout,
+        newLayout,
+        result.widgetAssignments
+      );
+      const updatedLayouts = [...layouts, newLayout];
+
+      updateLayouts(updatedLayouts);
+      addProjectPage(
+        activeProjectSlug ?? ALL_PROJECTS_SLUG,
+        createDefaultDashboardPage(
+          {
+            layoutId: newLayout.id,
+            name,
+            slug,
+            widgetLayouts: {
+              [newLayout.id]: widgetAssignments,
+            },
+          },
+          updatedLayouts
+        )
+      );
+      setActivePage(slug);
+      setPagePresetPickerOpen(false);
+    },
+    [activeProjectSlug, addProjectPage, layouts, pages, setActivePage, updateLayouts]
+  );
+
+  const handleDeletePageRequest = useCallback(
+    (pageSlug: string) => {
+      if (pages.length <= 1) return;
+      if (pageSlug === DEFAULT_DASHBOARD_PAGE_SLUG) return;
+
+      setPendingDeletePageSlug(pageSlug);
+    },
+    [pages.length]
+  );
+
+  const handleConfirmDeletePage = useCallback(() => {
+    if (!pendingDeletePageSlug) return;
+    if (pendingDeletePageSlug === DEFAULT_DASHBOARD_PAGE_SLUG) return;
+    if (pages.length <= 1) return;
+
+    const pageIndex = pages.findIndex((page) => page.slug === pendingDeletePageSlug);
+    if (pageIndex < 0) return;
+
+    const fallbackPage =
+      pages[pageIndex + 1] ??
+      pages[pageIndex - 1] ??
+      pages.find((page) => page.slug !== pendingDeletePageSlug) ??
+      null;
+
+    removeProjectPage(activeProjectSlug ?? ALL_PROJECTS_SLUG, pendingDeletePageSlug);
+    if (activePageSlug === pendingDeletePageSlug && fallbackPage) {
+      setActivePage(fallbackPage.slug);
+    }
+  }, [
+    activePageSlug,
+    activeProjectSlug,
+    pages,
+    pendingDeletePageSlug,
+    removeProjectPage,
+    setActivePage,
+  ]);
+
+  const pendingDeletePage = useMemo(
+    () => pages.find((page) => page.slug === pendingDeletePageSlug) ?? null,
+    [pages, pendingDeletePageSlug]
+  );
 
   const {
     handleConfigureWidget,
@@ -1728,6 +1891,7 @@ function DashboardContent({
     pendingProjectSlug: isProjectSwitching ? pendingProjectSlug : null,
     projectLayouts,
     showTicker,
+    isEditMode,
     updateLayoutSizes,
     updateWidgetLayout,
     viewportWidth,
@@ -1750,76 +1914,106 @@ function DashboardContent({
   });
 
   return (
-    <DashboardSurface
-      activeDragWidgetName={activeDragWidgetName}
-      activeAdvancedSection={activeAdvancedSection}
-      activePageSlug={activePageSlug}
-      activePluginId={activePluginId}
-      activeProjectSlug={activeProjectSlug}
-      activeSection={activeSection}
-      assistantEnabled={assistantEnabled}
-      activeCells={activeCells}
-      activeCellRects={activeCellRects}
-      appearance={appearance}
-      closeChat={closeChat}
-      currencies={currencies}
-      currency={currency}
-      isEditMode={isEditMode}
-      detailItemId={detailItemId}
-      detailWidgetId={detailWidgetId}
-      gridStyle={gridStyle}
-      handleColResizeEnd={handleColResizeEnd}
-      handleColumnRowResize={handleColumnRowResize}
-      handleColumnRowResizeEnd={handleColumnRowResizeEnd}
-      handleColumnRowResizeStart={handleColumnRowResizeStart}
-      handleConfigureWidget={handleConfigureWidget}
-      handleConnectService={handleConnectService}
-      handleDebugClick={() => router.push("/debug")}
-      handleKnowledgeClick={() => router.push("/knowledge")}
-      handleAddProject={handleAddProject}
-      handleAddPage={handleAddPage}
-      handleDragCancel={handleDragCancel}
-      handleDragEnd={handleDragEnd}
-      handleDragStart={handleDragStart}
-      handleEditModeToggle={toggleEditMode}
-      handlePageSelect={handlePageSelect}
-      handlePluginClose={handlePluginClose}
-      handlePluginLaunch={handlePluginLaunch}
-      handleProjectPrefetch={handleProjectPrefetch}
-      handleProjectSelect={handleProjectSelect}
-      handleAdvancedSettingsSectionChange={handleAdvancedSettingsSectionChange}
-      handleSettingsOpen={handleSettingsOpen}
-      handleSettingsOpenChange={handleSettingsOpenChange}
-      handleSettingsSectionChange={handleSettingsSectionChange}
-      horizontalHandles={horizontalHandles}
-      isChatOpen={isChatOpen}
-      isDesktopLayout={isDesktopLayout}
-      isProjectSwitching={isProjectSwitching}
-      launcherOpen={launcherOpen}
-      liveColSizes={liveColSizes}
-      onCurrencyChange={setCurrency}
-      onLauncherOpenChange={setLauncherOpen}
-      onTimeRangeChange={setTimeRange}
-      orderedProjects={orderedProjects}
-      pages={pages}
-      pendingProjectName={pendingProjectName}
-      pendingProjectSlug={pendingProjectSlug}
-      pluginsLocked={pluginsLocked}
-      sensors={sensors}
-      setDetailParam={setDetailParam}
-      setLiveColSizes={setLiveColSizes}
-      settingsOpen={settingsOpen}
-      onRerunSetup={onRerunSetup}
-      onStartFreshSetup={onStartFreshSetup}
-      onPreviewSetup={onPreviewSetup}
-      shortcutTooltips={shortcutTooltips}
-      showResizeHandles={showResizeHandles}
-      timeRange={timeRange}
-      toggleChat={toggleChat}
-      visualProjectSlug={visualProjectSlug}
-      visualProjectView={visualProjectView}
-      widgetAreaRef={widgetAreaRef}
-    />
+    <>
+      <DashboardSurface
+        activeDragWidgetName={activeDragWidgetName}
+        activeAdvancedSection={activeAdvancedSection}
+        activePageSlug={activePageSlug}
+        activePluginId={activePluginId}
+        activeProjectSlug={activeProjectSlug}
+        activeSection={activeSection}
+        assistantEnabled={assistantEnabled}
+        activeCells={activeCells}
+        activeCellRects={activeCellRects}
+        appearance={appearance}
+        closeChat={closeChat}
+        currencies={currencies}
+        currency={currency}
+        isEditMode={isEditMode}
+        detailItemId={detailItemId}
+        detailWidgetId={detailWidgetId}
+        gridStyle={gridStyle}
+        handleColResizeEnd={handleColResizeEnd}
+        handleColumnRowResize={handleColumnRowResize}
+        handleColumnRowResizeEnd={handleColumnRowResizeEnd}
+        handleColumnRowResizeStart={handleColumnRowResizeStart}
+        handleConfigureWidget={handleConfigureWidget}
+        handleConnectService={handleConnectService}
+        handleDebugClick={() => router.push("/debug")}
+        handleKnowledgeClick={() => router.push("/knowledge")}
+        handleAddProject={handleAddProject}
+        handleAddPage={handleAddPage}
+        handleDeletePage={handleDeletePageRequest}
+        handleDragCancel={handleDragCancel}
+        handleDragEnd={handleDragEnd}
+        handleDragStart={handleDragStart}
+        handleEditModeToggle={toggleEditMode}
+        handlePageSelect={handlePageSelect}
+        handlePluginClose={handlePluginClose}
+        handlePluginLaunch={handlePluginLaunch}
+        handleProjectPrefetch={handleProjectPrefetch}
+        handleProjectSelect={handleProjectSelect}
+        handleAdvancedSettingsSectionChange={handleAdvancedSettingsSectionChange}
+        handleSettingsOpen={handleSettingsOpen}
+        handleSettingsOpenChange={handleSettingsOpenChange}
+        handleSettingsSectionChange={handleSettingsSectionChange}
+        horizontalHandles={horizontalHandles}
+        isChatOpen={isChatOpen}
+        isDesktopLayout={isDesktopLayout}
+        isProjectSwitching={isProjectSwitching}
+        launcherOpen={launcherOpen}
+        liveColSizes={liveColSizes}
+        onCurrencyChange={setCurrency}
+        onLauncherOpenChange={setLauncherOpen}
+        onTimeRangeChange={setTimeRange}
+        orderedProjects={orderedProjects}
+        pages={pages}
+        pendingProjectName={pendingProjectName}
+        pendingProjectSlug={pendingProjectSlug}
+        pluginsLocked={pluginsLocked}
+        sensors={sensors}
+        setDetailParam={setDetailParam}
+        setLiveColSizes={setLiveColSizes}
+        settingsOpen={settingsOpen}
+        onRerunSetup={onRerunSetup}
+        onStartFreshSetup={onStartFreshSetup}
+        onPreviewSetup={onPreviewSetup}
+        shortcutTooltips={shortcutTooltips}
+        showResizeHandles={showResizeHandles}
+        timeRange={timeRange}
+        toggleChat={toggleChat}
+        visualProjectSlug={visualProjectSlug}
+        visualProjectView={visualProjectView}
+        widgetAreaRef={widgetAreaRef}
+      />
+      <LayoutPresetPicker
+        open={pagePresetPickerOpen}
+        onOpenChange={setPagePresetPickerOpen}
+        onSelect={handleCreatePageFromLayout}
+        onSelectBlueprint={handleCreatePageFromBlueprint}
+        personas={preferences.userProfile ? [preferences.userProfile] : []}
+      />
+      <ConfirmationDialog
+        open={pendingDeletePage !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingDeletePageSlug(null);
+        }}
+        title="Delete Page"
+        confirmLabel="Delete page"
+        onConfirm={handleConfirmDeletePage}
+        successToast={pendingDeletePage ? `Deleted ${pendingDeletePage.name}` : "Page deleted"}
+        errorToast="Failed to delete page"
+      >
+        <DialogDescription>
+          {pendingDeletePage ? (
+            <>
+              Delete <span className="text-foreground">{pendingDeletePage.name}</span>? This removes
+              the page and its widget placements from this dashboard.
+            </>
+          ) : null}
+        </DialogDescription>
+      </ConfirmationDialog>
+    </>
   );
 }
 

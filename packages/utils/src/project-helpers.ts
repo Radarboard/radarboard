@@ -18,7 +18,7 @@ export function resolveOcSlug(
   projects: Project[],
   activeProjectSlug: string | null
 ): string | null {
-  if (!activeProjectSlug) return "front-end-checklist";
+  if (!activeProjectSlug) return null;
   const project = projects.find((p) => p.slug === activeProjectSlug);
   const oc = project?.platforms.find((p) => p.integrations.openCollective)?.integrations
     .openCollective as { slug?: string } | undefined;
@@ -49,16 +49,16 @@ export function formatTimeAgo(dateStr: string): string {
 
 /**
  * Resolve a GitHub login (owner) from the project config.
- * In "All" mode, returns the first github.owner found across all projects.
+ * Sponsorship data is project-scoped; in "All" mode, no single owner is implied.
  * In single-project mode, returns the owner from that project's platforms.
  */
 export function resolveGitHubLogin(
   projects: Project[],
   activeProjectSlug: string | null
 ): string | null {
-  const candidates = activeProjectSlug
-    ? projects.filter((p) => p.slug === activeProjectSlug)
-    : projects;
+  if (!activeProjectSlug) return null;
+
+  const candidates = projects.filter((p) => p.slug === activeProjectSlug);
 
   for (const project of candidates) {
     for (const platform of project.platforms) {

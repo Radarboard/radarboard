@@ -5,7 +5,7 @@ import { Button } from "@radarboard/ui/button";
 import { cn } from "@radarboard/utils/cn";
 import { ExternalLink, Loader2 } from "lucide-react";
 import { useCallback, useState } from "react";
-import { mutate as mutateSWR } from "swr";
+import { useSWRConfig } from "swr";
 import { CredentialFields } from "@/components/credentials/credential-fields";
 import type { ServiceEntry } from "@/components/settings/settings-integrations/types";
 import {
@@ -13,7 +13,7 @@ import {
   pickEditableCredentialValues,
   saveCredentialValues,
 } from "@/components/settings/settings-integrations/utils";
-import { isIntegrationBackedDashboardDataKey } from "@/lib/integration-data-invalidation";
+import { revalidateIntegrationBackedDashboardData } from "@/lib/integration-data-invalidation";
 import { handleExternalLinkClick } from "@/lib/system/ui/external-url";
 
 export function ApiCredentialAccessCard({
@@ -36,6 +36,7 @@ export function ApiCredentialAccessCard({
   onCredentialSaveSuccess?: () => void;
   onCredentialChange: () => Promise<void> | void;
 }) {
+  const { cache, mutate } = useSWRConfig();
   const [testing, setTesting] = useState(false);
   const [saving, setSaving] = useState(false);
   const [disconnecting, setDisconnecting] = useState(false);
@@ -47,8 +48,8 @@ export function ApiCredentialAccessCard({
     service.auth.fields?.every((field) => field.optional || values[field.key]?.trim()) ?? false;
 
   const revalidateCredentialData = useCallback(async () => {
-    await mutateSWR(isIntegrationBackedDashboardDataKey, undefined, { revalidate: true });
-  }, []);
+    await revalidateIntegrationBackedDashboardData(cache, mutate);
+  }, [cache, mutate]);
 
   const updateField = useCallback(
     (key: string, value: string) => {

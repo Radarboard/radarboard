@@ -120,6 +120,20 @@ describe("applyBlueprint", () => {
     });
     expect(result.filledCells).toEqual([]);
   });
+
+  it("skips widgets that cannot be placed in the target dashboard scope", () => {
+    const result = applyBlueprint(makeBlueprint(), [], {
+      dashboardScope: "all-projects",
+      canPlaceWidget: (widgetId, scope) => widgetId !== "revenue" || scope === "project",
+    });
+
+    expect(result.widgetAssignments).toEqual({
+      "cell-a": "analytics",
+      "cell-b": null,
+      "cell-c": "seo",
+    });
+    expect(result.filledCells).toEqual(["cell-a", "cell-c"]);
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -230,6 +244,21 @@ describe("smartMergeBlueprint", () => {
     });
     expect(result.filledCells).toEqual(["cell-a", "cell-b", "cell-c"]);
     expect(result.keptWidgets).toEqual([]);
+  });
+
+  it("does not merge widgets that cannot be placed in the target dashboard scope", () => {
+    const existing = { "cell-a": null, "cell-b": null, "cell-c": null };
+    const result = smartMergeBlueprint(makeBlueprint(), existing, [], {
+      dashboardScope: "all-projects",
+      canPlaceWidget: (widgetId, scope) => widgetId !== "revenue" || scope === "project",
+    });
+
+    expect(result.widgetAssignments).toEqual({
+      "cell-a": "analytics",
+      "cell-b": null,
+      "cell-c": "seo",
+    });
+    expect(result.filledCells).toEqual(["cell-a", "cell-c"]);
   });
 
   it("preserves extra cells not in the blueprint slots", () => {

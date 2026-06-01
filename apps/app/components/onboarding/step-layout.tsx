@@ -10,6 +10,8 @@ import {
 } from "@radarboard/widget-engine/blueprints";
 import { LAYOUT_RECIPES } from "@radarboard/widget-engine/layout-recipe-gallery";
 import { getCellRect, getLayoutDimensions } from "@radarboard/widget-engine/layouts";
+import { WIDGET_REGISTRY } from "@radarboard/widget-engine/widgets/registry";
+import { canPlaceWidgetInScope } from "@radarboard/widget-sdk/dashboard-scope";
 import { useEffect, useState } from "react";
 import { BlueprintGrid } from "@/components/settings/settings-layouts/blueprint-picker";
 import {
@@ -39,6 +41,11 @@ export function StepLayout({ state, onChange, onNext, onBack }: StepLayoutProps)
         score: scoreBlueprintFit(bp, {
           personas: state.profile ? [state.profile] : [],
           connectedIntegrations: state.connectedIntegrations,
+          dashboardScope: "all-projects",
+          canPlaceWidget: (widgetId, scope) => {
+            const descriptor = WIDGET_REGISTRY.get(widgetId);
+            return descriptor ? canPlaceWidgetInScope(descriptor, scope) : true;
+          },
         }),
       })).sort((a, b) => b.score - a.score)[0]
     : null;
@@ -65,8 +72,8 @@ export function StepLayout({ state, onChange, onNext, onBack }: StepLayoutProps)
         Dashboard Layout
       </div>
       <p className="mb-3 font-mono text-dim text-w-sm">
-        Choose a layout for your dashboard. Blueprints include suggested widgets. Templates are
-        empty grids you fill yourself.
+        Choose an All Projects layout. Project-only widgets can be added after you create a project.
+        Templates are empty grids you fill yourself.
       </p>
 
       <div className="mb-4 flex items-center gap-4">
@@ -101,6 +108,7 @@ export function StepLayout({ state, onChange, onNext, onBack }: StepLayoutProps)
             adaptLayout={(layout) => adaptLayoutToColumns(layout, columns)}
             onSelect={handleSelectBlueprint}
             selectedId={state.blueprintId}
+            dashboardScope="all-projects"
           />
         ) : (
           <TemplateGrid columns={columns} onSelect={handleSelectTemplate} />

@@ -12,6 +12,8 @@ import {
   scoreBlueprintFit,
 } from "@radarboard/widget-engine/blueprints/registry";
 import { getCellRect, getLayoutDimensions } from "@radarboard/widget-engine/layouts";
+import { WIDGET_REGISTRY } from "@radarboard/widget-engine/widgets/registry";
+import { canPlaceWidgetInScope, type DashboardScope } from "@radarboard/widget-sdk/dashboard-scope";
 import { RemoteServiceIcon } from "@/components/shared/remote-service-icon";
 import { getServiceFaviconUrl } from "@/lib/service-favicons";
 
@@ -37,7 +39,7 @@ const WIDGET_SHORT_LABELS: Record<string, string> = {
   "app-reviews": "App Reviews",
   roadmap: "Roadmap",
   seo: "SEO",
-  shipping: "Shipping",
+  shipping: "Release Activity",
   sponsorship: "Sponsors",
   "github-stars": "GitHub Stars",
 };
@@ -66,9 +68,11 @@ function buildSlotPositionMap(
 function BlueprintCardPreview({
   blueprint,
   adaptedLayout,
+  dashboardScope,
 }: {
   blueprint: LayoutBlueprintDescriptor;
   adaptedLayout: LayoutDefinition;
+  dashboardScope?: DashboardScope;
 }) {
   const { rowCount, colCount } = getLayoutDimensions(adaptedLayout);
   const slotMap = buildSlotPositionMap(blueprint);
@@ -80,8 +84,14 @@ function BlueprintCardPreview({
         const needsRightGap = cell.colStart + cell.colSpan < colCount;
         const needsBottomGap = cell.rowStart + cell.rowSpan < rowCount;
         const slotInfo = slotMap.get(`${cell.rowStart},${cell.colStart}`);
+        const descriptor = slotInfo ? WIDGET_REGISTRY.get(slotInfo.widgetId) : null;
+        const isAllowed =
+          !dashboardScope ||
+          (descriptor ? canPlaceWidgetInScope(descriptor, dashboardScope) : true);
         const label = slotInfo
-          ? (WIDGET_SHORT_LABELS[slotInfo.widgetId] ?? slotInfo.widgetId)
+          ? isAllowed
+            ? (WIDGET_SHORT_LABELS[slotInfo.widgetId] ?? slotInfo.widgetId)
+            : undefined
           : undefined;
         const tooltip = slotInfo
           ? `${WIDGET_SHORT_LABELS[slotInfo.widgetId] ?? slotInfo.widgetId} — ${slotInfo.purpose}`
@@ -122,6 +132,7 @@ function BlueprintCard({
   isSelected,
   missingIntegrations,
   onSelect,
+  dashboardScope,
 }: {
   blueprint: LayoutBlueprintDescriptor;
   adaptedLayout: LayoutDefinition;
@@ -129,8 +140,15 @@ function BlueprintCard({
   isSelected: boolean;
   missingIntegrations: string[];
   onSelect: () => void;
+  dashboardScope?: DashboardScope;
 }) {
   const missingSet = new Set(missingIntegrations);
+  const visibleSlotCount = dashboardScope
+    ? blueprint.slots.filter((slot) => {
+        const descriptor = WIDGET_REGISTRY.get(slot.widgetId);
+        return descriptor ? canPlaceWidgetInScope(descriptor, dashboardScope) : true;
+      }).length
+    : blueprint.slots.length;
 
   return (
     <Button
@@ -148,13 +166,17 @@ function BlueprintCard({
       )}
     >
       <div className="w-full p-3">
-        <BlueprintCardPreview blueprint={blueprint} adaptedLayout={adaptedLayout} />
+        <BlueprintCardPreview
+          blueprint={blueprint}
+          adaptedLayout={adaptedLayout}
+          dashboardScope={dashboardScope}
+        />
       </div>
       <div className="flex w-full flex-1 flex-col gap-1.5 border-border border-t px-3 py-2.5">
         <span className="truncate font-mono text-foreground text-w-sm">{blueprint.name}</span>
         <div className="flex flex-wrap items-center gap-1">
           <Badge variant="default" size="xs">
-            {blueprint.slots.length} widgets
+            {visibleSlotCount} widgets
           </Badge>
           {isRecommended ? (
             <Badge variant="accent" size="xs">
@@ -217,6 +239,8 @@ interface BlueprintGridProps {
   onSelect: (blueprint: LayoutBlueprintDescriptor) => void;
   /** Currently selected blueprint ID (for visual highlight). */
   selectedId?: string | null;
+  /** Target dashboard scope for hiding widgets that cannot be placed there. */
+  dashboardScope?: DashboardScope;
 }
 
 export function BlueprintGrid({
@@ -225,9 +249,18 @@ export function BlueprintGrid({
   adaptLayout,
   onSelect,
   selectedId,
+  dashboardScope,
 }: BlueprintGridProps) {
   const scored = LAYOUT_BLUEPRINTS.map((blueprint) => {
-    const score = scoreBlueprintFit(blueprint, { personas, connectedIntegrations });
+    const score = scoreBlueprintFit(blueprint, {
+      personas,
+      connectedIntegrations,
+      dashboardScope,
+      canPlaceWidget: (widgetId, scope) => {
+        const descriptor = WIDGET_REGISTRY.get(widgetId);
+        return descriptor ? canPlaceWidgetInScope(descriptor, scope) : true;
+      },
+    });
     const missing = blueprint.requiredIntegrations.filter(
       (i) => !connectedIntegrations.includes(i)
     );
@@ -249,6 +282,7 @@ export function BlueprintGrid({
             isSelected={selectedId === blueprint.id}
             missingIntegrations={missing}
             onSelect={() => onSelect(blueprint)}
+            dashboardScope={dashboardScope}
           />
         );
       })}

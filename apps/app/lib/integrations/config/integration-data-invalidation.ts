@@ -1,4 +1,5 @@
 import { API_ROUTES } from "@radarboard/types/api-routes";
+import type { Cache, ScopedMutator } from "swr";
 
 export const INTEGRATION_DATA_ROUTE_PREFIX = "/api/integrations/";
 export const PLUGIN_CHANGELOG_ROUTE_PREFIX = "/api/plugins/changelog/";
@@ -16,6 +17,48 @@ export function isIntegrationBackedDashboardDataKey(key: unknown): key is string
   return (
     typeof key === "string" &&
     INTEGRATION_BACKED_DASHBOARD_DATA_PREFIXES.some((prefix) => key.includes(prefix))
+  );
+}
+
+export function buildForceRefreshDashboardDataUrl(key: string): string {
+  const baseUrl =
+    typeof window === "undefined" ? "http://radarboard.local" : window.location.origin;
+  const url = new URL(key, baseUrl);
+  url.searchParams.set("refresh", "1");
+
+  if (key.startsWith("http://") || key.startsWith("https://")) {
+    return url.toString();
+  }
+
+  return `${url.pathname}${url.search}`;
+}
+
+async function fetchDashboardData(url: string): Promise<unknown> {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Dashboard data refresh failed (${res.status})`);
+  return res.json() as Promise<unknown>;
+}
+
+export async function revalidateIntegrationBackedDashboardData(
+  cache: Cache,
+  mutate: ScopedMutator
+): Promise<void> {
+  const keys = Array.from(cache.keys()).filter(isIntegrationBackedDashboardDataKey);
+
+  if (keys.length === 0) {
+    await mutate(isIntegrationBackedDashboardDataKey, undefined, { revalidate: true });
+    return;
+  }
+
+  await Promise.all(
+    keys.map(async (key) => {
+      try {
+        const fresh = await fetchDashboardData(buildForceRefreshDashboardDataUrl(key));
+        await mutate(key, fresh, { populateCache: true, revalidate: false });
+      } catch {
+        await mutate(key, undefined, { revalidate: true });
+      }
+    })
   );
 }
 

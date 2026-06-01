@@ -196,11 +196,13 @@
   --spacing-modal-sm: 34rem;
   --spacing-modal-content: 64rem;
   --spacing-modal-md: 96rem;
+  --spacing-modal-height-md: 68dvh;
+  --spacing-modal-height-lg: 80dvh;
   --spacing-drawer-sm: 20rem;
   --spacing-drawer-content: 24rem;
   --spacing-drawer-md: 28rem;
   --spacing-drawer-lg: 36rem;
-  --spacing-modal-height-md: 80dvh;
+  --spacing-drawer-xl: 44rem;
 
   /*
    * ─── Icons ───────────────────────────────────────────────────────────────
@@ -531,6 +533,11 @@ body {
 
 .rb-dialog-size-lg {
   inline-size: calc(100vw - (var(--spacing-modal-inset) * 2));
+  block-size: min(var(--spacing-modal-height-lg), calc(100dvh - (var(--spacing-modal-inset) * 2)));
+}
+
+.rb-dialog-size-xl {
+  inline-size: calc(100vw - (var(--spacing-modal-inset) * 2));
   block-size: calc(100dvh - (var(--spacing-modal-inset) * 2));
 }
 
@@ -548,6 +555,10 @@ body {
 
 .rb-drawer-size-lg {
   inline-size: min(var(--spacing-drawer-lg), 100vw);
+}
+
+.rb-drawer-size-xl {
+  inline-size: min(var(--spacing-drawer-xl), 100vw);
 }
 
 .dark body {

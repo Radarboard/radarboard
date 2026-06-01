@@ -69,6 +69,7 @@ const sponsorshipDescriptorBase = createTemplateDescriptor(
   SPONSORSHIP_TEMPLATE_CONFIG,
   {
     catalogCategory: "finance",
+    supportedDashboardScopes: ["project"],
     defaultSlot: "slot8",
     requiredIntegrations: [],
     defaultPollInterval: 300_000,

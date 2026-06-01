@@ -39,6 +39,14 @@ const {
       pollingSourceIds: [],
       usedByWidgets: [],
     },
+    {
+      auth: { name: "Open Collective" },
+      credKey: "opencollective",
+      description: "Open Collective contributors and sponsorship.",
+      integrationKey: "openCollective",
+      pollingSourceIds: [],
+      usedByWidgets: [],
+    },
   ],
   integrationState: {} as Record<string, unknown>,
   openPanelProjectsState: {
@@ -48,6 +56,7 @@ const {
   serviceConfiguredState: {
     github: true,
     openpanel: false,
+    opencollective: false,
   } as Record<string, boolean>,
   updateIntegrationMock: vi.fn(),
   useDashboardMock: vi.fn(),
@@ -172,7 +181,10 @@ function createProject(): Project {
 
 function renderPlatformSection(
   platform: Platform,
-  overrides?: { onOpenIntegrationSettings?: (serviceId: string) => void }
+  overrides?: {
+    onOpenIntegrationSettings?: (serviceId: string) => void;
+    projectSetupIntent?: string | null;
+  }
 ) {
   const project = createProject();
   const getIntegration = (projectSlug: string, platformId: string, key: string) =>
@@ -194,6 +206,7 @@ function renderPlatformSection(
       allProjects={[project]}
       isUserPlatform={false}
       onDeletePlatform={undefined}
+      projectSetupIntent={overrides?.projectSetupIntent}
       onOpenIntegrationSettings={overrides?.onOpenIntegrationSettings}
       getIntegration={getIntegration}
       updateIntegration={updateIntegration}
@@ -204,6 +217,7 @@ function renderPlatformSection(
 function renderProjectDetailPanel(overrides?: {
   project?: Project;
   allProjects?: Project[];
+  projectSetupIntent?: string | null;
   getIntegration?: (projectSlug: string, platformId: string, key: string) => unknown;
 }) {
   const project = overrides?.project ?? createProject();
@@ -228,6 +242,7 @@ function renderProjectDetailPanel(overrides?: {
       integrations={{}}
       isUserCreated
       onDeleteProject={vi.fn()}
+      projectSetupIntent={overrides?.projectSetupIntent}
       getIntegration={getIntegration}
       updateIntegration={updateIntegration}
     />
@@ -249,6 +264,7 @@ describe("PlatformSection", () => {
     connectedKeysState.splice(0, connectedKeysState.length, "github");
     serviceConfiguredState.github = true;
     serviceConfiguredState.openpanel = false;
+    serviceConfiguredState.opencollective = false;
     updateIntegrationMock.mockReset();
     openPanelProjectsState.configured = false;
     openPanelProjectsState.projects = [];
@@ -285,7 +301,43 @@ describe("PlatformSection", () => {
     expect(screen.getByText("GitHub")).toBeTruthy();
     expect(screen.getByText("Configured")).toBeTruthy();
     expect(screen.getByText("OpenPanel")).toBeTruthy();
-    expect(screen.getByText("Not configured")).toBeTruthy();
+    expect(screen.getAllByText("Not configured").length).toBeGreaterThan(0);
+  });
+
+  it("marks Open Collective and GitHub as recommended for sponsorship setup", async () => {
+    const user = userEvent.setup();
+
+    renderPlatformSection(
+      {
+        id: "website",
+        name: "Website",
+        type: "website",
+        integrations: {},
+      },
+      { projectSetupIntent: "sponsorship-project" }
+    );
+
+    await user.click(screen.getByRole("button", { name: /add integration/i }));
+
+    expect(screen.getByText("Open Collective")).toBeTruthy();
+    expect(screen.getByText("GitHub")).toBeTruthy();
+    expect(screen.getAllByText("Recommended")).toHaveLength(2);
+  });
+
+  it("uses sponsorship-specific guidance when no integrations are attached", () => {
+    renderPlatformSection(
+      {
+        id: "website",
+        name: "Website",
+        type: "website",
+        integrations: {},
+      },
+      { projectSetupIntent: "sponsorship-project" }
+    );
+
+    expect(
+      screen.getByText("Use Add integration to attach Open Collective or GitHub to this platform.")
+    ).toBeTruthy();
   });
 
   it("attaches configured integrations directly from the picker", async () => {
@@ -435,6 +487,20 @@ describe("PlatformSection", () => {
 });
 
 describe("ProjectDetailPanel", () => {
+  it("shows sponsorship setup guidance on the Platforms tab", () => {
+    renderProjectDetailPanel({ projectSetupIntent: "sponsorship-project" });
+
+    expect(screen.getByText("Finish Sponsorship Setup")).toBeTruthy();
+    expect(
+      screen.getByText(
+        "Sponsorship can use an Open Collective slug or a GitHub owner/repo. Use Add integration on the right platform to attach one of those sources."
+      )
+    ).toBeTruthy();
+    expect(
+      screen.getByText("Add a platform first, then attach Open Collective or GitHub.")
+    ).toBeTruthy();
+  });
+
   it("prefills the new platform name from the current project name and selects it on open", async () => {
     const user = userEvent.setup();
     renderProjectDetailPanel();

@@ -9,6 +9,8 @@ import "../data-resolver";
 const useDashboardMock = vi.fn();
 const useOpenCollectiveMock = vi.fn();
 const useGitHubSponsorsMock = vi.fn();
+const resolveOcSlugMock = vi.fn();
+const resolveGitHubLoginMock = vi.fn();
 
 vi.mock("@radarboard/hooks/use-dashboard", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@radarboard/hooks/use-dashboard")>();
@@ -27,13 +29,15 @@ vi.mock("../hooks/use-github-sponsors", () => ({
 }));
 
 vi.mock("@radarboard/utils/project-helpers", () => ({
-  resolveOcSlug: vi.fn(() => "radarboard"),
-  resolveGitHubLogin: vi.fn(() => "thedaviddias"),
+  resolveOcSlug: (...args: unknown[]) => resolveOcSlugMock(...args),
+  resolveGitHubLogin: (...args: unknown[]) => resolveGitHubLoginMock(...args),
 }));
 
 describe("sponsorship data resolver", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    resolveOcSlugMock.mockReturnValue("radarboard");
+    resolveGitHubLoginMock.mockReturnValue("thedaviddias");
     useDashboardMock.mockReturnValue({ projects: [], timeRange: "30d" });
     useOpenCollectiveMock.mockReturnValue({
       data: {
@@ -64,9 +68,13 @@ describe("sponsorship data resolver", () => {
           },
         ],
       },
+      configured: true,
       fetchedAt: 200,
       loading: false,
       error: null,
+      setupMessage: null,
+      ctaLabel: null,
+      ctaTarget: null,
       refetch: vi.fn(async () => {}),
     });
     useGitHubSponsorsMock.mockReturnValue({
@@ -83,9 +91,13 @@ describe("sponsorship data resolver", () => {
         goal: { title: "Fund OSS", targetValue: 10000, percentComplete: 12 },
         limitedAccess: true,
       },
+      configured: true,
       fetchedAt: 250,
       loading: true,
       error: "github limited",
+      setupMessage: null,
+      ctaLabel: null,
+      ctaTarget: null,
       refetch: vi.fn(async () => {}),
     });
   });
@@ -120,7 +132,7 @@ describe("sponsorship data resolver", () => {
       );
     });
     expect(useOpenCollectiveMock).toHaveBeenCalledWith("radarboard", "30d");
-    expect(useGitHubSponsorsMock).toHaveBeenCalledWith("thedaviddias");
+    expect(useGitHubSponsorsMock).toHaveBeenCalledWith("thedaviddias", true);
   });
 
   it("supports open-collective-only summaries and expense transactions", async () => {
@@ -145,16 +157,24 @@ describe("sponsorship data resolver", () => {
         ],
         topMembers: [],
       },
+      configured: true,
       fetchedAt: 300,
       loading: false,
       error: null,
+      setupMessage: null,
+      ctaLabel: null,
+      ctaTarget: null,
       refetch: vi.fn(async () => {}),
     });
     useGitHubSponsorsMock.mockReturnValue({
       data: null,
+      configured: false,
       fetchedAt: null,
       loading: false,
       error: null,
+      setupMessage: null,
+      ctaLabel: null,
+      ctaTarget: null,
       refetch: vi.fn(async () => {}),
     });
     const Resolver = DATA_SOURCE_REGISTRY.get("sponsorship");
@@ -191,16 +211,24 @@ describe("sponsorship data resolver", () => {
   it("reports configured false when no sponsorship provider has data", async () => {
     useOpenCollectiveMock.mockReturnValue({
       data: null,
+      configured: false,
       fetchedAt: null,
       loading: false,
       error: null,
+      setupMessage: null,
+      ctaLabel: null,
+      ctaTarget: null,
       refetch: vi.fn(async () => {}),
     });
     useGitHubSponsorsMock.mockReturnValue({
       data: null,
+      configured: false,
       fetchedAt: null,
       loading: false,
       error: null,
+      setupMessage: null,
+      ctaLabel: null,
+      ctaTarget: null,
       refetch: vi.fn(async () => {}),
     });
     const Resolver = DATA_SOURCE_REGISTRY.get("sponsorship");
@@ -225,21 +253,122 @@ describe("sponsorship data resolver", () => {
     });
   });
 
+  it("reports a project-scoped setup state when no project is selected", async () => {
+    resolveOcSlugMock.mockReturnValue(null);
+    resolveGitHubLoginMock.mockReturnValue(null);
+    useOpenCollectiveMock.mockReturnValue({
+      data: null,
+      configured: false,
+      fetchedAt: null,
+      loading: false,
+      error: null,
+      setupMessage: null,
+      ctaLabel: null,
+      ctaTarget: null,
+      refetch: vi.fn(async () => {}),
+    });
+    useGitHubSponsorsMock.mockReturnValue({
+      data: null,
+      configured: false,
+      fetchedAt: null,
+      loading: false,
+      error: null,
+      setupMessage: null,
+      ctaLabel: null,
+      ctaTarget: null,
+      refetch: vi.fn(async () => {}),
+    });
+    const Resolver = DATA_SOURCE_REGISTRY.get("sponsorship");
+    const onState = vi.fn();
+
+    if (!Resolver) throw new Error("sponsorship resolver not registered");
+
+    render(createElement(Resolver, { projectSlug: null, onState }));
+
+    await waitFor(() => {
+      expect(onState).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            configured: false,
+            ctaLabel: "Open Project Settings",
+            ctaTarget: "intent:sponsorship-project",
+            setupMessage:
+              "Select a project to view sponsorship data. Sponsorship currently needs an Open Collective slug or GitHub owner on a project.",
+          }),
+        })
+      );
+    });
+  });
+
+  it("passes through provider setup state when a mapped provider returns configured false", async () => {
+    resolveGitHubLoginMock.mockReturnValue(null);
+    useOpenCollectiveMock.mockReturnValue({
+      data: null,
+      configured: false,
+      fetchedAt: null,
+      loading: false,
+      error: null,
+      setupMessage: "Add the Open Collective integration to enable this data source.",
+      ctaLabel: "Add Open Collective integration",
+      ctaTarget: "/settings?section=integrations",
+      refetch: vi.fn(async () => {}),
+    });
+    useGitHubSponsorsMock.mockReturnValue({
+      data: null,
+      configured: false,
+      fetchedAt: null,
+      loading: false,
+      error: null,
+      setupMessage: null,
+      ctaLabel: null,
+      ctaTarget: null,
+      refetch: vi.fn(async () => {}),
+    });
+    const Resolver = DATA_SOURCE_REGISTRY.get("sponsorship");
+    const onState = vi.fn();
+
+    if (!Resolver) throw new Error("sponsorship resolver not registered");
+
+    render(createElement(Resolver, { projectSlug: "atlas", onState }));
+
+    await waitFor(() => {
+      expect(onState).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            configured: false,
+            setupMessage:
+              "Open Collective credentials can be connected, but this build does not have a registered Open Collective data source. Enable the provider integration before this widget can fetch sponsorship data.",
+            ctaLabel: "Add Open Collective integration",
+            ctaTarget: "opencollective",
+          }),
+        })
+      );
+    });
+  });
+
   it("reuses the same snapshot without reporting twice and exposes a combined refetch", async () => {
     const openCollectiveRefetch = vi.fn(async () => {});
     const githubRefetch = vi.fn(async () => {});
     useOpenCollectiveMock.mockReturnValue({
       data: null,
+      configured: false,
       fetchedAt: null,
       loading: false,
       error: null,
+      setupMessage: null,
+      ctaLabel: null,
+      ctaTarget: null,
       refetch: openCollectiveRefetch,
     });
     useGitHubSponsorsMock.mockReturnValue({
       data: null,
+      configured: false,
       fetchedAt: 400,
       loading: false,
       error: null,
+      setupMessage: null,
+      ctaLabel: null,
+      ctaTarget: null,
       refetch: githubRefetch,
     });
     const Resolver = DATA_SOURCE_REGISTRY.get("sponsorship");

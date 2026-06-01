@@ -9,7 +9,10 @@ const saveCredentialValuesMock = vi.fn();
 const mutateSWRMock = vi.fn();
 
 vi.mock("swr", () => ({
-  mutate: (...args: unknown[]) => mutateSWRMock(...args),
+  useSWRConfig: () => ({
+    cache: new Map(),
+    mutate: (...args: unknown[]) => mutateSWRMock(...args),
+  }),
 }));
 
 vi.mock("@/components/settings/settings-integrations/utils", async (importOriginal) => {

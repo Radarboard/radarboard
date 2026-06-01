@@ -9,6 +9,7 @@
 import type { UserProfile } from "@radarboard/types/database";
 import { LAYOUT_RECIPES } from "@radarboard/widget-engine/layout-recipe-gallery";
 import { BASIC_3X3, BASIC_4X3 } from "@radarboard/widget-engine/layouts";
+import type { DashboardScope } from "@radarboard/widget-sdk/dashboard-scope";
 import type { LayoutBlueprintDescriptor } from "./types";
 
 // ---------------------------------------------------------------------------
@@ -30,7 +31,7 @@ export const LAYOUT_BLUEPRINTS: LayoutBlueprintDescriptor[] = [
     id: "oss-command-center",
     name: "Open Source Command Center",
     description:
-      "Track sponsorship, roadmap, analytics, and shipping activity at a glance. Designed for open source maintainers who need community health metrics front and center.",
+      "Track sponsorship, roadmap, analytics, and release activity at a glance. Designed for open source maintainers who need community health metrics front and center.",
     recipeId: "hero-focus",
     layout: getRecipeLayout("hero-focus"),
     slots: [
@@ -43,7 +44,7 @@ export const LAYOUT_BLUEPRINTS: LayoutBlueprintDescriptor[] = [
       { cellId: "side-b", widgetId: "analytics", purpose: "Analytics trends" },
       { cellId: "foot-a", widgetId: "shipping", purpose: "Release cadence" },
       { cellId: "foot-b", widgetId: "sponsorship", purpose: "Sponsor revenue" },
-      { cellId: "foot-c", widgetId: "shipping", purpose: "Shipping activity" },
+      { cellId: "foot-c", widgetId: "shipping", purpose: "Release activity" },
     ],
     requiredIntegrations: [],
     personaAffinities: ["opensource"],
@@ -60,11 +61,11 @@ export const LAYOUT_BLUEPRINTS: LayoutBlueprintDescriptor[] = [
       { cellId: "cell-1", widgetId: "revenue", purpose: "MRR & gross revenue" },
       { cellId: "cell-2", widgetId: "analytics", purpose: "Visitor & session metrics" },
       { cellId: "cell-3", widgetId: "seo", purpose: "Search performance" },
-      { cellId: "cell-4", widgetId: "shipping", purpose: "Shipping timeline & releases" },
+      { cellId: "cell-4", widgetId: "shipping", purpose: "Release timeline" },
       { cellId: "cell-5", widgetId: "observability", purpose: "Service monitoring" },
       { cellId: "cell-6", widgetId: "roadmap", purpose: "Roadmap activity" },
       { cellId: "cell-7", widgetId: "sponsorship", purpose: "Community traction" },
-      { cellId: "cell-8", widgetId: "shipping", purpose: "Shipping cadence" },
+      { cellId: "cell-8", widgetId: "shipping", purpose: "Release cadence" },
       { cellId: "cell-9", widgetId: "observability", purpose: "Service status" },
     ],
     requiredIntegrations: [],
@@ -97,13 +98,13 @@ export const LAYOUT_BLUEPRINTS: LayoutBlueprintDescriptor[] = [
     id: "devops-monitor",
     name: "DevOps Monitor",
     description:
-      "Observability rail with service health and shipping activity. Designed for platform engineers who need operational awareness.",
+      "Observability rail with service health and release activity. Designed for platform engineers who need operational awareness.",
     recipeId: "rail-workbench",
     layout: getRecipeLayout("rail-workbench"),
     slots: [
       { cellId: "rail", widgetId: "observability", purpose: "Service monitor overview" },
       { cellId: "main", widgetId: "observability", purpose: "Service health history" },
-      { cellId: "queue", widgetId: "shipping", purpose: "Shipping queue" },
+      { cellId: "queue", widgetId: "shipping", purpose: "Release queue" },
       { cellId: "detail", widgetId: "observability", purpose: "Service status" },
     ],
     requiredIntegrations: [],
@@ -136,19 +137,19 @@ export const LAYOUT_BLUEPRINTS: LayoutBlueprintDescriptor[] = [
     id: "team-velocity",
     name: "Team Velocity",
     description:
-      "Roadmap progress, Roadmap throughput, builds, and shipping cadence. A manager's view of team output and project health.",
+      "Roadmap progress, Roadmap throughput, builds, and release cadence. A manager's view of team output and project health.",
     recipeId: "basic-3x3",
     layout: BASIC_3X3,
     slots: [
       { cellId: "cell-1", widgetId: "roadmap", purpose: "Roadmap & milestones" },
       { cellId: "cell-2", widgetId: "roadmap", purpose: "Roadmap throughput" },
       { cellId: "cell-3", widgetId: "shipping", purpose: "Release cadence" },
-      { cellId: "cell-4", widgetId: "shipping", purpose: "Shipping activity" },
+      { cellId: "cell-4", widgetId: "shipping", purpose: "Release activity" },
       { cellId: "cell-5", widgetId: "observability", purpose: "Service health" },
       { cellId: "cell-6", widgetId: "analytics", purpose: "Product usage" },
       { cellId: "cell-7", widgetId: "seo", purpose: "Search visibility" },
       { cellId: "cell-8", widgetId: "observability", purpose: "Service health" },
-      { cellId: "cell-9", widgetId: "shipping", purpose: "Shipping cadence" },
+      { cellId: "cell-9", widgetId: "shipping", purpose: "Release cadence" },
     ],
     requiredIntegrations: [],
     personaAffinities: ["team-lead"],
@@ -158,7 +159,7 @@ export const LAYOUT_BLUEPRINTS: LayoutBlueprintDescriptor[] = [
     id: "content-creator-hub",
     name: "Content Creator Hub",
     description:
-      "Analytics, SEO, bookmarks, and shipping across 12 tiles. Track content reach and audience growth at a glance.",
+      "Analytics, SEO, bookmarks, and release activity across 12 tiles. Track content reach and audience growth at a glance.",
     recipeId: "basic-4x3",
     layout: BASIC_4X3,
     slots: [
@@ -169,7 +170,7 @@ export const LAYOUT_BLUEPRINTS: LayoutBlueprintDescriptor[] = [
       { cellId: "cell-5", widgetId: "shipping", purpose: "Content releases" },
       { cellId: "cell-6", widgetId: "analytics", purpose: "Analytics metrics" },
       { cellId: "cell-7", widgetId: "sponsorship", purpose: "Community traction" },
-      { cellId: "cell-8", widgetId: "shipping", purpose: "Shipping updates" },
+      { cellId: "cell-8", widgetId: "shipping", purpose: "Release updates" },
       { cellId: "cell-9", widgetId: "roadmap", purpose: "Roadmap activity" },
       { cellId: "cell-10", widgetId: "observability", purpose: "Service health" },
       { cellId: "cell-11", widgetId: "observability", purpose: "Service monitoring" },
@@ -198,7 +199,7 @@ export const LAYOUT_BLUEPRINTS: LayoutBlueprintDescriptor[] = [
       { cellId: "cell-9", widgetId: "roadmap", purpose: "Roadmap activity" },
       { cellId: "cell-10", widgetId: "observability", purpose: "Domain health" },
       { cellId: "cell-11", widgetId: "observability", purpose: "Service status" },
-      { cellId: "cell-12", widgetId: "shipping", purpose: "Shipping activity" },
+      { cellId: "cell-12", widgetId: "shipping", purpose: "Release activity" },
     ],
     requiredIntegrations: [],
     personaAffinities: ["marketing", "data"],
@@ -238,8 +239,21 @@ export function getBlueprintsForPersonas(personas: UserProfile[]): LayoutBluepri
  */
 export function scoreBlueprintFit(
   blueprint: LayoutBlueprintDescriptor,
-  context: { personas: UserProfile[]; connectedIntegrations: string[] }
+  context: {
+    personas: UserProfile[];
+    connectedIntegrations: string[];
+    dashboardScope?: DashboardScope;
+    canPlaceWidget?: (widgetId: string, scope: DashboardScope) => boolean;
+  }
 ): number {
+  if (context.dashboardScope && context.canPlaceWidget) {
+    const { dashboardScope, canPlaceWidget } = context;
+    const hasPlaceableSlot = blueprint.slots.some((slot) =>
+      canPlaceWidget(slot.widgetId, dashboardScope)
+    );
+    if (!hasPlaceableSlot) return 0;
+  }
+
   // Persona score: fraction of blueprint's affinities matched
   const personaScore =
     blueprint.personaAffinities.length > 0

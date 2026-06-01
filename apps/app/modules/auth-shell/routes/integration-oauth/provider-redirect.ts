@@ -23,6 +23,7 @@ const providerRedirectQuerySchema = z.object({
   handoffId: z.string().optional(),
   handoffChallenge: z.string().optional(),
   returnOrigin: z.string().optional(),
+  desktopReturnScheme: z.enum(["radarboard", "radarboard-dev"]).optional(),
 });
 
 export async function handleIntegrationProviderRedirect(request: Request, provider: string) {
@@ -77,6 +78,15 @@ export async function handleIntegrationProviderRedirect(request: Request, provid
       maxAge: 600,
       path: "/",
     });
+    if (parsed.data.desktopReturnScheme) {
+      cookieStore.set(names.desktopReturnScheme, parsed.data.desktopReturnScheme, {
+        httpOnly: true,
+        secure: isSecure,
+        sameSite: "lax",
+        maxAge: 600,
+        path: "/",
+      });
+    }
 
     const brokerUrl = new URL(`/api/auth/${provider}/redirect`, brokerOrigin);
     brokerUrl.searchParams.set("credKey", credKey);

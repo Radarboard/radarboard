@@ -43,6 +43,8 @@ pnpm-debug.log*
 # Radarboard config (contains database credentials)
 .codex/
 .radarboard/dev-extensions.json
+.radarboard/dev-extensions/
+apps/app/.radarboard/
 .radarboard.json
 .radarboard.e2e.json
 .radarboard-data/

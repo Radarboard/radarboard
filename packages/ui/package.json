@@ -31,6 +31,7 @@
     "./rich-text-composer": "./src/rich-text-composer/index.tsx",
     "./rich-text-viewer": "./src/rich-text-viewer/index.tsx",
     "./info-row": "./src/info-row/index.tsx",
+    "./balanced-text": "./src/balanced-text/index.tsx",
     "./empty-state": "./src/empty-state/index.tsx",
     "./stat-card": "./src/stat-card/index.tsx",
     "./contribution-graph": "./src/contribution-graph/index.tsx",
@@ -60,6 +61,7 @@
     "motion": "catalog:",
     "react-markdown": "^10.1.0",
     "react-syntax-highlighter": "^16.1.1",
+    "react-wrap-balancer": "^1.1.1",
     "turndown": "^7.2.4"
   },
   "devDependencies": {

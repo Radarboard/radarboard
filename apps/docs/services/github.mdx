@@ -1,17 +1,17 @@
 ---
 title: "GitHub"
-description: "Track merged pull requests, releases, and commits for the Shipping widget."
+description: "Track merged pull requests, releases, and commits for the Release Activity widget."
 ---
 
 # GitHub
 
-GitHub integration fetches recently merged pull requests, releases, and commits to populate Shipping.
+GitHub integration fetches recently merged pull requests, releases, and commits to populate Release Activity.
 
 ## What it powers
 
-- **Shipping Log widget** -- Merged PRs appear as shipped items
+- **Release Activity widget** -- Merged PRs appear as release items
 - **KPI Strip** -- Last deploy timestamp
-- **Bottom Ticker** -- Recent shipping activity in the scrolling marquee
+- **Bottom Ticker** -- Recent release activity in the scrolling marquee
 
 ## Getting your token
 
@@ -52,10 +52,10 @@ GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ## Widgets that use this service
 
 <CardGroup cols={2}>
-  <Card title="Shipping" icon="ship" href="/widgets/shipping">
-    Shows merged PRs as shipped items.
+  <Card title="Release Activity" icon="ship" href="/widgets/shipping">
+    Shows merged PRs as release items.
   </Card>
   <Card title="Bottom Ticker" icon="text" href="/widgets/bottom-ticker">
-    Includes shipping items in the scrolling marquee.
+    Includes release activity items in the scrolling marquee.
   </Card>
 </CardGroup>

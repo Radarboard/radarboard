@@ -20,6 +20,8 @@ use tauri::{
     tray::TrayIconBuilder,
 };
 #[cfg(desktop)]
+use tauri_plugin_deep_link::DeepLinkExt;
+#[cfg(desktop)]
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut, ShortcutState};
 #[cfg(desktop)]
 use tauri_plugin_opener::OpenerExt;
@@ -265,6 +267,61 @@ fn open_external_url(app: tauri::AppHandle, url: String) -> Result<(), String> {
     app.opener()
         .open_url(&url, None::<&str>)
         .map_err(|e| format!("Failed to open external URL: {e}"))
+}
+
+#[cfg(desktop)]
+#[tauri::command]
+fn get_deep_link_scheme(app: tauri::AppHandle) -> String {
+    if is_stable_desktop_channel(&app) {
+        "radarboard".to_string()
+    } else {
+        "radarboard-dev".to_string()
+    }
+}
+
+#[cfg(desktop)]
+fn url_origin(url: &tauri::Url) -> Option<String> {
+    if url.scheme() != "http" && url.scheme() != "https" {
+        return None;
+    }
+
+    let host = url.host_str()?;
+    let port = url
+        .port()
+        .map(|port| format!(":{port}"))
+        .unwrap_or_default();
+    Some(format!("{}://{}{}", url.scheme(), host, port))
+}
+
+#[cfg(desktop)]
+fn handle_oauth_deep_link(app: tauri::AppHandle, url: tauri::Url) {
+    if url.scheme() != "radarboard" && url.scheme() != "radarboard-dev" {
+        return;
+    }
+    if url.host_str() != Some("oauth") {
+        return;
+    }
+
+    let Some(window) = app.get_webview_window("main") else {
+        return;
+    };
+    let Some(current_origin) = window.url().ok().and_then(|current| url_origin(&current)) else {
+        return;
+    };
+    let query = url
+        .query()
+        .map(|query| format!("?{query}"))
+        .unwrap_or_default();
+    let target = format!("{current_origin}/{query}");
+
+    match target.parse::<tauri::Url>() {
+        Ok(target_url) => {
+            let _ = window.show();
+            let _ = window.set_focus();
+            let _ = window.navigate(target_url);
+        }
+        Err(error) => warn!("Invalid OAuth deep link target: {error}"),
+    }
 }
 
 #[cfg(desktop)]
@@ -896,9 +953,11 @@ pub fn run() {
         .on_page_load(|webview, payload| {
             #[cfg(desktop)]
             {
+                let loaded_url = payload.url().as_str();
                 if webview.label() == "main"
                     && matches!(payload.event(), tauri::webview::PageLoadEvent::Finished)
-                    && payload.url().as_str() != "about:blank"
+                    && loaded_url != "about:blank"
+                    && !loaded_url.ends_with("splashscreen.html")
                     && webview.get_webview_window("splashscreen").is_some()
                 {
                     transition_from_splash(webview);
@@ -919,6 +978,13 @@ pub fn run() {
 
             #[cfg(desktop)]
             {
+                let deep_link_app = app.handle().clone();
+                app.deep_link().on_open_url(move |event| {
+                    for url in event.urls() {
+                        handle_oauth_deep_link(deep_link_app.clone(), url);
+                    }
+                });
+
                 if is_stable_desktop_channel(app) {
                     app.handle()
                         .plugin(tauri_plugin_updater::Builder::new().build())?;
@@ -1326,6 +1392,7 @@ pub fn run() {
             check_for_updates,
             open_log_file,
             open_external_url,
+            get_deep_link_scheme,
             save_text_file,
             reset_app_data
         ])

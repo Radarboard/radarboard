@@ -5,8 +5,11 @@ import { createLogger } from "@radarboard/logger/logger";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { errorJson, parseBody } from "@/lib/api";
+import { normalizeCredentialValues } from "./normalize";
 
 const log = createLogger("api/credentials/test");
+const RAINDROP_INVALID_TOKEN_MESSAGE =
+  "Raindrop returned 401. Use a Test token from Raindrop App Management or a fresh OAuth access token. Client IDs, client secrets, and expired OAuth tokens are rejected.";
 
 const SERVICE_TESTS: Record<
   string,
@@ -52,12 +55,17 @@ const SERVICE_TESTS: Record<
     return res.ok ? { ok: true } : { ok: false, error: `Linear returned ${res.status}` };
   },
   raindrop: async (values) => {
+    if (!values.accessToken?.trim()) {
+      return { ok: false, error: "Add a Raindrop access token before testing the connection." };
+    }
     const headers = new Headers();
-    headers.set("Authorization", `Bearer ${values.accessToken ?? ""}`);
+    headers.set("Authorization", `Bearer ${values.accessToken}`);
     const res = await fetch("https://api.raindrop.io/rest/v1/user", {
       headers,
     });
-    return res.ok ? { ok: true } : { ok: false, error: `Raindrop returned ${res.status}` };
+    if (res.ok) return { ok: true };
+    if (res.status === 401) return { ok: false, error: RAINDROP_INVALID_TOKEN_MESSAGE };
+    return { ok: false, error: `Raindrop returned ${res.status}` };
   },
   vercel: async (values) => {
     const url = values.teamId
@@ -135,7 +143,7 @@ export async function handleTestCredentials(request: Request) {
       return errorJson(404, `No test available for "${body.key}"`, { ok: false });
     }
 
-    const result = await testFn(body.values);
+    const result = await testFn(normalizeCredentialValues(body.key, body.values));
     return NextResponse.json(result);
   } catch (err) {
     log.error("Credential connection test failed", { error: err });

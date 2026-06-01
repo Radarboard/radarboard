@@ -12,4 +12,14 @@ describe("integrations init", () => {
     expect(findDataSource("openpanel", "data")).toBeDefined();
     expect(findDataSource("openpanel", "projects")).toBeDefined();
   });
+
+  it("registers Google Search Console SEO data sources", () => {
+    expect(findDataSource("google-search-console", "data")).toBeDefined();
+    expect(findDataSource("google-search-console", "sites")).toBeDefined();
+    expect(findDataSource("google-search-console", "query")).toBeDefined();
+  });
+
+  it("registers Linear roadmap data sources", () => {
+    expect(findDataSource("linear", "roadmap")).toBeDefined();
+  });
 });

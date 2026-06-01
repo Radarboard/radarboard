@@ -2,12 +2,12 @@
 
 import { DashboardContext } from "@radarboard/hooks/use-dashboard";
 import type { WidgetModalSize } from "@radarboard/types/database";
-import { APP_DIALOG_SIZES, DialogContent, DialogSizeToggle } from "@radarboard/ui/app-dialog";
+import { DialogContent, DialogSizeToggle } from "@radarboard/ui/app-dialog";
 import { cn } from "@radarboard/utils/cn";
 import type { ComponentPropsWithoutRef } from "react";
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 
-export const WIDGET_MODAL_SIZES: WidgetModalSize[] = [...APP_DIALOG_SIZES];
+export const WIDGET_MODAL_SIZES: WidgetModalSize[] = ["sm", "content", "md", "lg", "xl"];
 export const DEFAULT_WIDGET_MODAL_SIZE: WidgetModalSize = "md";
 
 export const WIDGET_DIALOG_SIZE_CLASS: Record<WidgetModalSize, string> = {
@@ -15,9 +15,11 @@ export const WIDGET_DIALOG_SIZE_CLASS: Record<WidgetModalSize, string> = {
   content: "",
   md: "",
   lg: "",
+  xl: "",
 };
 
 export const WIDGET_EXPANDED_PANEL_CLASS: Record<WidgetModalSize, string> = {
+  xl: "rb-dialog-size-xl flex flex-1 flex-col",
   lg: "rb-dialog-size-lg flex flex-1 flex-col",
   md: "rb-dialog-size-md flex flex-col",
   content: "rb-dialog-size-content flex flex-col",
@@ -25,6 +27,7 @@ export const WIDGET_EXPANDED_PANEL_CLASS: Record<WidgetModalSize, string> = {
 };
 
 export const WIDGET_EXPANDED_CONTAINER_CLASS: Record<WidgetModalSize, string> = {
+  xl: "flex flex-col",
   lg: "flex flex-col",
   md: "flex items-center justify-center",
   content: "flex items-center justify-center",

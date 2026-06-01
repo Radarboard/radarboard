@@ -16,8 +16,8 @@ import { useShipping } from "./hooks/use-shipping";
 
 export const shippingDescriptor: WidgetDescriptor<WidgetTemplateConfig> = {
   id: "shipping",
-  name: "Shipping",
-  description: "Recent deploys, commits, and shipped features",
+  name: "Release Activity",
+  description: "Recent deploys, commits, and release work",
   catalogCategory: "product",
   capabilities: [
     {

@@ -7,7 +7,7 @@ import { errorJson, parseBody, parseSearchParams } from "@/lib/api";
 import { OAUTH_PROVIDERS } from "@/lib/auth/oauth-providers";
 import { getWebEnv, WEB_ENV_KEYS } from "@/lib/env";
 
-const DEFAULT_BROKER_ORIGIN = "https://app.radarboard.app";
+const DEFAULT_BROKER_ORIGIN = "https://auth.radarboard.app";
 const HANDOFF_TTL_MS = 10 * 60 * 1000;
 
 const brokerCallbackQuerySchema = z.object({

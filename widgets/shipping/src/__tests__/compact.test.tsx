@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { createElement } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import "../data-resolver";
@@ -33,8 +34,9 @@ describe("shippingDescriptor compact", () => {
     });
   });
 
-  it("reports disconnected chrome state when shipping is not configured", async () => {
+  it("reports disconnected chrome state when release activity is not configured", async () => {
     const onChromeStateChange = vi.fn();
+    const onConnectService = vi.fn();
 
     render(
       createElement(shippingDescriptor.component, {
@@ -42,12 +44,17 @@ describe("shippingDescriptor compact", () => {
         projectSlug: null,
         config: shippingDescriptor.defaultConfig,
         onChromeStateChange,
+        onConnectService,
       })
     );
 
-    expect(await screen.findByText("Shipping not connected")).toBeTruthy();
+    expect(
+      await screen.findByText("Connect GitHub, Linear, or Vercel to show release activity.")
+    ).toBeTruthy();
     await waitFor(() => {
       expect(onChromeStateChange).toHaveBeenCalledWith("disconnected");
     });
+    await userEvent.click(screen.getByRole("button", { name: "Choose integration" }));
+    expect(onConnectService).toHaveBeenCalledWith("intent:release-activity");
   });
 });

@@ -8,9 +8,9 @@
 import type { EmbeddingService } from "@radarboard/embedding-service";
 import type { PluginDescriptor, PluginServerRuntime } from "@radarboard/plugin-sdk/types";
 import { BrainCircuit } from "lucide-react";
-import { handleEmbeddingsRoute, type EmbeddingsRouteBody } from "./server/routes";
 import { EmbeddingsOverlay } from "./components/embeddings-overlay";
 import { embeddingsMcpTools, setEmbeddingServiceResolver } from "./mcp-tools";
+import { type EmbeddingsRouteBody, handleEmbeddingsRoute } from "./server/routes";
 import { EMBEDDING_MODEL_GROUPS } from "./types";
 
 type EmbeddingServiceResolver = (options?: {
@@ -19,7 +19,9 @@ type EmbeddingServiceResolver = (options?: {
   dimensions?: number;
 }) => Promise<EmbeddingService | null>;
 
-function getEmbeddingServiceResolver(runtime: PluginServerRuntime): EmbeddingServiceResolver | null {
+function getEmbeddingServiceResolver(
+  runtime: PluginServerRuntime
+): EmbeddingServiceResolver | null {
   const resolver = runtime.services.getEmbeddingService;
   return typeof resolver === "function" ? (resolver as EmbeddingServiceResolver) : null;
 }

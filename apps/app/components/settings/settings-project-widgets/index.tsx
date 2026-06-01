@@ -20,6 +20,7 @@ import {
 import { useCredentials } from "@radarboard/hooks/use-credentials";
 import { useDashboard } from "@radarboard/hooks/use-dashboard";
 import { getIntegration } from "@radarboard/integration-sdk";
+import { ALL_PROJECTS_SLUG } from "@radarboard/types/dashboard";
 import type { LayoutCell, LayoutDefinition } from "@radarboard/types/database";
 import {
   ConfirmationDialog,
@@ -48,6 +49,11 @@ import {
 } from "@radarboard/widget-engine/layouts";
 import type { WidgetDescriptor } from "@radarboard/widget-engine/widgets/registry";
 import { WIDGET_REGISTRY } from "@radarboard/widget-engine/widgets/registry";
+import {
+  canPlaceWidgetInScope,
+  type DashboardScope,
+  filterWidgetsForDashboardScope,
+} from "@radarboard/widget-sdk/dashboard-scope";
 import { GripVertical, Search, X } from "lucide-react";
 import type React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -669,8 +675,8 @@ function WidgetPlacementPreview({
       <div className="shrink-0 px-4 pt-3 pb-2">
         <div className="font-mono text-dim text-w-sm uppercase tracking-widest">Layout Preview</div>
         <div className="mt-0.5 text-dim text-w-sm">
-          Drag widgets from the library to place them. These changes stay scoped to this project,
-          page, and layout.
+          Drag widgets from the library to place them. These changes stay scoped to this dashboard
+          layer, page, and layout.
         </div>
       </div>
 
@@ -726,12 +732,14 @@ function WidgetPlacementPreview({
 }
 
 function WidgetPlacementHeader({
+  dashboardScope,
   layout,
   modalSize,
   pageName,
   projectName,
   setModalSize,
 }: {
+  dashboardScope: DashboardScope;
   layout: LayoutDefinition;
   modalSize: WidgetPlacementModalSize;
   pageName: string;
@@ -764,7 +772,8 @@ function WidgetPlacementHeader({
         Drag widgets from the library into open slots. Changes stay scoped to{" "}
         <span className="text-foreground-secondary">{projectName}</span>,{" "}
         <span className="text-foreground-secondary">{pageName}</span>, and{" "}
-        <span className="text-foreground-secondary">{layout.name}</span>.
+        <span className="text-foreground-secondary">{layout.name}</span>. Showing widgets that work{" "}
+        {dashboardScope === "all-projects" ? "on All Projects" : "on this project"}.
       </DialogDescription>
     </DialogHeader>
   );
@@ -878,6 +887,8 @@ export function ProjectWidgetPlacementModal({
 }) {
   const { projectLayouts, updateProjectPageWidgetLayout } = useDashboard();
   const { connectedKeys } = useCredentials();
+  const dashboardScope: DashboardScope =
+    projectSlug === ALL_PROJECTS_SLUG ? "all-projects" : "project";
 
   const sortedCells = useMemo(() => getSortedCells(layout.cells), [layout.cells]);
   const cellLabelById = useMemo(
@@ -891,10 +902,20 @@ export function ProjectWidgetPlacementModal({
         layout.id
       ] ?? {};
 
-    return Object.keys(savedLayout).length > 0
-      ? normalizeDashboardWidgetLayout(layout, savedLayout)
-      : createDefaultDashboardWidgetLayout(layout);
-  }, [layout, pageSlug, projectLayouts, projectSlug]);
+    const normalized =
+      Object.keys(savedLayout).length > 0
+        ? normalizeDashboardWidgetLayout(layout, savedLayout)
+        : createDefaultDashboardWidgetLayout(layout);
+    return Object.fromEntries(
+      Object.entries(normalized).map(([cellId, widgetId]) => {
+        const descriptor = widgetId ? WIDGET_REGISTRY.get(widgetId) : null;
+        return [
+          cellId,
+          descriptor && canPlaceWidgetInScope(descriptor, dashboardScope) ? widgetId : null,
+        ];
+      })
+    );
+  }, [dashboardScope, layout, pageSlug, projectLayouts, projectSlug]);
   const {
     uiState: { activeDragId, assignments, modalSize, pendingRemoval, pendingReplace, searchQuery },
     setUiState,
@@ -922,7 +943,10 @@ export function ProjectWidgetPlacementModal({
     return { connected, total };
   }
 
-  const allWidgets = useMemo(() => Array.from(WIDGET_REGISTRY.values()), []);
+  const allWidgets = useMemo(
+    () => filterWidgetsForDashboardScope(Array.from(WIDGET_REGISTRY.values()), dashboardScope),
+    [dashboardScope]
+  );
 
   const filteredWidgets = useMemo(() => {
     if (!searchQuery.trim()) return allWidgets;
@@ -1070,6 +1094,7 @@ export function ProjectWidgetPlacementModal({
           className="flex flex-col gap-0 overflow-hidden p-0"
         >
           <WidgetPlacementHeader
+            dashboardScope={dashboardScope}
             layout={layout}
             modalSize={modalSize}
             pageName={pageName}

@@ -1,6 +1,14 @@
 // @generated — do not edit manually. Run `pnpm generate:extensions` to regenerate.
 
-/** No dev extensions configured. Add entries to `devExtensions` in radarboard.config.ts. */
+/**
+ * Registers local dev extensions from filesystem paths.
+ * Configure with explicit local opt-ins in .radarboard/dev-extensions.json.
+ */
+
+import { registerIntegration } from "@radarboard/integration-sdk/registry";
+import { sentryDescriptor as devExt0Descriptor } from "../../../.radarboard/dev-extensions/sentry/src/index";
+
 export function initializeDevExtensions(): void {
-  // Intentionally empty when no dev extensions are configured.
+  // Dev extension: apps/app/.radarboard/dev-extensions/sentry (integration)
+  registerIntegration(devExt0Descriptor);
 }

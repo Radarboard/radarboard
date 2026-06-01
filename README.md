@@ -1,7 +1,7 @@
 # Radarboard
 
 <p align="center">
-  <img src="apps/marketing/public/media/radarboard-dashboard.png" alt="Radarboard dashboard showing product, growth, shipping, and reliability signals in one desktop board" width="960" />
+  <img src="apps/marketing/public/media/radarboard-dashboard.png" alt="Radarboard dashboard showing product, growth, release activity, and reliability signals in one desktop board" width="960" />
 </p>
 
 <p align="center">
@@ -31,13 +31,13 @@
 
 ## Why Radarboard exists
 
-People who ship products now run a small control room by themselves: GitHub, Vercel, Stripe, RevenueCat, Sentry, OpenPanel, Linear, App Store Connect, Resend, BetterStack, Google Search Console, and a dozen other tabs.
+People who release products now run a small control room by themselves: GitHub, Vercel, Stripe, RevenueCat, Sentry, OpenPanel, Linear, App Store Connect, Resend, BetterStack, Google Search Console, and a dozen other tabs.
 
 Radarboard is the desktop layer for that work. It gives indie hackers, open-source maintainers, creators, and teams a single place to answer practical questions:
 
 - Did revenue move?
 - Did anything break?
-- What shipped?
+- What released?
 - What are users doing?
 - Which issues, reviews, incidents, or roadmap items need attention?
 - What changed while I was focused elsewhere?
@@ -51,13 +51,13 @@ It is intentionally local-first. Your operational data belongs on your machine f
 | Revenue | RevenueCat, Open Collective, Stripe, sponsorship, downloads, and subscription signals |
 | Product analytics | OpenPanel sessions, visitors, page views, live activity, and trend widgets |
 | Reliability | Sentry issues, BetterStack monitors, incidents, logs, alerts, and status surfaces |
-| Shipping | GitHub pull requests, commits, releases, Linear work, Vercel deploys, and changelogs |
+| Release Activity | GitHub pull requests, commits, releases, Linear work, Vercel deploys, and changelogs |
 | Growth | Google Search Console queries, clicks, impressions, npm downloads, GitHub stars, and SEO cards |
 | Product feedback | App Store reviews, ideas, bugs, notes, bookmarks, tasks, and roadmap views |
 | Automation | MCP tools, webhook relay, extension catalogs, and SDK-backed integrations |
 
 <p align="center">
-  <img src="apps/marketing/public/media/radarboard-widgets.png" alt="Radarboard widgets for metrics, shipping, reliability, growth, and product operations" width="960" />
+  <img src="apps/marketing/public/media/radarboard-widgets.png" alt="Radarboard widgets for metrics, release activity, reliability, growth, and product operations" width="960" />
 </p>
 
 ## Desktop beta

@@ -54,8 +54,8 @@ describe("project helpers", () => {
 
   it("falls back for all-project mode and utility filters", () => {
     expect(hasIntegration(projects, null, "anything")).toBe(true);
-    expect(resolveOcSlug(projects, null)).toBe("front-end-checklist");
-    expect(resolveGitHubLogin(projects, null)).toBe("thedaviddias");
+    expect(resolveOcSlug(projects, null)).toBeNull();
+    expect(resolveGitHubLogin(projects, null)).toBeNull();
     expect(resolveWithFallback(["configured"], true, ["fallback"])).toEqual(["configured"]);
     expect(resolveWithFallback([], true, ["fallback"])).toEqual(["fallback"]);
     expect(

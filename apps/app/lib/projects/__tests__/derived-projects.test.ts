@@ -72,4 +72,26 @@ describe("deriveAllProjects", () => {
       },
     ]);
   });
+
+  it("includes user-created projects restored from metadata keys when the id index is stale", () => {
+    const projects = deriveAllProjects({
+      "@@proj_goshuin": {
+        _: {
+          name: "Goshuin",
+          color: "#5b8af5",
+        },
+      },
+    });
+
+    expect(projects).toEqual([
+      {
+        id: "goshuin",
+        slug: "goshuin",
+        name: "Goshuin",
+        color: "#5b8af5",
+        description: "",
+        platforms: [],
+      },
+    ]);
+  });
 });

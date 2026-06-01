@@ -3,6 +3,7 @@ import type { ExtensionMeta, WidgetCapability } from "@radarboard/types/extensio
 import type { PollingSourceId } from "@radarboard/types/polling";
 import type { PlatformIntegrations, Project } from "@radarboard/types/project";
 import type { ComponentType } from "react";
+import type { DashboardScope } from "./dashboard-scope";
 
 /** Size of the expanded widget overlay: "sm", "md", or "lg". */
 export type WidgetModalSize = import("@radarboard/types/database").WidgetModalSize;
@@ -181,6 +182,8 @@ export interface WidgetDescriptor<TConfig = Record<string, unknown>> extends Ext
   version?: string;
   /** Catalog grouping used by settings/widget library surfaces. */
   catalogCategory?: string;
+  /** Dashboard scopes where this widget can be placed. Omit to support all scopes. */
+  supportedDashboardScopes?: DashboardScope[];
   /** Canonical or specialized capability ownership for this widget. */
   capabilities?: WidgetCapability[];
   /** Integration keys that must be present on the active project for this widget to be relevant.

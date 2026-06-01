@@ -8,6 +8,7 @@ import { z } from "zod";
 import { getCacheRepo, getCredentialRepo } from "@/db/repository";
 import { errorJson, parseBody, parseSearchParams } from "@/lib/api";
 import { getCredentialDependentCacheRoutes } from "@/lib/integration-data-invalidation";
+import { normalizeCredentialValues } from "./normalize";
 
 const log = createLogger("api/credentials");
 
@@ -93,7 +94,11 @@ export async function handleSaveCredentials(request: Request) {
     const parsed = await parseBody(request, CredentialPostSchema);
     if (!parsed.ok) return parsed.response;
 
-    const { key, values } = parsed.data;
+    const { key } = parsed.data;
+    const values = normalizeCredentialValues(key, parsed.data.values);
+    if (key === "raindrop" && !values.accessToken?.trim()) {
+      return errorJson(400, "Add a Raindrop access token before saving credentials");
+    }
     const repo = getCredentialRepo();
     await repo.setCredential(key, values);
     await invalidateCredentialDependentCaches(key);

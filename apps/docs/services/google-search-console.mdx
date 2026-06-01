@@ -14,7 +14,9 @@ Google Search Console provides search analytics data: top queries with clicks, i
 
 ## OAuth setup
 
-Google Search Console uses Radarboard's hosted OAuth broker. Users connect their own Google account, and the hosted Radarboard app stores the Google refresh token. Local or desktop clients store only an opaque broker token and request short-lived access tokens when they fetch Search Console data.
+Google Search Console uses an OAuth broker because Google requires a stable HTTPS redirect URL for public apps. Radarboard can use the managed broker at `https://auth.radarboard.app`, or an organization can run its own broker and point the app configuration at that broker.
+
+When a user connects Google Search Console, they authorize their own Google account. The managed broker stores the Google refresh token encrypted at rest so it can issue short-lived access tokens to the local app. The local macOS app stores only an opaque broker token. The broker does not store Search Console reports, queries, clicks, impressions, or site performance data.
 
 <Steps>
   <Step title="Create a Google Cloud project">
@@ -26,26 +28,46 @@ Google Search Console uses Radarboard's hosted OAuth broker. Users connect their
   <Step title="Create OAuth2 credentials">
     Go to **APIs & Services** > **Credentials** > **Create Credentials** > **OAuth 2.0 Client ID**.
     
-    Select **Web application** as the application type. Add this Authorized redirect URI:
+    Select **Web application** as the application type. For the managed broker, add this Authorized redirect URI:
 
     ```text
-    https://app.radarboard.app/api/auth/google/callback
+    https://auth.radarboard.app/api/auth/google/callback
     ```
     
-    Note the **Client ID** and **Client Secret** for the hosted Radarboard deployment.
+    If you self-host the broker, use your broker domain with the same path: `/api/auth/google/callback`.
   </Step>
   <Step title="Configure the broker">
-    Set the OAuth client values on the hosted Radarboard app. Local and desktop clients can use the default broker URL.
+    Configure the broker deployment with the Google OAuth client values and a durable encrypted credential store. The local app uses the managed broker by default; self-hosted builds can point app configuration to a different broker URL.
   </Step>
 </Steps>
 
-## Environment variables
+## Broker configuration
 
-```bash .env.local
+Managed broker URL:
+
+```text
+https://auth.radarboard.app
+```
+
+Self-hosted broker deployments need these configuration values:
+
+```text
 OAUTH_GOOGLE_CLIENT_ID=xxxxxxxxxxxx.apps.googleusercontent.com
 OAUTH_GOOGLE_CLIENT_SECRET=GOCSPX-xxxxxxxxxxxx
-RADARBOARD_OAUTH_BROKER_URL=https://app.radarboard.app
+RADARBOARD_OAUTH_BROKER_URL=https://auth.radarboard.app
 ```
+
+For self-hosted brokers, replace `RADARBOARD_OAUTH_BROKER_URL` with your own HTTPS broker origin.
+
+## Privacy and storage
+
+| Item | Stored by managed broker? | Notes |
+|------|----------------------------|-------|
+| Google refresh token | Yes | Encrypted at rest; required to refresh access without asking the user to reconnect. |
+| Google access token | Temporarily | Short-lived token used to read Search Console data. |
+| Local app broker token | Yes, locally | Opaque token stored by the local app; it is not the Google refresh token. |
+| Search Console reports | No | The broker does not persist clicks, impressions, queries, CTR, rankings, or site report data. |
+| Self-hosted broker option | Yes | Advanced users can run their own broker and configure the app to use it. |
 
 ## API details
 
@@ -54,7 +76,7 @@ RADARBOARD_OAUTH_BROKER_URL=https://app.radarboard.app
 | API base URL | `https://searchconsole.googleapis.com/webmasters/v3` |
 | Rate limit | Standard Google API quotas |
 | Cache TTL | 5 minutes |
-| Authentication | OAuth2 through hosted broker |
+| Authentication | OAuth2 through managed or self-hosted broker |
 
 ## Widgets that use this service
 

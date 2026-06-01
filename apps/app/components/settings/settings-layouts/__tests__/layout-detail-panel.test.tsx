@@ -17,7 +17,7 @@ vi.mock("@radarboard/widget-engine/widgets/registry", () => ({
     const labels: Record<string, { name: string }> = {
       analytics: { name: "Analytics" },
       revenue: { name: "Revenue" },
-      shipping: { name: "Shipping" },
+      shipping: { name: "Release Activity" },
     };
     return labels[id];
   }),

@@ -30,6 +30,7 @@ import {
 
 let orderTimer: ReturnType<typeof setTimeout> | null = null;
 let layoutTimer: ReturnType<typeof setTimeout> | null = null;
+let integrationsTimer: ReturnType<typeof setTimeout> | null = null;
 let loadStarted = false;
 
 /** Max retries for settings load (server may still be starting on desktop). */
@@ -86,6 +87,10 @@ export function resetSettingsStoreForTesting(): void {
   if (layoutTimer) {
     clearTimeout(layoutTimer);
     layoutTimer = null;
+  }
+  if (integrationsTimer) {
+    clearTimeout(integrationsTimer);
+    integrationsTimer = null;
   }
   settingsStore.setState(() => ({
     projectOrder: [],
@@ -236,9 +241,11 @@ export function updateFeaturePreference(featureId: string, enabled: boolean): vo
 export function updateProjectIntegrations(config: ProjectIntegrationsMap): void {
   settingsStore.setState((s: SettingsState) => ({ ...s, projectIntegrations: config }));
 
-  const save = async () => {
+  if (integrationsTimer) clearTimeout(integrationsTimer);
+  integrationsTimer = setTimeout(async () => {
+    const latestConfig = settingsStore.state.projectIntegrations;
     if (typeof navigator !== "undefined" && !navigator.onLine) {
-      await queueAction("UPDATE_PROJECT_INTEGRATIONS", { projectIntegrations: config });
+      await queueAction("UPDATE_PROJECT_INTEGRATIONS", { projectIntegrations: latestConfig });
       toast.info("Integrations saved offline");
       return;
     }
@@ -246,13 +253,12 @@ export function updateProjectIntegrations(config: ProjectIntegrationsMap): void 
       await fetch(API_ROUTES.settings, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ projectIntegrations: config }),
+        body: JSON.stringify({ projectIntegrations: latestConfig }),
       });
       revalidateProjectIntegrationRoutes();
       notifyProjectGraphChanged();
     } catch (err) {
       showErrorToast("Failed to save project integrations", err);
     }
-  };
-  save();
+  }, 300);
 }

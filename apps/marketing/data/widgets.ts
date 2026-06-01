@@ -24,9 +24,9 @@ export const widgets: Widget[] = [
   },
   {
     slug: "shipping",
-    name: "Shipping",
-    description: "Recent deploys, commits, and shipped features in a unified timeline",
-    category: "Shipping",
+    name: "Release Activity",
+    description: "Recent deploys, commits, and released work in a unified timeline",
+    category: "Release Activity",
     integrations: ["vercel", "linear", "github"],
     layout: "Timeline",
     bestFor: ["Teams", "Maintainers"],
