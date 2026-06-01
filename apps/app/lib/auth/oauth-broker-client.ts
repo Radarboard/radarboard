@@ -4,7 +4,15 @@ type BrokerAccessTokenResponse = {
   accessToken?: string;
 };
 
-export function isOAuthBrokerCredential(creds: Record<string, string> | null | undefined): boolean {
+type OAuthBrokerCredential = BrokerCredential & {
+  authMethod: "oauth_broker";
+  brokerUrl: string;
+  brokerCredentialToken: string;
+};
+
+export function isOAuthBrokerCredential(
+  creds: Record<string, string> | null | undefined
+): creds is OAuthBrokerCredential {
   return Boolean(
     creds?.authMethod === "oauth_broker" && creds.brokerUrl && creds.brokerCredentialToken
   );
