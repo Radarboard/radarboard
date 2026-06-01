@@ -1,0 +1,34 @@
+---
+title: "Response Cache"
+description: "Review cached API responses, fetch times, TTLs, and expiration state."
+---
+
+## Purpose
+
+Use Response Cache to understand whether Radarboard is showing fresh provider data, cached data, or stale fallback data.
+
+## When to use it
+
+- A widget value looks stale after a successful connection.
+- Provider calls work, but the dashboard does not update.
+- You need to verify TTL behavior for an integration route.
+
+## What to inspect
+
+- Cache key and route.
+- Fetch timestamp.
+- TTL and expiration status.
+- Whether entries are fresh, expired, or missing.
+
+## Common troubleshooting flow
+
+1. Find the route used by the affected widget or integration.
+2. Compare the fetched timestamp with the expected refresh window.
+3. Open [Service Health](/developer-guide/debug/service-health) if cache entries are missing because provider calls fail.
+4. Open [Debug Events](/developer-guide/debug/debug-events) if the cache state does not match the visible UI.
+
+## Related debug pages
+
+- [Service Health](/developer-guide/debug/service-health)
+- [Extension Health](/developer-guide/debug/extension-health)
+- [Debug Events](/developer-guide/debug/debug-events)

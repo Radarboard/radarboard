@@ -1,0 +1,35 @@
+---
+title: "Debug Events"
+description: "Search durable debug events emitted by chat, plugins, integrations, and MCP tools."
+---
+
+## Purpose
+
+Use Debug Events to inspect chronological runtime events across Radarboard subsystems.
+
+## When to use it
+
+- You know something happened but need the event trail.
+- A plugin, integration, or assistant workflow fails without an obvious UI error.
+- You need to correlate events across multiple runtime surfaces.
+
+## What to inspect
+
+- Event time.
+- Source and category.
+- Event message.
+- Grouped or ungrouped event rows.
+- Any attached metadata.
+
+## Common troubleshooting flow
+
+1. Filter by source, category, or time window.
+2. Find the earliest event related to the failure.
+3. Open [Performance Spans](/developer-guide/debug/performance-spans) if timing matters.
+4. Open [Client Issues](/developer-guide/debug/client-issues) if the event points to a browser failure.
+
+## Related debug pages
+
+- [Performance Spans](/developer-guide/debug/performance-spans)
+- [Client Issues](/developer-guide/debug/client-issues)
+- [Webhook Relay](/developer-guide/debug/webhook-relay)

@@ -1,0 +1,34 @@
+---
+title: "Conversations"
+description: "Inspect saved assistant conversations and project context."
+---
+
+## Purpose
+
+Use Conversations to inspect saved assistant threads and the project metadata attached to them.
+
+## When to use it
+
+- The assistant appears to use the wrong project context.
+- A conversation is missing, stale, or attached to the wrong project.
+- You need to trace a user-visible assistant workflow back to its saved thread.
+
+## What to inspect
+
+- Conversation title.
+- Project slug.
+- Created and updated timestamps.
+- Whether the thread belongs to the expected project.
+
+## Common troubleshooting flow
+
+1. Locate the conversation by title or updated time.
+2. Confirm it is attached to the expected project.
+3. Open [LLM Traces](/developer-guide/debug/llm-traces) to inspect model calls from the same workflow.
+4. Open [AI Memory](/developer-guide/debug/ai-memory) if the assistant carried unexpected context.
+
+## Related debug pages
+
+- [LLM Traces](/developer-guide/debug/llm-traces)
+- [AI Memory](/developer-guide/debug/ai-memory)
+- [Reports](/developer-guide/debug/reports)

@@ -13,6 +13,7 @@ import {
   pickEditableCredentialValues,
   saveCredentialValues,
 } from "@/components/settings/settings-integrations/utils";
+import { isIntegrationBackedDashboardDataKey } from "@/lib/integration-data-invalidation";
 import { handleExternalLinkClick } from "@/lib/system/ui/external-url";
 
 export function ApiCredentialAccessCard({
@@ -44,11 +45,7 @@ export function ApiCredentialAccessCard({
     service.auth.fields?.every((field) => field.optional || values[field.key]?.trim()) ?? false;
 
   const revalidateCredentialData = useCallback(async () => {
-    await mutateSWR(
-      (key) => typeof key === "string" && key.startsWith("/api/integrations/"),
-      undefined,
-      { revalidate: true }
-    );
+    await mutateSWR(isIntegrationBackedDashboardDataKey, undefined, { revalidate: true });
   }, []);
 
   const updateField = useCallback(

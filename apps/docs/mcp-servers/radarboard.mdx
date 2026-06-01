@@ -5,7 +5,7 @@ description: "Find the built-in Radarboard MCP server URL, OAuth endpoints, and 
 
 # Radarboard MCP server
 
-Radarboard exposes its own built-in MCP server from the web app. This is the endpoint you use when connecting ChatGPT or another OAuth-capable MCP client to your Radarboard instance.
+Radarboard exposes its own built-in MCP server from the web app. This is the endpoint you use when connecting ChatGPT, OpenCode, Codex, or another MCP client to your Radarboard instance.
 
 This is separate from external MCP servers such as RevenueCat or OpenPanel that you configure in `opencode.json`.
 
@@ -51,6 +51,46 @@ openssl rand -hex 32
   `NEXT_PUBLIC_APP_URL` is the source of truth for the built-in MCP, OAuth, and discovery URLs.
 </Note>
 
+## Local agent setup
+
+For local development, this repo configures the Radarboard MCP in `opencode.json` at:
+
+```text
+https://radarboard.localhost:1355/api/mcp
+```
+
+The local MCP config reads its bearer token from `RADARBOARD_MCP_TOKEN`, so the token never needs to be committed.
+
+Generate a local token with:
+
+```bash
+pnpm mcp:token
+```
+
+Then export it for the current shell before launching an MCP client:
+
+```bash
+export RADARBOARD_MCP_TOKEN="$(pnpm mcp:token)"
+```
+
+<Note>
+  The local app server must already be running on `radarboard.localhost:1355`. This repo does not auto-start the dev server for MCP setup.
+</Note>
+
+### Codex Desktop
+
+For Codex Desktop, add a user-level MCP server entry pointing at the same local endpoint:
+
+```toml
+[mcp_servers.radarboard]
+url = "https://radarboard.localhost:1355/api/mcp"
+
+[mcp_servers.radarboard.http_headers]
+Authorization = "Bearer <RADARBOARD_MCP_TOKEN>"
+```
+
+If your Codex build supports environment interpolation in HTTP headers, use `RADARBOARD_MCP_TOKEN` there instead of pasting the token. Restart Codex or open a new session after changing the config so the `mcp__radarboard` tools are loaded.
+
 ## Endpoints
 
 | Endpoint | URL pattern | Purpose |
@@ -73,13 +113,23 @@ curl https://radarboard.example.com/.well-known/oauth-protected-resource
 
 The MCP endpoint itself requires a bearer token, so it will return `401 Unauthorized` unless you call it with a valid OAuth-issued token.
 
+For local agent setup, verify the full flow with:
+
+```bash
+export RADARBOARD_MCP_TOKEN="$(pnpm mcp:token)"
+pnpm mcp:verify
+```
+
+The verification script checks protected-resource discovery, confirms unauthenticated MCP requests return `401`, initializes an authenticated MCP session, and confirms `tools/list` includes core Radarboard tools such as `get_notifications`, `get_debug_events`, and `list_artifacts`.
+
 ## Where to look in the codebase
 
 If you need the implementation details:
 
-- `apps/app/lib/env.ts` defines the MCP-related env keys
-- `apps/app/lib/mcp-oauth.ts` reads `NEXT_PUBLIC_APP_URL` and `RADARBOARD_API_SECRET`
-- `apps/app/app/api/mcp/route.ts` exposes the built-in MCP endpoint
+- `apps/app/lib/system/runtime/env.ts` defines the MCP-related env keys
+- `apps/app/lib/mcp/mcp-oauth.ts` reads `NEXT_PUBLIC_APP_URL` and `RADARBOARD_API_SECRET`
+- `apps/app/modules/mcp-shell/routes/server.ts` exposes the built-in MCP server implementation
+- `apps/app/modules/mcp-shell/routes/register.ts` registers the `/api/mcp` route
 - `apps/app/app/.well-known/oauth-authorization-server/route.ts` exposes OAuth server metadata
 - `apps/app/app/.well-known/oauth-protected-resource/route.ts` exposes protected resource metadata
 

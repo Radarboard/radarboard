@@ -1,0 +1,34 @@
+---
+title: "Client Issues"
+description: "Inspect grouped browser runtime errors, API failures, and React client issues."
+---
+
+## Purpose
+
+Use Client Issues to inspect failures that happen in the browser or are reported by client-side runtime surfaces.
+
+## When to use it
+
+- A page breaks only after client interaction.
+- A React component throws in the browser.
+- API calls fail from the client even though server-side checks look healthy.
+
+## What to inspect
+
+- Issue group and severity.
+- Browser or API source.
+- Recent occurrences.
+- Error message and stack details where available.
+
+## Common troubleshooting flow
+
+1. Find the most recent issue group for the affected surface.
+2. Confirm whether the issue is a client runtime error or API failure.
+3. Open [Debug Events](/developer-guide/debug/debug-events) to inspect surrounding events.
+4. Open [Performance Spans](/developer-guide/debug/performance-spans) if the failure follows a slow request.
+
+## Related debug pages
+
+- [Debug Events](/developer-guide/debug/debug-events)
+- [Performance Spans](/developer-guide/debug/performance-spans)
+- [Extension Health](/developer-guide/debug/extension-health)

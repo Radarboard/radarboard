@@ -1,0 +1,34 @@
+---
+title: "AI Memory"
+description: "Review persistent assistant facts stored across projects and conversations."
+---
+
+## Purpose
+
+Use AI Memory to verify the persistent facts the assistant can reuse across conversations.
+
+## When to use it
+
+- The assistant remembers something incorrect.
+- A response depends on project context that may be stale.
+- You need to confirm whether a fact is stored globally or for a specific project.
+
+## What to inspect
+
+- Memory key.
+- Stored value.
+- Project scope.
+- Created or updated timestamps.
+
+## Common troubleshooting flow
+
+1. Search for the project or fact.
+2. Confirm the value and scope.
+3. Open [Conversations](/developer-guide/debug/conversations) to check where the context was used.
+4. Open [LLM Traces](/developer-guide/debug/llm-traces) to inspect the model request.
+
+## Related debug pages
+
+- [Conversations](/developer-guide/debug/conversations)
+- [LLM Traces](/developer-guide/debug/llm-traces)
+- [Reports](/developer-guide/debug/reports)

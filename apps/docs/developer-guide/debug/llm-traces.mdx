@@ -1,0 +1,35 @@
+---
+title: "LLM Traces"
+description: "Inspect assistant requests, token usage, model latency, costs, and trace metadata."
+---
+
+## Purpose
+
+Use LLM Traces to understand what the assistant sent to a model, how long it took, and how many tokens it used.
+
+## When to use it
+
+- An assistant response is slow.
+- A response is unexpectedly expensive.
+- A response appears to miss context.
+- You need to compare model usage across assistant workflows.
+
+## What to inspect
+
+- Prompt, completion, and total token counts.
+- Duration and estimated cost.
+- Model and provider metadata.
+- Trace insights and inspection details.
+
+## Common troubleshooting flow
+
+1. Filter to the recent request or project.
+2. Inspect token usage and latency.
+3. Compare the trace with [Conversations](/developer-guide/debug/conversations).
+4. Open [AI Memory](/developer-guide/debug/ai-memory) if the trace suggests stale or missing context.
+
+## Related debug pages
+
+- [Conversations](/developer-guide/debug/conversations)
+- [AI Memory](/developer-guide/debug/ai-memory)
+- [Debug Events](/developer-guide/debug/debug-events)

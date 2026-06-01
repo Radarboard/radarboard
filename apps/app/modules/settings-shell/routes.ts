@@ -6,6 +6,7 @@ import { z } from "zod";
 import { getSettingsRepo } from "@/db/repository";
 import { parseBody } from "@/lib/api";
 import { emitCacheInvalidation } from "@/lib/event-gateway";
+import { INTEGRATION_BACKED_DASHBOARD_DATA_PREFIXES } from "@/lib/integration-data-invalidation";
 import "@/lib/polling-config";
 import { ensureWorkflowSchedulerStarted } from "@/lib/workflow-scheduler-runtime";
 
@@ -303,7 +304,7 @@ export async function handleUpdateSettings(request: Request) {
     if (projectIntegrations) {
       await repo.setProjectIntegrations(projectIntegrations);
       emitCacheInvalidation(
-        ["/api/integrations/", "/api/plugins/changelog/"],
+        Array.from(INTEGRATION_BACKED_DASHBOARD_DATA_PREFIXES),
         "settings:projectIntegrations"
       );
     }

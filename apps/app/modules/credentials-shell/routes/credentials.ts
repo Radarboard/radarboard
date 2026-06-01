@@ -1,12 +1,13 @@
 import "@/lib/integrations-init";
 
-import { getAllIntegrations } from "@radarboard/integration-sdk/registry";
+import { DATA_SOURCE_REGISTRY, getAllIntegrations } from "@radarboard/integration-sdk/registry";
 import { integrationRoute } from "@radarboard/integration-sdk/routes";
 import { createLogger } from "@radarboard/logger/logger";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getCacheRepo, getCredentialRepo } from "@/db/repository";
 import { errorJson, parseBody, parseSearchParams } from "@/lib/api";
+import { getCredentialDependentCacheRoutes } from "@/lib/integration-data-invalidation";
 
 const log = createLogger("api/credentials");
 
@@ -33,11 +34,22 @@ async function clearRouteCache(route: string) {
   }
 }
 
-async function invalidateCredentialDependentCaches(key: string) {
+async function invalidateCredentialDependentCaches(credentialKey: string) {
   const routes = new Set<string>();
 
+  for (const route of getCredentialDependentCacheRoutes(credentialKey)) {
+    routes.add(route);
+  }
+
+  for (const key of DATA_SOURCE_REGISTRY.keys()) {
+    const [integration, action] = key.split("/");
+    if (integration === credentialKey && action) {
+      routes.add(integrationRoute(integration, action));
+    }
+  }
+
   for (const integration of getAllIntegrations()) {
-    if (integration.id !== key && integration.auth.id !== key) continue;
+    if (integration.id !== credentialKey && integration.auth.id !== credentialKey) continue;
 
     for (const dataSource of integration.dataSources ?? []) {
       routes.add(integrationRoute(integration.id, dataSource.action));

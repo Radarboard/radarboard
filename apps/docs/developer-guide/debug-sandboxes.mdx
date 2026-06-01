@@ -9,6 +9,13 @@ Debug sandboxes are local development surfaces under `/debug/*`. They help you i
 
 Use sandboxes after the extension appears in **Extension Health**. If a sandbox is empty, check that the generated extension init files are current and that the extension is listed in `radarboard.config.ts`.
 
+For focused reference, each sandbox has its own page:
+
+- [Integration Sandbox](/developer-guide/debug/integration-sandbox)
+- [Widget Sandbox](/developer-guide/debug/widget-sandbox)
+- [Widget Composition](/developer-guide/debug/widget-composition)
+- [Plugin Sandbox](/developer-guide/debug/plugin-sandbox)
+
 ## Navigation model
 
 The sandbox order follows the extension development flow:
@@ -31,6 +38,8 @@ The **Integration Sandbox** shows each registered integration descriptor:
 
 Use it when validating a new integration or checking whether a provider exposes the data sources widgets expect.
 
+[Open the Integration Sandbox reference](/developer-guide/debug/integration-sandbox).
+
 ## Widget Sandbox
 
 The **Widget Sandbox** renders every template-backed widget with generated data in four states:
@@ -42,15 +51,21 @@ The **Widget Sandbox** renders every template-backed widget with generated data 
 
 Use it to catch visual regressions, empty states, layout overflow, and error handling before wiring a widget into a live dashboard.
 
+[Open the Widget Sandbox reference](/developer-guide/debug/widget-sandbox).
+
 ## Widget Composition
 
 The **Widget Composition** sandbox renders deterministic widget recipe examples from the template engine. Use it when changing recipe composition, section synchronization, or shared template primitives.
+
+[Open the Widget Composition reference](/developer-guide/debug/widget-composition).
 
 ## Plugin Sandbox
 
 The **Plugin Sandbox** renders every registered plugin with a mock plugin API across runtime states and presentation modes.
 
 Use it to verify side panel, modal, fullscreen, and mini HUD behavior without invoking the plugin from a production surface.
+
+[Open the Plugin Sandbox reference](/developer-guide/debug/plugin-sandbox).
 
 ## Recommended order
 
@@ -64,6 +79,8 @@ When building a provider-backed experience, move through the sandboxes in this o
 ## Adding a new sandbox
 
 Add new sandbox routes to the central debug registry so the shared debug shell can provide the same title, description, docs link, sidebar entry, and active state.
+
+Each sandbox registry entry must point `docsHref` at a dedicated page under `/developer-guide/debug/<slug>`.
 
 Use the workflow position to choose the order:
 

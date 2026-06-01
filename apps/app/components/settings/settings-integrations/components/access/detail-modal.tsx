@@ -3,6 +3,7 @@
 import { API_ROUTES } from "@radarboard/types/api-routes";
 import type { IntegrationConnection } from "@radarboard/types/database";
 import type { McpServerConfig } from "@radarboard/types/mcp-server";
+import type { ModalSize } from "@radarboard/types/ui";
 import { VIEW_STATE_QUERY_KEYS } from "@radarboard/types/view-state";
 import {
   Dialog,
@@ -25,6 +26,8 @@ import type {
   ServiceEntry,
 } from "@/components/settings/settings-integrations/types";
 import {
+  getDefaultServiceConnection,
+  getLinkedMcpServerForConnection,
   getVisibleIntegrationModalTabs,
   isWebhookService,
   resolveIntegrationModalTab,
@@ -120,6 +123,18 @@ export function ServiceDetailModal({
     activeTabParam && visibleTabs.includes(activeTabParam as IntegrationModalTab)
       ? (activeTabParam as IntegrationModalTab)
       : defaultActiveTab;
+  const defaultConnection = useMemo(
+    () => getDefaultServiceConnection(service, connections),
+    [connections, service]
+  );
+  const hasAssistantAccess = useMemo(
+    () =>
+      Boolean(
+        service.mcpConfig || getLinkedMcpServerForConnection(service, defaultConnection, mcpServers)
+      ),
+    [defaultConnection, mcpServers, service]
+  );
+  const modalSize: ModalSize = activeTab === "access" && !hasAssistantAccess ? "sm" : "md";
 
   useEffect(() => {
     if (!open) {
@@ -141,7 +156,7 @@ export function ServiceDetailModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent size="md" nested className="overflow-y-auto">
+      <DialogContent size={modalSize} nested className="overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2.5">
             {faviconUrl ? (

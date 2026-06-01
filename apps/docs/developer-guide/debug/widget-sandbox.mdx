@@ -1,0 +1,36 @@
+---
+title: "Widget Sandbox"
+description: "Render every registered widget with happy, empty, loading, and error states."
+---
+
+## Purpose
+
+Use Widget Sandbox to preview template-backed widgets with generated data in every expected runtime state.
+
+## When to use it
+
+- You are building or changing a widget.
+- A widget layout overflows or breaks in a specific state.
+- You need to verify empty, loading, and error handling before using live data.
+
+## What to inspect
+
+- Happy path rendering.
+- Empty state rendering.
+- Loading state rendering.
+- Error state rendering.
+- Layout stability across all registered widgets.
+
+## Common troubleshooting flow
+
+1. Select a widget or keep the all-widgets view.
+2. Compare each state side by side.
+3. Open [Integration Sandbox](/developer-guide/debug/integration-sandbox) if the widget depends on a missing provider data source.
+4. Open [Widget Composition](/developer-guide/debug/widget-composition) if the issue comes from template recipe behavior.
+
+## Related debug pages
+
+- [Integration Sandbox](/developer-guide/debug/integration-sandbox)
+- [Widget Composition](/developer-guide/debug/widget-composition)
+- [Extension Health](/developer-guide/debug/extension-health)
+- [Build a widget](/developer-guide/build-a-widget)

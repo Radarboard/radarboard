@@ -52,6 +52,8 @@
     "desktop:build:dev-app": "pnpm --filter @radarboard/desktop build:dev-app",
     "desktop:link:dev-app": "pnpm --filter @radarboard/desktop link:dev-app",
     "desktop:unlink:dev-app": "pnpm --filter @radarboard/desktop unlink:dev-app",
+    "mcp:token": "node scripts/mint-mcp-dev-token.mjs",
+    "mcp:verify": "node scripts/verify-radarboard-mcp.mjs",
     "clean": "rm -rf apps/app/.next apps/docs/.mintlify .turbo node_modules/.cache && find . -name '.turbo' -type d -not -path '*/node_modules/*' -exec rm -rf {} + 2>/dev/null; echo 'Cleaned build caches'",
     "clean:all": "pnpm clean && find . -name 'node_modules' -type d -prune -exec rm -rf {} + 2>/dev/null; echo 'Cleaned everything — run pnpm install'",
     "generate:extensions": "tsx scripts/generate-extensions-init.ts",

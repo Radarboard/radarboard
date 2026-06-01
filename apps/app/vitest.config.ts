@@ -100,6 +100,7 @@ const exactAliases = {
   "@/lib/changelog-server": "lib/integrations/content/changelog-server",
   "@/lib/integration-artifacts": "lib/integrations/config/integration-artifacts",
   "@/lib/integration-connections": "lib/integrations/config/integration-connections",
+  "@/lib/integration-data-invalidation": "lib/integrations/config/integration-data-invalidation",
   "@/lib/integration-rss-feeds": "lib/integrations/content/integration-rss-feeds",
   "@/lib/integration-status-pages": "lib/integrations/status/integration-status-pages",
   "@/lib/project-health-sources": "lib/integrations/status/project-health-sources",

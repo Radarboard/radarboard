@@ -1,0 +1,35 @@
+---
+title: "Integration Sandbox"
+description: "Inspect integration descriptors, credential fields, data sources, MCP tools, and mock fetches."
+---
+
+## Purpose
+
+Use Integration Sandbox to verify the contract an integration exposes to Radarboard.
+
+## When to use it
+
+- A provider appears installed but its widget cannot find a data source.
+- You are validating a new integration descriptor.
+- You need to confirm credential fields, placeholders, or MCP tools.
+
+## What to inspect
+
+- Auth type and credential fields.
+- Data source actions and cache TTLs.
+- MCP tool descriptors.
+- Mock fetch tester results.
+
+## Common troubleshooting flow
+
+1. Select the integration.
+2. Confirm auth fields match the provider setup instructions.
+3. Confirm the expected data source action exists.
+4. Open [Widget Sandbox](/developer-guide/debug/widget-sandbox) to verify the widget handles the integration data shape.
+
+## Related debug pages
+
+- [Extension Health](/developer-guide/debug/extension-health)
+- [Widget Sandbox](/developer-guide/debug/widget-sandbox)
+- [Plugin Sandbox](/developer-guide/debug/plugin-sandbox)
+- [Build an integration](/developer-guide/build-an-integration)

@@ -14,6 +14,14 @@
       },
       "enabled": true
     },
+    "radarboard": {
+      "type": "remote",
+      "url": "https://radarboard.localhost:1355/api/mcp",
+      "headers": {
+        "Authorization": "Bearer {env:RADARBOARD_MCP_TOKEN}"
+      },
+      "enabled": true
+    },
     "openpanel": {
       "type": "local",
       "command": ["npx", "-y", "openpanel-mcp-server"],

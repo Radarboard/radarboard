@@ -8,6 +8,7 @@ import type { PlatformIntegrations } from "@radarboard/types/project";
 import type { WidgetAuth } from "@radarboard/widget-engine/widgets/registry";
 import { WIDGET_REGISTRY } from "@radarboard/widget-engine/widgets/registry";
 import type { IntegrationProviderDefinition } from "@/hooks/settings/use-integration-connections";
+import { isAppShellWidgetAuthServiceId } from "@/lib/integration-data-invalidation";
 import { buildCredentialReference } from "@/lib/mcp/mcp-server-config";
 import { readStoredIntegrationModalTab } from "../settings-storage";
 import { CATEGORY_ORDER, INTEGRATION_CATEGORY_LABELS, WEBHOOK_SERVICE_CONFIG } from "./constants";
@@ -220,6 +221,10 @@ export function mergeWidgetAuthServices(
       if (!existing.description && auth.description) {
         existing.description = auth.description;
       }
+      continue;
+    }
+
+    if (!isAppShellWidgetAuthServiceId(auth.id)) {
       continue;
     }
 

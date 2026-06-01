@@ -9,6 +9,20 @@ The `/debug` area is the local diagnostics workspace for Radarboard. Use it when
 
 Each panel is read-only unless the page clearly presents an action such as refresh, inspect, or retry.
 
+For focused reference, each sidebar item has its own page:
+
+- [Extension Health](/developer-guide/debug/extension-health)
+- [Service Health](/developer-guide/debug/service-health)
+- [Response Cache](/developer-guide/debug/response-cache)
+- [Conversations](/developer-guide/debug/conversations)
+- [LLM Traces](/developer-guide/debug/llm-traces)
+- [AI Memory](/developer-guide/debug/ai-memory)
+- [Reports](/developer-guide/debug/reports)
+- [Debug Events](/developer-guide/debug/debug-events)
+- [Performance Spans](/developer-guide/debug/performance-spans)
+- [Client Issues](/developer-guide/debug/client-issues)
+- [Webhook Relay](/developer-guide/debug/webhook-relay)
+
 ## Navigation model
 
 The sidebar is ordered around the most common troubleshooting flow:
@@ -40,11 +54,15 @@ Use **Extension Health** as the first stop for modularity and registration issue
 
 Start here when a dashboard widget says a provider is missing, a sandbox is empty, or an extension appears installed but does not work.
 
+[Open the Extension Health reference](/developer-guide/debug/extension-health).
+
 ### Service Health
 
 Use **Service Health** to inspect integration availability, latency, error rates, and recent failures.
 
 Start here when provider data is unavailable, slow, or failing after registration is confirmed.
+
+[Open the Service Health reference](/developer-guide/debug/service-health).
 
 ### Response Cache
 
@@ -52,11 +70,15 @@ Use **Response Cache** to review cached API responses, fetch times, TTLs, and ex
 
 Start here when a dashboard value looks stale or when a successful provider response is not reflected in the UI.
 
+[Open the Response Cache reference](/developer-guide/debug/response-cache).
+
 ## Assistant panels
 
 ### Conversations
 
 Use **Conversations** to inspect saved assistant threads and their associated project metadata. This is useful when debugging conversation history, project routing, or stale context.
+
+[Open the Conversations reference](/developer-guide/debug/conversations).
 
 ### LLM Traces
 
@@ -64,13 +86,19 @@ Use **LLM Traces** to inspect assistant requests, token usage, model latency, es
 
 Start here when an AI response is slow, unexpectedly expensive, or missing context.
 
+[Open the LLM Traces reference](/developer-guide/debug/llm-traces).
+
 ### AI Memory
 
 Use **AI Memory** to review persistent assistant facts stored across conversations. This helps verify whether the assistant is carrying the right project context into later runs.
 
+[Open the AI Memory reference](/developer-guide/debug/ai-memory).
+
 ### Reports
 
 Use **Reports** to find generated analysis reports and exports created from assistant workflows.
+
+[Open the Reports reference](/developer-guide/debug/reports).
 
 ## Runtime panels
 
@@ -80,11 +108,15 @@ Use **Debug Events** to search durable debug events emitted by chat, plugins, in
 
 Start here when you know something happened but need a chronological event trail.
 
+[Open the Debug Events reference](/developer-guide/debug/debug-events).
+
 ### Performance Spans
 
 Use **Performance Spans** to inspect timed runtime spans across API routes, integrations, plugins, and background work.
 
 Start here when a feature works but feels slow.
+
+[Open the Performance Spans reference](/developer-guide/debug/performance-spans).
 
 ### Client Issues
 
@@ -92,11 +124,15 @@ Use **Client Issues** to inspect grouped browser runtime errors, API failures, a
 
 Start here when the problem appears only in the browser or after a client interaction.
 
+[Open the Client Issues reference](/developer-guide/debug/client-issues).
+
 ### Webhook Relay
 
 Use **Webhook Relay** to inspect inbound webhook events, payload summaries, and delivery outcomes.
 
 Start here when testing inbound provider webhooks or local webhook forwarding.
+
+[Open the Webhook Relay debug reference](/developer-guide/debug/webhook-relay).
 
 ## Recommended flows
 
@@ -133,6 +169,7 @@ Each registry entry should include:
 - a clear page `title`
 - a one-sentence `description`
 - a `docsHref`
+- a dedicated page under `/developer-guide/debug/<slug>`
 - a group: `overview`, `assistant`, or `runtime`
 
 If the new page does not fit one of those groups, add a new group only when there will be more than one page in that mental model. Avoid one-page groups unless the page is a major top-level workflow.

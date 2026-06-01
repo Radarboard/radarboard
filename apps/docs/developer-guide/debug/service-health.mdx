@@ -1,0 +1,36 @@
+---
+title: "Service Health"
+description: "Inspect provider availability, data source latency, and recent integration failures."
+---
+
+## Purpose
+
+Use Service Health to see whether provider-backed data paths are available and responding within expected latency.
+
+## When to use it
+
+- A dashboard value fails to load after the extension is registered.
+- Provider data is slow or intermittently unavailable.
+- You need to compare integration availability and error rates.
+
+## What to inspect
+
+- Service status.
+- Availability percentage.
+- Average and p95 latency.
+- Last failure messages.
+- Recent changes in provider health.
+
+## Common troubleshooting flow
+
+1. Confirm the failing provider is listed.
+2. Check the status and last failure.
+3. Open [Response Cache](/developer-guide/debug/response-cache) to see whether stale data is being served.
+4. Use [Performance Spans](/developer-guide/debug/performance-spans) if the provider succeeds but is slow.
+
+## Related debug pages
+
+- [Extension Health](/developer-guide/debug/extension-health)
+- [Response Cache](/developer-guide/debug/response-cache)
+- [Performance Spans](/developer-guide/debug/performance-spans)
+- [Debug Events](/developer-guide/debug/debug-events)

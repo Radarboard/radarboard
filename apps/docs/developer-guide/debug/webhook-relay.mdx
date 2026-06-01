@@ -1,0 +1,35 @@
+---
+title: "Webhook Relay"
+description: "Inspect inbound webhook relay events, payload summaries, and delivery outcomes."
+---
+
+## Purpose
+
+Use Webhook Relay to inspect webhook events received by Radarboard's relay pipeline and consumed by the local dashboard.
+
+## When to use it
+
+- A provider webhook does not update the dashboard.
+- You need to confirm whether a webhook reached the relay.
+- You are testing local webhook forwarding or relay delivery.
+
+## What to inspect
+
+- Event status.
+- Integration source.
+- Payload summary.
+- Delivery timing and failure details.
+
+## Common troubleshooting flow
+
+1. Confirm the webhook event appears in the relay table.
+2. Check status and payload summary.
+3. Open [Debug Events](/developer-guide/debug/debug-events) for related runtime events.
+4. Open [Service Health](/developer-guide/debug/service-health) if the webhook should refresh provider-backed data.
+
+## Related debug pages
+
+- [Debug Events](/developer-guide/debug/debug-events)
+- [Service Health](/developer-guide/debug/service-health)
+- [Performance Spans](/developer-guide/debug/performance-spans)
+- [Webhook Relay guide](/developer-guide/webhook-relay)

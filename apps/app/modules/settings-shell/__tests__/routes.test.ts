@@ -152,7 +152,7 @@ describe("handleUpdateSettings", () => {
     expect(res.status).toBe(200);
     expect(mockRepo.setProjectIntegrations).toHaveBeenCalled();
     expect(emitCacheInvalidation).toHaveBeenCalledWith(
-      expect.arrayContaining(["/api/integrations/"]),
+      expect.arrayContaining(["/api/integrations/", "/api/analytics/data"]),
       "settings:projectIntegrations"
     );
   });

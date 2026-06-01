@@ -16,7 +16,7 @@ There are two MCP categories in this project:
 
 ## Built-in Radarboard MCP
 
-Use the built-in Radarboard MCP when you want an external client such as ChatGPT to connect directly to your deployed Radarboard instance.
+Use the built-in Radarboard MCP when you want an external client such as ChatGPT, OpenCode, or Codex to connect directly to your Radarboard instance.
 
 The URL pattern is:
 
@@ -24,7 +24,13 @@ The URL pattern is:
 ${NEXT_PUBLIC_APP_URL}/api/mcp
 ```
 
-See [Radarboard MCP](/mcp-servers/radarboard) for the full URL breakdown, required environment variables, and OAuth endpoints.
+For local agent work in this repo, the default URL is:
+
+```text
+https://radarboard.localhost:1355/api/mcp
+```
+
+See [Radarboard MCP](/mcp-servers/radarboard) for the full URL breakdown, local token setup, required environment variables, and OAuth endpoints.
 
 ## External MCP servers
 
@@ -32,6 +38,7 @@ Radarboard also works with external MCP servers for individual services. This re
 
 | Server | Service | Type | Description |
 |--------|---------|------|-------------|
+| [Radarboard MCP](/mcp-servers/radarboard) | Radarboard | Remote (local app) | Query Radarboard notifications, debug events, artifacts, plugins, and integrations |
 | [RevenueCat MCP](/mcp-servers/revenuecat) | RevenueCat | Remote (hosted) | Query revenue metrics and subscription data |
 | [OpenPanel MCP](/mcp-servers/openpanel) | OpenPanel | Local (npm package) | Query analytics data for specific sites |
 
@@ -41,6 +48,7 @@ MCP servers expose tools that AI agents can call. For example, an AI agent could
 - Ask "What's the current MRR?" and query RevenueCat
 - Ask "How many visitors did the site get today?" and query OpenPanel
 - Ask "What are my unread Radarboard notifications?" and query the built-in Radarboard MCP
+- Ask "What failed in the assistant flow?" and query Radarboard debug events
 
 ## Where external servers are configured
 
@@ -52,6 +60,13 @@ External MCP servers are configured in `opencode.json` at the project root. Each
 ```json opencode.json
 {
   "mcp": {
+    "radarboard": {
+      "type": "remote",
+      "url": "https://radarboard.localhost:1355/api/mcp",
+      "headers": {
+        "Authorization": "Bearer {env:RADARBOARD_MCP_TOKEN}"
+      }
+    },
     "revenuecat": {
       "type": "remote",
       "url": "https://mcp.revenuecat.ai/mcp",

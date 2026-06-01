@@ -64,7 +64,7 @@ export const DEBUG_SECTIONS: DebugSectionDescriptor[] = [
     icon: PuzzleIcon,
     description:
       "Audit registered widgets, plugins, integrations, data sources, and extension issues.",
-    docsHref: "https://docs.radarboard.app/developer-guide/debug-panels#extension-health",
+    docsHref: "https://docs.radarboard.app/developer-guide/debug/extension-health",
     group: "overview",
   },
   {
@@ -73,7 +73,7 @@ export const DEBUG_SECTIONS: DebugSectionDescriptor[] = [
     title: "Service Health",
     icon: HeartPulseIcon,
     description: "Monitor integration availability, data source latency, and recent failures.",
-    docsHref: "https://docs.radarboard.app/developer-guide/debug-panels#service-health",
+    docsHref: "https://docs.radarboard.app/developer-guide/debug/service-health",
     group: "overview",
   },
   {
@@ -82,7 +82,7 @@ export const DEBUG_SECTIONS: DebugSectionDescriptor[] = [
     title: "Response Cache",
     icon: DatabaseIcon,
     description: "Review cached API responses, fetch times, TTLs, and expiration status.",
-    docsHref: "https://docs.radarboard.app/developer-guide/debug-panels#response-cache",
+    docsHref: "https://docs.radarboard.app/developer-guide/debug/response-cache",
     group: "overview",
   },
 
@@ -93,7 +93,7 @@ export const DEBUG_SECTIONS: DebugSectionDescriptor[] = [
     title: "Conversations",
     icon: MessageSquareIcon,
     description: "Browse saved assistant conversations and the project context attached to them.",
-    docsHref: "https://docs.radarboard.app/developer-guide/debug-panels#conversations",
+    docsHref: "https://docs.radarboard.app/developer-guide/debug/conversations",
     group: "assistant",
   },
   {
@@ -102,7 +102,7 @@ export const DEBUG_SECTIONS: DebugSectionDescriptor[] = [
     title: "LLM Traces",
     icon: ActivityIcon,
     description: "Inspect AI requests, token usage, model latency, costs, and trace details.",
-    docsHref: "https://docs.radarboard.app/developer-guide/debug-panels#llm-traces",
+    docsHref: "https://docs.radarboard.app/developer-guide/debug/llm-traces",
     group: "assistant",
   },
   {
@@ -112,7 +112,7 @@ export const DEBUG_SECTIONS: DebugSectionDescriptor[] = [
     icon: BrainIcon,
     description:
       "Review persistent facts the assistant has stored across projects and conversations.",
-    docsHref: "https://docs.radarboard.app/developer-guide/debug-panels#ai-memory",
+    docsHref: "https://docs.radarboard.app/developer-guide/debug/ai-memory",
     group: "assistant",
   },
   {
@@ -121,7 +121,7 @@ export const DEBUG_SECTIONS: DebugSectionDescriptor[] = [
     title: "Reports",
     icon: FileTextIcon,
     description: "Find generated analysis reports and exports created from assistant workflows.",
-    docsHref: "https://docs.radarboard.app/developer-guide/debug-panels#reports",
+    docsHref: "https://docs.radarboard.app/developer-guide/debug/reports",
     group: "assistant",
   },
 
@@ -133,7 +133,7 @@ export const DEBUG_SECTIONS: DebugSectionDescriptor[] = [
     icon: LogsIcon,
     description:
       "Search durable debug events emitted by chat, plugins, integrations, and MCP tools.",
-    docsHref: "https://docs.radarboard.app/developer-guide/debug-panels#debug-events",
+    docsHref: "https://docs.radarboard.app/developer-guide/debug/debug-events",
     group: "runtime",
   },
   {
@@ -143,7 +143,7 @@ export const DEBUG_SECTIONS: DebugSectionDescriptor[] = [
     icon: GaugeIcon,
     description:
       "Inspect timed spans across API routes, integrations, plugins, and background work.",
-    docsHref: "https://docs.radarboard.app/developer-guide/debug-panels#performance-spans",
+    docsHref: "https://docs.radarboard.app/developer-guide/debug/performance-spans",
     group: "runtime",
   },
   {
@@ -152,7 +152,7 @@ export const DEBUG_SECTIONS: DebugSectionDescriptor[] = [
     title: "Client Issues",
     icon: BugIcon,
     description: "Inspect grouped browser runtime errors, API failures, and React client issues.",
-    docsHref: "https://docs.radarboard.app/developer-guide/debug-panels#client-issues",
+    docsHref: "https://docs.radarboard.app/developer-guide/debug/client-issues",
     group: "runtime",
   },
   {
@@ -161,7 +161,7 @@ export const DEBUG_SECTIONS: DebugSectionDescriptor[] = [
     title: "Webhook Relay",
     icon: WebhookIcon,
     description: "Inspect inbound webhook relay events, payload summaries, and delivery outcomes.",
-    docsHref: "https://docs.radarboard.app/developer-guide/debug-panels#webhook-relay",
+    docsHref: "https://docs.radarboard.app/developer-guide/debug/webhook-relay",
     group: "runtime",
   },
 ];
@@ -173,7 +173,7 @@ export const DEBUG_SANDBOXES: DebugSandboxDescriptor[] = [
     title: "Integration Sandbox",
     description:
       "Inspect integration descriptors, credential fields, data sources, MCP tools, and mock fetches.",
-    docsHref: "https://docs.radarboard.app/developer-guide/debug-sandboxes#integration-sandbox",
+    docsHref: "https://docs.radarboard.app/developer-guide/debug/integration-sandbox",
     href: "/debug/integration-sandbox",
     icon: DatabaseIcon,
   },
@@ -182,7 +182,7 @@ export const DEBUG_SANDBOXES: DebugSandboxDescriptor[] = [
     label: "Widget Sandbox",
     title: "Widget Sandbox",
     description: "Render every registered widget with happy, empty, loading, and error states.",
-    docsHref: "https://docs.radarboard.app/developer-guide/debug-sandboxes#widget-sandbox",
+    docsHref: "https://docs.radarboard.app/developer-guide/debug/widget-sandbox",
     href: "/debug/widget-sandbox",
     icon: PuzzleIcon,
   },
@@ -192,7 +192,7 @@ export const DEBUG_SANDBOXES: DebugSandboxDescriptor[] = [
     title: "Widget Composition Lab",
     description:
       "Review deterministic template recipe examples for composition and visual coverage.",
-    docsHref: "https://docs.radarboard.app/developer-guide/debug-sandboxes#widget-composition",
+    docsHref: "https://docs.radarboard.app/developer-guide/debug/widget-composition",
     href: "/debug/widget-composition",
     icon: GaugeIcon,
   },
@@ -201,7 +201,7 @@ export const DEBUG_SANDBOXES: DebugSandboxDescriptor[] = [
     label: "Plugin Sandbox",
     title: "Plugin Sandbox",
     description: "Preview every registered plugin across runtime states and presentation modes.",
-    docsHref: "https://docs.radarboard.app/developer-guide/debug-sandboxes#plugin-sandbox",
+    docsHref: "https://docs.radarboard.app/developer-guide/debug/plugin-sandbox",
     href: "/debug/plugin-sandbox",
     icon: ActivityIcon,
   },

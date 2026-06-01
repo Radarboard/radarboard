@@ -1,0 +1,34 @@
+---
+title: "Widget Composition"
+description: "Review deterministic template recipe examples for composition and visual coverage."
+---
+
+## Purpose
+
+Use Widget Composition to inspect canonical widget recipe examples rendered by the template engine.
+
+## When to use it
+
+- You are changing template composition behavior.
+- A shared recipe primitive affects multiple widgets.
+- You need deterministic examples for visual coverage.
+
+## What to inspect
+
+- Recipe kind.
+- Template version.
+- Example notes.
+- Rendered widget output for each canonical recipe.
+
+## Common troubleshooting flow
+
+1. Find the recipe kind affected by your change.
+2. Compare the rendered example with the expected layout.
+3. Open [Widget Sandbox](/developer-guide/debug/widget-sandbox) to verify real widgets using the same primitives.
+4. Open [Extension Health](/developer-guide/debug/extension-health) if examples render but registered widgets are missing.
+
+## Related debug pages
+
+- [Widget Sandbox](/developer-guide/debug/widget-sandbox)
+- [Extension Health](/developer-guide/debug/extension-health)
+- [Widget composition reference](/developer-guide/widget-composition-reference)

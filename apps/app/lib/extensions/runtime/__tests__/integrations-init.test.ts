@@ -7,4 +7,9 @@ describe("integrations init", () => {
     expect(getIntegration("revenuecat")?.name).toBe("RevenueCat");
     expect(findDataSource("revenuecat", "data")).toBeDefined();
   });
+
+  it("registers OpenPanel analytics data sources", () => {
+    expect(findDataSource("openpanel", "data")).toBeDefined();
+    expect(findDataSource("openpanel", "projects")).toBeDefined();
+  });
 });

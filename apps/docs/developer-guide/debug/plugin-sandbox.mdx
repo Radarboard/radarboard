@@ -1,0 +1,35 @@
+---
+title: "Plugin Sandbox"
+description: "Preview every registered plugin across runtime states and presentation modes."
+---
+
+## Purpose
+
+Use Plugin Sandbox to preview plugins with a mock plugin API before invoking them from production surfaces.
+
+## When to use it
+
+- You are building or changing a plugin.
+- A plugin works in one presentation mode but not another.
+- You need to verify loaded, empty, loading, and error states.
+
+## What to inspect
+
+- Registered plugin list.
+- Runtime state previews.
+- Side panel, fullscreen, modal, and mini HUD presentation modes.
+- Error boundary behavior.
+
+## Common troubleshooting flow
+
+1. Select the plugin.
+2. Switch through presentation modes.
+3. Compare loaded, empty, loading, and error states.
+4. Open [Debug Events](/developer-guide/debug/debug-events) if plugin actions fail at runtime.
+
+## Related debug pages
+
+- [Extension Health](/developer-guide/debug/extension-health)
+- [Debug Events](/developer-guide/debug/debug-events)
+- [Integration Sandbox](/developer-guide/debug/integration-sandbox)
+- [Build a plugin](/developer-guide/build-a-plugin)

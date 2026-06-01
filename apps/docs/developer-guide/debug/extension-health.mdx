@@ -1,0 +1,36 @@
+---
+title: "Extension Health"
+description: "Confirm that widgets, plugins, integrations, and data sources are registered correctly."
+---
+
+## Purpose
+
+Use Extension Health as the first stop when an extension-driven dashboard surface does not work. It answers whether Radarboard has loaded the expected widgets, plugins, integrations, data sources, and widget resolvers.
+
+## When to use it
+
+- A widget says a provider or data route is not configured.
+- A sandbox shows zero registered items.
+- A newly added extension is not available in the dashboard.
+- You want to confirm modularity checks at runtime, not only in scripts.
+
+## What to inspect
+
+- Health score and issue count.
+- Expected versus registered extension counts.
+- Registered integration data sources and widget resolvers.
+- Per-extension status, checks, usage, and error metrics.
+
+## Common troubleshooting flow
+
+1. Confirm the extension appears in the table.
+2. Check whether its required registry entries are present.
+3. Open [Service Health](/developer-guide/debug/service-health) if the extension is registered but provider calls fail.
+4. Open the relevant sandbox to isolate descriptor or rendering issues.
+
+## Related debug pages
+
+- [Service Health](/developer-guide/debug/service-health)
+- [Response Cache](/developer-guide/debug/response-cache)
+- [Integration Sandbox](/developer-guide/debug/integration-sandbox)
+- [Widget Sandbox](/developer-guide/debug/widget-sandbox)

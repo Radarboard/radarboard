@@ -1,0 +1,35 @@
+---
+title: "Performance Spans"
+description: "Inspect timed spans across API routes, integrations, plugins, and background work."
+---
+
+## Purpose
+
+Use Performance Spans to find where time is spent during a request or runtime workflow.
+
+## When to use it
+
+- A feature works but feels slow.
+- Provider calls or plugin lifecycle work take longer than expected.
+- You need to compare p95 latency with individual span records.
+
+## What to inspect
+
+- Span name.
+- Status.
+- Duration.
+- Start time.
+- Route or operation metadata.
+
+## Common troubleshooting flow
+
+1. Find spans around the time of the slow interaction.
+2. Sort by duration or inspect failed spans.
+3. Open [Service Health](/developer-guide/debug/service-health) if latency comes from a provider.
+4. Open [Debug Events](/developer-guide/debug/debug-events) for the surrounding event sequence.
+
+## Related debug pages
+
+- [Service Health](/developer-guide/debug/service-health)
+- [Debug Events](/developer-guide/debug/debug-events)
+- [Client Issues](/developer-guide/debug/client-issues)

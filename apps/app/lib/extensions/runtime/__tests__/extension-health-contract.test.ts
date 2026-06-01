@@ -8,6 +8,7 @@ import { getAllPlugins } from "@radarboard/plugin-sdk/registry";
 import { getAllWidgets } from "@radarboard/widget-engine/widgets/registry";
 import { DATA_SOURCE_REGISTRY as WIDGET_DATA_SOURCE_REGISTRY } from "@radarboard/widget-sdk/data-source-registry";
 import { beforeAll, describe, expect, it } from "vitest";
+import { APP_SHELL_WIDGET_AUTH_SERVICE_IDS } from "@/lib/integration-data-invalidation";
 import config from "../../../../../../radarboard.config";
 import "../features";
 import { featureDescriptors } from "../features-init";
@@ -133,6 +134,19 @@ describe("first-party extension health contract", () => {
           `Widget "${widget.id}" references unregistered template data source "${sourceId}"`
         ).toBe(true);
       }
+    }
+  });
+
+  it("backs every app-shell widget auth provider with a runtime data source", () => {
+    for (const id of APP_SHELL_WIDGET_AUTH_SERVICE_IDS) {
+      const hasDataSource = [...DATA_SOURCE_REGISTRY.keys()].some((key) =>
+        key.startsWith(`${id}/`)
+      );
+
+      expect(
+        hasDataSource,
+        `App-shell widget auth provider "${id}" has no registered data source`
+      ).toBe(true);
     }
   });
 

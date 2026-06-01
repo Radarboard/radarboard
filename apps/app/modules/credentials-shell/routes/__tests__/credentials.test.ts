@@ -52,4 +52,38 @@ describe("credentials route", () => {
     expect(cacheRepoMock.getKeysByRoute).toHaveBeenCalledWith("/api/integrations/revenuecat/data");
     expect(cacheRepoMock.delete).toHaveBeenCalledWith("revenue:all:30d:USD:UTC");
   });
+
+  it("invalidates the analytics bridge cache for saved OpenPanel credentials", async () => {
+    credentialRepoMock.setCredential.mockResolvedValue(undefined);
+    cacheRepoMock.getKeysByRoute.mockResolvedValue(["analytics:data:all:30d:UTC"]);
+    cacheRepoMock.delete.mockResolvedValue(undefined);
+
+    const res = await handleSaveCredentials(
+      makeRequest({
+        key: "openpanel",
+        values: { clientId: "cid", clientSecret: "secret" },
+      })
+    );
+
+    expect(res.status).toBe(200);
+    expect(cacheRepoMock.getKeysByRoute).toHaveBeenCalledWith("/api/integrations/analytics/data");
+    expect(cacheRepoMock.delete).toHaveBeenCalledWith("analytics:data:all:30d:UTC");
+  });
+
+  it("invalidates the analytics bridge cache for saved Umami credentials", async () => {
+    credentialRepoMock.setCredential.mockResolvedValue(undefined);
+    cacheRepoMock.getKeysByRoute.mockResolvedValue(["analytics:data:all:30d:UTC"]);
+    cacheRepoMock.delete.mockResolvedValue(undefined);
+
+    const res = await handleSaveCredentials(
+      makeRequest({
+        key: "umami",
+        values: { apiKey: "secret", baseUrl: "https://analytics.example.com", websiteId: "site" },
+      })
+    );
+
+    expect(res.status).toBe(200);
+    expect(cacheRepoMock.getKeysByRoute).toHaveBeenCalledWith("/api/integrations/analytics/data");
+    expect(cacheRepoMock.delete).toHaveBeenCalledWith("analytics:data:all:30d:UTC");
+  });
 });

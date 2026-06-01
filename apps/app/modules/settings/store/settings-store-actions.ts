@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { mutate } from "swr";
 import { notifyProjectGraphChanged } from "@/hooks/app/use-project-graph-invalidation";
 import { getDefaultPlan } from "@/lib/features";
+import { isIntegrationBackedDashboardDataKey } from "@/lib/integration-data-invalidation";
 import { queueAction } from "@/lib/offline-sync";
 import { type SettingsState, settingsStore } from "./settings-store";
 import {
@@ -64,13 +65,9 @@ function persistMigratedLayout(merged: WidgetLayoutConfig): void {
 }
 
 function revalidateProjectIntegrationRoutes(): void {
-  mutate(
-    (key) =>
-      typeof key === "string" &&
-      (key.includes("/api/integrations/") || key.includes("/api/plugins/changelog/")),
-    undefined,
-    { revalidate: true }
-  ).catch(() => undefined);
+  mutate(isIntegrationBackedDashboardDataKey, undefined, { revalidate: true }).catch(
+    () => undefined
+  );
 }
 
 // ---------------------------------------------------------------------------

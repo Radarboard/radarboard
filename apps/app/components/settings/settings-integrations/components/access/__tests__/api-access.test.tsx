@@ -101,6 +101,7 @@ describe("ApiCredentialAccessCard", () => {
     const matcher = mutateSWRMock.mock.calls[0]?.[0] as (key: unknown) => boolean;
     expect(matcher("/api/integrations/revenuecat/data?range=30d")).toBe(true);
     expect(matcher("/api/integrations/openpanel/data?range=30d")).toBe(true);
+    expect(matcher("/api/analytics/data?range=30d")).toBe(true);
     expect(matcher("/api/credentials")).toBe(false);
   });
 });

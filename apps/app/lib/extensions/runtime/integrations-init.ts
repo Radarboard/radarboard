@@ -8,10 +8,12 @@
 import { revenuecatDescriptor } from "@radarboard/integration-revenuecat";
 import { registerDataSources, registerIntegration } from "@radarboard/integration-sdk/registry";
 import { shippingDataSources } from "@radarboard/integration-shipping/data-sources";
+import { openPanelDataSources } from "./server/openpanel-data-sources";
 export function initializeIntegrations(): void {
   registerIntegration(revenuecatDescriptor);
 
   // Virtual integrations — composite data sources with no IntegrationDescriptor.
+  registerDataSources("openpanel", openPanelDataSources);
   registerDataSources("shipping", shippingDataSources);
 }
 

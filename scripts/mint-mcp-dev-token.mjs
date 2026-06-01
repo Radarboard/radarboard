@@ -18,14 +18,20 @@ const { SignJWT } = require("jose");
 const envPath = resolve(__dirname, "../apps/app/.env.local");
 const envText = readFileSync(envPath, "utf-8");
 
-const match = envText.match(/^RADARBOARD_API_SECRET=(.+)$/m);
-if (!match) {
+function readEnvValue(name) {
+  const match = envText.match(new RegExp(`^${name}=(.+)$`, "m"));
+  if (!match) return null;
+  return match[1].trim().replace(/^["']|["']$/g, "");
+}
+
+const apiSecret = readEnvValue("RADARBOARD_API_SECRET");
+if (!apiSecret) {
   console.error("RADARBOARD_API_SECRET not found in apps/app/.env.local");
   process.exit(1);
 }
 
-const appUrl = "https://radarboard.localhost:1355";
-const secret = new TextEncoder().encode(match[1].trim());
+const appUrl = readEnvValue("NEXT_PUBLIC_APP_URL") ?? "https://radarboard.localhost:1355";
+const secret = new TextEncoder().encode(apiSecret);
 
 const token = await new SignJWT({ client_id: "claude-code-dev", scope: "read" })
   .setProtectedHeader({ alg: "HS256" })

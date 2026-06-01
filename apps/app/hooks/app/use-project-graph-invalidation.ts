@@ -2,10 +2,9 @@
 
 import { useEffect } from "react";
 import { useSWRConfig } from "swr";
+import { isIntegrationBackedDashboardDataKey } from "@/lib/integration-data-invalidation";
 
 export const PROJECT_GRAPH_INVALIDATION_EVENT = "radarboard:project-graph-changed";
-
-const PROJECT_GRAPH_INVALIDATION_PREFIXES = ["/api/integrations/", "/api/plugins/changelog/"];
 
 export function notifyProjectGraphChanged(): void {
   if (typeof window === "undefined") return;
@@ -17,13 +16,9 @@ export function useProjectGraphInvalidation() {
 
   useEffect(() => {
     const handleInvalidation = () => {
-      mutate(
-        (key) =>
-          typeof key === "string" &&
-          PROJECT_GRAPH_INVALIDATION_PREFIXES.some((prefix) => key.includes(prefix)),
-        undefined,
-        { revalidate: true }
-      ).catch(() => undefined);
+      mutate(isIntegrationBackedDashboardDataKey, undefined, { revalidate: true }).catch(
+        () => undefined
+      );
     };
 
     window.addEventListener(PROJECT_GRAPH_INVALIDATION_EVENT, handleInvalidation);

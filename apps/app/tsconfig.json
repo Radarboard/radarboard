@@ -54,6 +54,9 @@
       "@/lib/changelog-server": ["./lib/integrations/content/changelog-server.ts"],
       "@/lib/integration-artifacts": ["./lib/integrations/config/integration-artifacts.ts"],
       "@/lib/integration-connections": ["./lib/integrations/config/integration-connections.ts"],
+      "@/lib/integration-data-invalidation": [
+        "./lib/integrations/config/integration-data-invalidation.ts"
+      ],
       "@/lib/integration-rss-feeds": ["./lib/integrations/content/integration-rss-feeds.ts"],
       "@/lib/integration-status-pages": ["./lib/integrations/status/integration-status-pages.ts"],
       "@/lib/project-health-sources": ["./lib/integrations/status/project-health-sources.ts"],

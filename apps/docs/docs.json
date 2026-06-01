@@ -140,10 +140,30 @@
               "developer-guide/extension-packages",
               "developer-guide/community-extensions",
               "developer-guide/developer-mode",
-              "developer-guide/debug-panels",
-              "developer-guide/debug-sandboxes",
               "developer-guide/mcp-extension-tutorial",
               "developer-guide/intent-bus-cookbook"
+            ]
+          },
+          {
+            "group": "Debugging",
+            "pages": [
+              "developer-guide/debug-panels",
+              "developer-guide/debug-sandboxes",
+              "developer-guide/debug/extension-health",
+              "developer-guide/debug/service-health",
+              "developer-guide/debug/response-cache",
+              "developer-guide/debug/conversations",
+              "developer-guide/debug/llm-traces",
+              "developer-guide/debug/ai-memory",
+              "developer-guide/debug/reports",
+              "developer-guide/debug/debug-events",
+              "developer-guide/debug/performance-spans",
+              "developer-guide/debug/client-issues",
+              "developer-guide/debug/webhook-relay",
+              "developer-guide/debug/integration-sandbox",
+              "developer-guide/debug/widget-sandbox",
+              "developer-guide/debug/widget-composition",
+              "developer-guide/debug/plugin-sandbox"
             ]
           },
           {

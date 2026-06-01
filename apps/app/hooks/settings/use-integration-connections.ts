@@ -3,7 +3,8 @@
 import { API_ROUTES } from "@radarboard/types/api-routes";
 import type { IntegrationConnection } from "@radarboard/types/database";
 import { useCallback } from "react";
-import useSWR from "swr";
+import useSWR, { mutate as mutateSWR } from "swr";
+import { isIntegrationBackedDashboardDataKey } from "@/lib/integration-data-invalidation";
 
 export interface IntegrationProviderDefinition {
   provider: string;
@@ -28,6 +29,10 @@ async function apiFetcher<T>(url: string): Promise<T> {
     throw new Error(body.error ?? `Request failed (${res.status})`);
   }
   return (await res.json()) as T;
+}
+
+async function revalidateIntegrationBackedDashboardData(): Promise<void> {
+  await mutateSWR(isIntegrationBackedDashboardDataKey, undefined, { revalidate: true });
 }
 
 export function useIntegrationConnections() {
@@ -57,6 +62,7 @@ export function useIntegrationConnections() {
       }
 
       await mutate();
+      await revalidateIntegrationBackedDashboardData();
     },
     [mutate]
   );
@@ -75,6 +81,7 @@ export function useIntegrationConnections() {
       }
 
       await mutate();
+      await revalidateIntegrationBackedDashboardData();
     },
     [mutate]
   );
