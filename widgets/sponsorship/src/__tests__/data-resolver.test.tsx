@@ -188,6 +188,43 @@ describe("sponsorship data resolver", () => {
     });
   });
 
+  it("reports configured false when no sponsorship provider has data", async () => {
+    useOpenCollectiveMock.mockReturnValue({
+      data: null,
+      fetchedAt: null,
+      loading: false,
+      error: null,
+      refetch: vi.fn(async () => {}),
+    });
+    useGitHubSponsorsMock.mockReturnValue({
+      data: null,
+      fetchedAt: null,
+      loading: false,
+      error: null,
+      refetch: vi.fn(async () => {}),
+    });
+    const Resolver = DATA_SOURCE_REGISTRY.get("sponsorship");
+    const onState = vi.fn();
+
+    if (!Resolver) throw new Error("sponsorship resolver not registered");
+
+    render(createElement(Resolver, { projectSlug: "atlas", onState }));
+
+    await waitFor(() => {
+      expect(onState).toHaveBeenCalledWith(
+        expect.objectContaining({
+          fetchedAt: null,
+          loading: false,
+          error: null,
+          data: expect.objectContaining({
+            configured: false,
+            setupMessage: "Connect GitHub Sponsors or Open Collective to enable sponsorship data.",
+          }),
+        })
+      );
+    });
+  });
+
   it("reuses the same snapshot without reporting twice and exposes a combined refetch", async () => {
     const openCollectiveRefetch = vi.fn(async () => {});
     const githubRefetch = vi.fn(async () => {});

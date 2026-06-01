@@ -108,6 +108,12 @@ function computeSponsorshipSummary(
   };
 }
 
+const SPONSORSHIP_NOT_CONFIGURED_STATE = {
+  configured: false,
+  setupMessage: "Connect GitHub Sponsors or Open Collective to enable sponsorship data.",
+  ctaLabel: "Configure sponsorship",
+};
+
 function SponsorshipResolver({ projectSlug, onState }: DataSourceResolverProps) {
   const { projects, timeRange } = useDashboard();
   const openCollectiveSlug = resolveOcSlug(projects, projectSlug);
@@ -128,8 +134,14 @@ function SponsorshipResolver({ projectSlug, onState }: DataSourceResolverProps) 
   }, [openCollective.refetch, githubSponsors.refetch]);
 
   const data = useMemo(
-    () => computeSponsorshipSummary(openCollective.data, githubSponsors.data),
-    [openCollective.data, githubSponsors.data]
+    () =>
+      !openCollective.loading &&
+      !githubSponsors.loading &&
+      openCollective.data == null &&
+      githubSponsors.data == null
+        ? SPONSORSHIP_NOT_CONFIGURED_STATE
+        : computeSponsorshipSummary(openCollective.data, githubSponsors.data),
+    [openCollective.data, openCollective.loading, githubSponsors.data, githubSponsors.loading]
   );
   const previousDataSnapshot = useRef<string | null>(null);
 

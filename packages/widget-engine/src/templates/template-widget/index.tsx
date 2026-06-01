@@ -37,6 +37,7 @@ const DATA_SOURCE_SERVICE_MAP: Record<string, { name: string; serviceId?: string
   roadmap: { name: "Linear", serviceId: "linear" },
   sentry: { name: "Sentry", serviceId: "sentry" },
   shipping: { name: "Shipping" },
+  sponsorship: { name: "Sponsorship" },
   vercel: { name: "Vercel", serviceId: "vercel" },
 };
 

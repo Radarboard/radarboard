@@ -127,4 +127,35 @@ describe("sponsorshipDescriptor", () => {
     expect(screen.getByRole("tab", { name: /Sponsors \(0\)/i })).toBeTruthy();
     expect(screen.getByRole("tab", { name: /Backers \(0\)/i })).toBeTruthy();
   });
+
+  it("renders the not-configured state when no sponsorship provider is connected", async () => {
+    mockUseOpenCollective.mockReturnValue({
+      data: null,
+      configured: false,
+      fetchedAt: null,
+      loading: false,
+      error: null,
+      refetch: vi.fn(async () => {}),
+    });
+    mockUseGitHubSponsors.mockReturnValue({
+      data: null,
+      configured: false,
+      fetchedAt: null,
+      loading: false,
+      error: null,
+      refetch: vi.fn(async () => {}),
+    });
+
+    render(
+      createElement(sponsorshipDescriptor.component, {
+        projectSlug: "goshuin-atlas",
+        config: {},
+      })
+    );
+
+    expect(
+      await screen.findByText("Connect GitHub Sponsors or Open Collective to enable sponsorship data.")
+    ).toBeTruthy();
+    expect(screen.queryByText("Monthly Income")).toBeNull();
+  });
 });
