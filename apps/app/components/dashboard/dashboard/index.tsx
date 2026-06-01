@@ -1667,12 +1667,13 @@ function DashboardContent({
     addProjectPage(
       activeProjectSlug ?? ALL_PROJECTS_SLUG,
       createDefaultDashboardPage({
+        layoutId: activeLayout.id,
         name,
         slug,
       })
     );
     setActivePage(slug);
-  }, [activeProjectSlug, addProjectPage, pages, setActivePage]);
+  }, [activeLayout.id, activeProjectSlug, addProjectPage, pages, setActivePage]);
 
   const {
     handleConfigureWidget,
