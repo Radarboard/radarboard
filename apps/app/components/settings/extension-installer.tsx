@@ -244,7 +244,7 @@ function derivePhase(params: {
     return installPhase;
   }
 
-  if (!trimmedGithubUrl || !trimmedGithubUrl.includes("/")) {
+  if (!trimmedGithubUrl?.includes("/")) {
     return "idle";
   }
 
@@ -314,7 +314,7 @@ function ValidationDetails({
 }) {
   if (phase === "invalid" && installError) {
     return (
-      <div className="flex items-start gap-2 rounded-md border border-destructive/50 bg-destructive/10 p-3 text-destructive text-sm">
+      <div className="flex items-start gap-2 rounded-md border border-destructive/50 bg-destructive/10 p-3 text-destructive text-w-sm">
         <XCircle className="mt-0.5 h-4 w-4 shrink-0" />
         <pre className="whitespace-pre-wrap font-sans">{installError}</pre>
       </div>
@@ -336,14 +336,14 @@ function ValidationDetails({
         <div className="space-y-1">
           <p className="font-medium text-foreground">{validation.name}</p>
           {validation.description ? (
-            <p className="text-muted-foreground text-sm">{validation.description}</p>
+            <p className="text-muted-foreground text-w-sm">{validation.description}</p>
           ) : null}
         </div>
         <div className="flex shrink-0 gap-1">
           {typeLabels.map((label) => (
             <span
               key={label}
-              className="rounded-full bg-accent px-2.5 py-0.5 font-medium text-accent-foreground text-xs"
+              className="rounded-full bg-accent px-2.5 py-0.5 font-medium text-accent-foreground text-w-xs"
             >
               {label}
             </span>
@@ -354,7 +354,7 @@ function ValidationDetails({
       {validation.warnings.length > 0 ? (
         <div className="space-y-1 border-border border-t pt-2">
           {validation.warnings.map((warning) => (
-            <div key={warning} className="flex items-start gap-2 text-muted-foreground text-xs">
+            <div key={warning} className="flex items-start gap-2 text-muted-foreground text-w-xs">
               <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0 text-warning" />
               <span>{warning}</span>
             </div>
@@ -368,7 +368,7 @@ function ValidationDetails({
         fullWidth
         variant="default"
         uppercase={false}
-        className="gap-2 rounded-card font-medium text-sm"
+        className="gap-2 rounded-card font-medium text-w-sm"
       >
         <Download className="h-4 w-4" />
         {installLabel}
@@ -399,7 +399,7 @@ function GithubRepositoryField({
       <div className="space-y-2">
         <Label
           htmlFor="extension-installer-github-url"
-          className="font-medium text-foreground text-sm normal-case tracking-normal"
+          className="font-medium text-foreground text-w-sm normal-case tracking-normal"
         >
           GitHub Repository
         </Label>
@@ -416,10 +416,10 @@ function GithubRepositoryField({
             placeholder="owner/repo"
             variant="surface"
             size="lg"
-            className="bg-background pr-3 pl-9 text-sm"
+            className="bg-background pr-3 pl-9 text-w-sm"
           />
         </div>
-        <p className="text-muted-foreground text-xs">
+        <p className="text-muted-foreground text-w-xs">
           Paste a GitHub URL or use the owner/repo shorthand.
         </p>
       </div>
@@ -437,13 +437,13 @@ function GithubRepositoryField({
 function InstallProgressList({ progress }: { progress: InstallProgress[] }) {
   return (
     <div className="space-y-3">
-      <div className="flex items-center gap-2 font-medium text-sm">
+      <div className="flex items-center gap-2 font-medium text-w-sm">
         <Loader2 className="h-4 w-4 animate-spin" />
         Installing...
       </div>
       <div className="space-y-2">
         {progress.map((step) => (
-          <div key={step.step} className="flex items-center gap-2 text-sm">
+          <div key={step.step} className="flex items-center gap-2 text-w-sm">
             {step.status === "running" ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
             ) : null}
@@ -468,7 +468,7 @@ function InstallErrorState({
 }) {
   return (
     <div className="space-y-3">
-      <div className="flex items-start gap-2 rounded-md border border-destructive/50 bg-destructive/10 p-3 text-destructive text-sm">
+      <div className="flex items-start gap-2 rounded-md border border-destructive/50 bg-destructive/10 p-3 text-destructive text-w-sm">
         <XCircle className="mt-0.5 h-4 w-4 shrink-0" />
         <span>{installError}</span>
       </div>
@@ -477,7 +477,7 @@ function InstallErrorState({
         onClick={onReset}
         variant="outline"
         uppercase={false}
-        className="rounded-card text-sm"
+        className="rounded-card text-w-sm"
       >
         Try again
       </Button>
@@ -492,7 +492,7 @@ function InstallSuccessState({ onDone }: { onDone: () => void }) {
         <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-success" />
         <div className="space-y-1">
           <p className="font-medium text-success">Installed successfully</p>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-muted-foreground text-w-sm">
             Restart the dev server or trigger a new build for the extension to take effect.
           </p>
         </div>
@@ -503,7 +503,7 @@ function InstallSuccessState({ onDone }: { onDone: () => void }) {
         fullWidth
         variant="default"
         uppercase={false}
-        className="rounded-card font-medium text-sm"
+        className="rounded-card font-medium text-w-sm"
       >
         Done
       </Button>
@@ -514,9 +514,11 @@ function InstallSuccessState({ onDone }: { onDone: () => void }) {
 export function InstallExtensionDialog({
   open,
   onOpenChange,
+  initialGithubUrl = "",
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  initialGithubUrl?: string;
 }) {
   const [githubUrl, setGithubUrl] = useState("");
   const [installState, dispatch] = useReducer(installStateReducer, {
@@ -562,6 +564,12 @@ export function InstallExtensionDialog({
     if (!open || phase === "installing" || phase === "installed") return;
     inputRef.current?.focus();
   }, [open, phase]);
+
+  useEffect(() => {
+    if (!open) return;
+    setGithubUrl(initialGithubUrl);
+    dispatch({ type: "reset" });
+  }, [initialGithubUrl, open]);
 
   const handleInstall = useCallback(async () => {
     dispatch({ type: "start-install" });

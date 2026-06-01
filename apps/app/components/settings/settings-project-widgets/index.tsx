@@ -217,9 +217,7 @@ function DroppableCell({
       <div className="flex items-center justify-between border-border border-b bg-surface px-2 py-1">
         <span className="font-mono text-dim text-w-sm uppercase tracking-wider">{cellLabel}</span>
         <div className="flex items-center gap-1">
-          {Boolean(sizeLabel) && (
-            <span className="font-mono text-dim/40 text-w-sm">{sizeLabel}</span>
-          )}
+          {Boolean(sizeLabel) && <span className="font-mono text-dim text-w-sm">{sizeLabel}</span>}
           {isFilled && onRequestRemove ? (
             <Tooltip>
               <TooltipTrigger asChild>
@@ -258,7 +256,7 @@ function DroppableCell({
         ) : (
           <span
             className={cn(
-              "rounded-item border border-dashed px-2 py-1.5 font-mono text-xs",
+              "rounded-item border border-dashed px-2 py-1.5 font-mono text-w-xs",
               isOver ? "border-accent text-accent" : "border-border text-dim"
             )}
           >
@@ -668,7 +666,7 @@ function WidgetPlacementPreview({
     <div className="flex flex-1 flex-col overflow-hidden">
       <div className="shrink-0 px-4 pt-3 pb-2">
         <div className="font-mono text-dim text-w-sm uppercase tracking-widest">Layout Preview</div>
-        <div className="mt-0.5 text-dim/60 text-w-sm">
+        <div className="mt-0.5 text-dim text-w-sm">
           Drag widgets from the library to place them. These changes stay scoped to this project,
           page, and layout.
         </div>
@@ -743,7 +741,7 @@ function WidgetPlacementHeader({
       <DialogTitle className="flex items-start gap-2 font-mono text-w-base">
         <span className="min-w-0 flex-1">
           Widget Placement — <span className="text-accent">{projectName}</span>
-          <span className="ml-2 font-normal text-dim text-xs">
+          <span className="ml-2 font-normal text-dim text-w-xs">
             {pageName} · {layout.name} · {layout.cells.length}{" "}
             {layout.cells.length === 1 ? "cell" : "cells"}
           </span>

@@ -22,7 +22,7 @@ export interface PluginEmptyStateProps {
 /**
  * Consistent empty state for plugin views.
  *
- * Replaces the various inline `<div className="text-sm text-dim text-center">` patterns
+ * Replaces the various inline `<div className="text-w-sm text-dim text-center">` patterns
  * scattered across plugin overlays.
  */
 export function PluginEmptyState({

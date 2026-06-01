@@ -14,7 +14,6 @@ import { parseAsInteger, useQueryState } from "nuqs";
 import type { ComponentType } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { OnboardingProgress } from "./onboarding-progress";
-import { getSuggestedIntegrations } from "./profile-config";
 import { StepComplete } from "./step-complete";
 import { StepDatabase } from "./step-database";
 import { persistEnabledPlugins } from "./plugin-persistence";
@@ -227,16 +226,6 @@ export function OnboardingWizard({
   const nextStep = useCallback(() => {
     const next = getNextStep(step, visibleSteps);
     if (next !== null) {
-      // When leaving the profile step, pre-select suggested integrations
-      if (step === 2) {
-        setState((prev) => {
-          const suggested = prev.profile ? getSuggestedIntegrations([prev.profile]) : [];
-          if (prev.connectedIntegrations.length === 0 && suggested.length > 0) {
-            return { ...prev, connectedIntegrations: suggested };
-          }
-          return prev;
-        });
-      }
       goToStep(next);
     }
   }, [step, visibleSteps, goToStep]);
@@ -291,7 +280,8 @@ export function OnboardingWizard({
         // Non-critical — demo will use fallback data
       }
 
-      // Apply the best-fit blueprint so the demo dashboard isn't empty.
+      // Apply the demo showcase layout. Community widgets are used when they
+      // are registered locally; core fallbacks keep a bare core checkout stable.
       let demoLayouts = currentLayouts;
       let demoProjectLayouts = currentProjectLayouts;
       const demoPreferences: typeof preferences & Record<string, unknown> = {
@@ -302,45 +292,35 @@ export function OnboardingWizard({
 
       setFinishProgress("Applying layout...");
       try {
-        const { LAYOUT_BLUEPRINTS, scoreBlueprintFit } = await import(
-          "@radarboard/widget-engine/blueprints/registry"
-        );
-        const { applyBlueprint } = await import("@radarboard/widget-engine/blueprints");
+        const [{ BASIC_3X3 }, { DEMO_CONFIG }, { WIDGET_REGISTRY }] = await Promise.all([
+          import("@radarboard/widget-engine/layouts"),
+          import("@radarboard/widget-engine/demo/registry"),
+          import("@radarboard/widget-engine/widgets/registry"),
+        ]);
+        const widgetAssignments: Record<string, string | null> = {};
+        const widgetMap: Record<string, string> = {};
 
-        if (LAYOUT_BLUEPRINTS.length > 0) {
-          const scored = LAYOUT_BLUEPRINTS.map((b) => ({
-            blueprint: b,
-            score: scoreBlueprintFit(b, { personas: [], connectedIntegrations: [] }),
-          })).sort((a, b) => b.score - a.score);
-          const blueprint = scored[0]?.blueprint;
-
-          if (blueprint) {
-            const result = applyBlueprint(blueprint, []);
-            demoLayouts = [result.layout];
-            const resolvedLayout = resolveDashboardLayoutDefinition(demoLayouts, result.layout.id);
-            const normalizedAssignments = normalizeDashboardWidgetLayout(
-              resolvedLayout,
-              result.widgetAssignments
-            );
-            demoProjectLayouts = {
-              [ALL_PROJECTS_SLUG]: {
-                pages: [
-                  {
-                    name: "Overview",
-                    slug: DEFAULT_DASHBOARD_PAGE_SLUG,
-                    layoutId: result.layout.id,
-                    widgetLayouts: { [result.layout.id]: normalizedAssignments },
-                  },
-                ],
-              },
-            };
-            const widgetMap: Record<string, string> = {};
-            for (const slot of blueprint.slots) {
-              widgetMap[slot.cellId] = slot.widgetId;
-            }
-            demoPreferences.blueprintWidgetMap = widgetMap;
-          }
+        for (const [cellId, slot] of Object.entries(DEMO_CONFIG.showcaseLayout)) {
+          const preferred = WIDGET_REGISTRY.has(slot.widgetId) ? slot.widgetId : slot.fallbackWidgetId;
+          widgetAssignments[cellId] = preferred;
+          widgetMap[cellId] = preferred;
         }
+
+        demoLayouts = [BASIC_3X3];
+        const normalizedAssignments = normalizeDashboardWidgetLayout(BASIC_3X3, widgetAssignments);
+        demoProjectLayouts = {
+          [ALL_PROJECTS_SLUG]: {
+            pages: [
+              {
+                name: "Overview",
+                slug: DEFAULT_DASHBOARD_PAGE_SLUG,
+                layoutId: BASIC_3X3.id,
+                widgetLayouts: { [BASIC_3X3.id]: normalizedAssignments },
+              },
+            ],
+          },
+        };
+        demoPreferences.blueprintWidgetMap = widgetMap;
       } catch {
         // Non-critical — user can pick a layout from settings later
       }
@@ -353,6 +333,7 @@ export function OnboardingWizard({
         preferences: demoPreferences,
         appearance: currentAppearance,
       });
+      window.dispatchEvent(new CustomEvent("radarboard:demo-data-ready"));
       clearSessionState();
       setStepParam(null);
       setIsFinishing(false);
@@ -505,6 +486,7 @@ export function OnboardingWizard({
     <Dialog open={open} onOpenChange={() => isDismissible && onComplete()}>
       <DialogContent
         size="md"
+        overlayClassName="bg-background"
         hideCloseButton={!isDismissible}
         onPointerDownOutside={(e) => !isDismissible && e.preventDefault()}
         onEscapeKeyDown={(e) => !isDismissible && e.preventDefault()}

@@ -46,7 +46,7 @@ export function DetailPanelShell({
       <div className="shrink-0 border-border border-b px-4 py-3">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <div className="font-medium text-foreground-secondary text-sm">{title}</div>
+            <div className="font-medium text-foreground-secondary text-w-sm">{title}</div>
             {Boolean(subtitle) && (
               <div className="mt-1 flex items-center gap-3 font-mono text-dim text-w-sm">
                 {subtitle}

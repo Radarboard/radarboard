@@ -77,7 +77,9 @@ test.describe("onboarding backup restore — preview mode @onboarding", () => {
     });
 
     // Error message should appear
-    await expect(page.getByText(/Invalid backup file/i)).toBeVisible({ timeout: 5_000 });
+    await expect(
+      page.getByText(/Invalid backup file|JSON Parse error|JSON at position/i)
+    ).toBeVisible({ timeout: 5_000 });
 
     await assertNoOnboardingErrors(consoleErrors, pageErrors);
   });
@@ -94,7 +96,9 @@ test.describe("onboarding backup restore — preview mode @onboarding", () => {
     });
 
     // Should show an error (validation fails for version != "1")
-    await expect(page.getByText(/Invalid backup file|Failed to restore/i)).toBeVisible({
+    await expect(
+      page.getByText(/Invalid backup file|Unsupported backup version|Failed to restore/i)
+    ).toBeVisible({
       timeout: 5_000,
     });
 
@@ -126,7 +130,7 @@ test.describe("onboarding backup restore — persistence @onboarding @e2e-only",
     });
 
     // Should advance past the welcome step (restore triggers onNext)
-    await expect(page.getByText("Select all that apply")).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText("Choose your primary role")).toBeVisible({ timeout: 10_000 });
 
     await assertNoOnboardingErrors(consoleErrors, pageErrors);
   });
@@ -149,13 +153,14 @@ test.describe("onboarding backup restore — persistence @onboarding @e2e-only",
     });
 
     // Advance should happen automatically
-    await expect(page.getByText("Select all that apply")).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText("Choose your primary role")).toBeVisible({ timeout: 10_000 });
 
     // Skip through remaining steps to complete
-    await page.getByRole("button", { name: "Skip" }).click(); // profile → integrations
-    await page.getByRole("button", { name: "Skip" }).click(); // integrations → plugins
+    await page.getByText("Full-Stack Developer").click();
+    await page.getByRole("button", { name: "Continue" }).click(); // profile → integrations
+    await page.getByRole("button", { name: "Continue" }).click(); // integrations → plugins
     await page.getByRole("button", { name: "Skip" }).click(); // plugins → layout
-    await page.getByRole("button", { name: "Skip" }).click(); // layout → complete
+    await page.getByRole("button", { name: "Continue" }).click(); // layout → complete
 
     // Complete step should show
     await expect(page.getByText("You're all set")).toBeVisible({ timeout: 10_000 });
@@ -165,7 +170,7 @@ test.describe("onboarding backup restore — persistence @onboarding @e2e-only",
     await page.getByRole("dialog").waitFor({ state: "hidden", timeout: 5_000 });
 
     // Dashboard should be visible
-    await expect(page.getByRole("heading", { name: "Radarboard" })).toBeVisible({
+    await expect(page.getByRole("navigation", { name: "Plugins" })).toBeVisible({
       timeout: 20_000,
     });
 

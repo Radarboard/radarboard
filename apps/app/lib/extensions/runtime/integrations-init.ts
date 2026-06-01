@@ -5,25 +5,8 @@
  * Import this early in the app to populate INTEGRATION_REGISTRY.
  */
 
-import { appStoreConnectDescriptor } from "@radarboard/integration-app-store-connect";
-import { astroDataSources } from "@radarboard/integration-astro/data-sources";
-import { betterstackDescriptor } from "@radarboard/integration-betterstack";
-import { githubDescriptor } from "@radarboard/integration-github";
-import { githubSponsorsDescriptor } from "@radarboard/integration-github-sponsors";
-import { googleSearchConsoleDescriptor } from "@radarboard/integration-google-search-console";
-import { linearDescriptor } from "@radarboard/integration-linear";
-import { npmDescriptor } from "@radarboard/integration-npm";
-import { openCollectiveDescriptor } from "@radarboard/integration-open-collective";
-import { openpanelDescriptor } from "@radarboard/integration-openpanel";
-import { raindropDescriptor } from "@radarboard/integration-raindrop";
-import { resendDescriptor } from "@radarboard/integration-resend";
-import { revenuecatDescriptor } from "@radarboard/integration-revenuecat";
-import { registerDataSources, registerIntegration } from "@radarboard/integration-sdk/registry";
-import { sentryDescriptor } from "@radarboard/integration-sentry";
+import { registerDataSources } from "@radarboard/integration-sdk/registry";
 import { shippingDataSources } from "@radarboard/integration-shipping/data-sources";
-import { slackDescriptor } from "@radarboard/integration-slack";
-import { stripeDescriptor } from "@radarboard/integration-stripe";
-import { vercelDescriptor } from "@radarboard/integration-vercel";
 
 const INTEGRATIONS_INIT_KEY = "__radarboardAppIntegrationsInitialized__";
 
@@ -37,26 +20,8 @@ export function initializeIntegrations(): void {
 
   state[INTEGRATIONS_INIT_KEY] = true;
 
-  registerIntegration(appStoreConnectDescriptor);
-  registerIntegration(betterstackDescriptor);
-  registerIntegration(githubDescriptor);
-  registerIntegration(githubSponsorsDescriptor);
-  registerIntegration(googleSearchConsoleDescriptor);
-  registerIntegration(linearDescriptor);
-  registerIntegration(npmDescriptor);
-  registerIntegration(openCollectiveDescriptor);
-  registerIntegration(openpanelDescriptor);
-  registerIntegration(raindropDescriptor);
-  registerIntegration(resendDescriptor);
-  registerIntegration(revenuecatDescriptor);
-  registerIntegration(sentryDescriptor);
-  registerIntegration(slackDescriptor);
-  registerIntegration(stripeDescriptor);
-  registerIntegration(vercelDescriptor);
-
   // Virtual integrations — composite data sources with no IntegrationDescriptor.
   registerDataSources("shipping", shippingDataSources);
-  registerDataSources("astro", astroDataSources);
 }
 
 initializeIntegrations();

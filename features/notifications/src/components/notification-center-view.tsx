@@ -148,8 +148,8 @@ export function NotificationCenterView({
           onOpenPanel={() => setPanelOpen(true)}
           onClose={() => setDropdownOpen(false)}
           onMarkRead={markRead}
-            onMarkAllRead={markAllRead}
-          />
+          onMarkAllRead={markAllRead}
+        />
       </div>
 
       <NotificationPanel

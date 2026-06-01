@@ -6,7 +6,7 @@
   "mainBinaryName": "Radarboard",
   "build": {
     "frontendDist": "../placeholder",
-    "devUrl": "http://127.0.0.1:1355",
+    "devUrl": "http://radarboard.localhost:1355",
     "beforeBuildCommand": "pnpm build:sidecar",
     "beforeDevCommand": "pnpm --filter @radarboard/app dev:desktop"
   },

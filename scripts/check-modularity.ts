@@ -179,9 +179,6 @@ const KNOWN_TECH_DEBT: Record<string, string> = {
   "hooks/use-tauri-health-sync.ts":
     "Direct widget-observability import. Fix: register health data source via descriptor.",
 
-  // --- Scripts ---
-  "scripts/backfill-github-stars.ts":
-    "One-off migration script. Acceptable — not part of runtime.",
 };
 
 // ---------------------------------------------------------------------------

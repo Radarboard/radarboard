@@ -654,11 +654,11 @@ fn get_cloud_url() -> String {
 }
 
 #[cfg(desktop)]
-fn transition_from_splash(app: &tauri::App) {
-    if let Some(splash) = app.get_webview_window("splashscreen") {
+fn transition_from_splash<M: Manager<R>, R: tauri::Runtime>(manager: &M) {
+    if let Some(splash) = manager.get_webview_window("splashscreen") {
         let _ = splash.close();
     }
-    if let Some(main) = app.get_webview_window("main") {
+    if let Some(main) = manager.get_webview_window("main") {
         // On first launch (no saved window state), size the window to 90% of
         // the primary monitor, capped at 1920x1200 so it feels spacious on any
         // display without overflowing smaller screens. The window-state plugin
@@ -841,20 +841,22 @@ fn build_tray_menu(
 // ── App Entry Point ──
 
 pub fn run() {
+    let log_plugin = tauri_plugin_log::Builder::new()
+        .target(tauri_plugin_log::Target::new(
+            tauri_plugin_log::TargetKind::Stdout,
+        ))
+        .target(tauri_plugin_log::Target::new(
+            tauri_plugin_log::TargetKind::Webview,
+        ));
+
+    #[cfg(feature = "devtools")]
+    let log_plugin = log_plugin.skip_logger();
+
     let mut builder = tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_notification::init())
-        .plugin(
-            tauri_plugin_log::Builder::new()
-                .target(tauri_plugin_log::Target::new(
-                    tauri_plugin_log::TargetKind::Stdout,
-                ))
-                .target(tauri_plugin_log::Target::new(
-                    tauri_plugin_log::TargetKind::Webview,
-                ))
-                .build(),
-        )
+        .plugin(log_plugin.build())
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_dialog::init())
@@ -891,6 +893,18 @@ pub fn run() {
     }
 
     builder
+        .on_page_load(|webview, payload| {
+            #[cfg(desktop)]
+            {
+                if webview.label() == "main"
+                    && matches!(payload.event(), tauri::webview::PageLoadEvent::Finished)
+                    && payload.url().as_str() != "about:blank"
+                    && webview.get_webview_window("splashscreen").is_some()
+                {
+                    transition_from_splash(webview);
+                }
+            }
+        })
         .setup(|app| {
             // Stronghold needs the app data dir for its salt file, so it must be
             // registered inside .setup() rather than on the builder chain.
@@ -961,7 +975,6 @@ pub fn run() {
                     if let Some(main) = app.get_webview_window("main") {
                         let _ = main.navigate(dev_url);
                     }
-                    transition_from_splash(app);
                 } else {
                     let data_dir = app
                         .path()

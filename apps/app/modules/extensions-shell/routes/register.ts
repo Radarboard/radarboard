@@ -1,6 +1,7 @@
 /* biome-ignore-all lint/style/useNamingConvention: Route handler maps intentionally use HTTP method keys. */
 import { API_ROUTES } from "@radarboard/types/api-routes";
 import { registerRoutes } from "@/lib/router/registry";
+import { handleGetExtensionCatalog } from "./catalog";
 import { handleGetDependencyGraph } from "./dependency-graph";
 import { handleGetExtensionHealthScore } from "./health-score";
 import { handleInstallExtension } from "./install";
@@ -17,6 +18,10 @@ registerRoutes([
   {
     path: API_ROUTES.extensionsUsage,
     handlers: { GET: handleGetExtensionUsage, POST: handleTrackExtensionUsage },
+  },
+  {
+    path: API_ROUTES.extensionsCatalog,
+    handlers: { GET: handleGetExtensionCatalog },
   },
   {
     path: API_ROUTES.extensionsHealthScore,

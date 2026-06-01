@@ -137,8 +137,8 @@ export function SettingsAi({
       >
         {!collapsed && (
           <div className="shrink-0 border-border border-b p-3">
-            <div className="font-mono text-dim text-xs uppercase tracking-widest">Assistant</div>
-            <div className="text-dim/70 text-xs">Providers, models &amp; skills</div>
+            <div className="font-mono text-dim text-w-xs uppercase tracking-widest">Assistant</div>
+            <div className="text-dim/70 text-w-xs">Providers, models &amp; skills</div>
           </div>
         )}
         <div className="scrollbar-thin flex-1 overflow-y-auto">

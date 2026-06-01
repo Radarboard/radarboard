@@ -88,7 +88,7 @@ export function __PLUGIN_PASCAL__Overlay({ api }: PluginRenderProps) {
       <h2 className="text-lg font-semibold">__PLUGIN_NAME__</h2>
       <ul className="space-y-1">
         {items.map((item) => (
-          <li key={item.id} className="flex items-center gap-2 rounded border p-2 text-sm">
+          <li key={item.id} className="flex items-center gap-2 rounded border p-2 text-w-sm">
             <Button
               variant="ghost"
               size="sm"

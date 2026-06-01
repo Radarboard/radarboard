@@ -593,7 +593,7 @@ function ChatComposerFooter({
               variant="ghost"
               size="icon"
               onClick={() => setShowInsertMenu((open) => !open)}
-              className="uppercase-none h-8 w-8 p-0 text-dim/40 transition-colors hover:bg-accent/5 hover:text-accent"
+              className="uppercase-none h-8 w-8 p-0 text-dim transition-colors hover:bg-accent/5 hover:text-accent"
               aria-label="Insert context"
             >
               <PlusIcon size={16} />
@@ -604,7 +604,7 @@ function ChatComposerFooter({
         <Tooltip>
           <TooltipTrigger asChild>
             <Label
-              className="mb-0 block cursor-pointer rounded-none p-1.5 text-dim/40 transition-colors hover:bg-accent/5 hover:text-accent"
+              className="mb-0 block cursor-pointer rounded-none p-1.5 text-dim transition-colors hover:bg-accent/5 hover:text-accent"
               aria-label="Attach file"
             >
               <ImageIcon size={16} />
@@ -689,7 +689,7 @@ function ChatComposerEditor({
         placeholder="Ask anything… (@ project, $ skill, paste files)"
         showToolbar={false}
         className="relative rounded-none border-0 bg-transparent"
-        editorClassName="min-h-[80px] px-4 pb-4 pt-4 text-w-sm leading-relaxed text-foreground placeholder:text-dim/40"
+        editorClassName="min-h-[80px] px-4 pb-4 pt-4 text-w-sm leading-relaxed text-foreground placeholder:text-muted-foreground"
         contentClassName="max-h-[400px]"
       />
     </PromptInputBody>

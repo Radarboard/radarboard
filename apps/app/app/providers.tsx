@@ -12,7 +12,6 @@ import "@/lib/integrations-init";
 import "@/lib/plugins-init";
 import "@/lib/polling-config";
 
-import { WebhookRelayPoller } from "@radarboard/plugin-webhook-relay/runtime/background-poller";
 import { HotkeysProvider } from "@tanstack/react-hotkeys";
 import { useStore } from "@tanstack/react-store";
 import { useParams, useRouter } from "next/navigation";
@@ -37,8 +36,6 @@ import { isClientE2EMode, setClientE2EModeMarker } from "@/lib/e2e";
 import { getDashboardHref, updateDashboardSearch } from "@/lib/project-routes";
 import { deriveAllProjects } from "@/lib/projects/derived-projects";
 import { initializeWidgets } from "@/lib/widgets-init";
-import { RssReaderBackgroundPoller } from "@/modules/provider-shell/rss-reader-background-poller";
-import { StatusPageBackgroundPoller } from "@/modules/provider-shell/status-page-background-poller";
 import {
   loadSettings,
   settingsStore,
@@ -332,9 +329,6 @@ export function Providers({ children }: { children: ReactNode }) {
         >
           <ThemeBridge />
           <ShortcutRuntimeBridge pluginConfigs={pluginConfigs} />
-          {!isE2EMode && <StatusPageBackgroundPoller />}
-          {!isE2EMode && <RssReaderBackgroundPoller />}
-          {!isE2EMode && <WebhookRelayPoller />}
           <OfflineIndicator />
           <SyncPoller />
           <PluginHost

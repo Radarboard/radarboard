@@ -112,7 +112,7 @@ export function TemplateManager({
                   placeholder="Template name"
                   variant="surface"
                   size="lg"
-                  className="bg-surface text-sm"
+                  className="bg-surface text-w-sm"
                 />
                 <Input
                   type="text"
@@ -121,14 +121,14 @@ export function TemplateManager({
                   placeholder="Short description"
                   variant="surface"
                   size="lg"
-                  className="bg-surface text-sm"
+                  className="bg-surface text-w-sm"
                 />
                 <Textarea
                   value={editor.content}
                   onChange={(e) => setEditor({ ...editor, content: e.target.value })}
                   placeholder="Template content (Markdown, use {date} for date placeholder)"
                   rows={10}
-                  className="resize-y bg-surface font-mono text-sm"
+                  className="resize-y bg-surface font-mono text-w-sm"
                 />
               </div>
               <div className="flex gap-2">
@@ -178,7 +178,7 @@ export function TemplateManager({
                   >
                     <FileText className="icon-sm mt-0.5 shrink-0 text-dim" />
                     <div className="min-w-0 flex-1">
-                      <div className="font-medium text-foreground-secondary text-sm">
+                      <div className="font-medium text-foreground-secondary text-w-sm">
                         {tpl.name}
                       </div>
                       <div className="mt-0.5 text-dim text-w-sm">{tpl.description}</div>

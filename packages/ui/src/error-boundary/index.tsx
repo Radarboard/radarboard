@@ -21,6 +21,16 @@ interface ErrorBoundaryState {
   error: Error | null;
 }
 
+export function isRecoverableChunkLoadError(error: Error): boolean {
+  const value = `${error.name}\n${error.message}\n${error.stack ?? ""}`.toLowerCase();
+  return (
+    value.includes("chunkloaderror") ||
+    value.includes("failed to load chunk") ||
+    value.includes("loading chunk") ||
+    value.includes("dynamically imported module")
+  );
+}
+
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
@@ -61,13 +71,28 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     this.setState({ error: null });
   };
 
+  recover = () => {
+    if (
+      this.state.error &&
+      isRecoverableChunkLoadError(this.state.error) &&
+      typeof window !== "undefined"
+    ) {
+      window.location.reload();
+      return;
+    }
+
+    this.reset();
+  };
+
   render() {
     const { error } = this.state;
     const { children, title, className, fallback } = this.props;
 
     if (!error) return children;
 
-    if (fallback) return fallback(error, this.reset);
+    if (fallback) return fallback(error, this.recover);
+
+    const actionLabel = isRecoverableChunkLoadError(error) ? "Reload" : "Retry";
 
     return (
       <div
@@ -80,10 +105,10 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
           </h2>
           <button
             type="button"
-            onClick={this.reset}
+            onClick={this.recover}
             className="cursor-pointer font-mono text-dim text-w-sm transition-colors hover:text-foreground-secondary"
           >
-            Retry
+            {actionLabel}
           </button>
         </div>
 

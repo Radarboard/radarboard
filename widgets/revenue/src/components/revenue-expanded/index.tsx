@@ -15,13 +15,14 @@ import { RevenueChart } from "../revenue-chart";
 import { RevenueSummaryShell } from "../revenue-compact";
 
 export function RevenueExpanded({ projectSlug, onConnectService }: WidgetRenderProps) {
-  const { timeRange, currency, projects } = useDashboard();
+  const { timeRange, currency, projects, preferences } = useDashboard();
   const providerIntegrationId = resolveRevenueProviderIntegrationId(projects, projectSlug);
   const { data, series, raw, loading } = useRevenue(
     providerIntegrationId,
     timeRange,
     currency,
-    projectSlug
+    projectSlug,
+    preferences.demoMode === true
   );
 
   return (

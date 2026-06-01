@@ -78,7 +78,7 @@ export function SubtaskList({ subtasks, onToggle, onAdd, onRemove }: SubtaskList
             </Button>
             <span
               className={cn(
-                "flex-1 text-sm",
+                "flex-1 text-w-sm",
                 subtask.done ? "text-dim line-through" : "text-foreground-secondary"
               )}
             >
@@ -109,7 +109,7 @@ export function SubtaskList({ subtasks, onToggle, onAdd, onRemove }: SubtaskList
           placeholder="Add subtask..."
           variant="ghost"
           size="default"
-          className="flex-1 text-foreground-secondary text-sm"
+          className="flex-1 text-foreground-secondary text-w-sm"
         />
       </div>
     </div>

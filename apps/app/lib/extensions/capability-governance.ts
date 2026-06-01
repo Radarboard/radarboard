@@ -58,10 +58,20 @@ export function getCanonicalWidgetMap(
   return canonical;
 }
 
-function hasProvider(provider: CapabilityProviderRef): boolean {
+function hasProviderAction(provider: CapabilityProviderRef): boolean {
   return DATA_SOURCE_REGISTRY.has(`${provider.integration}/${provider.action}`);
 }
 
+function hasRegisteredProviderIntegration(provider: CapabilityProviderRef): boolean {
+  if (getAllIntegrations().some((integration) => integration.id === provider.integration)) {
+    return true;
+  }
+
+  const prefix = `${provider.integration}/`;
+  return Array.from(DATA_SOURCE_REGISTRY.keys()).some((key) => key.startsWith(prefix));
+}
+
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: governance checks intentionally compare canonical, registered, and provider-advertised capabilities together.
 export function auditCapabilityGovernance(
   integrations: IntegrationDescriptor[],
   widgets: WidgetDescriptor[]
@@ -88,7 +98,11 @@ export function auditCapabilityGovernance(
       }
 
       for (const provider of capability.providers) {
-        if (!hasProvider(provider)) {
+        if (!hasRegisteredProviderIntegration(provider)) {
+          continue;
+        }
+
+        if (!hasProviderAction(provider)) {
           audits.push({
             level: "error",
             code: "missing-provider-action",

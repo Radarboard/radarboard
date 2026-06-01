@@ -169,7 +169,7 @@ export function PluginSandbox() {
           <h1 className="font-semibold text-3xl text-foreground tracking-tight">
             Preview Plugins in All States
           </h1>
-          <p className="max-w-3xl text-muted-foreground text-sm leading-relaxed">
+          <p className="max-w-3xl text-muted-foreground text-w-sm leading-relaxed">
             Every registered plugin rendered with a mock PluginAPI. Preview different states and
             presentation modes during development.
           </p>
@@ -177,7 +177,7 @@ export function PluginSandbox() {
 
         {/* Controls */}
         <div className="flex flex-wrap items-center gap-4 border-border border-b pb-4">
-          <label className="text-dim text-sm" htmlFor="sandbox-plugin-select">
+          <label className="text-dim text-w-sm" htmlFor="sandbox-plugin-select">
             Plugin:
           </label>
           <select
@@ -186,7 +186,7 @@ export function PluginSandbox() {
             onChange={(e) =>
               setSelectedPlugin(e.target.value === "__all__" ? null : e.target.value)
             }
-            className="rounded border border-input bg-surface px-2 py-1 text-foreground text-sm"
+            className="rounded border border-input bg-surface px-2 py-1 text-foreground text-w-sm"
           >
             <option value="__all__">All plugins ({plugins.length})</option>
             {plugins.map((p) => (
@@ -197,7 +197,7 @@ export function PluginSandbox() {
           </select>
 
           <span className="text-dim">|</span>
-          <span className="text-dim text-sm">States:</span>
+          <span className="text-dim text-w-sm">States:</span>
           {(
             Object.entries(PREVIEW_LABELS) as Array<
               [PluginPreviewState, { label: string; color: string }]
@@ -208,8 +208,8 @@ export function PluginSandbox() {
               variant="outline"
               size="sm"
               onClick={() => toggleState(state)}
-              className={`font-mono text-xs ${
-                selectedStates.has(state) ? `bg-surface-raised ${color}` : "text-dim/50"
+              className={`font-mono text-w-xs ${
+                selectedStates.has(state) ? `bg-surface-raised ${color}` : "text-dim"
               }`}
             >
               {label}
@@ -217,14 +217,14 @@ export function PluginSandbox() {
           ))}
 
           <span className="text-dim">|</span>
-          <label className="text-dim text-sm" htmlFor="sandbox-presentation-select">
+          <label className="text-dim text-w-sm" htmlFor="sandbox-presentation-select">
             Mode:
           </label>
           <select
             id="sandbox-presentation-select"
             value={presentation}
             onChange={(e) => setPresentation(e.target.value as PresentationMode)}
-            className="rounded border border-input bg-surface px-2 py-1 text-foreground text-sm"
+            className="rounded border border-input bg-surface px-2 py-1 text-foreground text-w-sm"
           >
             {(
               Object.entries(PRESENTATION_STYLES) as Array<[PresentationMode, { label: string }]>
@@ -243,11 +243,11 @@ export function PluginSandbox() {
             <section key={plugin.id} className="space-y-3">
               <div>
                 <h2 className="font-medium text-foreground text-lg">{plugin.name}</h2>
-                <p className="font-mono text-dim text-xs">
+                <p className="font-mono text-dim text-w-xs">
                   {plugin.id} &middot; v{plugin.version} &middot; default: {presConfig.default}
                 </p>
                 {plugin.description && (
-                  <p className="mt-0.5 text-muted-foreground text-sm">{plugin.description}</p>
+                  <p className="mt-0.5 text-muted-foreground text-w-sm">{plugin.description}</p>
                 )}
               </div>
 

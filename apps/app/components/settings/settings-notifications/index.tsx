@@ -256,7 +256,7 @@ function GlobalChannelsCard({
 
       <div className="space-y-1 rounded-item border border-border border-dashed bg-secondary/30 p-3">
         <div className="font-mono text-foreground-secondary text-w-sm">Email</div>
-        <div className="text-dim/60 text-w-sm">
+        <div className="text-dim text-w-sm">
           Resend-backed email digests are documented and queued for a later pass.
         </div>
       </div>
@@ -294,7 +294,7 @@ function DesktopPermissionCard({
       </div>
 
       {permission === "unsupported" && (
-        <div className="text-dim/60 text-w-sm">Not supported by this browser.</div>
+        <div className="text-dim text-w-sm">Not supported by this browser.</div>
       )}
       {permission === "denied" && (
         <div className="text-destructive text-w-sm">
@@ -315,7 +315,7 @@ function DesktopPermissionCard({
       <div
         className={cn(
           "rounded-item px-2 py-1 font-mono text-w-sm",
-          permission === "granted" ? "bg-success/10 text-success" : "bg-secondary text-dim/60"
+          permission === "granted" ? "bg-success/10 text-success" : "bg-secondary text-dim"
         )}
       >
         Permission: {permission}
@@ -501,7 +501,7 @@ function SoundChannelCard({
         />
       </div>
 
-      <div className="text-dim/60 text-w-xs uppercase tracking-wider">Source: soundcn.xyz</div>
+      <div className="text-dim text-w-xs uppercase tracking-wider">Source: soundcn.xyz</div>
     </div>
   );
 }
@@ -1380,7 +1380,7 @@ function WebhookForm({
             )}
           </Button>
         </div>
-        <div className="text-dim/60 text-w-sm">
+        <div className="text-dim text-w-sm">
           Verify payloads with header:{" "}
           <code className="text-dim">X-Radarboard-Signature: sha256=&lt;hex&gt;</code>
         </div>
@@ -1423,7 +1423,7 @@ function WebhooksSection() {
 
   return (
     <div className="space-y-3">
-      <div className="text-dim/60 text-w-sm leading-relaxed">
+      <div className="text-dim text-w-sm leading-relaxed">
         Radarboard signs outbound payloads with HMAC-SHA256.{" "}
         <span className="text-dim">
           Email and full webhook delivery channels are coming — see docs/notifications/channels.md
@@ -1446,7 +1446,7 @@ function WebhooksSection() {
                 {ep.name}
               </div>
               <div className="truncate text-dim text-w-sm">{ep.url}</div>
-              <div className="mt-0.5 truncate text-dim/60 text-w-sm">
+              <div className="mt-0.5 truncate text-dim text-w-sm">
                 Events: {ep.events.join(", ")}
               </div>
             </div>

@@ -59,17 +59,21 @@ export const DialogContent = ({
   size = "sm",
   hideCloseButton = false,
   nested = false,
+  overlayClassName,
   ref,
   ...props
 }: ComponentPropsWithoutRef<typeof DialogPrimitiveContent> & {
   size?: ModalContentSize;
   hideCloseButton?: boolean;
   nested?: boolean;
+  overlayClassName?: string;
   ref?: RefObject<HTMLDivElement | null>;
 }) => (
   <DialogChromeContext.Provider value={{ hideCloseButton }}>
     <DialogPrimitivePortal>
-      <DialogOverlay className={nested ? "z-[var(--z-modal-nested)]" : undefined} />
+      <DialogOverlay
+        className={cn(nested ? "z-[var(--z-modal-nested)]" : undefined, overlayClassName)}
+      />
       <DialogPrimitiveContent
         ref={ref}
         className={cn(
@@ -124,7 +128,7 @@ export const DialogTitle = ({
   <DialogPrimitiveTitle
     ref={ref}
     className={cn(
-      "font-bold font-mono text-foreground text-sm uppercase tracking-wider",
+      "font-bold font-mono text-foreground text-w-sm uppercase tracking-wider",
       className
     )}
     {...props}
@@ -167,7 +171,7 @@ export function DialogCancelButton({
     <button
       type={type}
       className={cn(
-        "cursor-pointer px-3 py-1.5 font-mono text-muted-foreground text-xs transition-colors hover:text-foreground",
+        "cursor-pointer px-3 py-1.5 font-mono text-muted-foreground text-w-xs transition-colors hover:text-foreground",
         className
       )}
       {...props}
@@ -184,7 +188,7 @@ export function DialogDestructiveButton({
     <button
       type={type}
       className={cn(
-        "cursor-pointer rounded-item bg-destructive px-3 py-1.5 font-mono text-destructive-foreground text-xs transition-colors hover:bg-destructive/90",
+        "cursor-pointer rounded-item bg-destructive px-3 py-1.5 font-mono text-destructive-foreground text-w-xs transition-colors hover:bg-destructive/90",
         className
       )}
       {...props}
@@ -199,7 +203,7 @@ export function DetailRow({ label, children }: { label: string; children: ReactN
       <span className="shrink-0 font-mono text-dim text-w-sm uppercase tracking-wider">
         {label}
       </span>
-      <span className="text-right font-mono text-foreground-secondary text-xs">{children}</span>
+      <span className="text-right font-mono text-foreground-secondary text-w-xs">{children}</span>
     </div>
   );
 }

@@ -50,18 +50,23 @@ function RaindropResolver({ timeRange = "30d", onState }: DataSourceResolverProp
       topTags: [],
     };
 
+    const recent = Array.isArray(baseData.recent) ? baseData.recent : [];
+    const collections = Array.isArray(baseData.collections) ? baseData.collections : [];
+    const topTags = Array.isArray(baseData.topTags) ? baseData.topTags : [];
+
     return {
       ...baseData,
-      recent: baseData.recent.map((bookmark) => ({
+      recent: recent.map((bookmark) => ({
         ...bookmark,
         key: String(bookmark.id),
         domainLabel: stripWwwPrefix(bookmark.domain),
         savedAgo: formatTimeAgo(bookmark.created),
       })),
-      collections: baseData.collections.map((collection) => ({
+      collections: collections.map((collection) => ({
         ...collection,
         key: String(collection.id),
       })),
+      topTags,
       errorMessage: error ?? baseData.error ?? "",
       errorPresent: Boolean(error ?? baseData.error),
       setupMessage: baseData.configured

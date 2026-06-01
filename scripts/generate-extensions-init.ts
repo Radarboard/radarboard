@@ -158,7 +158,13 @@ function generateIntegrationsInit(config: RadarboardConfig): string {
     lines.push(`import { ${camel}DataSources } from "${pkg}/data-sources";`);
   }
 
-  lines.push(`import { registerDataSources, registerIntegration } from "@radarboard/integration-sdk/registry";`);
+  const registryImports = ["registerDataSources"];
+  if (config.integrations.length > 0) {
+    registryImports.push("registerIntegration");
+  }
+  lines.push(
+    `import { ${registryImports.join(", ")} } from "@radarboard/integration-sdk/registry";`
+  );
 
   lines.push("");
   lines.push('const INTEGRATIONS_INIT_KEY = "__radarboardAppIntegrationsInitialized__";');

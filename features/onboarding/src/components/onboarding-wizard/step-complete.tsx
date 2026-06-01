@@ -37,7 +37,6 @@ export function StepComplete({
     ? PROFILE_GROUPS.flatMap((g) => g.profiles).find((p) => p.id === state.profile)?.label
     : null;
   const summaryItems: Array<{
-    eyebrow: string;
     description?: string;
     icon: ComponentType<{ className?: string }>;
     key: string;
@@ -46,7 +45,6 @@ export function StepComplete({
 
   if (state.keepExisting) {
     summaryItems.push({
-      eyebrow: "Status",
       key: "keep-existing",
       icon: ShieldCheck,
       label: "Existing settings preserved",
@@ -56,7 +54,6 @@ export function StepComplete({
 
   if (profileLabel) {
     summaryItems.push({
-      eyebrow: "Profile",
       key: "profile",
       icon: User,
       label: profileLabel,
@@ -65,7 +62,6 @@ export function StepComplete({
 
   if (state.demoMode) {
     summaryItems.push({
-      eyebrow: "Mode",
       key: "demo-mode",
       icon: FlaskConical,
       label: "Demo mode",
@@ -75,7 +71,6 @@ export function StepComplete({
 
   if (integrationCount > 0) {
     summaryItems.push({
-      eyebrow: "Integrations",
       key: "integrations",
       icon: Plug,
       label: `${integrationCount} integration${integrationCount > 1 ? "s" : ""}`,
@@ -85,7 +80,6 @@ export function StepComplete({
 
   if (pluginCount > 0) {
     summaryItems.push({
-      eyebrow: "Plugins",
       key: "plugins",
       icon: Puzzle,
       label: `${pluginCount} plugin${pluginCount > 1 ? "s" : ""}`,
@@ -95,7 +89,6 @@ export function StepComplete({
 
   if (state.blueprintId) {
     summaryItems.push({
-      eyebrow: "Layout",
       key: "blueprint",
       icon: LayoutGrid,
       label: "Dashboard blueprint selected",
@@ -104,7 +97,6 @@ export function StepComplete({
 
   if (summaryItems.length === 0) {
     summaryItems.push({
-      eyebrow: "Status",
       key: "ready",
       icon: CheckCircle,
       label: "Dashboard ready",
@@ -113,13 +105,13 @@ export function StepComplete({
   }
 
   return (
-    <div className="flex flex-1 items-center justify-center px-4 py-8 sm:px-6 sm:py-10">
-      <div className="flex w-full max-w-md flex-col items-center text-center">
+    <div className="flex flex-1 items-center justify-center overflow-y-auto px-4 py-6 scrollbar-thin sm:px-6 sm:py-8">
+      <div className="flex w-full max-w-lg flex-col items-center text-center">
         <div className="flex h-14 w-14 items-center justify-center rounded-full border border-success/30 bg-success/10">
           <CheckCircle className="icon-lg text-success" />
         </div>
 
-        <div className="mt-5 flex max-w-sm flex-col items-center gap-4">
+        <div className="mt-5 flex max-w-md flex-col items-center gap-3">
           <h2 className="font-bold font-mono text-foreground text-w-lg uppercase tracking-widest">
             You&apos;re all set
           </h2>
@@ -128,7 +120,7 @@ export function StepComplete({
           </p>
         </div>
 
-        <div className="mt-8 w-full max-w-sm text-left">
+        <div className="mt-7 w-full text-left">
           <p className="font-mono text-dim text-w-xs uppercase tracking-widest">Setup summary</p>
           <ul className="mt-3 space-y-2 overflow-x-hidden">
             {summaryItems.map((item) => {
@@ -137,16 +129,17 @@ export function StepComplete({
               return (
                 <li
                   key={item.key}
-                  className="flex items-start gap-3 rounded-item border border-border bg-surface px-4 py-3.5"
+                  className="flex min-h-12 items-center gap-3 rounded-item border border-border bg-surface px-4 py-3"
                 >
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-item border border-border bg-secondary">
                     <Icon className="icon-sm text-accent" />
                   </div>
-                  <div className="min-w-0 font-mono">
-                    <p className="text-dim text-w-xs uppercase tracking-wide">{item.eyebrow}</p>
-                    <p className="mt-1 text-foreground-secondary text-w-sm leading-6">{item.label}</p>
+                  <div className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2 gap-y-1 font-mono">
+                    <p className="min-w-0 break-words text-foreground-secondary text-w-sm leading-6">
+                      {item.label}
+                    </p>
                     {item.description ? (
-                      <p className="mt-1 text-dim text-w-xs leading-5">
+                      <p className="min-w-0 text-dim text-w-xs leading-5">
                         {item.description}
                       </p>
                     ) : null}
@@ -157,7 +150,7 @@ export function StepComplete({
           </ul>
         </div>
 
-        <div className="mt-8 flex max-w-sm flex-col items-center gap-5">
+        <div className="mt-7 flex max-w-md flex-col items-center gap-5">
           <p className="font-mono text-dim text-w-sm leading-6">
             You can always re-run this setup from Settings or adjust individual preferences.
           </p>

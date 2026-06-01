@@ -304,7 +304,7 @@ function AllProjectRow({ isSelected, onSelect }: { isSelected: boolean; onSelect
         <LayoutGrid
           className={cn("icon-xs shrink-0", isSelected ? "text-accent" : "text-accent/60")}
         />
-        <span className="flex-1 text-left font-mono text-xs uppercase tracking-wider">
+        <span className="flex-1 text-left font-mono text-w-xs uppercase tracking-wider">
           All Projects
         </span>
         <Badge className="border-none bg-accent/10 text-accent/70">aggregate</Badge>

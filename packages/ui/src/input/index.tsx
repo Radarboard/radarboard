@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import type { InputHTMLAttributes, Ref } from "react";
 
 const inputVariants = cva(
-  "flex w-full border border-border font-mono transition-interactive file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:focus-visible:border-destructive",
+  "flex w-full border border-border font-mono transition-interactive file:border-0 file:bg-transparent file:text-w-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:focus-visible:border-destructive",
   {
     variants: {
       variant: {

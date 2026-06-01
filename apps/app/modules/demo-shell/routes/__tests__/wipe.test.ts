@@ -55,6 +55,35 @@ describe("POST /api/dev/demo/wipe", () => {
     expect(saved.preferences.demoMode).toBe(false);
   });
 
+  it("resets onboarding preferences for fresh mode", async () => {
+    mockSettingsRepo.getWidgetLayout.mockResolvedValue({
+      widgets: ["a", "b"],
+      preferences: {
+        demoMode: true,
+        onboardingCompleted: true,
+        userProfile: "creator",
+        intendedIntegrations: ["stripe"],
+        blueprintWidgetMap: { revenue: "stripe-revenue" },
+      },
+    });
+
+    const res = await POST(
+      new Request("http://localhost/api/dev/demo/wipe", {
+        method: "POST",
+        body: JSON.stringify({ mode: "fresh" }),
+      })
+    );
+    const body = await res.json();
+
+    expect(body.mode).toBe("fresh");
+    const saved = mockSettingsRepo.setWidgetLayout.mock.calls[0][0];
+    expect(saved.preferences.demoMode).toBe(false);
+    expect(saved.preferences.onboardingCompleted).toBe(false);
+    expect(saved.preferences.userProfile).toBeNull();
+    expect(saved.preferences.intendedIntegrations).toEqual([]);
+    expect(saved.preferences.blueprintWidgetMap).toEqual({});
+  });
+
   it("skips layout update when no layout exists", async () => {
     mockSettingsRepo.getWidgetLayout.mockResolvedValue(null);
 

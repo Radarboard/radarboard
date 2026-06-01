@@ -177,7 +177,7 @@ export function StepIntegrations({ state, onChange, onNext, onBack }: StepIntegr
           if (categoryServices.length === 0) return null;
           return (
             <fieldset key={category.id}>
-              <legend className="mb-2 font-mono text-dim/60 text-w-sm uppercase tracking-widest">
+              <legend className="mb-2 font-mono text-dim text-w-sm uppercase tracking-widest">
                 {category.label}
               </legend>
               <OnboardingGrid className={ONBOARDING_GRID_CLASS}>
@@ -202,14 +202,10 @@ export function StepIntegrations({ state, onChange, onNext, onBack }: StepIntegr
         <div className="flex items-center gap-2">
           {selectedCount === 0 ? (
             <span className="font-mono text-dim text-w-sm" role="status">
-              Select at least one integration
+              You can connect services later
             </span>
           ) : null}
-          <Button
-            onClick={onNext}
-            disabled={selectedCount === 0}
-            className="font-mono uppercase tracking-widest"
-          >
+          <Button onClick={onNext} className="font-mono uppercase tracking-widest">
             Continue
           </Button>
         </div>

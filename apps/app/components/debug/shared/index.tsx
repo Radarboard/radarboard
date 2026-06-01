@@ -11,14 +11,16 @@ import type React from "react";
 
 /** Loading spinner / placeholder for debug section data. */
 export function LoadingState() {
-  return <div className="flex items-center justify-center py-12 text-dim text-sm">Loading...</div>;
+  return (
+    <div className="flex items-center justify-center py-12 text-dim text-w-sm">Loading...</div>
+  );
 }
 
 /** Section header with label and optional refresh button. */
 export function SectionHeader({ label, onRefresh }: { label: string; onRefresh?: () => void }) {
   return (
     <div className="flex items-center justify-between">
-      <h3 className="font-mono text-dim text-xs uppercase tracking-widest">{label}</h3>
+      <h3 className="font-mono text-dim text-w-xs uppercase tracking-widest">{label}</h3>
       {Boolean(onRefresh) && (
         <Button
           type="button"
@@ -26,7 +28,7 @@ export function SectionHeader({ label, onRefresh }: { label: string; onRefresh?:
           spacing="none"
           uppercase={false}
           onClick={onRefresh}
-          className="text-dim text-xs"
+          className="text-dim text-w-xs"
         >
           Refresh
         </Button>

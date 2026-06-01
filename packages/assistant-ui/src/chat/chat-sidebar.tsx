@@ -66,13 +66,13 @@ export function ChatSidebar() {
 
       {/* Search */}
       <div className="flex items-center gap-1.5 border-border border-b px-3 py-1.5">
-        <SearchIcon size={10} className="shrink-0 text-dim/50" />
+        <SearchIcon size={10} className="shrink-0 text-dim" />
         <Input
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Filter…"
-          className="h-6 min-w-0 flex-1 rounded-none border-none bg-transparent p-0 font-mono text-foreground text-w-sm shadow-none outline-none placeholder:text-dim/40 focus-visible:ring-0"
+          className="h-6 min-w-0 flex-1 rounded-none border-none bg-transparent p-0 font-mono text-foreground text-w-sm shadow-none outline-none placeholder:text-muted-foreground focus-visible:ring-0"
         />
         {Boolean(searchQuery) && (
           <Button
@@ -80,7 +80,7 @@ export function ChatSidebar() {
             variant="ghost"
             size="icon"
             onClick={() => setSearchQuery("")}
-            className="icon-sm uppercase-none shrink-0 p-0 text-dim/50 hover:bg-transparent hover:text-dim"
+            className="icon-sm uppercase-none shrink-0 p-0 text-dim hover:bg-transparent hover:text-dim"
             aria-label="Clear search"
           >
             <XIcon size={9} />
@@ -183,7 +183,7 @@ export function ChatSidebar() {
                   size="icon"
                   onClick={() => startRename(thread.id, thread.title)}
                   aria-label="Rename conversation"
-                  className="icon-sm uppercase-none flex shrink-0 items-center p-0 text-dim/50 transition-colors hover:bg-transparent hover:text-dim"
+                  className="icon-sm uppercase-none flex shrink-0 items-center p-0 text-dim transition-colors hover:bg-transparent hover:text-dim"
                 >
                   <PencilIcon size={9} />
                 </Button>

@@ -2,7 +2,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
 
 /**
- * Enforces visual and UX consistency across extensions (widgets, plugins).
+ * Enforces visual and UX consistency across Radarboard UI surfaces.
  *
  * Rules:
  * 1. No local Card/CardHeader/CardContent components — use @radarboard/ui/card
@@ -11,10 +11,19 @@ import { join, relative } from "node:path";
  * 4. No direct Radix imports — use @radarboard/ui wrappers
  * 5. Plugins must use @radarboard/plugin-sdk/components for list/detail patterns
  * 6. No local toast/notification implementations — use api.notify()
+ * 7. No readable UI text below the app's 12px minimum token floor
  */
 
 const ROOT = process.cwd();
-const EXTENSION_PATHS = ["plugins", "widgets"];
+const UI_SOURCE_PATHS = [
+  "apps/app/components",
+  "packages/assistant-ui/src",
+  "packages/plugin-sdk/src",
+  "packages/ui/src",
+  "packages/widget-engine/src",
+  "plugins",
+  "widgets",
+];
 const SOURCE_FILE_PATTERN = /\.(ts|tsx)$/;
 const EXCLUDED_FILE_PATTERN = /\.(test|spec|stories|story|scaffold)\.(ts|tsx)$/;
 const SKIP_DIR_NAMES = new Set([
@@ -46,15 +55,30 @@ const RULE_ALLOWLIST: Record<string, Set<string>> = {
 interface Rule {
   id: string;
   description: string;
-  /** Only apply to these extension categories. Omit = all. */
-  scope?: ("plugins" | "widgets")[];
+  /** Only apply to these UI source categories. Omit = all. */
+  scope?: UiSourceCategory[];
   check: (content: string, relativePath: string) => string | null;
 }
+
+type UiSourceCategory =
+  | "app"
+  | "assistant-ui"
+  | "plugin-sdk"
+  | "ui"
+  | "widget-engine"
+  | "plugins"
+  | "widgets";
+
+const SMALL_TEXT_PATTERN = /\b(?:file:)?text-(?:xs|sm)\b/;
+const ARBITRARY_TEXT_SIZE_PATTERN = /\btext-\[(?:\d+(?:\.\d+)?(?:px|rem|em)|calc\(|clamp\()/;
+const LOW_OPACITY_TEXT_PATTERN =
+  /\b(?:placeholder:)?text-(?:dim|muted-foreground|foreground-secondary)\/(?:[0-6][0-9]|[0-9])\b|\btext-\[var\(--color-text-muted\)\]\/(?:[0-6][0-9]|[0-9])\b/;
 
 const RULES: Rule[] = [
   {
     id: "no-local-card",
     description: "Use @radarboard/ui/card instead of defining local Card components",
+    scope: ["plugins", "widgets"],
     check: (content) => {
       const pattern =
         /\b(?:export\s+)?(?:function|const)\s+(?:Card|CardHeader|CardContent|CardFooter)\s*[=(]/;
@@ -66,6 +90,7 @@ const RULES: Rule[] = [
   {
     id: "no-local-empty-state",
     description: "Use @radarboard/ui/empty-state instead of local empty components",
+    scope: ["plugins", "widgets"],
     check: (content) => {
       const pattern = /\b(?:export\s+)?(?:function|const)\s+EmptyState\s*[=(]/;
       return pattern.test(content)
@@ -76,6 +101,7 @@ const RULES: Rule[] = [
   {
     id: "no-local-skeleton",
     description: "Use @radarboard/ui/skeleton-shimmer instead of local skeleton components",
+    scope: ["plugins", "widgets"],
     check: (content) => {
       const pattern =
         /\b(?:export\s+)?(?:function|const)\s+(?:Skeleton|SkeletonShimmer|ShimmerBlock)\s*[=(]/;
@@ -87,6 +113,7 @@ const RULES: Rule[] = [
   {
     id: "no-direct-radix",
     description: "Use @radarboard/ui wrappers instead of direct Radix imports",
+    scope: ["plugins", "widgets"],
     check: (content, relativePath) => {
       // Skip plugin-sdk itself — it wraps Radix for plugin components
       if (relativePath.startsWith("packages/")) return null;
@@ -116,6 +143,7 @@ const RULES: Rule[] = [
     id: "no-local-scroll-area",
     description:
       "Use @radarboard/ui/scroll-area instead of local scroll containers",
+    scope: ["plugins", "widgets"],
     check: (content) => {
       const pattern = /\b(?:export\s+)?(?:function|const)\s+ScrollArea\s*[=(]/;
       return pattern.test(content)
@@ -143,6 +171,22 @@ const RULES: Rule[] = [
         if (!usesListRow) {
           return "Has 5+ keyed list items. Consider using @radarboard/plugin-sdk/components/list-row for consistent styling.";
         }
+      }
+      return null;
+    },
+  },
+  {
+    id: "readable-text-floor",
+    description: "Use text-w-* tokens for visible readable text; minimum rendered size is 12px",
+    check: (content) => {
+      if (SMALL_TEXT_PATTERN.test(content)) {
+        return "Uses text-xs/text-sm. Use semantic text-w-* tokens so readable text respects the 12px floor.";
+      }
+      if (ARBITRARY_TEXT_SIZE_PATTERN.test(content)) {
+        return "Uses an arbitrary text size. Use the app text-w-* scale instead.";
+      }
+      if (LOW_OPACITY_TEXT_PATTERN.test(content)) {
+        return "Uses low-opacity semantic text. Use a readable semantic color token instead.";
       }
       return null;
     },
@@ -195,7 +239,7 @@ interface Violation {
 }
 
 function main() {
-  const files = EXTENSION_PATHS.flatMap((entryPath) =>
+  const files = UI_SOURCE_PATHS.flatMap((entryPath) =>
     collectSourceFiles(join(ROOT, entryPath))
   );
 
@@ -203,18 +247,14 @@ function main() {
 
   for (const filePath of files) {
     const relativePath = relative(ROOT, filePath);
-    const category = relativePath.startsWith("plugins/")
-      ? "plugins"
-      : relativePath.startsWith("widgets/")
-        ? "widgets"
-        : null;
+    const category = getUiSourceCategory(relativePath);
 
     if (!category) continue;
 
     const content = readFileSync(filePath, "utf8");
 
     for (const rule of RULES) {
-      if (rule.scope && !rule.scope.includes(category as "plugins" | "widgets")) {
+      if (rule.scope && !rule.scope.includes(category)) {
         continue;
       }
 
@@ -240,12 +280,23 @@ function main() {
     console.error(`  ${file} [${ruleId}]: ${message}`);
   }
   console.error(
-    "\nExtensions must use shared UI components for visual consistency."
+    "\nRadarboard UI surfaces must use shared components, readable tokens, and semantic styling."
   );
   console.error(
     "See: @radarboard/ui, @radarboard/plugin-sdk/components"
   );
   process.exit(1);
+}
+
+function getUiSourceCategory(relativePath: string): UiSourceCategory | null {
+  if (relativePath.startsWith("apps/app/components/")) return "app";
+  if (relativePath.startsWith("packages/assistant-ui/src/")) return "assistant-ui";
+  if (relativePath.startsWith("packages/plugin-sdk/src/")) return "plugin-sdk";
+  if (relativePath.startsWith("packages/ui/src/")) return "ui";
+  if (relativePath.startsWith("packages/widget-engine/src/")) return "widget-engine";
+  if (relativePath.startsWith("plugins/")) return "plugins";
+  if (relativePath.startsWith("widgets/")) return "widgets";
+  return null;
 }
 
 main();

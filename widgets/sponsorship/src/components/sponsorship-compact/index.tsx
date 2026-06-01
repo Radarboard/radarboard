@@ -158,9 +158,10 @@ export function SponsorshipCompact({
   onFetchedAt,
   onRefetch,
 }: WidgetRenderProps) {
-  const { projects, timeRange } = useDashboard();
+  const { projects, timeRange, preferences } = useDashboard();
   const ocSlug = resolveOcSlug(projects, projectSlug);
   const ghLogin = resolveGitHubLogin(projects, projectSlug);
+  const demoMode = preferences.demoMode === true;
 
   const {
     data: ocData,
@@ -168,14 +169,14 @@ export function SponsorshipCompact({
     refetch: ocRefetch,
     loading: ocLoading,
     error: ocError,
-  } = useOpenCollective(ocSlug, timeRange);
+  } = useOpenCollective(ocSlug, timeRange, demoMode);
   const {
     data: ghData,
     fetchedAt: ghFetchedAt,
     refetch: ghRefetch,
     loading: ghLoading,
     error: ghError,
-  } = useGitHubSponsors(ghLogin);
+  } = useGitHubSponsors(ghLogin, true, demoMode);
 
   const fetchedAt = useMemo(() => {
     if (ocFetchedAt && ghFetchedAt) return Math.max(ocFetchedAt, ghFetchedAt);
@@ -190,7 +191,7 @@ export function SponsorshipCompact({
     widgetId,
     projectSlug,
     timeRange,
-    sourceIds: ["open-collective", "github-sponsors"],
+    sourceIds: ["sponsorship"],
     fetchedAt,
     loading: ocLoading || ghLoading,
     error: ocError ?? ghError,

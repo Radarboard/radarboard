@@ -275,7 +275,7 @@ export const raindropDescriptor = createTemplateDescriptor(
     ],
     defaultSlot: "slot9",
     defaultPollInterval: 300_000,
-    pollingSourceIds: ["raindrop"],
+    pollingSourceIds: ["bookmarks"],
     auth: {
       id: "raindrop",
       name: "Raindrop",

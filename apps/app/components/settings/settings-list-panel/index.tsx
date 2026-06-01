@@ -41,8 +41,8 @@ export function ListPanelHeader({
     <div className="shrink-0 border-border border-b p-3">
       <div className="mb-2 flex items-center gap-2">
         <div className="min-w-0 flex-1">
-          <div className="font-mono text-dim text-xs uppercase tracking-widest">{title}</div>
-          <div className="truncate text-dim/70 text-xs">{subtitle}</div>
+          <div className="font-mono text-dim text-w-xs uppercase tracking-widest">{title}</div>
+          <div className="truncate text-dim/70 text-w-xs">{subtitle}</div>
         </div>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -69,7 +69,7 @@ export function ListPanelHeader({
           placeholder={searchPlaceholder}
           value={searchValue}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="h-8 w-full pr-2 pl-8 font-mono text-xs"
+          className="h-8 w-full pr-2 pl-8 font-mono text-w-xs"
         />
       </div>
     </div>

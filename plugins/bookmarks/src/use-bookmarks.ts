@@ -76,8 +76,8 @@ export function useBookmarks(api: PluginAPI) {
 
   const persistBookmarks = useCallback(
     async (updated: Bookmark[]) => {
-      if (isDemoMode) return;
       setBookmarks(updated);
+      if (isDemoMode) return;
       await api.db.set(DB_KEYS.bookmarks, updated);
     },
     [api, isDemoMode]

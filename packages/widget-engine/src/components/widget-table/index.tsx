@@ -196,7 +196,7 @@ export function WidgetTable<TData>({
         {filterPlaceholder !== undefined && (
           <div className="shrink-0 border-border border-b px-3 py-2">
             <div className="relative">
-              <Search className="icon-xs pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-dim/60" />
+              <Search className="icon-xs pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-dim" />
               <Input
                 type="text"
                 value={globalFilter}

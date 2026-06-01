@@ -30,11 +30,15 @@ export interface OpenCollectiveOverviewData {
   topMembers: OpenCollectiveMember[];
 }
 
-export function useOpenCollective(slug: string | null, timeRange: TimeRange = "30d") {
+export function useOpenCollective(
+  slug: string | null,
+  timeRange: TimeRange = "30d",
+  demoMode = false
+) {
   const effectiveTimezone = useEffectiveTimeZone();
   const refreshInterval = usePollingInterval("sponsorship");
   const key = slug
-    ? `${ROUTE}?slug=${encodeURIComponent(slug)}&range=${encodeURIComponent(timeRange)}&timezone=${encodeURIComponent(effectiveTimezone)}`
+    ? `${ROUTE}?slug=${encodeURIComponent(slug)}&range=${encodeURIComponent(timeRange)}&timezone=${encodeURIComponent(effectiveTimezone)}${demoMode ? "&demo=1" : ""}`
     : null;
 
   const { data, error, isLoading, mutate } = useSWR<OpenCollectiveResponse>(key, apiFetcher, {
@@ -44,10 +48,10 @@ export function useOpenCollective(slug: string | null, timeRange: TimeRange = "3
 
   const refetch = useCallback(async () => {
     if (!slug) return;
-    const forceUrl = `${ROUTE}?slug=${encodeURIComponent(slug)}&range=${encodeURIComponent(timeRange)}&timezone=${encodeURIComponent(effectiveTimezone)}&refresh=1`;
+    const forceUrl = `${ROUTE}?slug=${encodeURIComponent(slug)}&range=${encodeURIComponent(timeRange)}&timezone=${encodeURIComponent(effectiveTimezone)}&refresh=1${demoMode ? "&demo=1" : ""}`;
     const fresh = await apiFetcher<OpenCollectiveResponse>(forceUrl);
     await mutate(fresh, { revalidate: false });
-  }, [slug, timeRange, effectiveTimezone, mutate]);
+  }, [slug, timeRange, effectiveTimezone, demoMode, mutate]);
 
   const parsed: OpenCollectiveOverviewData | null =
     data?.configured && data?.stats

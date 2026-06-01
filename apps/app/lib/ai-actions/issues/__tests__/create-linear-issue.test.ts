@@ -1,23 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
-
-vi.mock("@radarboard/integration-linear/client", () => ({
-  createIssue: vi.fn().mockResolvedValue({
-    success: true,
-    issue: {
-      id: "iss-1",
-      identifier: "DDD-100",
-      title: "Test",
-      url: "https://linear.app/issue/DDD-100",
-      team: { key: "DDD", name: "Team" },
-      state: { name: "Backlog", type: "backlog" },
-    },
-  }),
-  getTeams: vi.fn().mockResolvedValue([{ id: "team-1", name: "Engineering", key: "ENG" }]),
-  getLabels: vi.fn().mockResolvedValue([
-    { id: "label-1", name: "bug" },
-    { id: "label-2", name: "feature" },
-  ]),
-}));
+import { describe, expect, it } from "vitest";
 
 import {
   executeCreateLinearIssue,
@@ -26,24 +7,22 @@ import {
 } from "../create-linear-issue";
 
 describe("executeCreateLinearIssue", () => {
-  it("delegates to the integration client", async () => {
+  it("reports that Linear issue creation lives in the extension", async () => {
     const result = await executeCreateLinearIssue({ apiKey: "test" }, { title: "Bug report" });
-    expect(result.success).toBe(true);
-    expect(result.issue.identifier).toBe("DDD-100");
+    expect(result.error).toContain("Linear issue creation requires the Linear extension");
   });
 });
 
 describe("executeListLinearTeams", () => {
-  it("returns teams from integration client", async () => {
+  it("returns no teams without the extension", async () => {
     const teams = await executeListLinearTeams({ apiKey: "test" });
-    expect(teams).toHaveLength(1);
-    expect(teams[0].key).toBe("ENG");
+    expect(teams).toEqual([]);
   });
 });
 
 describe("executeListLinearLabels", () => {
-  it("returns labels from integration client", async () => {
+  it("returns no labels without the extension", async () => {
     const labels = await executeListLinearLabels({ apiKey: "test" });
-    expect(labels).toHaveLength(2);
+    expect(labels).toEqual([]);
   });
 });

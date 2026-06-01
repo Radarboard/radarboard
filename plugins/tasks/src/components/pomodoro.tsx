@@ -55,7 +55,7 @@ export function PomodoroTimer({ session, onStop, compact }: PomodoroTimerProps) 
 
   if (!session) {
     return compact ? null : (
-      <div className="py-4 text-center text-dim text-sm">
+      <div className="py-4 text-center text-dim text-w-sm">
         No active timer. Start a Pomodoro from a task.
       </div>
     );
@@ -73,7 +73,7 @@ export function PomodoroTimer({ session, onStop, compact }: PomodoroTimerProps) 
             isComplete ? "bg-emerald-400" : "animate-pulse bg-red-400"
           )}
         />
-        <span className={cn("font-mono text-sm", TYPE_COLORS[session.type])}>
+        <span className={cn("font-mono text-w-sm", TYPE_COLORS[session.type])}>
           {isComplete ? "Done!" : formatTime(remaining)}
         </span>
         <span className="text-dim text-w-sm">{TYPE_LABELS[session.type]}</span>
@@ -98,7 +98,7 @@ export function PomodoroTimer({ session, onStop, compact }: PomodoroTimerProps) 
         {isComplete ? "00:00" : formatTime(remaining)}
       </div>
 
-      <div className="text-dim text-xs">Cycle {session.completedCycles + 1}</div>
+      <div className="text-dim text-w-xs">Cycle {session.completedCycles + 1}</div>
 
       <div className="mt-2 flex items-center gap-2">
         <Button
@@ -106,7 +106,7 @@ export function PomodoroTimer({ session, onStop, compact }: PomodoroTimerProps) 
           onClick={onStop}
           variant="secondary"
           uppercase={false}
-          className="h-auto gap-1.5 py-1.5 text-muted-foreground text-sm hover:text-foreground-secondary"
+          className="h-auto gap-1.5 py-1.5 text-muted-foreground text-w-sm hover:text-foreground-secondary"
         >
           {isComplete ? <RotateCcw className="icon-base" /> : <Pause className="icon-base" />}
           {isComplete ? "Reset" : "Stop"}

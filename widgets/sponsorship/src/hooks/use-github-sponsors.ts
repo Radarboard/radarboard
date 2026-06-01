@@ -40,12 +40,13 @@ export interface GitHubSponsorsOverviewData {
   limitedAccess: boolean;
 }
 
-export function useGitHubSponsors(login: string | null, enabled = true) {
+export function useGitHubSponsors(login: string | null, enabled = true, demoMode = false) {
   const refreshInterval = usePollingInterval("sponsorship");
   const getKey = () => {
     if (!enabled) return null;
-    if (login) return `${ROUTE}?login=${encodeURIComponent(login)}`;
-    return ROUTE;
+    const demoQuery = demoMode ? `${login ? "&" : "?"}demo=1` : "";
+    if (login) return `${ROUTE}?login=${encodeURIComponent(login)}${demoQuery}`;
+    return `${ROUTE}${demoQuery}`;
   };
   const key = getKey();
 
@@ -56,11 +57,11 @@ export function useGitHubSponsors(login: string | null, enabled = true) {
 
   const refetch = useCallback(async () => {
     const forceUrl = login
-      ? `${ROUTE}?login=${encodeURIComponent(login)}&refresh=1`
-      : `${ROUTE}?refresh=1`;
+      ? `${ROUTE}?login=${encodeURIComponent(login)}&refresh=1${demoMode ? "&demo=1" : ""}`
+      : `${ROUTE}?refresh=1${demoMode ? "&demo=1" : ""}`;
     const fresh = await apiFetcher<GitHubSponsorsResponse>(forceUrl);
     await mutate(fresh, { revalidate: false });
-  }, [login, mutate]);
+  }, [login, demoMode, mutate]);
 
   const parsed: GitHubSponsorsOverviewData | null =
     data?.configured && data?.stats

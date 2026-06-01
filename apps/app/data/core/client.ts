@@ -1,11 +1,5 @@
 import { mkdirSync } from "node:fs";
 import { type Client, createClient } from "@libsql/client";
-import {
-  githubRepoStarDaily,
-  githubRepoStarEvent,
-  githubRepoStarSyncState,
-  githubRepoStarTracking,
-} from "@radarboard/integration-github/stars";
 import { drizzle } from "drizzle-orm/libsql";
 import {
   LATEST_SCHEMA_VERSION,
@@ -38,10 +32,6 @@ const schema = {
   userSettings,
   widgetCredentials,
   apiCache,
-  githubRepoStarDaily,
-  githubRepoStarSyncState,
-  githubRepoStarEvent,
-  githubRepoStarTracking,
   llmConversations,
   llmMessages,
   llmMemory,
@@ -116,4 +106,13 @@ async function autoMigrate(client: Client): Promise<void> {
 export async function ensureDbReady(): Promise<void> {
   getDb();
   if (_ready !== null) await _ready;
+}
+
+export function resetDbConnectionForTests(): void {
+  if (process.env.RADARBOARD_E2E !== "1" && process.env.NODE_ENV !== "test") {
+    return;
+  }
+
+  _db = null;
+  _ready = null;
 }

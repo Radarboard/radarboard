@@ -1,11 +1,11 @@
 ---
 name: create-integration
-description: "Create or update a Radarboard integration in integrations/. ALWAYS use this when the user asks to add, build, scaffold, wire, or fix an external service connection or integration package in Radarboard, including credentials or OAuth setup, data sources, MCP tools, config-flow steps, MCP connection config, and webhook or delta handling for services like GitHub, Stripe, Slack, Vercel, Sentry, or any API-backed provider."
+description: "Create or update a Radarboard integration. Provider integrations should default to the community-extensions repo; core integrations are explicit platform exceptions. Use this when the user asks to add, build, scaffold, wire, or fix an external service connection, credentials or OAuth setup, data sources, MCP tools, config-flow steps, MCP connection config, and webhook or delta handling for services like GitHub, Stripe, Slack, Vercel, Sentry, or any API-backed provider."
 ---
 
 # Create Integration
 
-End-to-end guide for adding a new integration under `integrations/`.
+End-to-end guide for adding a new integration. Provider integrations belong in `/Users/thedaviddias/Projects/community-extensions` by default. Only put an integration in Radarboard core when it is provider-neutral platform infrastructure.
 
 ## Gather Inputs
 
@@ -23,13 +23,21 @@ If the user already named a service, do not stall. Fill the rest from the repo, 
 
 ## Step 1: Scaffold
 
-Run the existing scaffold script:
+For provider integrations, run from `/Users/thedaviddias/Projects/community-extensions`:
+
+```bash
+pnpm create-extension <name> --integration
+```
+
+This creates `integrations/<name>/` in the community catalog. It does not update core `radarboard.config.ts`; provider integrations must remain installable extensions.
+
+For the rare core integration, run from Radarboard core:
 
 ```bash
 pnpm create-integration <name>
 ```
 
-This creates `integrations/<name>/`, updates `radarboard.config.ts`, runs `pnpm generate:extensions`, and links the workspace with `pnpm install`.
+That creates `integrations/<name>/`, updates `radarboard.config.ts`, runs `pnpm generate:extensions`, and links the workspace with `pnpm install`.
 
 The scaffolded package includes:
 
@@ -221,12 +229,14 @@ For MCP-backed integrations, prefer the first-class `mcp` connection config inst
 ## Step 7: Verify
 
 ```bash
-pnpm check:extensions --filter=integration
+pnpm check:extensions --filter=integration --extension <name>
 pnpm --filter @radarboard/integration-<name> test
-pnpm typecheck
+pnpm validate --extension <name>
 ```
 
-`pnpm check:extensions` now includes capability governance checks. It will:
+For core-only integrations, use `pnpm typecheck` instead of `pnpm validate --extension <name>`.
+
+`pnpm check:extensions` includes capability governance checks. It will:
 
 - error if a capability action points at a missing data source
 - warn if the integration declares a capability with no canonical widget owner

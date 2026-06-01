@@ -588,7 +588,7 @@ export function LayoutRecipeGallery({
         <div className="font-mono text-dim text-w-sm uppercase tracking-[0.24em]">
           Widget Layout Recipes
         </div>
-        <p className="text-foreground-secondary text-sm leading-6">
+        <p className="text-foreground-secondary text-w-sm leading-6">
           Real layout definitions shown both as structure grammar and as populated widget previews.
           Use this gallery to decide which dashboard recipes feel intentional before wiring real
           data.
@@ -613,7 +613,7 @@ export function LayoutRecipeGallery({
                   {recipe.layout.cells.length} cells
                 </Badge>
               </div>
-              <p className="mt-2 max-w-[52ch] text-foreground-secondary text-sm leading-6">
+              <p className="mt-2 max-w-[52ch] text-foreground-secondary text-w-sm leading-6">
                 {recipe.description}
               </p>
             </div>

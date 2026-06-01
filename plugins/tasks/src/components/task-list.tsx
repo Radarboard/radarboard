@@ -66,7 +66,7 @@ export function TaskList({
   if (tasks.length === 0) {
     return (
       <div className="flex flex-1 items-center justify-center px-4 py-10">
-        <div className="text-center text-dim text-sm">
+        <div className="text-center text-dim text-w-sm">
           {trashMode ? "Trash is empty." : "No tasks yet. Press `n` to create one."}
         </div>
       </div>

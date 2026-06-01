@@ -103,8 +103,8 @@ export function useNotes(api: PluginAPI) {
   // Persist helper --------------------------------------------------------
   const persistNotes = useCallback(
     async (updated: Note[]) => {
-      if (isDemoMode) return;
       setNotes(updated);
+      if (isDemoMode) return;
       await api.db.set(DB_KEYS.notes, updated);
     },
     [api, isDemoMode]

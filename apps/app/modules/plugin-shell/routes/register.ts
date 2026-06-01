@@ -4,9 +4,7 @@ import { registerRoutes } from "@/lib/router/registry";
 import { handlePluginActionGet, handlePluginActionPost } from "./action";
 import { handleDeletePluginData, handleGetPluginData, handlePutPluginData } from "./data";
 import { handleListPluginData } from "./data-list";
-import { handleGetStatusPageHealth } from "./status-page-health";
 import { handleIssuePluginToken } from "./token";
-import { handleWebhookRelayPoll } from "./webhook-relay-poll";
 
 type PluginRouteContext = {
   params: Promise<{ plugin: string; action: string }>;
@@ -37,13 +35,5 @@ registerRoutes([
   {
     path: API_ROUTES.pluginToken,
     handlers: { POST: handleIssuePluginToken },
-  },
-  {
-    path: API_ROUTES.statusPageProjectHealth,
-    handlers: { GET: handleGetStatusPageHealth },
-  },
-  {
-    path: API_ROUTES.relayPoll,
-    handlers: { POST: handleWebhookRelayPoll },
   },
 ]);

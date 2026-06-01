@@ -381,7 +381,7 @@ function NotesEditor({ notes, onChange }: { notes: string; onChange: (notes: str
         onChange={(next) => onChange(next)}
         placeholder="e.g. This project targets Japanese users. Focus on mobile-first design. Revenue model is freemium with in-app purchases…"
         className="bg-secondary/50"
-        editorClassName="min-h-[160px] text-w-sm text-foreground-secondary placeholder:text-dim/40"
+        editorClassName="min-h-[160px] text-w-sm text-foreground-secondary placeholder:text-muted-foreground"
       />
     </div>
   );

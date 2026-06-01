@@ -14,6 +14,7 @@ import { parseAsString, useQueryState } from "nuqs";
 import { useMemo, useState } from "react";
 import { getAuthList } from "../../widgets/widget-config-panel";
 import { WidgetDetailDialog } from "../../widgets/widget-detail-dialog";
+import { CommunityExtensionDiscovery } from "../community-discovery";
 import { InstallExtensionDialog } from "../extension-installer";
 import { SettingsCatalogCard } from "../settings-catalog-card";
 import { SettingsCategoryTabs } from "../settings-category-tabs";
@@ -221,6 +222,7 @@ export function SettingsWidgets({
     VIEW_STATE_QUERY_KEYS.settingsInstaller,
     parseAsString
   );
+  const [installerGithubUrl, setInstallerGithubUrl] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const installerOpen = settingsInstallerParam === "widgets";
 
@@ -344,6 +346,11 @@ export function SettingsWidgets({
     ? (projects.find((project) => project.slug === activeProjectSlug)?.name ?? activeProjectSlug)
     : "All Projects";
 
+  function openInstaller(githubUrl = "") {
+    setInstallerGithubUrl(githubUrl);
+    setSettingsInstallerParam("widgets");
+  }
+
   return (
     <>
       <SettingsPageLayout
@@ -366,7 +373,7 @@ export function SettingsWidgets({
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setSettingsInstallerParam("widgets")}
+                onClick={() => openInstaller()}
                 uppercase={false}
                 className="h-auto shrink-0 px-3 py-2 font-mono text-foreground-secondary text-w-sm uppercase tracking-wider hover:text-foreground"
               >
@@ -394,45 +401,63 @@ export function SettingsWidgets({
         ) : null}
 
         {visibleCategorySections.length === 0 ? (
-          <EmptyState message="No widgets match your current filters." />
+          <>
+            <EmptyState message="No widgets match your current filters." />
+            <CommunityExtensionDiscovery
+              type="widget"
+              searchQuery={searchQuery}
+              onInstall={openInstaller}
+            />
+          </>
         ) : (
-          visibleCategorySections.map((category) => {
-            const widgets = category.itemIds
-              .map((id) => WIDGET_REGISTRY.get(id))
-              .filter((w): w is WidgetDescriptor => w !== undefined);
+          <>
+            {visibleCategorySections.map((category) => {
+              const widgets = category.itemIds
+                .map((id) => WIDGET_REGISTRY.get(id))
+                .filter((w): w is WidgetDescriptor => w !== undefined);
 
-            if (widgets.length === 0) return null;
+              if (widgets.length === 0) return null;
 
-            const enabledInCategory = widgets.filter((w) => widgetToCellId.has(w.id)).length;
+              const enabledInCategory = widgets.filter((w) => widgetToCellId.has(w.id)).length;
 
-            return (
-              <SettingsCardSection
-                key={category.id}
-                title={category.label}
-                badge={
-                  enabledInCategory > 0 ? (
-                    <span className="rounded-item border border-border bg-card px-2 py-0.5 font-mono text-muted-foreground text-w-sm">
-                      {enabledInCategory} enabled
-                    </span>
-                  ) : undefined
-                }
-              >
-                <WidgetCatalogGrid
-                  widgets={widgets}
-                  widgetToCellId={widgetToCellId}
-                  countServices={countServices}
-                  onConfigure={setConfigWidgetId}
-                  onToggle={handleToggle}
-                />
-              </SettingsCardSection>
-            );
-          })
+              return (
+                <SettingsCardSection
+                  key={category.id}
+                  title={category.label}
+                  badge={
+                    enabledInCategory > 0 ? (
+                      <span className="rounded-item border border-border bg-card px-2 py-0.5 font-mono text-muted-foreground text-w-sm">
+                        {enabledInCategory} enabled
+                      </span>
+                    ) : undefined
+                  }
+                >
+                  <WidgetCatalogGrid
+                    widgets={widgets}
+                    widgetToCellId={widgetToCellId}
+                    countServices={countServices}
+                    onConfigure={setConfigWidgetId}
+                    onToggle={handleToggle}
+                  />
+                </SettingsCardSection>
+              );
+            })}
+            <CommunityExtensionDiscovery
+              type="widget"
+              searchQuery={searchQuery}
+              onInstall={openInstaller}
+            />
+          </>
         )}
       </SettingsPageLayout>
 
       <InstallExtensionDialog
         open={installerOpen}
-        onOpenChange={(open) => setSettingsInstallerParam(open ? "widgets" : null)}
+        initialGithubUrl={installerGithubUrl}
+        onOpenChange={(open) => {
+          if (!open) setInstallerGithubUrl("");
+          setSettingsInstallerParam(open ? "widgets" : null);
+        }}
       />
 
       {/* Widget detail dialog */}

@@ -315,7 +315,7 @@ function TargetOption({
       />
       <div className="min-w-0 flex-1">
         <p className="font-mono text-foreground text-w-sm">{label}</p>
-        <p className="truncate text-dim text-xs">{description}</p>
+        <p className="truncate text-dim text-w-xs">{description}</p>
       </div>
     </Button>
   );

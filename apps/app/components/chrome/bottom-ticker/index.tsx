@@ -4,6 +4,7 @@ import { useDashboard } from "@radarboard/hooks/use-dashboard";
 import { useEffectiveTimeZone } from "@radarboard/hooks/use-effective-timezone";
 import { useRoutingConfig } from "@radarboard/hooks/use-routing-config";
 import { getPluginToken } from "@radarboard/plugin-sdk/host";
+import { getPlugin } from "@radarboard/plugin-sdk/registry";
 import { pluginDataRoute } from "@radarboard/types/api-routes";
 import type { TimeRange } from "@radarboard/types/dashboard";
 import type { ShippingSource } from "@radarboard/types/shipping";
@@ -261,8 +262,15 @@ export function BottomTicker({ projectSlug }: BottomTickerProps) {
   } | null>(null);
   const [isPaused, setIsPaused] = useState(false);
   const pauseRef = useRef(false);
-  const { data: statusPageTickerData } = useSWR(
-    "bottom-ticker:status-page",
+  const hasStatusPagePlugin = getPlugin("status-page") != null;
+  const hasRssReaderPlugin = getPlugin("rss-reader") != null;
+  const {
+    data: statusPageTickerData = {
+      enabled: false,
+      sources: [] as StatusPageTickerSource[],
+    },
+  } = useSWR(
+    hasStatusPagePlugin ? "bottom-ticker:status-page" : null,
     async () => {
       try {
         const enabled = await loadStatusPageTickerEnabled();
@@ -282,7 +290,7 @@ export function BottomTicker({ projectSlug }: BottomTickerProps) {
     }
   );
   const { data: rssTickerItems = [] } = useSWR(
-    ["bottom-ticker:rss", timeRange, effectiveTimezone] as const,
+    hasRssReaderPlugin ? (["bottom-ticker:rss", timeRange, effectiveTimezone] as const) : null,
     async ([, nextTimeRange, nextTimezone]) => {
       try {
         return await loadRssTickerItems(nextTimeRange, nextTimezone);

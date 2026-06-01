@@ -618,7 +618,7 @@ function FeedbackReasonPanel({
         className="mt-2 h-8"
         aria-label="Optional feedback detail"
       />
-      <p className="mt-1.5 text-dim/60 text-w-xs">Feedback is visible in debug events.</p>
+      <p className="mt-1.5 text-dim text-w-xs">Feedback is visible in debug events.</p>
     </div>
   );
 }
@@ -654,7 +654,7 @@ function AssistantMessageFooter({
 }) {
   return (
     <MessageActions>
-      {model ? <span className="font-mono text-dim/60 text-w-sm">{model}</span> : null}
+      {model ? <span className="font-mono text-dim text-w-sm">{model}</span> : null}
       <MessageAction tooltip="Copy response" onClick={() => onCopy(messageId, text)}>
         {copiedId === messageId ? (
           <CheckIcon size={16} className="text-success" />
@@ -726,7 +726,7 @@ function SaveMemoryForm({
           size="icon"
           onClick={onClose}
           aria-label="Close save to memory"
-          className="icon-base uppercase-none text-dim/50 hover:bg-transparent hover:text-dim"
+          className="icon-base uppercase-none text-dim hover:bg-transparent hover:text-dim"
         >
           <XIcon size={14} />
         </Button>
@@ -1036,7 +1036,7 @@ function ChatMessagesViewport({
               <ChatTooltipButton
                 tooltip="Select messages"
                 onClick={() => setSelectionMode(true)}
-                className="flex items-center gap-1 font-mono text-dim/40 text-w-sm transition-colors hover:text-dim"
+                className="flex items-center gap-1 font-mono text-dim text-w-sm transition-colors hover:text-dim"
               >
                 <ClipboardListIcon size={13} />
                 Select
@@ -1242,7 +1242,7 @@ function MessageItem({
       <Message role={isUser ? "user" : "assistant"}>
         {/* Branch point indicator */}
         {isBranchPoint ? (
-          <div className="mb-1 flex w-full items-center gap-2 font-mono text-dim/40 text-w-xs uppercase tracking-tighter">
+          <div className="mb-1 flex w-full items-center gap-2 font-mono text-dim text-w-xs uppercase tracking-tighter">
             <div className="h-px flex-1 bg-border/20" />
             <span>branched</span>
             <div className="h-px flex-1 bg-border/20" />

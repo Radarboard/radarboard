@@ -1,11 +1,11 @@
 ---
 name: create-widget
-description: "Create or update a Radarboard widget in widgets/. ALWAYS use this when the user asks to add, build, scaffold, wire, or refactor a dashboard widget package in Radarboard, including template recipes, data resolvers, SWR hooks, compact or expanded views, widget auth, `expandAction`, visual-editor config, or widget MCP tools for analytics, deployments, reviews, releases, revenue, or any grid card backed by Radarboard data."
+description: "Create or update a Radarboard widget. Provider-specific widgets should default to the community-extensions repo; core widgets are provider-neutral baseline widgets. Use this when the user asks to add, build, scaffold, wire, or refactor a dashboard widget package, including template recipes, data resolvers, SWR hooks, compact or expanded views, widget auth, `expandAction`, visual-editor config, or widget MCP tools."
 ---
 
 # Create Widget
 
-End-to-end guide for adding a widget under `widgets/`.
+End-to-end guide for adding a widget. Provider-specific widgets belong in `/Users/thedaviddias/Projects/community-extensions` by default. Only put a widget in Radarboard core when it is provider-neutral and part of the default product baseline.
 
 ## Gather Inputs
 
@@ -25,13 +25,21 @@ If `widget-caching` and `react-doctor` skills are available, use them alongside 
 
 ## Step 1: Scaffold
 
-Run the existing scaffold script:
+For community widgets, run from `/Users/thedaviddias/Projects/community-extensions`:
+
+```bash
+pnpm create-extension <name> --widget
+```
+
+This creates `widgets/<name>/` in the community catalog. It does not update core `radarboard.config.ts`.
+
+For the rare core widget, run from Radarboard core:
 
 ```bash
 pnpm create-widget <name>
 ```
 
-This creates `widgets/<name>/`, updates `radarboard.config.ts`, runs `pnpm generate:extensions`, and links the workspace with `pnpm install`.
+That creates `widgets/<name>/`, updates `radarboard.config.ts`, runs `pnpm generate:extensions`, and links the workspace with `pnpm install`.
 
 The scaffolded package includes:
 
@@ -258,13 +266,15 @@ Prefer calling shared data sources or route helpers instead of duplicating fetch
 ## Step 7: Verify
 
 ```bash
-pnpm check:extensions --filter=widget
+pnpm check:extensions --filter=widget --extension <name>
 pnpm --filter @radarboard/widget-<name> test
 pnpm react-doctor
-pnpm typecheck
+pnpm validate --extension <name>
 ```
 
-`pnpm check:extensions` now audits capability governance. Expect:
+For core-only widgets, use `pnpm typecheck` instead of `pnpm validate --extension <name>`.
+
+`pnpm check:extensions` audits capability governance. Expect:
 
 - error on invalid provider references
 - error on duplicate canonical widgets for the same capability

@@ -1,5 +1,6 @@
 "use client";
 
+import { useDemoMode } from "@radarboard/hooks/use-demo-mode";
 import { getPluginToken } from "@radarboard/plugin-sdk/host";
 import { getAllPlugins } from "@radarboard/plugin-sdk/registry";
 import { API_ROUTES, pluginDataRoute } from "@radarboard/types/api-routes";
@@ -9,6 +10,7 @@ import useSWRImmutable from "swr/immutable";
 
 const DISABLED_PLUGINS_KEY = "disabled-plugins";
 const SYSTEM_PLUGIN_ID = "_system";
+const DEMO_ENABLED_PLUGIN_IDS = new Set(["tasks", "notes", "bookmarks"]);
 export const DISABLED_PLUGINS_CACHE_KEY = `plugin-data:${SYSTEM_PLUGIN_ID}:${DISABLED_PLUGINS_KEY}`;
 
 /** Sentinel value: null means "no preference stored" (fresh install → all disabled). */
@@ -62,18 +64,30 @@ function buildDisabledPluginSet(ids: string[] | null | undefined): Set<string> {
   return new Set(ids);
 }
 
+function buildDemoDisabledPluginSet(ids: string[] | null | undefined): Set<string> {
+  const disabled = buildDisabledPluginSet(ids);
+  for (const pluginId of DEMO_ENABLED_PLUGIN_IDS) {
+    disabled.delete(pluginId);
+  }
+  return disabled;
+}
+
 /**
  * Fetches the set of disabled plugin IDs from the plugin data store.
  * On fresh install (no data stored), all plugins are disabled until
  * the user enables them via onboarding or settings.
  */
 export function useDisabledPlugins(): Set<string> {
+  const { isDemoMode } = useDemoMode();
   const { data } = useSWRImmutable<string[] | null>(
     DISABLED_PLUGINS_CACHE_KEY,
     fetchDisabledPluginIds
   );
 
-  return useMemo(() => buildDisabledPluginSet(data), [data]);
+  return useMemo(
+    () => (isDemoMode ? buildDemoDisabledPluginSet(data) : buildDisabledPluginSet(data)),
+    [data, isDemoMode]
+  );
 }
 
 export function useDisabledPluginsState(): {
@@ -81,6 +95,7 @@ export function useDisabledPluginsState(): {
   isLoading: boolean;
   setPluginEnabled: (pluginId: string, enabled: boolean) => void;
 } {
+  const { isDemoMode } = useDemoMode();
   const { data, isLoading, mutate } = useSWRImmutable<string[] | null>(
     DISABLED_PLUGINS_CACHE_KEY,
     fetchDisabledPluginIds
@@ -120,7 +135,10 @@ export function useDisabledPluginsState(): {
   );
 
   return {
-    disabledIds: useMemo(() => buildDisabledPluginSet(data), [data]),
+    disabledIds: useMemo(
+      () => (isDemoMode ? buildDemoDisabledPluginSet(data) : buildDisabledPluginSet(data)),
+      [data, isDemoMode]
+    ),
     isLoading: data === undefined && isLoading,
     setPluginEnabled,
   };

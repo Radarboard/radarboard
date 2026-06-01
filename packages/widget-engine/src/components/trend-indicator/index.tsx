@@ -23,8 +23,8 @@ const DIRECTION_CONFIG = {
 
 const SIZE_CONFIG = {
   xs: { icon: "h-2.5 w-2.5", text: "text-w-xs" },
-  sm: { icon: "h-3 w-3", text: "text-xs" },
-  md: { icon: "h-4 w-4", text: "text-sm" },
+  sm: { icon: "h-3 w-3", text: "text-w-xs" },
+  md: { icon: "h-4 w-4", text: "text-w-sm" },
 } as const;
 
 export function TrendIndicator({

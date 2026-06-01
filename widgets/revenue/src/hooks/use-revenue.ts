@@ -153,7 +153,8 @@ export function useRevenue(
   providerIntegrationId: string,
   timeRange: TimeRange = "30d",
   currency: DisplayCurrency = "USD",
-  projectSlug: string | null = null
+  projectSlug: string | null = null,
+  demoMode = false
 ) {
   const effectiveTimezone = useEffectiveTimeZone();
   const refreshInterval = usePollingInterval("revenue");
@@ -163,8 +164,9 @@ export function useRevenue(
       currency,
       project: projectSlug,
       timezone: effectiveTimezone,
+      ...(demoMode ? { demo: "1" } : {}),
     }),
-    [currency, effectiveTimezone, projectSlug, timeRange]
+    [currency, effectiveTimezone, demoMode, projectSlug, timeRange]
   );
   const key = buildUrl(integrationRoute(providerIntegrationId, "data"), requestParams);
 

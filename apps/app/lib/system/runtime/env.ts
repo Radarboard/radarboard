@@ -43,6 +43,9 @@ const envSchema = z.object({
   // Webhook relay (optional — relay polling disabled if not set)
   RELAY_POLL_SECRET: z.string().optional(),
 
+  // Extension discovery (optional — defaults to Radarboard/community-extensions)
+  RADARBOARD_COMMUNITY_EXTENSIONS_CATALOG_URL: z.string().url().optional(),
+
   // Feature flags (optional — all default to enabled)
   NEXT_PUBLIC_FEATURE_ASSISTANT: z.string().optional(),
   NEXT_PUBLIC_FEATURE_SKILLS: z.string().optional(),
@@ -125,6 +128,9 @@ export const WEB_ENV_KEYS = {
   },
   relay: {
     secret: "RELAY_POLL_SECRET",
+  },
+  extensions: {
+    communityCatalogUrl: "RADARBOARD_COMMUNITY_EXTENSIONS_CATALOG_URL",
   },
   assistant: {
     enabled: "NEXT_PUBLIC_FEATURE_ASSISTANT",

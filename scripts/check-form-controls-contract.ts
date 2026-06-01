@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -94,6 +94,7 @@ function checkFile(filePath: string, content: string): string[] {
 function main() {
   const files = SOURCE_PATHS.flatMap((entryPath) => {
     const absolutePath = join(ROOT, entryPath);
+    if (!existsSync(absolutePath)) return [];
     const stat = statSync(absolutePath);
     return stat.isDirectory() ? collectSourceFiles(absolutePath) : [absolutePath];
   });

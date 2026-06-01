@@ -1,14 +1,15 @@
-/**
- * AI Action: Create a GitHub issue.
- *
- * Delegates to the GitHub integration client for all API calls.
- */
+export interface GitHubConfig {
+  token: string;
+}
 
-import { createIssue } from "@radarboard/integration-github/client";
-import type { CreateIssueInput, GitHubConfig } from "@radarboard/integration-github/types";
+export interface CreateIssueInput {
+  owner: string;
+  repo: string;
+  title: string;
+  body?: string;
+  labels?: string[];
+}
 
-export type { CreateIssueInput };
-
-export async function executeCreateGithubIssue(config: GitHubConfig, input: CreateIssueInput) {
-  return createIssue(config, input);
+export async function executeCreateGithubIssue(_config: GitHubConfig, _input: CreateIssueInput) {
+  return { error: "GitHub issue creation requires the GitHub extension." };
 }

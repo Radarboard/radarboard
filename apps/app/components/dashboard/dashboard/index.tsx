@@ -45,7 +45,7 @@ import { parseAsString, useQueryState } from "nuqs";
 import type React from "react";
 import type { CSSProperties, RefObject } from "react";
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import useSWR from "swr";
+import useSWR, { useSWRConfig } from "swr";
 import { Providers } from "@/app/providers";
 import { DashboardSkeleton } from "@/components/dashboard/dashboard-skeleton";
 import { SetupWizard } from "@/components/dashboard/setup-wizard";
@@ -504,6 +504,12 @@ interface DashboardGridAreaProps {
 }
 
 const DASHBOARD_CELL_GAP = "var(--dashboard-cell-gap, 6px)";
+const DEMO_REVALIDATE_ROUTES = ["/api/analytics/data", "/api/integrations/"] as const;
+
+function isDemoDataKey(key: unknown): key is string {
+  if (typeof key !== "string") return false;
+  return DEMO_REVALIDATE_ROUTES.some((route) => key.includes(route));
+}
 
 function getDesktopCellStyle(
   cell: LayoutCell,
@@ -718,6 +724,7 @@ interface DashboardSurfaceProps extends DashboardGridAreaProps {
   sensors: ReturnType<typeof useSensors>;
   settingsOpen: boolean;
   onRerunSetup?: () => void;
+  onStartFreshSetup?: () => void;
   onPreviewSetup?: () => void;
   shortcutTooltips: {
     search?: string;
@@ -787,6 +794,7 @@ function DashboardSurface({
   setLiveColSizes,
   settingsOpen,
   onRerunSetup,
+  onStartFreshSetup,
   onPreviewSetup,
   shortcutTooltips,
   showResizeHandles,
@@ -798,12 +806,28 @@ function DashboardSurface({
   visualProjectView,
   widgetAreaRef,
 }: DashboardSurfaceProps) {
-  const { isDemoMode, dismissDemo } = useDemoModeActions();
+  const { isDemoMode, connectRealData, startFresh } = useDemoModeActions();
   const [pluginMode, setPluginMode] = useQueryState("pluginMode", parseAsString);
 
-  const handleExitDemo = useCallback(() => {
-    onRerunSetup?.();
-  }, [onRerunSetup]);
+  const handleConnectRealData = useCallback(() => {
+    connectRealData()
+      .finally(() => {
+        handleSettingsOpen("integrations");
+      })
+      .catch(() => undefined);
+  }, [connectRealData, handleSettingsOpen]);
+
+  const handleStartFresh = useCallback(() => {
+    startFresh()
+      .finally(() => {
+        if (typeof window !== "undefined") {
+          window.sessionStorage.removeItem("radarboard:onboarding-completed");
+          window.sessionStorage.setItem("radarboard:setup-dismissed", "true");
+        }
+        onStartFreshSetup?.();
+      })
+      .catch(() => undefined);
+  }, [onStartFreshSetup, startFresh]);
 
   const handlePluginModeChange = useCallback(
     (mode: string) => setPluginMode(mode),
@@ -862,8 +886,8 @@ function DashboardSurface({
               onSearchOpen={() => onLauncherOpenChange(true)}
               searchTooltip={shortcutTooltips.search}
               isDemoMode={isDemoMode}
-              onExitDemo={handleExitDemo}
-              onDismissDemo={dismissDemo}
+              onConnectRealData={handleConnectRealData}
+              onStartFresh={handleStartFresh}
               isEditMode={isEditMode}
               onEditModeToggle={handleEditModeToggle}
               editTooltip={shortcutTooltips.edit}
@@ -1473,10 +1497,12 @@ function useLauncherState() {
 
 function DashboardContent({
   onRerunSetup,
+  onStartFreshSetup,
   onPreviewSetup,
   pluginsLocked = false,
 }: {
   onRerunSetup?: () => void;
+  onStartFreshSetup?: () => void;
   onPreviewSetup?: () => void;
   pluginsLocked?: boolean;
 }) {
@@ -1508,6 +1534,19 @@ function DashboardContent({
     preferences,
   } = useDashboard();
   const isDemoMode = preferences.demoMode === true;
+  const { mutate } = useSWRConfig();
+
+  const revalidateDemoData = useCallback(() => {
+    mutate(isDemoDataKey).catch(() => undefined);
+  }, [mutate]);
+
+  useEffect(() => {
+    if (!isDemoMode) return;
+    window.addEventListener("radarboard:demo-data-ready", revalidateDemoData);
+    return () => {
+      window.removeEventListener("radarboard:demo-data-ready", revalidateDemoData);
+    };
+  }, [isDemoMode, revalidateDemoData]);
 
   // Onboarding auto-trigger is handled by DashboardWithSearchParams via
   // the hasConfig check + setupDismissed flag. No secondary trigger needed
@@ -1709,6 +1748,7 @@ function DashboardContent({
       setLiveColSizes={setLiveColSizes}
       settingsOpen={settingsOpen}
       onRerunSetup={onRerunSetup}
+      onStartFreshSetup={onStartFreshSetup}
       onPreviewSetup={onPreviewSetup}
       shortcutTooltips={shortcutTooltips}
       showResizeHandles={showResizeHandles}
@@ -1730,6 +1770,7 @@ function DashboardOnboardingShell({
   handleOnboardingComplete,
   handlePreviewSetup,
   handleRerunSetup,
+  handleStartFreshSetup,
   handleSetupComplete,
   showOnboarding,
   showSetup,
@@ -1738,6 +1779,7 @@ function DashboardOnboardingShell({
   handleOnboardingComplete: () => void;
   handlePreviewSetup: () => void;
   handleRerunSetup: () => void;
+  handleStartFreshSetup: () => void;
   handleSetupComplete: () => void;
   showOnboarding: boolean;
   showSetup: boolean;
@@ -1761,6 +1803,7 @@ function DashboardOnboardingShell({
       )}
       <DashboardContent
         onRerunSetup={handleRerunSetup}
+        onStartFreshSetup={handleStartFreshSetup}
         onPreviewSetup={handlePreviewSetup}
         pluginsLocked={showOnboarding}
       />
@@ -1802,7 +1845,7 @@ function DashboardWithSearchParams({ setupBehavior = "auto" }: DashboardProps) {
   // desktop) but the user hasn't completed onboarding yet.
   useEffect(() => {
     if (skipSetup) return;
-    if (!data || data.hasConfig !== true) return;
+    if (data?.hasConfig !== true) return;
     if (data.onboardingCompleted) return;
     // Don't re-trigger if already completed this session or mode is already set
     if (
@@ -1839,6 +1882,15 @@ function DashboardWithSearchParams({ setupBehavior = "auto" }: DashboardProps) {
     setOnboardingMode("returning");
   }, []);
 
+  const handleStartFreshSetup = useCallback(() => {
+    setSetupDismissed(true);
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("radarboard:setup-dismissed", "true");
+      sessionStorage.removeItem("radarboard:onboarding-completed");
+    }
+    setOnboardingMode("first-run");
+  }, []);
+
   const handlePreviewSetup = useCallback(() => {
     setOnboardingMode("preview");
   }, []);
@@ -1856,6 +1908,7 @@ function DashboardWithSearchParams({ setupBehavior = "auto" }: DashboardProps) {
         handleOnboardingComplete={handleOnboardingComplete}
         handlePreviewSetup={handlePreviewSetup}
         handleRerunSetup={handleRerunSetup}
+        handleStartFreshSetup={handleStartFreshSetup}
         handleSetupComplete={handleSetupComplete}
         showOnboarding={showOnboarding}
         showSetup={showSetup}

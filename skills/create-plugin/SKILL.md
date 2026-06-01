@@ -1,11 +1,11 @@
 ---
 name: create-plugin
-description: "Create or update a Radarboard plugin in plugins/. ALWAYS use this when the user asks to add, build, scaffold, wire, or fix a Radarboard plugin package, overlay, plugin-scoped data model, plugin MCP tools, settings, intents, RPC services, deep-linkable item views, query-param-sync behavior, or plugin-contributed widgets for workflows like notes, tasks, bookmarks, monitoring, inboxes, and other interactive Radarboard features."
+description: "Create or update a Radarboard plugin. Provider-specific or optional workflow plugins should default to the community-extensions repo; core plugins are explicit platform/product exceptions. Use this when the user asks to add, build, scaffold, wire, or fix a Radarboard plugin package, overlay, plugin-scoped data model, plugin MCP tools, settings, intents, RPC services, deep-linkable item views, query-param-sync behavior, or plugin-contributed widgets."
 ---
 
 # Create Plugin
 
-End-to-end guide for adding a plugin under `plugins/`.
+End-to-end guide for adding a plugin. Optional/provider-specific plugins belong in `/Users/thedaviddias/Projects/community-extensions` by default. Only put a plugin in Radarboard core when it is part of the provider-neutral product baseline.
 
 ## Gather Inputs
 
@@ -22,13 +22,21 @@ If the plugin exposes item detail views or shareable selection state, plan query
 
 ## Step 1: Scaffold
 
-Run:
+For community plugins, run from `/Users/thedaviddias/Projects/community-extensions`:
+
+```bash
+pnpm create-extension <name> --plugin
+```
+
+This creates `plugins/<name>/` in the community catalog. It does not update core `radarboard.config.ts`.
+
+For the rare core plugin, run from Radarboard core:
 
 ```bash
 pnpm create-plugin <name>
 ```
 
-This creates `plugins/<name>/`, updates `radarboard.config.ts`, runs `pnpm generate:extensions`, and links the new workspace with `pnpm install`.
+That creates `plugins/<name>/`, updates `radarboard.config.ts`, runs `pnpm generate:extensions`, and links the new workspace with `pnpm install`.
 
 The scaffolded package includes:
 
@@ -212,10 +220,12 @@ If the plugin contributes dashboard widgets, add a dedicated file such as `src/w
 ## Step 6: Verify
 
 ```bash
-pnpm check:extensions --filter=plugin
+pnpm check:extensions --filter=plugin --extension <name>
 pnpm --filter @radarboard/plugin-<name> test
-pnpm typecheck
+pnpm validate --extension <name>
 ```
+
+For core-only plugins, use `pnpm typecheck` instead of `pnpm validate --extension <name>`.
 
 If the plugin adds deep-link behavior or overlay navigation, run or update the relevant existing tests rather than assuming the shared host code will cover it.
 

@@ -80,7 +80,7 @@ export function PluginListRow({
           <div className="flex min-w-0 items-center gap-1.5">
             <span
               className={cn(
-                "truncate text-foreground-secondary text-sm",
+                "truncate text-foreground-secondary text-w-sm",
                 strikethrough && "text-dim line-through"
               )}
             >

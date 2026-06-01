@@ -22,8 +22,10 @@ test.describe("onboarding flow — About You step @onboarding", () => {
     await openPreviewOnboarding(page);
 
     // Welcome step — advance to About You
-    await page.getByText("Start fresh").click();
-    await expect(page.getByText("Select all that apply")).toBeVisible({ timeout: TIMEOUT.dialog });
+    await page.getByRole("button", { name: /^Start fresh/ }).click();
+    await expect(page.getByText("Choose your primary role")).toBeVisible({
+      timeout: TIMEOUT.dialog,
+    });
 
     // Continue button should be disabled when no profile is selected
     const continueButton = page.getByRole("button", { name: "Continue" });
@@ -53,14 +55,15 @@ test.describe("onboarding flow — About You step @onboarding", () => {
 test.describe("onboarding flow — demo mode no auto-trigger @onboarding @demo", () => {
   test("demo mode does not auto-trigger onboarding on page load", async ({
     page,
+    request,
     consoleErrors,
     pageErrors,
   }) => {
     // Complete onboarding with demo mode to set up the dashboard state
-    await enterDemoMode(page);
+    await enterDemoMode(page, request);
 
     // Dashboard should be visible (enterDemoMode already asserts dialog is hidden)
-    await expect(page.getByRole("heading", { name: "Radarboard" })).toBeVisible({
+    await expect(page.getByRole("navigation", { name: "Plugins" })).toBeVisible({
       timeout: TIMEOUT.pageLoad,
     });
 
@@ -68,7 +71,7 @@ test.describe("onboarding flow — demo mode no auto-trigger @onboarding @demo",
     await page.reload({ waitUntil: "commit" });
 
     // Dashboard should load without the onboarding dialog
-    await expect(page.getByRole("heading", { name: "Radarboard" })).toBeVisible({
+    await expect(page.getByRole("navigation", { name: "Plugins" })).toBeVisible({
       timeout: TIMEOUT.pageLoad,
     });
 
@@ -92,10 +95,11 @@ test.describe("onboarding flow — Layout step blueprint pre-selection @onboardi
   test("Layout step pre-selects a blueprint", async ({ page, consoleErrors, pageErrors }) => {
     await openPreviewOnboarding(page);
 
-    // Navigate: Welcome -> Profile (skip) -> Integrations (skip) -> Plugins (skip) -> Layout
-    await page.getByText("Start fresh").click();
-    await page.getByRole("button", { name: "Skip" }).click(); // profile
-    await page.getByRole("button", { name: "Skip" }).click(); // integrations
+    // Navigate: Welcome -> Profile -> Integrations (continue) -> Plugins (skip) -> Layout
+    await page.getByRole("button", { name: /^Start fresh/ }).click();
+    await page.getByText("Full-Stack Developer").click();
+    await page.getByRole("button", { name: "Continue" }).click(); // profile
+    await page.getByRole("button", { name: "Continue" }).click(); // integrations
     await page.getByRole("button", { name: "Skip" }).click(); // plugins
 
     // Layout step should be visible
@@ -122,9 +126,10 @@ test.describe("onboarding flow — Layout step blueprint pre-selection @onboardi
   }) => {
     await openPreviewOnboarding(page);
 
-    await page.getByText("Start fresh").click();
-    await page.getByRole("button", { name: "Skip" }).click(); // profile
-    await page.getByRole("button", { name: "Skip" }).click(); // integrations
+    await page.getByRole("button", { name: /^Start fresh/ }).click();
+    await page.getByText("Full-Stack Developer").click();
+    await page.getByRole("button", { name: "Continue" }).click(); // profile
+    await page.getByRole("button", { name: "Continue" }).click(); // integrations
     await page.getByRole("button", { name: "Skip" }).click(); // plugins
 
     await expect(page.getByText("Dashboard Layout")).toBeVisible({ timeout: TIMEOUT.dialog });

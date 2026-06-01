@@ -29,7 +29,8 @@ type SeoUnconfiguredState = Omit<SeoResponse, "seo"> & {
 export function useSeo(
   projectSlug: string | null = null,
   siteUrl: string | null = null,
-  timeRange: TimeRange = "30d"
+  timeRange: TimeRange = "30d",
+  demoMode = false
 ) {
   const effectiveTimezone = useEffectiveTimeZone();
   const refreshInterval = usePollingInterval("seo");
@@ -38,6 +39,7 @@ export function useSeo(
     siteUrl,
     range: timeRange,
     timezone: effectiveTimezone,
+    ...(demoMode ? { demo: "1" } : {}),
   });
 
   const { data, error, isLoading, mutate } = useSWR<SeoResponse>(key, apiFetcher, {
@@ -51,10 +53,11 @@ export function useSeo(
       range: timeRange,
       timezone: effectiveTimezone,
       refresh: "1",
+      ...(demoMode ? { demo: "1" } : {}),
     });
     const fresh = await apiFetcher<SeoResponse>(forceUrl);
     await mutate(fresh, { revalidate: false });
-  }, [projectSlug, siteUrl, timeRange, effectiveTimezone, mutate]);
+  }, [projectSlug, siteUrl, timeRange, effectiveTimezone, demoMode, mutate]);
 
   return {
     data: data?.configured === false ? (data as SeoUnconfiguredState) : (data?.seo ?? null),

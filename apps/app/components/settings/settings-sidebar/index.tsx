@@ -221,7 +221,7 @@ export function SettingsSidebar({
             {group.label && (
               <div
                 className={cn(
-                  "px-4 pt-3 pb-1 font-mono text-dim/60 text-w-xs uppercase tracking-widest",
+                  "px-4 pt-3 pb-1 font-mono text-dim text-w-xs uppercase tracking-widest",
                   groupIdx > 0 && "mt-1 border-border border-t"
                 )}
               >
@@ -264,7 +264,7 @@ export function SettingsSidebar({
             {group.label && (
               <div
                 className={cn(
-                  "px-4 pt-3 pb-1 font-mono text-dim/60 text-w-xs uppercase tracking-widest",
+                  "px-4 pt-3 pb-1 font-mono text-dim text-w-xs uppercase tracking-widest",
                   groupIdx > 0 && "mt-1 border-border border-t"
                 )}
               >
@@ -314,7 +314,7 @@ export function SettingsSidebar({
               variant="ghost"
               uppercase={false}
               onClick={onPreviewSetup}
-              className="h-auto w-full justify-start px-2 py-1 text-left font-mono text-dim/60 text-w-sm hover:text-dim"
+              className="h-auto w-full justify-start px-2 py-1 text-left font-mono text-dim text-w-sm hover:text-dim"
             >
               Preview full onboarding
             </Button>

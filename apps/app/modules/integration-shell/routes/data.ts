@@ -3,27 +3,13 @@
  * GET /api/integrations/[integration]/[action]
  *
  * Dispatches to DataSourceDescriptor implementations from the registry and
- * absorbs the remaining app-shell analytics/GitHub bridge actions so no
+ * absorbs the remaining app-shell analytics bridge actions so no
  * concrete provider folders are needed under apps/app/app/api/integrations.
  */
 
 import "@/lib/integrations-init";
 
-import { getRepository } from "@radarboard/integration-github/client";
-import {
-  browseGitHubRepositoryContents,
-  getGitHubRateLimitError,
-  listGitHubRepos,
-  parseGitHubRepositoryContents,
-} from "@radarboard/integration-github/server/repo-browser";
-import {
-  initializeGitHubStarTracking,
-  listGitHubStarTrackingStates,
-  type RepoRef,
-  resolveTrackedRepos as resolveTrackedGitHubRepos,
-} from "@radarboard/integration-github/server/star-tracking";
 import { findDataSource } from "@radarboard/integration-sdk/registry";
-import { integrationRoute } from "@radarboard/integration-sdk/routes";
 import type { TimeRange } from "@radarboard/integration-sdk/types";
 import { createLogger } from "@radarboard/logger/logger";
 import { withLogging } from "@radarboard/logger/middleware";
@@ -32,16 +18,10 @@ import { normalizeTimeZone } from "@radarboard/utils/timezone";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getCacheEntry, getCacheKeysByRoute, withCache } from "@/db/cache";
-import {
-  getCacheRepo,
-  getCredentialRepo,
-  getGitHubStarHistoryRepo,
-  getSettingsRepo,
-} from "@/db/repository";
+import { getSettingsRepo } from "@/db/repository";
 import { errorJson, parseSearchParams } from "@/lib/api";
 import { maybeAutoEmbed } from "@/lib/auto-embed";
 import { CircuitOpenError, withCircuitBreaker } from "@/lib/circuit-breaker";
-import { resolveGitHubConfig } from "@/lib/credential-resolver";
 import { buildDataSourceContext } from "@/lib/data-source-context";
 import { emitDebugEvent } from "@/lib/debug-events";
 import { recordHealth } from "@/lib/health-tracker";
@@ -51,19 +31,36 @@ import { getDashboardPollingPreferences, resolvePollingTtlSeconds } from "@/lib/
 const log = createLogger("api/integrations");
 const ANALYTICS_PROVIDERS = ["openpanel", "umami"] as const;
 const VALID_RANGES = new Set(["today", "7d", "15d", "30d", "3m", "1y", "all"]);
+const DEMO_CACHE_KEY_PREFIXES: Record<string, string[]> = {
+  "/api/integrations/app-store-connect/data": ["app-store:"],
+  "/api/integrations/betterstack/data": ["betterstack:"],
+  "/api/integrations/github-sponsors/data": ["github-sponsors:"],
+  "/api/integrations/github/commits": ["github:commits:"],
+  "/api/integrations/github/pulls": ["github:pulls:"],
+  "/api/integrations/github/stars": ["github:stars:"],
+  "/api/integrations/google-search-console/data": ["seo:"],
+  "/api/integrations/linear/roadmap": ["roadmap:"],
+  "/api/integrations/npm/downloads": ["npm:"],
+  "/api/integrations/open-collective/data": ["open-collective:"],
+  "/api/integrations/openpanel/data": ["analytics:"],
+  "/api/integrations/raindrop/data": ["raindrop:"],
+  "/api/integrations/revenuecat/data": ["revenue:"],
+  "/api/integrations/sentry/data": ["sentry:"],
+  "/api/integrations/shipping/data": ["shipping:"],
+  "/api/integrations/umami/data": ["analytics:"],
+  "/api/integrations/vercel/deployments": ["vercel:deployments:"],
+  "/api/integrations/vercel/domains": ["vercel:domains:"],
+  "/api/integrations/vercel/projects": ["vercel:projects:"],
+};
 const integrationCommonQuerySchema = z.object({
   project: z.string().optional(),
   range: z.string().optional(),
   timezone: z.string().optional(),
   refresh: z.string().optional(),
+  demo: z.string().optional(),
 });
-const gitHubReposQuerySchema = z.object({
-  q: z.string().optional(),
-});
-const gitHubContentsQuerySchema = z.object({
-  owner: z.string().optional(),
-  repo: z.string().optional(),
-  path: z.string().optional(),
+const integrationDemoQuerySchema = z.object({
+  demo: z.string().optional(),
 });
 type IntegrationCommonParams = {
   projectSlug: string | null;
@@ -73,6 +70,9 @@ type IntegrationCommonParams = {
 };
 type ParsedIntegrationCommonParams =
   | { ok: true; data: IntegrationCommonParams }
+  | { ok: false; response: Response };
+type ParsedIntegrationDemoParams =
+  | { ok: true; forceDemoCache: boolean }
   | { ok: false; response: Response };
 
 function parseRange(raw: string | null): TimeRange {
@@ -98,19 +98,18 @@ function parseCommonIntegrationParams(
   };
 }
 
-async function evictCaches(integration: string, prefixes: string[]): Promise<void> {
-  for (const prefix of prefixes) {
-    try {
-      const evictModule = await import(`@radarboard/integration-${integration}/client`);
-      if (typeof evictModule.evictCacheByPrefix === "function") {
-        evictModule.evictCacheByPrefix(prefix);
-      } else if (typeof evictModule.evictSponsorsCache === "function") {
-        evictModule.evictSponsorsCache();
-      }
-    } catch {
-      // Integration may not have an eviction function; safe to skip.
-    }
+function parseIntegrationDemoParams(searchParams: URLSearchParams): ParsedIntegrationDemoParams {
+  const parsed = parseSearchParams(searchParams, integrationDemoQuerySchema);
+  if (!parsed.ok) {
+    return { ok: false, response: parsed.response };
   }
+
+  return { ok: true, forceDemoCache: parsed.data.demo === "1" };
+}
+
+async function evictCaches(_integration: string, _prefixes: string[]): Promise<void> {
+  // Provider cache eviction belongs to installed extension runtimes. Core must
+  // not dynamically import provider packages that may live outside this repo.
 }
 
 function runDeltaDetection(
@@ -145,38 +144,30 @@ function resolveAnalyticsProvider(action: string) {
   return null;
 }
 
-type SavedIntegrations = Record<string, Record<string, Record<string, unknown>>>;
-
-async function resolveTrackedReposFromAppState(): Promise<RepoRef[]> {
-  const settingsRepo = getSettingsRepo();
-  const [{ PROJECTS }, widgetLayout, savedIntegrations] = await Promise.all([
-    import("@/config/projects"),
-    settingsRepo.getWidgetLayout().catch(() => null),
-    settingsRepo.getProjectIntegrations().catch(() => ({}) as SavedIntegrations),
-  ]);
-
-  return resolveTrackedGitHubRepos(
-    PROJECTS as unknown as Array<{
-      slug: string;
-      platforms: Array<{ id: string; integrations: Record<string, unknown> }>;
-    }>,
-    widgetLayout,
-    savedIntegrations
-  );
-}
-
 export async function handleAnalyticsAction(request: Request, action: string) {
+  const searchParams = new URL(request.url).searchParams;
+  const parsedDemo = parseIntegrationDemoParams(searchParams);
+  if (!parsedDemo.ok) return parsedDemo.response;
+
+  for (const provider of ANALYTICS_PROVIDERS) {
+    const demoResponse = await serveDemoCacheByRoute(
+      `/api/integrations/${provider}/${action}`,
+      parsedDemo.forceDemoCache
+    );
+    if (demoResponse) return demoResponse;
+  }
+
   const resolved = resolveAnalyticsProvider(action);
   if (!resolved) {
-    for (const provider of ANALYTICS_PROVIDERS) {
-      const demoResponse = await serveDemoCacheByRoute(`/api/integrations/${provider}/${action}`);
-      if (demoResponse) return demoResponse;
-    }
-    return errorJson(404, `No analytics provider found for action: ${action}`);
+    return NextResponse.json({
+      configured: false,
+      setupMessage: "Install an analytics provider extension to enable analytics.",
+      ctaLabel: "Install extension",
+      ctaTarget: "/settings?section=integrations",
+    });
   }
 
   const { provider, dataSource } = resolved;
-  const searchParams = new URL(request.url).searchParams;
   const parsedCommon = parseCommonIntegrationParams(searchParams);
   if (!parsedCommon.ok) return parsedCommon.response;
   const { projectSlug, range, timeZone, forceRefresh } = parsedCommon.data;
@@ -243,170 +234,64 @@ export async function handleAnalyticsAction(request: Request, action: string) {
   }
 }
 
-async function handleGitHubRepos(request: Request) {
-  const requestId = crypto.randomUUID();
-  const startedAt = Date.now();
-  try {
-    const parsed = parseSearchParams(new URL(request.url).searchParams, gitHubReposQuerySchema);
-    if (!parsed.ok) return parsed.response;
-    const query = parsed.data.q;
-    const config = await resolveGitHubConfig();
-
-    if (!config?.token) {
-      await emitDebugEvent({
-        level: "warn",
-        source: "api/github/repos",
-        eventType: "github.repos.rejected",
-        message: "GitHub repositories request rejected: missing token",
-        requestId,
-        entityType: "integration",
-        entityId: "github",
-        status: "rejected",
-        metadata: { query },
-      });
-      return errorJson(
-        401,
-        "GitHub not connected. Connect GitHub in Integrations settings to view your repositories."
-      );
-    }
-
-    try {
-      const repos = await listGitHubRepos(config, query ?? null);
-      await emitDebugEvent({
-        level: "info",
-        source: "api/github/repos",
-        eventType: "github.repos.completed",
-        message: "GitHub repositories request completed",
-        requestId,
-        entityType: "integration",
-        entityId: "github",
-        status: "completed",
-        durationMs: Date.now() - startedAt,
-        metadata: { query, count: repos.length },
-      });
-      return NextResponse.json({ repos });
-    } catch (error) {
-      const response =
-        error && typeof error === "object" && "response" in error
-          ? ((error as { response?: Response }).response ?? undefined)
-          : undefined;
-      log.error("GitHub API error", {
-        error,
-        status: response?.status,
-      });
-      await emitDebugEvent({
-        level: "error",
-        source: "api/github/repos",
-        eventType: "github.repos.failed",
-        message: "GitHub repositories request failed",
-        requestId,
-        entityType: "integration",
-        entityId: "github",
-        status: "failed",
-        durationMs: Date.now() - startedAt,
-        metadata: { query, status: response?.status ?? null },
-      });
-
-      const rateLimitError = getGitHubRateLimitError(response);
-      return rateLimitError
-        ? errorJson(429, rateLimitError)
-        : errorJson(response?.status ?? 500, `GitHub API returned ${response?.status ?? 500}`);
-    }
-  } catch (error) {
-    log.error("Failed to fetch GitHub repos", { error });
-    return errorJson(500, "Failed to fetch GitHub repos");
-  }
-}
-
-async function handleGitHubContents(request: Request) {
-  try {
-    const parsed = parseSearchParams(new URL(request.url).searchParams, gitHubContentsQuerySchema);
-    if (!parsed.ok) return parsed.response;
-    const { owner, repo, path = "" } = parsed.data;
-
-    if (!owner || !repo) {
-      return errorJson(400, "Missing required parameters: owner and repo");
-    }
-
-    const config = await resolveGitHubConfig();
-    if (!config?.token) {
-      return errorJson(401, "GitHub not connected. Connect GitHub in Integrations settings.");
-    }
-
-    const response = await browseGitHubRepositoryContents(config, { owner, repo, path });
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => "");
-      log.error("GitHub contents API error", { status: response.status, body: errorText });
-      return errorJson(response.status, `GitHub API returned ${response.status}`);
-    }
-
-    return NextResponse.json(await parseGitHubRepositoryContents(response, path));
-  } catch (error) {
-    log.error("Failed to fetch repository contents", { error });
-    return errorJson(500, "Failed to fetch repository contents");
-  }
-}
-
-async function handleGitHubStarTrackingGet() {
-  try {
-    const repos = await resolveTrackedReposFromAppState();
-    const historyRepo = getGitHubStarHistoryRepo();
-    return NextResponse.json({ repos: await listGitHubStarTrackingStates(repos, historyRepo) });
-  } catch (error) {
-    log.error("Failed to fetch GitHub star tracking states", { error });
-    const message = error instanceof Error ? error.message : "Unknown error";
-    return errorJson(500, message);
-  }
-}
-
-async function handleGitHubStarTrackingPost() {
-  try {
-    const repos = await resolveTrackedReposFromAppState();
-    if (repos.length === 0) {
-      return errorJson(400, "No GitHub repos resolved for star tracking");
-    }
-
-    const creds = await getCredentialRepo().getCredential("github");
-    const token = creds?.token ?? creds?.accessToken ?? "";
-    if (!token) {
-      return errorJson(400, "GitHub credentials are not configured");
-    }
-
-    const historyRepo = getGitHubStarHistoryRepo();
-    const cacheRepo = getCacheRepo();
-    return NextResponse.json({
-      repos: await initializeGitHubStarTracking({
-        repos,
-        token,
-        historyRepo,
-        cacheRepo,
-        getRepository,
-        starsHistoryRoute: integrationRoute("github", "stars-history"),
-      }),
-    });
-  } catch (error) {
-    log.error("Failed to initialize GitHub star tracking", { error });
-    const message = error instanceof Error ? error.message : "Unknown error";
-    return errorJson(500, message);
-  }
-}
-
 /** In demo mode, serve cached data for integrations that aren't registered. */
-async function serveDemoCacheByRoute(routePath: string): Promise<Response | null> {
+async function serveDemoCacheByRoute(
+  routePath: string,
+  forceDemoCache = false
+): Promise<Response | null> {
   try {
-    const settings = getSettingsRepo();
-    const wl = await settings.getWidgetLayout();
-    if (!wl?.preferences?.demoMode) return null;
+    let demoCacheActive = forceDemoCache;
+    if (!forceDemoCache) {
+      const settings = getSettingsRepo();
+      const wl = await settings.getWidgetLayout();
+      if (!wl?.preferences?.demoMode) return null;
+      demoCacheActive = true;
+    }
     const cacheKeys = await getCacheKeysByRoute(routePath);
     if (cacheKeys.length === 0) return null;
-    const cached = await getCacheEntry(cacheKeys[0]!);
+    const cacheEntries = (
+      await Promise.all(
+        cacheKeys.map(async (key) => {
+          const entry = await getCacheEntry(key);
+          return entry ? { key, ...entry } : null;
+        })
+      )
+    ).filter(
+      (
+        entry
+      ): entry is {
+        key: string;
+        data: unknown;
+        fetchedAt: number;
+        ttlSeconds: number;
+      } => entry != null
+    );
+    if (cacheEntries.length === 0) return null;
+
+    const configuredEntries = cacheEntries.filter((entry) => {
+      if (!entry.data || typeof entry.data !== "object") return true;
+      return (entry.data as { configured?: unknown }).configured !== false;
+    });
+    const preferredPrefixes = demoCacheActive ? DEMO_CACHE_KEY_PREFIXES[routePath] : undefined;
+    const preferredEntries = preferredPrefixes
+      ? configuredEntries.filter((entry) =>
+          preferredPrefixes.some((prefix) => entry.key.startsWith(prefix))
+        )
+      : [];
+    const candidates =
+      preferredEntries.length > 0
+        ? preferredEntries
+        : configuredEntries.length > 0
+          ? configuredEntries
+          : cacheEntries;
+    const cached = candidates.toSorted((a, b) => b.fetchedAt - a.fetchedAt)[0];
     return cached ? NextResponse.json(cached.data) : null;
   } catch {
     return null;
   }
 }
 
-/* biome-ignore lint/complexity/noExcessiveCognitiveComplexity: integration dispatch handles caching, circuit breaking, logging, and error fallbacks. */
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: integration dispatch keeps demo cache, registry lookup, health, and stale fallback behavior in one route.
 async function handleRegistryIntegrationAction(
   request: Request,
   integration: string,
@@ -414,11 +299,16 @@ async function handleRegistryIntegrationAction(
 ) {
   const requestId = crypto.randomUUID();
   const startedAt = Date.now();
+  const routePath = `/api/integrations/${integration}/${action}`;
+  const searchParams = new URL(request.url).searchParams;
+  const parsedDemo = parseIntegrationDemoParams(searchParams);
+  if (!parsedDemo.ok) return parsedDemo.response;
+
+  const demoResponse = await serveDemoCacheByRoute(routePath, parsedDemo.forceDemoCache);
+  if (demoResponse) return demoResponse;
+
   const dataSource = findDataSource(integration, action);
   if (!dataSource) {
-    const demoResponse = await serveDemoCacheByRoute(`/api/integrations/${integration}/${action}`);
-    if (demoResponse) return demoResponse;
-
     await emitDebugEvent({
       level: "warn",
       source: "api/integrations",
@@ -430,10 +320,14 @@ async function handleRegistryIntegrationAction(
       status: "rejected",
       metadata: { integration, action },
     });
-    return errorJson(404, `Unknown data source: ${integration}/${action}`);
+    return NextResponse.json({
+      configured: false,
+      setupMessage: `Install the ${integration} extension to enable this data source.`,
+      ctaLabel: "Install extension",
+      ctaTarget: "/settings?section=integrations",
+    });
   }
 
-  const searchParams = new URL(request.url).searchParams;
   const parsedCommon = parseCommonIntegrationParams(searchParams);
   if (!parsedCommon.ok) return parsedCommon.response;
   const { projectSlug, range, timeZone, forceRefresh } = parsedCommon.data;
@@ -446,7 +340,6 @@ async function handleRegistryIntegrationAction(
   }
 
   const ctx = buildDataSourceContext();
-  const routePath = `/api/integrations/${integration}/${action}`;
   const cacheKey = dataSource.buildCacheKey
     ? dataSource.buildCacheKey(mergedParams)
     : `${integration}:${action}:${projectSlug ?? "all"}:${range}:${timeZone}`;
@@ -605,12 +498,6 @@ export const handleIntegrationData = withLogging(
       return handleAnalyticsAction(request, action);
     }
 
-    if (integration === "github") {
-      if (action === "repos") return handleGitHubRepos(request);
-      if (action === "contents") return handleGitHubContents(request);
-      if (action === "star-tracking") return handleGitHubStarTrackingGet();
-    }
-
     return handleRegistryIntegrationAction(request, integration, action);
   }
 );
@@ -619,11 +506,7 @@ export async function handleIntegrationActionPost(
   _request: Request,
   context: { params: Promise<{ integration: string; action: string }> }
 ) {
-  const { integration, action } = await context.params;
-
-  if (integration === "github" && action === "star-tracking") {
-    return handleGitHubStarTrackingPost();
-  }
+  await context.params;
 
   return errorJson(404, "Not found");
 }

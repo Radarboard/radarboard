@@ -1,4 +1,4 @@
-import { expect } from "@playwright/test";
+import { type APIRequestContext, expect, type Page } from "@playwright/test";
 import {
   completeFirstRunOnboarding,
   getSettings,
@@ -27,6 +27,13 @@ export async function assertNoOnboardingErrors(consoleErrors: string[], pageErro
  * Does NOT require E2E mode. Preview mode is URL-driven and doesn't modify state.
  */
 export async function openPreviewOnboarding(page: Parameters<typeof gotoDashboard>[0]) {
+  const response = await page.context().request.post("/api/dev/e2e/state", {
+    data: { scenario: "dashboard" },
+  });
+  if (response.status() !== 404 && !response.ok()) {
+    throw new Error(`Failed to reset preview state: ${response.status()} ${await response.text()}`);
+  }
+
   await mockDashboardApis(page);
   await gotoDashboard(page, "/?onboarding=preview");
 }
@@ -42,13 +49,29 @@ export async function openFirstRunOnboarding(
   await gotoDashboard(page);
 }
 
-export async function enterDemoMode(page: Parameters<typeof gotoDashboard>[0]) {
+export async function seedDemoDashboard(page: Page, request: APIRequestContext) {
+  await resetE2EState(request, "dashboard");
+  await mockDashboardApis(page);
+
+  const response = await request.post("/api/dev/demo/seed");
+  if (!response.ok()) {
+    throw new Error(`Failed to seed demo mode: ${response.status()} ${await response.text()}`);
+  }
+
+  await gotoDashboard(page);
+  await expect(page.getByRole("navigation", { name: "Plugins" })).toBeVisible({
+    timeout: 20_000,
+  });
+}
+
+export async function enterDemoMode(page: Page, request?: APIRequestContext) {
+  if (request) {
+    await seedDemoDashboard(page, request);
+    return;
+  }
+
   await openPreviewOnboarding(page);
-  await page.getByText("Start with demo data").click();
-  await page.getByRole("button", { name: "Skip" }).click();
-  await page.getByRole("button", { name: "Skip" }).click();
-  await page.getByRole("button", { name: "Skip" }).click();
-  await page.getByRole("button", { name: "Skip" }).click();
+  await page.getByRole("button", { name: /^Start with demo data/ }).click();
   await page.getByText("You're all set").waitFor({ state: "visible", timeout: 10_000 });
   await page.getByRole("button", { name: "Go to Dashboard" }).click();
   await page.getByRole("dialog").waitFor({ state: "hidden", timeout: 5_000 });

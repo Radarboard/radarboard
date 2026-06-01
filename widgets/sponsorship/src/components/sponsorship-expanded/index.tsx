@@ -205,12 +205,13 @@ export function SponsorshipExpanded({
   selectedDetailId,
   onSelectedDetailIdChange,
 }: WidgetRenderProps) {
-  const { projects, timeRange } = useDashboard();
+  const { projects, timeRange, preferences } = useDashboard();
   const ocSlug = resolveOcSlug(projects, projectSlug);
   const ghLogin = resolveGitHubLogin(projects, projectSlug);
+  const demoMode = preferences.demoMode === true;
 
-  const { data: ocData } = useOpenCollective(ocSlug, timeRange);
-  const { data: ghData } = useGitHubSponsors(ghLogin);
+  const { data: ocData } = useOpenCollective(ocSlug, timeRange, demoMode);
+  const { data: ghData } = useGitHubSponsors(ghLogin, true, demoMode);
 
   const kpis = computeUnifiedKPIs(ocData, ghData);
 

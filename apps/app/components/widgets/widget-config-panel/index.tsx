@@ -22,11 +22,6 @@ import {
 } from "@radarboard/widget-engine/templates";
 import { WIDGET_REGISTRY, type WidgetDescriptor } from "@radarboard/widget-engine/widgets/registry";
 import {
-  collectProjectLinkedRepoSelections,
-  resolveWidgetGitHubRepoSelections,
-  StarsRepositoriesSection,
-} from "@radarboard/widget-github-stars/config";
-import {
   createCustomVariant,
   DEFAULT_VARIANT_ID,
   getActiveVariantId,
@@ -40,7 +35,6 @@ import { BookOpen, Copy, Plus, X } from "lucide-react";
 import { createElement, useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { RemoteServiceIcon } from "@/components/shared/remote-service-icon";
-import { useSettings } from "@/hooks/settings/use-settings";
 import { getServiceFaviconUrl } from "@/lib/service-favicons";
 import {
   finalizePackagePatternDraft,
@@ -135,7 +129,7 @@ function ServiceRow({
           />
         </div>
         <div>
-          <div className="font-mono text-foreground-secondary text-xs">
+          <div className="font-mono text-foreground-secondary text-w-xs">
             {service.name ?? credKey}
           </div>
           <div className={cn("font-mono text-w-sm", isConnected ? "text-success" : "text-dim")}>
@@ -462,7 +456,7 @@ function NpmPackageFiltersSection({
             placeholder={"package-one\npackage-two"}
             className="min-h-[84px] bg-surface"
           />
-          <p className="text-dim/60 text-w-sm">
+          <p className="text-dim text-w-sm">
             Optional. Enter exact package names, one per line or comma-separated.
           </p>
         </div>
@@ -489,7 +483,7 @@ function NpmPackageFiltersSection({
             placeholder={"package-to-hide"}
             className="min-h-[84px] bg-surface"
           />
-          <p className="text-dim/60 text-w-sm">
+          <p className="text-dim text-w-sm">
             Exact package names only. Exclusions always win over inclusions.
           </p>
         </div>
@@ -559,7 +553,6 @@ function useWidgetConfigPanelState(
   onConfigChange: (key: string, value: unknown) => void
 ) {
   const { activeProjectSlug, preferences, projects, updatePreferences } = useDashboard();
-  const { projectIntegrations } = useSettings();
   const authList = getAuthList(descriptor);
   const connectableServices = authList.filter((a) => a.type !== "none" && a.id);
   const disabledServices = (config.disabledServices as string[]) ?? [];
@@ -589,8 +582,6 @@ function useWidgetConfigPanelState(
   );
   const [isEditingIncludePackages, setIsEditingIncludePackages] = useState(false);
   const [isEditingExcludePackages, setIsEditingExcludePackages] = useState(false);
-  const selectedRepos = resolveWidgetGitHubRepoSelections(config.selectedRepos);
-  const projectLinkedRepos = collectProjectLinkedRepoSelections(projects, projectIntegrations);
 
   useEffect(() => {
     setIncludePackagesDraft((current) =>
@@ -654,8 +645,6 @@ function useWidgetConfigPanelState(
     setIsEditingIncludePackages,
     isEditingExcludePackages,
     setIsEditingExcludePackages,
-    selectedRepos,
-    projectLinkedRepos,
     toggleService,
     updatePollingInterval,
     finishPackageDraft,
@@ -914,8 +903,6 @@ export function WidgetConfigPanel({
     setExcludePackagesDraft,
     setIsEditingIncludePackages,
     setIsEditingExcludePackages,
-    selectedRepos,
-    projectLinkedRepos,
     toggleService,
     updatePollingInterval,
     finishPackageDraft,
@@ -938,7 +925,7 @@ export function WidgetConfigPanel({
         )}
       >
         <div>
-          <p className="mb-2 text-muted-foreground text-xs">{displayDescription}</p>
+          <p className="mb-2 text-muted-foreground text-w-xs">{displayDescription}</p>
           <Button
             asChild
             variant="ghost-link"
@@ -1079,15 +1066,6 @@ export function WidgetConfigPanel({
           preferences={preferences}
           updatePollingInterval={updatePollingInterval}
         />
-
-        {descriptor.id === "github-stars" && (
-          <StarsRepositoriesSection
-            isGitHubConnected={connectedKeys.includes("github")}
-            selectedRepos={selectedRepos}
-            excludedRepos={projectLinkedRepos}
-            onChange={(repos) => onConfigChange("selectedRepos", repos)}
-          />
-        )}
 
         {descriptor.id === "npm-downloads" ? (
           <NpmPackageFiltersSection

@@ -155,7 +155,7 @@ export function WidgetVisualEditorPreview({
       </div>
 
       {Boolean(previewDirty) && (
-        <div className="rounded-item border border-border border-dashed bg-surface px-3 py-2 font-mono text-dim/60 text-w-sm">
+        <div className="rounded-item border border-border border-dashed bg-surface px-3 py-2 font-mono text-dim text-w-sm">
           Preview is out of date. Apply your changes when you are ready.
         </div>
       )}

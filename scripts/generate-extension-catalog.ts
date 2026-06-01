@@ -19,6 +19,7 @@ const OUTPUT = join(ROOT, "apps/app/public/extension-catalog.json");
 
 interface CatalogExtension {
   id: string;
+  packageName: string;
   name: string;
   description: string;
   type: "integration" | "plugin" | "widget";
@@ -46,6 +47,10 @@ async function loadConfig() {
     plugins: string[];
     widgets: string[];
   };
+}
+
+function extensionId(packageName: string, type: "integration" | "plugin" | "widget"): string {
+  return packageName.replace(`@radarboard/${type}-`, "");
 }
 
 // ---------------------------------------------------------------------------
@@ -80,13 +85,15 @@ async function main() {
   const extensions: CatalogExtension[] = [];
 
   // Integrations
-  for (const id of config.integrations) {
+  for (const packageName of config.integrations) {
+    const id = extensionId(packageName, "integration");
     const dir = join(ROOT, "integrations", id);
     const indexPath = join(dir, "src/index.ts");
     const fields = extractDescriptorFields(indexPath);
 
     extensions.push({
       id,
+      packageName,
       name: fields.name ?? id,
       description: fields.description ?? "",
       type: "integration",
@@ -98,13 +105,15 @@ async function main() {
   }
 
   // Plugins
-  for (const id of config.plugins) {
+  for (const packageName of config.plugins) {
+    const id = extensionId(packageName, "plugin");
     const dir = join(ROOT, "plugins", id);
     const indexPath = join(dir, "src/index.ts");
     const fields = extractDescriptorFields(indexPath);
 
     extensions.push({
       id,
+      packageName,
       name: fields.name ?? id,
       description: fields.description ?? "",
       type: "plugin",
@@ -117,13 +126,15 @@ async function main() {
   }
 
   // Widgets
-  for (const id of config.widgets) {
+  for (const packageName of config.widgets) {
+    const id = extensionId(packageName, "widget");
     const dir = join(ROOT, "widgets", id);
-    const indexPath = join(dir, "index.ts");
+    const indexPath = join(dir, "src/index.ts");
     const fields = extractDescriptorFields(indexPath);
 
     extensions.push({
       id,
+      packageName,
       name: fields.name ?? id,
       description: fields.description ?? "",
       type: "widget",

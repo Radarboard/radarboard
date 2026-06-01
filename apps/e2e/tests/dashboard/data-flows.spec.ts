@@ -130,6 +130,14 @@ test.describe("dashboard data flows — demo mode @e2e-only", () => {
     await expect(page.getByLabel("Demo mode active")).toBeVisible({ timeout: TIMEOUT.dialog });
     await assertDashboardLoaded(page);
     await expect(page.getByLabel("Edit disabled in demo")).toBeVisible();
+    await expect(page.locator("section.widget-card")).toHaveCount(9, {
+      timeout: TIMEOUT.element,
+    });
+    await expect(
+      page.getByText(
+        /not connected|not configured|Install an analytics provider extension|No sponsorship data available|No trend data/i
+      )
+    ).toHaveCount(0);
 
     await assertNoRuntimeErrors(consoleErrors, pageErrors);
   });

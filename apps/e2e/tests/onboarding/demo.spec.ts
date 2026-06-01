@@ -10,10 +10,11 @@ import {
 test.describe("demo mode flow @demo @onboarding", () => {
   test("demo badge visible in TopBar after entering demo mode", async ({
     page,
+    request,
     consoleErrors,
     pageErrors,
   }) => {
-    await enterDemoMode(page);
+    await enterDemoMode(page, request);
 
     await expect(page.getByLabel("Demo mode active")).toBeVisible({ timeout: 10_000 });
     await expect(page.getByText("Demo", { exact: true })).toBeVisible();
@@ -21,8 +22,13 @@ test.describe("demo mode flow @demo @onboarding", () => {
     await assertNoOnboardingErrors(consoleErrors, pageErrors);
   });
 
-  test("settings panels show demo guard banner", async ({ page, consoleErrors, pageErrors }) => {
-    await enterDemoMode(page);
+  test("settings panels show demo guard banner", async ({
+    page,
+    request,
+    consoleErrors,
+    pageErrors,
+  }) => {
+    await enterDemoMode(page, request);
 
     await page
       .getByRole("navigation", { name: "Plugins" })
@@ -35,8 +41,13 @@ test.describe("demo mode flow @demo @onboarding", () => {
     await assertNoOnboardingErrors(consoleErrors, pageErrors);
   });
 
-  test("edit mode button disabled in demo", async ({ page, consoleErrors, pageErrors }) => {
-    await enterDemoMode(page);
+  test("edit mode button disabled in demo", async ({
+    page,
+    request,
+    consoleErrors,
+    pageErrors,
+  }) => {
+    await enterDemoMode(page, request);
 
     const editButton = page.getByLabel("Edit disabled in demo");
     await expect(editButton).toBeVisible({ timeout: 10_000 });
@@ -46,10 +57,11 @@ test.describe("demo mode flow @demo @onboarding", () => {
 
   test("demo badge popover shows connect and dismiss actions", async ({
     page,
+    request,
     consoleErrors,
     pageErrors,
   }) => {
-    await enterDemoMode(page);
+    await enterDemoMode(page, request);
 
     await page.getByLabel("Demo mode active").click();
     await expect(page.getByText("Connect services")).toBeVisible({ timeout: 5_000 });
@@ -60,10 +72,11 @@ test.describe("demo mode flow @demo @onboarding", () => {
 
   test("demo badge → connect services → onboarding opens", async ({
     page,
+    request,
     consoleErrors,
     pageErrors,
   }) => {
-    await enterDemoMode(page);
+    await enterDemoMode(page, request);
 
     await page.getByLabel("Demo mode active").click();
     await page.getByText("Connect services").click();
@@ -75,8 +88,13 @@ test.describe("demo mode flow @demo @onboarding", () => {
     await assertNoOnboardingErrors(consoleErrors, pageErrors);
   });
 
-  test("demo badge → dismiss → demo mode cleared", async ({ page, consoleErrors, pageErrors }) => {
-    await enterDemoMode(page);
+  test("demo badge → dismiss → demo mode cleared", async ({
+    page,
+    request,
+    consoleErrors,
+    pageErrors,
+  }) => {
+    await enterDemoMode(page, request);
 
     await page.getByLabel("Demo mode active").click();
     await page.getByText("Dismiss demo").click();
@@ -143,7 +161,7 @@ test.describe("onboarding persistence @onboarding @e2e-only", () => {
 
     await expect(page.getByLabel("Demo mode active")).toBeVisible({ timeout: 10_000 });
     await page.reload({ waitUntil: "commit" });
-    await expect(page.getByRole("heading", { name: "Radarboard" })).toBeVisible({
+    await expect(page.getByRole("navigation", { name: "Plugins" })).toBeVisible({
       timeout: 20_000,
     });
     await expect(page.getByLabel("Demo mode active")).toBeVisible({ timeout: 10_000 });
@@ -264,7 +282,7 @@ test.describe("onboarding persistence @onboarding @e2e-only", () => {
     await completeFirstRunOnboarding(page, request, { demo: true });
 
     // Dashboard should be loaded
-    await expect(page.getByRole("heading", { name: "Radarboard" })).toBeVisible({
+    await expect(page.getByRole("navigation", { name: "Plugins" })).toBeVisible({
       timeout: 20_000,
     });
 
@@ -303,7 +321,7 @@ test.describe("onboarding persistence @onboarding @e2e-only", () => {
     expect(allLayout.pages![0].widgetLayouts).toBeDefined();
 
     // Dashboard should show at least one widget
-    await expect(page.getByRole("heading", { name: "Radarboard" })).toBeVisible({
+    await expect(page.getByRole("navigation", { name: "Plugins" })).toBeVisible({
       timeout: 20_000,
     });
     const widgetSections = page.locator("section.widget-card");

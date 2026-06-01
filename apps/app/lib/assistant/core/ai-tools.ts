@@ -894,7 +894,10 @@ export function buildActionTools() {
       execute: async (params: { message: string; channel?: string }) => {
         const creds = await resolveCredential("slack");
         if (!creds?.webhookUrl) return { error: "Slack credentials not configured" };
-        return executeSendSlackMessage({ webhookUrl: creds.webhookUrl }, params);
+        return executeSendSlackMessage(
+          { webhookUrl: creds.webhookUrl },
+          { text: params.message, channel: params.channel }
+        );
       },
     }),
 

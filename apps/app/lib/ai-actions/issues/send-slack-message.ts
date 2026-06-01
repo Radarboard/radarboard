@@ -1,16 +1,12 @@
-/**
- * AI Action: Send a Slack message.
- *
- * Delegates to the Slack integration client for all API calls.
- * Rate limited via the outbound rate limiter.
- */
+export interface SlackConfig {
+  webhookUrl: string;
+}
 
-import { sendMessage } from "@radarboard/integration-slack/client";
-import type { SendMessageInput, SlackConfig } from "@radarboard/integration-slack/types";
-import { withOutboundRateLimit } from "@/lib/outbound-rate-limit";
+export interface SendMessageInput {
+  text: string;
+  channel?: string;
+}
 
-export type { SendMessageInput };
-
-export async function executeSendSlackMessage(config: SlackConfig, input: SendMessageInput) {
-  return withOutboundRateLimit("slack", () => sendMessage(config, input));
+export async function executeSendSlackMessage(_config: SlackConfig, _input: SendMessageInput) {
+  return { error: "Slack message sending requires the Slack extension." };
 }

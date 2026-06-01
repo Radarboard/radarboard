@@ -117,7 +117,7 @@ function ServerListItem({
           <div className="truncate font-mono text-foreground text-w-base">{server.name}</div>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="truncate font-mono text-dim text-xs">{truncateText(summary)}</div>
+              <div className="truncate font-mono text-dim text-w-xs">{truncateText(summary)}</div>
             </TooltipTrigger>
             <TooltipContent>{summary}</TooltipContent>
           </Tooltip>
@@ -163,7 +163,7 @@ function ManagedServerList({
         <div className="font-mono text-dim text-w-sm uppercase tracking-wider">
           Managed By Integrations
         </div>
-        <div className="mt-1 font-mono text-dim/60 text-xs">
+        <div className="mt-1 font-mono text-dim text-w-xs">
           Linked servers are configured from the Integrations page.
         </div>
       </div>
@@ -196,7 +196,7 @@ function ManagedServerList({
                       {server.name}
                     </div>
                   </div>
-                  <div className="mt-1 truncate font-mono text-dim/60 text-xs">
+                  <div className="mt-1 truncate font-mono text-dim text-w-xs">
                     {managedIntegration?.name ?? "Linked integration"}
                   </div>
                 </div>
@@ -206,7 +206,7 @@ function ManagedServerList({
                 </span>
               </div>
 
-              <div className="mt-2 truncate font-mono text-dim/60 text-xs">
+              <div className="mt-2 truncate font-mono text-dim text-w-xs">
                 {truncateText(getMcpServerSummary(server), 56)}
               </div>
             </div>
@@ -274,7 +274,7 @@ export function ServerListPanel({
         )}
 
         {!loading && error && (
-          <div className="px-3 py-4 font-mono text-destructive text-xs">{error}</div>
+          <div className="px-3 py-4 font-mono text-destructive text-w-xs">{error}</div>
         )}
 
         {!loading &&
@@ -282,7 +282,7 @@ export function ServerListPanel({
           filteredCustomServers.length === 0 &&
           filteredManagedServers.length === 0 &&
           !showForm && (
-            <div className="px-3 py-4 text-center font-mono text-dim text-xs">
+            <div className="px-3 py-4 text-center font-mono text-dim text-w-xs">
               {servers.length === 0 ? "No servers yet" : "No servers match your search."}
             </div>
           )}

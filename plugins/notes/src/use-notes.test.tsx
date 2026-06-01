@@ -58,6 +58,32 @@ describe("useNotes", () => {
     expect(result.current.notes[0]?.title).toBe("Sprint 14 retrospective");
   });
 
+  it("updates demo notes in memory without writing to storage", async () => {
+    mockIsDemoMode = true;
+    const { api } = createApi();
+
+    const { result } = renderHook(() => useNotes(api as never));
+
+    await waitFor(() => {
+      expect(result.current.loaded).toBe(true);
+    });
+
+    await act(async () => {
+      await result.current.addNote({ title: "Demo scratch", content: "try it" });
+    });
+    await act(async () => {
+      await result.current.trashNote("demo-1");
+    });
+
+    expect(result.current.notes.find((note) => note.id === "generated-note")).toMatchObject({
+      title: "Demo scratch",
+    });
+    expect(result.current.notes.find((note) => note.id === "demo-1")).toMatchObject({
+      status: "trashed",
+    });
+    expect(api.db.set).not.toHaveBeenCalled();
+  });
+
   it("migrates persisted notes and supports note operations", async () => {
     const { api, store } = createApi({
       "notes:list": [

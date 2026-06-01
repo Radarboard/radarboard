@@ -37,18 +37,8 @@ describe("Widget Registry", () => {
       "seo",
       "observability",
       "sponsorship",
-      "pulls",
-      "github-commits",
-      "github-stars",
-      "npm-downloads",
       "bookmarks",
       "logs",
-      "aso-keywords",
-      "deployments",
-      "projects",
-      "builds",
-      "vercel-domains",
-      "app-reviews",
     ];
     const ids = Array.from(WIDGET_REGISTRY.keys());
     for (const widgetId of expectedIds) {

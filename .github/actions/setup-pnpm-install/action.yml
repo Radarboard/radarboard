@@ -10,6 +10,10 @@ inputs:
     description: Arguments passed to pnpm install.
     required: false
     default: --frozen-lockfile
+  turbo-cache:
+    description: Restore and save Turborepo's local task cache.
+    required: false
+    default: "false"
 
 runs:
   using: composite
@@ -23,3 +27,14 @@ runs:
 
     - shell: bash
       run: pnpm install ${{ inputs.install-args }}
+
+    - name: Restore Turborepo cache
+      if: ${{ inputs.turbo-cache == 'true' }}
+      uses: actions/cache@v4
+      with:
+        path: .turbo/cache
+        key: turbo-${{ runner.os }}-${{ github.job }}-${{ hashFiles('pnpm-lock.yaml', 'turbo.json') }}-${{ github.sha }}
+        restore-keys: |
+          turbo-${{ runner.os }}-${{ github.job }}-${{ hashFiles('pnpm-lock.yaml', 'turbo.json') }}-
+          turbo-${{ runner.os }}-${{ github.job }}-
+          turbo-${{ runner.os }}-

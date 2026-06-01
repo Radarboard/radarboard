@@ -153,7 +153,7 @@ function WidgetHeaderText({
       </span>
       {fetchedAt !== null && fetchedAt !== undefined && (
         <span
-          className="shrink-0 font-mono text-dim/60 text-w-sm"
+          className="shrink-0 font-mono text-dim text-w-sm"
           title={
             formatDateTime(new Date(fetchedAt * 1000), {
               locale: effectiveLocale,

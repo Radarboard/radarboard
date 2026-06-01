@@ -839,7 +839,7 @@ function ChartSparklines({
             invertScale
             unit="avg pos"
           />
-          <div className="mt-1 flex justify-between font-mono text-dim/40 text-w-sm">
+          <div className="mt-1 flex justify-between font-mono text-dim text-w-sm">
             <span>{detail.positionTrend[0]?.value.toFixed(1)}</span>
             <span>{detail.positionTrend[detail.positionTrend.length - 1]?.value.toFixed(1)}</span>
           </div>
@@ -1091,7 +1091,7 @@ function VsAverage({
   return (
     <div className="flex flex-col gap-2">
       <div>
-        <div className="mb-1 font-mono text-dim/40 text-w-sm">CTR</div>
+        <div className="mb-1 font-mono text-dim text-w-sm">CTR</div>
         <div className="mb-0.5 flex items-center gap-1.5">
           <span className="w-7 shrink-0 font-mono text-dim text-w-sm">This</span>
           <GaugeBar pct={(queryCtr / maxCtr) * 100} className={queryCtrBg} />
@@ -1100,15 +1100,15 @@ function VsAverage({
           </span>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="w-7 shrink-0 font-mono text-dim/40 text-w-sm">Avg</span>
+          <span className="w-7 shrink-0 font-mono text-dim text-w-sm">Avg</span>
           <GaugeBar pct={(siteAvgCtr / maxCtr) * 100} className="bg-secondary-foreground/20" />
-          <span className="w-9 shrink-0 text-right font-mono text-dim/40 text-w-sm">
+          <span className="w-9 shrink-0 text-right font-mono text-dim text-w-sm">
             {siteAvgCtr.toFixed(1)}%
           </span>
         </div>
       </div>
       <div>
-        <div className="mb-1 font-mono text-dim/40 text-w-sm">Position</div>
+        <div className="mb-1 font-mono text-dim text-w-sm">Position</div>
         <div className="mb-0.5 flex items-center gap-1.5">
           <span className="w-7 shrink-0 font-mono text-dim text-w-sm">This</span>
           <GaugeBar pct={((maxPos - queryPosition) / maxPos) * 100} className={queryPosBg} />
@@ -1117,12 +1117,12 @@ function VsAverage({
           </span>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="w-7 shrink-0 font-mono text-dim/40 text-w-sm">Avg</span>
+          <span className="w-7 shrink-0 font-mono text-dim text-w-sm">Avg</span>
           <GaugeBar
             pct={((maxPos - siteAvgPosition) / maxPos) * 100}
             className="bg-secondary-foreground/20"
           />
-          <span className="w-9 shrink-0 text-right font-mono text-dim/40 text-w-sm">
+          <span className="w-9 shrink-0 text-right font-mono text-dim text-w-sm">
             {siteAvgPosition.toFixed(1)}
           </span>
         </div>

@@ -340,7 +340,7 @@ export function SettingsDatabase() {
                 {Boolean(testResult) && (
                   <span
                     className={cn(
-                      "font-mono text-xs",
+                      "font-mono text-w-xs",
                       testResult?.success ? "text-success" : "text-destructive"
                     )}
                   >
@@ -378,7 +378,7 @@ export function SettingsDatabase() {
             </div>
 
             <div className="space-y-2">
-              <p className="font-mono text-dim text-xs uppercase tracking-wider">Import Mode</p>
+              <p className="font-mono text-dim text-w-xs uppercase tracking-wider">Import Mode</p>
               <div className="flex items-center gap-2">
                 <Button
                   type="button"
@@ -403,7 +403,7 @@ export function SettingsDatabase() {
                   Merge existing
                 </Button>
               </div>
-              <p className="font-mono text-dim/70 text-xs">
+              <p className="font-mono text-dim/70 text-w-xs">
                 Replace is recommended when migrating to a clean instance. Merge keeps the current
                 instance data and overlays the imported backup on top.
               </p>
@@ -411,11 +411,11 @@ export function SettingsDatabase() {
           </div>
 
           {Boolean(fullBackupError) && (
-            <p className="font-mono text-destructive text-xs">{fullBackupError}</p>
+            <p className="font-mono text-destructive text-w-xs">{fullBackupError}</p>
           )}
 
           {Boolean(fullImportResult) && (
-            <p className="font-mono text-dim/60 text-xs">{fullImportResult}</p>
+            <p className="font-mono text-dim text-w-xs">{fullImportResult}</p>
           )}
         </SettingsPanel>
 
@@ -425,8 +425,10 @@ export function SettingsDatabase() {
         >
           <div className="space-y-4">
             <div className="space-y-2">
-              <p className="font-mono text-dim text-xs uppercase tracking-wider">Config Snapshot</p>
-              <p className="font-mono text-dim/70 text-xs">
+              <p className="font-mono text-dim text-w-xs uppercase tracking-wider">
+                Config Snapshot
+              </p>
+              <p className="font-mono text-dim/70 text-w-xs">
                 Layouts, preferences, project wiring, and plugin data. Credential values are not
                 included here.
               </p>
@@ -450,22 +452,22 @@ export function SettingsDatabase() {
               </div>
             </div>
 
-            <p className="font-mono text-dim/70 text-xs">
+            <p className="font-mono text-dim/70 text-w-xs">
               Per-source data exports remain available in Backup &amp; Export when you need a JSON
               or CSV dump for a single integration.
             </p>
           </div>
 
           {Boolean(configExportError) && (
-            <p className="font-mono text-destructive text-xs">{configExportError}</p>
+            <p className="font-mono text-destructive text-w-xs">{configExportError}</p>
           )}
 
           {Boolean(configImportError) && (
-            <p className="font-mono text-destructive text-xs">{configImportError}</p>
+            <p className="font-mono text-destructive text-w-xs">{configImportError}</p>
           )}
 
           {Boolean(configImportResult) && (
-            <p className="font-mono text-dim/60 text-xs">{configImportResult}</p>
+            <p className="font-mono text-dim text-w-xs">{configImportResult}</p>
           )}
         </SettingsPanel>
       </div>

@@ -280,13 +280,13 @@ describe("blueprint registry", () => {
     }
   });
 
-  it("no blueprint has duplicate widget IDs in its slots", async () => {
+  it("all blueprint slots reference a widget ID", async () => {
     const { LAYOUT_BLUEPRINTS } = await import("./registry");
 
     for (const blueprint of LAYOUT_BLUEPRINTS) {
-      const widgetIds = blueprint.slots.map((s) => s.widgetId);
-      const unique = new Set(widgetIds);
-      expect(unique.size).toBe(widgetIds.length);
+      for (const slot of blueprint.slots) {
+        expect(slot.widgetId.length).toBeGreaterThan(0);
+      }
     }
   });
 

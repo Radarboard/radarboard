@@ -37,10 +37,7 @@ The desktop app spawns the Next.js standalone server as a child process on a ran
 ## Development
 
 ```bash
-# 1. Build the web app with standalone output (required first)
-pnpm --filter @radarboard/app build
-
-# 2. Run the desktop app in dev mode
+# Run the desktop app in dev mode
 cd apps/desktop
 pnpm tauri dev
 ```
@@ -48,13 +45,13 @@ pnpm tauri dev
 Or from the monorepo root:
 
 ```bash
-pnpm --filter @radarboard/app build && pnpm dev:desktop
+pnpm dev:desktop
 ```
 
 The dev command will:
 1. Compile the Rust backend
-2. Spawn the Next.js standalone server on a random port
-3. Open a native window pointing to `http://127.0.0.1:<port>`
+2. Start the Next.js dev server through portless
+3. Open a native window pointing to `http://radarboard.localhost:1355`
 4. Show a system tray icon (click to show/hide window)
 
 ### Local Dev App Install
@@ -66,13 +63,83 @@ pnpm desktop:build:dev-app
 pnpm desktop:link:dev-app
 ```
 
-This creates a `Radarboard Dev.app` symlink in `/Applications` that points at the local Tauri build output. Rebuilding refreshes the app contents in place without touching `/Applications/Radarboard.app`.
+This installs a local `Radarboard Dev.app` copy in `/Applications` without touching `/Applications/Radarboard.app`.
 
 Remove the local dev-installed app with:
 
 ```bash
 pnpm desktop:unlink:dev-app
 ```
+
+### Manual QA Dev Workflow
+
+Use both desktop dev paths when you need to test Radarboard before sending a beta to real users:
+
+1. Use hot reload for fast fixes.
+2. Use the installed dev app for release-like manual QA.
+
+#### Fast iteration
+
+Run the desktop shell against the local Next.js dev server:
+
+```bash
+cd apps/desktop
+pnpm tauri dev --config src-tauri/tauri.conf.json --features devtools
+```
+
+Use this when you are actively changing UI, app logic, tray behavior, or Tauri commands and want fast feedback.
+
+#### Release-like local QA
+
+Build and launch the isolated dev app:
+
+```bash
+pnpm desktop:build:dev-app
+pnpm desktop:link:dev-app
+open "/Applications/Radarboard Dev.app"
+```
+
+Rebuild with `pnpm desktop:build:dev-app` after changes, then run `pnpm desktop:link:dev-app` again to refresh the installed dev app.
+
+`Radarboard Dev.app` is intentionally separate from the normal app:
+
+- App name: `Radarboard Dev.app`
+- Bundle identifier: `com.radarboard.client.dev`
+- App data: `~/Library/Application Support/Radarboard Dev`
+- Installed dev app: `/Applications/Radarboard Dev.app`
+
+This workflow does not touch `/Applications/Radarboard.app` or the regular Radarboard data directory.
+
+> Warning: Only use `pnpm build:desktop:fresh-install` when you intentionally want to reset the real local Radarboard install for first-run testing. It backs up and clears the normal Radarboard app data paths.
+
+#### Logs
+
+Use the tray menu item **View Logs...** while the app is running.
+
+The likely dev log file is:
+
+```text
+~/Library/Logs/com.radarboard.client.dev/Radarboard Dev.log
+```
+
+#### Manual QA checklist
+
+Before publishing another beta, test the installed `Radarboard Dev.app` and verify:
+
+- The app launches from `/Applications/Radarboard Dev.app`.
+- The splash screen transitions into the dashboard without hanging.
+- The tray icon matches the expected square plus two horizontal bars glyph.
+- The tray menu opens, all menu items are readable, and window show/hide works.
+- The helper process has a professional name and no `radarboard-server` app appears.
+- Firewall prompts are expected, understandable, and do not reference broken app names.
+- First-run onboarding works with isolated dev data.
+- Settings pages open, save changes, and survive restart.
+- Integrations can be connected, tested, disconnected, and shown in error states.
+- Notifications can be triggered, paused, resumed, marked read, and opened from the tray.
+- Logs are reachable from **View Logs...** and contain useful launch/runtime errors.
+- Quit and relaunch works without stale helper processes.
+- Rebuilding `Radarboard Dev.app` picks up the latest local changes.
+- A DMG or release-like install opens cleanly before any public beta is published.
 
 ## Production Build
 

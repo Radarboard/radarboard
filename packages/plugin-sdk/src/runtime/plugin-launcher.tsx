@@ -446,7 +446,7 @@ export function PluginLauncher({
         {/* Results */}
         <div className="scrollbar-thin max-h-[400px] overflow-y-auto overflow-x-hidden">
           {flatItems.length === 0 ? (
-            <div className="px-4 py-6 text-center text-dim text-sm">No results found</div>
+            <div className="px-4 py-6 text-center text-dim text-w-sm">No results found</div>
           ) : (
             groups.map((group) => {
               const groupItems = group.items.map((item) => {
@@ -466,12 +466,12 @@ export function PluginLauncher({
                   >
                     <Icon className="icon-sm shrink-0 text-dim" />
                     <div className="min-w-0 flex-1">
-                      <div className="truncate text-foreground text-sm">
+                      <div className="truncate text-foreground text-w-sm">
                         {item.label}
-                        <span className="ml-2 text-dim text-xs">{item.description}</span>
+                        <span className="ml-2 text-dim text-w-xs">{item.description}</span>
                       </div>
                       {item.missingDeps && item.missingDeps.length > 0 && (
-                        <div className="mt-0.5 flex items-center gap-1 text-warning text-xs">
+                        <div className="mt-0.5 flex items-center gap-1 text-w-xs text-warning">
                           <AlertCircle className="h-3 w-3" />
                           <span>Requires {item.missingDeps.join(", ")}</span>
                         </div>
@@ -485,7 +485,7 @@ export function PluginLauncher({
               return (
                 <div key={group.category}>
                   <div className="px-4 pt-2 pb-1">
-                    <span className="font-mono text-dim/60 text-w-sm uppercase tracking-wider">
+                    <span className="font-mono text-dim text-w-sm uppercase tracking-wider">
                       {CATEGORY_LABELS[group.category]}
                     </span>
                   </div>
@@ -497,7 +497,7 @@ export function PluginLauncher({
         </div>
 
         {/* Footer hint */}
-        <div className="flex items-center justify-between border-border border-t px-4 py-2 text-dim/60 text-w-sm">
+        <div className="flex items-center justify-between border-border border-t px-4 py-2 text-dim text-w-sm">
           <span>
             <kbd className="mr-1 rounded-item border border-border bg-secondary px-1 py-0.5 font-mono text-foreground">
               ↑↓

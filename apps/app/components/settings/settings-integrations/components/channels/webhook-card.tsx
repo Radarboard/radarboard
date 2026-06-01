@@ -354,7 +354,7 @@ function GitHubStarTrackingSection({ enabled }: { enabled: boolean }) {
     <div className="space-y-3 rounded-item border border-border bg-secondary/30 p-3">
       <div>
         <div className="font-mono text-dim text-w-sm uppercase tracking-wider">Stars Tracking</div>
-        <p className="mt-1 text-dim/60 text-w-sm leading-relaxed">
+        <p className="mt-1 text-dim text-w-sm leading-relaxed">
           Capture a baseline star count for the repos used by the Stars widget. Gross additions only
           become exact after tracking starts and the webhook is live on those repos.
         </p>
@@ -384,7 +384,7 @@ function GitHubStarTrackingSection({ enabled }: { enabled: boolean }) {
       </div>
 
       {!enabled ? (
-        <div className="text-dim/60 text-w-sm">
+        <div className="text-dim text-w-sm">
           Save the webhook secret and configure the relay endpoint first.
         </div>
       ) : null}
@@ -398,7 +398,7 @@ function GitHubStarTrackingSection({ enabled }: { enabled: boolean }) {
       <div className="space-y-2">
         {!state.loading && state.repos.length > 0 ? (
           <div className="flex items-center justify-between gap-3 rounded-item border border-border bg-surface px-3 py-2">
-            <div className="font-mono text-dim/60 text-w-sm">
+            <div className="font-mono text-dim text-w-sm">
               {state.repos.length} repos resolved for star tracking
             </div>
             {canCollapse ? (

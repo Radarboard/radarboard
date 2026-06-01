@@ -89,6 +89,7 @@ export const API_ROUTES = {
   mcpServersTest: defineApiRoute("/api/mcp/servers/test"),
 
   analyticsData: defineApiRoute("/api/analytics/data"),
+  databaseConfigLegacy: defineApiRoute("/api/database/config"),
   databaseConfig: defineApiRoute("/api/system/database/config"),
   databaseTest: defineApiRoute("/api/system/database/test"),
   databaseMigrate: defineApiRoute("/api/system/database/migrate"),
@@ -168,6 +169,7 @@ export const API_ROUTES = {
 
   // Extensions
   extensionsHealthScore: defineApiRoute("/api/extensions/health-score"),
+  extensionsCatalog: defineApiRoute("/api/extensions/catalog"),
   extensionsUpdates: defineApiRoute("/api/extensions/updates"),
   extensionsValidate: defineApiRoute("/api/extensions/validate"),
   extensionsRecommendations: defineApiRoute("/api/extensions/recommendations"),

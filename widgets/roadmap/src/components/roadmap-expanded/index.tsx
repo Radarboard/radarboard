@@ -167,8 +167,11 @@ function InProgressRow({ issue }: { issue: RoadmapInProgressIssue }) {
 }
 
 export function RoadmapExpanded({ projectSlug }: WidgetRenderProps<WidgetTemplateConfig>) {
-  const { projects: dashProjects } = useDashboard();
-  const { projects, inProgressIssues, configured, loading } = useRoadmap(projectSlug);
+  const { projects: dashProjects, preferences } = useDashboard();
+  const { projects, inProgressIssues, configured, loading } = useRoadmap(
+    projectSlug,
+    preferences.demoMode === true
+  );
   const [activeTab, setActiveTab] = useState<TabId>("releases");
 
   const _projectName = resolveProjectName(dashProjects, projectSlug);

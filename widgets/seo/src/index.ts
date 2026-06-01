@@ -30,7 +30,7 @@ export const seoDescriptor: WidgetDescriptor<WidgetTemplateConfig> = {
     { id: "queries", name: "Queries", config: SEO_TEMPLATE_CONFIG, isDefault: true },
     { id: "overview", name: "Overview", config: SEO_OVERVIEW_CONFIG },
   ],
-  polling: { sourceIds: ["google-search-console"] },
+  polling: { sourceIds: ["seo"] },
   visualEditor: {
     kind: "template",
     getConfig: ({ config }) => (isSeoTemplateConfig(config) ? config : SEO_TEMPLATE_CONFIG),

@@ -7,7 +7,7 @@ import { gotoDashboard, mockDashboardApis, primeDashboardRoute, resetE2EState } 
 // ---------------------------------------------------------------------------
 
 export const TIMEOUT = {
-  /** Full page load after navigation (heading visible) */
+  /** Full page load after navigation (dashboard shell visible) */
   pageLoad: 20_000,
   /** Dialog open / close transitions */
   dialog: 10_000,
@@ -38,8 +38,11 @@ export async function setupDashboard(
  * Assert the dashboard shell rendered with core elements.
  */
 export async function assertDashboardLoaded(page: Page): Promise<void> {
-  await expect(page.getByRole("heading", { name: "Radarboard" })).toBeVisible({
+  await expect(page.getByRole("navigation", { name: "Plugins" })).toBeVisible({
     timeout: TIMEOUT.pageLoad,
+  });
+  await expect(page.getByRole("button", { name: "Overview" })).toBeVisible({
+    timeout: TIMEOUT.element,
   });
 }
 

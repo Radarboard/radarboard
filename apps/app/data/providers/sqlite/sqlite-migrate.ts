@@ -19,7 +19,6 @@
  * already have the change (e.g., fresh installs always create the latest schema).
  */
 import type { Client } from "@libsql/client";
-import { SQLITE_GITHUB_STARS_MIGRATION_SQL } from "@radarboard/integration-github/stars";
 
 /** Current schema version. Bump this when adding a new incremental migration. */
 export const LATEST_SCHEMA_VERSION = 1;
@@ -113,6 +112,4 @@ export const SQLITE_CORE_MIGRATION_SQL = [
   "CREATE INDEX IF NOT EXISTS notification_rules_project_idx ON notification_rules(project_slug)",
 ].join(";\n");
 
-export const SQLITE_MIGRATION_SQL = [SQLITE_CORE_MIGRATION_SQL, SQLITE_GITHUB_STARS_MIGRATION_SQL]
-  .filter(Boolean)
-  .join(";\n");
+export const SQLITE_MIGRATION_SQL = SQLITE_CORE_MIGRATION_SQL;

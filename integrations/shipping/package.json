@@ -14,12 +14,8 @@
     "./data-sources": "./src/api/data-sources.ts"
   },
   "dependencies": {
-    "@radarboard/integration-github": "workspace:*",
-    "@radarboard/integration-linear": "workspace:*",
     "@radarboard/integration-sdk": "workspace:*",
-    "@radarboard/integration-vercel": "workspace:*",
-    "@radarboard/types": "workspace:*",
-    "@radarboard/utils": "workspace:*"
+    "@radarboard/types": "workspace:*"
   },
   "devDependencies": {
     "@radarboard/tsconfig": "workspace:*",

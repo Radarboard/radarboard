@@ -51,36 +51,8 @@ vi.mock("@radarboard/integration-sdk/registry", () => ({
   },
 }));
 
-vi.mock("@radarboard/integration-revenuecat/data-sources", () => ({
-  revenuecatDataSources: [{ action: "data", fetch: mockedDataSourceFetches.revenue }],
-}));
-
-vi.mock("@radarboard/integration-openpanel/data-sources", () => ({
-  openpanelDataSources: [{ action: "data", fetch: mockedDataSourceFetches.analytics }],
-}));
-
-vi.mock("@radarboard/integration-betterstack/data-sources", () => ({
-  betterstackDataSources: [{ action: "data", fetch: mockedDataSourceFetches.health }],
-}));
-
-vi.mock("@radarboard/integration-sentry/data-sources", () => ({
-  sentryDataSources: [{ action: "data", fetch: mockedDataSourceFetches.sentry }],
-}));
-
-vi.mock("@radarboard/integration-google-search-console/data-sources", () => ({
-  googleSearchConsoleDataSources: [{ action: "data", fetch: mockedDataSourceFetches.seo }],
-}));
-
-vi.mock("@radarboard/integration-linear/data-sources", () => ({
-  linearDataSources: [{ action: "roadmap", fetch: mockedDataSourceFetches.roadmap }],
-}));
-
 vi.mock("@radarboard/integration-shipping/data-sources", () => ({
   shippingDataSources: [{ action: "data", fetch: mockedDataSourceFetches.shipping }],
-}));
-
-vi.mock("@radarboard/integration-app-store-connect/data-sources", () => ({
-  appStoreConnectDataSources: [{ action: "data", fetch: mockedDataSourceFetches.appStore }],
 }));
 
 import { AI_TOOL_REGISTRY, buildAiTools, buildSelfTools, getAvailableToolNames } from "../ai-tools";

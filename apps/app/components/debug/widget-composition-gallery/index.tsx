@@ -117,7 +117,7 @@ export function WidgetCompositionGallery() {
           <h1 className="font-semibold text-3xl text-foreground tracking-tight">
             Canonical Recipe Examples
           </h1>
-          <p className="max-w-3xl text-muted-foreground text-sm leading-relaxed">
+          <p className="max-w-3xl text-muted-foreground text-w-sm leading-relaxed">
             Deterministic template-backed examples for authoring and visual coverage. Each example
             maps to one canonical top-level recipe.
           </p>
@@ -144,7 +144,7 @@ export function WidgetCompositionGallery() {
                       v{config.version}
                     </div>
                   </div>
-                  <ul className="mt-3 space-y-1 text-dim/80 text-xs">
+                  <ul className="mt-3 space-y-1 text-dim/80 text-w-xs">
                     {example.notes.map((note) => (
                       <li key={note}>{note}</li>
                     ))}

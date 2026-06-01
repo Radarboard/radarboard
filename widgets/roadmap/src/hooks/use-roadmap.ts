@@ -20,9 +20,12 @@ interface RoadmapResponse {
 const EMPTY_PROJECTS: RoadmapProject[] = [];
 const EMPTY_ISSUES: RoadmapInProgressIssue[] = [];
 
-export function useRoadmap(projectSlug: string | null = null) {
+export function useRoadmap(projectSlug: string | null = null, demoMode = false) {
   const refreshInterval = usePollingInterval("roadmap");
-  const key = buildUrl(ROUTE, { project: projectSlug });
+  const key = buildUrl(ROUTE, {
+    project: projectSlug,
+    ...(demoMode ? { demo: "1" } : {}),
+  });
 
   const { data, error, isLoading, mutate } = useSWR<RoadmapResponse>(key, apiFetcher, {
     refreshInterval,
@@ -30,10 +33,14 @@ export function useRoadmap(projectSlug: string | null = null) {
   });
 
   const refetch = useCallback(async () => {
-    const forceUrl = buildUrl(ROUTE, { project: projectSlug, refresh: "1" });
+    const forceUrl = buildUrl(ROUTE, {
+      project: projectSlug,
+      refresh: "1",
+      ...(demoMode ? { demo: "1" } : {}),
+    });
     const fresh = await apiFetcher<RoadmapResponse>(forceUrl);
     await mutate(fresh, { revalidate: false });
-  }, [projectSlug, mutate]);
+  }, [projectSlug, demoMode, mutate]);
 
   return {
     projects: data?.projects ?? EMPTY_PROJECTS,

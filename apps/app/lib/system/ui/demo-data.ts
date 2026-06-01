@@ -13,14 +13,34 @@ export function useDemoModeActions() {
   const { preferences, updatePreferences } = useDashboard();
   const isDemoMode = preferences.demoMode === true;
 
-  const dismissDemo = useCallback(async () => {
+  const wipeDemo = useCallback(async (mode: "connect" | "fresh") => {
     try {
-      await fetch(API_ROUTES.demoWipe, { method: "POST" });
+      await fetch(API_ROUTES.demoWipe, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mode }),
+      });
     } catch {
       // Non-critical — preferences update below handles the UI state
     }
-    updatePreferences({ ...preferences, demoMode: false });
-  }, [preferences, updatePreferences]);
+  }, []);
 
-  return { isDemoMode, dismissDemo } as const;
+  const connectRealData = useCallback(async () => {
+    await wipeDemo("connect");
+    updatePreferences({ ...preferences, demoMode: false });
+  }, [preferences, updatePreferences, wipeDemo]);
+
+  const startFresh = useCallback(async () => {
+    await wipeDemo("fresh");
+    updatePreferences({
+      ...preferences,
+      demoMode: false,
+      onboardingCompleted: false,
+      userProfile: null,
+      intendedIntegrations: [],
+      blueprintWidgetMap: {},
+    });
+  }, [preferences, updatePreferences, wipeDemo]);
+
+  return { isDemoMode, connectRealData, startFresh } as const;
 }

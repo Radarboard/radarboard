@@ -36,7 +36,7 @@ export function PluginSearchInput({
         placeholder={placeholder}
         variant="surface"
         size="lg"
-        className="pr-3 pl-8 text-sm"
+        className="pr-3 pl-8 text-w-sm"
       />
     </div>
   );

@@ -13,12 +13,7 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@radarboard/integration-betterstack": "workspace:*",
-    "@radarboard/integration-github": "workspace:*",
-    "@radarboard/integration-linear": "workspace:*",
     "@radarboard/integration-sdk": "workspace:*",
-    "@radarboard/integration-sentry": "workspace:*",
-    "@radarboard/integration-vercel": "workspace:*",
     "@radarboard/types": "workspace:*",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.38.0",

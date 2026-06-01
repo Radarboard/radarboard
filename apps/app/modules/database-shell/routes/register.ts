@@ -8,6 +8,10 @@ import { handleExportDatabase, handleImportDatabase } from "./transfer";
 
 registerRoutes([
   {
+    path: API_ROUTES.databaseConfigLegacy,
+    handlers: { GET: handleGetDatabaseConfig, POST: handleSetDatabaseConfig },
+  },
+  {
     path: API_ROUTES.databaseConfig,
     handlers: { GET: handleGetDatabaseConfig, POST: handleSetDatabaseConfig },
   },

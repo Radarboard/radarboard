@@ -226,7 +226,7 @@ export function WidgetSandbox() {
           <h1 className="font-semibold text-3xl text-foreground tracking-tight">
             Preview Widgets in All States
           </h1>
-          <p className="max-w-3xl text-muted-foreground text-sm leading-relaxed">
+          <p className="max-w-3xl text-muted-foreground text-w-sm leading-relaxed">
             Every registered widget rendered with auto-generated mock data. Use this to verify
             layouts across happy path, empty, loading, and error states during development.
           </p>
@@ -234,7 +234,7 @@ export function WidgetSandbox() {
 
         {/* Controls */}
         <div className="flex flex-wrap items-center gap-4 border-border border-b pb-4">
-          <label className="text-dim text-sm" htmlFor="sandbox-widget-select">
+          <label className="text-dim text-w-sm" htmlFor="sandbox-widget-select">
             Widget:
           </label>
           <select
@@ -243,7 +243,7 @@ export function WidgetSandbox() {
             onChange={(e) =>
               setSelectedWidget(e.target.value === "__all__" ? null : e.target.value)
             }
-            className="rounded border border-input bg-surface px-2 py-1 text-foreground text-sm"
+            className="rounded border border-input bg-surface px-2 py-1 text-foreground text-w-sm"
           >
             <option value="__all__">All widgets ({widgets.length})</option>
             {widgets.map((w) => (
@@ -254,7 +254,7 @@ export function WidgetSandbox() {
           </select>
 
           <span className="text-dim">|</span>
-          <span className="text-dim text-sm">States:</span>
+          <span className="text-dim text-w-sm">States:</span>
           {(
             Object.entries(PREVIEW_LABELS) as Array<
               [PreviewState, { label: string; color: string }]
@@ -265,8 +265,8 @@ export function WidgetSandbox() {
               variant="outline"
               size="sm"
               onClick={() => toggleState(state)}
-              className={`font-mono text-xs ${
-                selectedStates.has(state) ? `bg-surface-raised ${color}` : "text-dim/50"
+              className={`font-mono text-w-xs ${
+                selectedStates.has(state) ? `bg-surface-raised ${color}` : "text-dim"
               }`}
             >
               {label}
@@ -279,9 +279,9 @@ export function WidgetSandbox() {
           <section key={widget.id} className="space-y-3">
             <div>
               <h2 className="font-medium text-foreground text-lg">{widget.name}</h2>
-              <p className="font-mono text-dim text-xs">{widget.id}</p>
+              <p className="font-mono text-dim text-w-xs">{widget.id}</p>
               {widget.description && (
-                <p className="mt-0.5 text-muted-foreground text-sm">{widget.description}</p>
+                <p className="mt-0.5 text-muted-foreground text-w-sm">{widget.description}</p>
               )}
             </div>
 

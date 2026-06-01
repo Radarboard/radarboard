@@ -22,6 +22,14 @@ Radarboard desktop beta releases are published from the canonical GitHub reposit
 
 Open [GitHub Releases](https://github.com/Radarboard/radarboard/releases), choose the latest `desktop-v*-beta.*` prerelease, and download the macOS DMG asset.
 
+## Internal dev QA before beta
+
+Maintainers should test an installed local dev app before publishing another desktop beta. Use the repository desktop workflow to build and launch `Radarboard Dev.app`, which keeps manual QA separate from the public beta install and regular local Radarboard data.
+
+<Note>
+Use the local dev app for launch, tray menu, helper process, firewall prompt, onboarding, settings, integrations, notifications, logs, restart, and release-like install checks before tagging a public beta.
+</Note>
+
 ## Homebrew beta
 
 After the beta cask sync PR is merged in the tap repository, install the beta with:

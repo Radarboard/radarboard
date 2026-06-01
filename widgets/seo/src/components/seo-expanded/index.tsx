@@ -4,6 +4,7 @@
  * SEO Performance — Expanded fullscreen view
  */
 
+import { useDemoMode } from "@radarboard/hooks/use-demo-mode";
 import type { SearchQuery, SeoOverview } from "@radarboard/types/seo";
 import { formatNumber } from "@radarboard/utils/format-number";
 import type { WidgetTemplateConfig } from "@radarboard/widget-engine/templates";
@@ -74,7 +75,8 @@ export function SeoExpanded({
   timeRange = "30d",
   onConnectService,
 }: WidgetRenderProps<WidgetTemplateConfig>) {
-  const { data: seoData, loading } = useSeo(projectSlug, null, timeRange);
+  const { isDemoMode } = useDemoMode();
+  const { data: seoData, loading } = useSeo(projectSlug, null, timeRange, isDemoMode);
   if (loading) {
     return (
       <div className="flex h-full items-center justify-center font-mono text-dim text-w-base">

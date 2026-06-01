@@ -100,7 +100,7 @@ function TaskDetailHeader({
           onKeyDown={handleTitleKeyDown}
           variant="ghost"
           size="default"
-          className="flex-1 font-medium text-foreground-secondary text-sm"
+          className="flex-1 font-medium text-foreground-secondary text-w-sm"
         />
       ) : (
         <Button
@@ -109,7 +109,7 @@ function TaskDetailHeader({
           spacing="none"
           uppercase={false}
           onClick={onStartEditing}
-          className="flex-1 text-left font-medium text-foreground-secondary text-sm hover:text-foreground"
+          className="flex-1 text-left font-medium text-foreground-secondary text-w-sm hover:text-foreground"
         >
           {task.title}
         </Button>
@@ -146,7 +146,7 @@ function TaskDetailFooter({
         <div className="text-dim text-w-sm">
           Updated {new Date(task.updatedAt).toLocaleDateString()}
         </div>
-        <div className="font-mono text-dim/40 text-w-sm">{task.id}</div>
+        <div className="font-mono text-dim text-w-sm">{task.id}</div>
       </div>
 
       <div className="flex items-center gap-2 border-border border-t pt-2">
@@ -345,7 +345,7 @@ export function TaskDetailPanel({
             onChange={(e) => onUpdate(task.id, { dueDate: e.target.value || undefined })}
             variant="ghost"
             size="default"
-            className="text-foreground-secondary text-sm"
+            className="text-foreground-secondary text-w-sm"
             style={{ colorScheme: "light dark" }}
           />
         </div>
@@ -364,7 +364,7 @@ export function TaskDetailPanel({
               }}
               variant="ghost"
               size="default"
-              className="w-full text-foreground-secondary text-sm"
+              className="w-full text-foreground-secondary text-w-sm"
             >
               <option value="">No folder</option>
               {folders
@@ -384,7 +384,7 @@ export function TaskDetailPanel({
               list="task-projects"
               variant="ghost"
               size="default"
-              className="w-full text-foreground-secondary text-sm"
+              className="w-full text-foreground-secondary text-w-sm"
             />
           )}
           {(!folders || folders.length === 0) && projects.length > 0 && (
@@ -404,7 +404,7 @@ export function TaskDetailPanel({
             onChange={(e) => onUpdate(task.id, { description: e.target.value || undefined })}
             placeholder="Add a description..."
             rows={3}
-            className="resize-none bg-transparent p-2 text-foreground-secondary text-sm"
+            className="resize-none bg-transparent p-2 text-foreground-secondary text-w-sm"
           />
         </div>
 
@@ -428,7 +428,7 @@ export function TaskDetailPanel({
               onChange={(e) => handleRecurrenceChange(e.target.value)}
               variant="ghost"
               size="default"
-              className="text-foreground-secondary text-sm"
+              className="text-foreground-secondary text-w-sm"
             >
               {RECURRENCE_OPTIONS.map((r) => (
                 <option key={r.value} value={r.value}>
@@ -446,7 +446,7 @@ export function TaskDetailPanel({
                   onChange={(e) => handleCustomIntervalChange(Number(e.target.value) || 1)}
                   variant="ghost"
                   size="sm"
-                  className="w-12 text-center text-foreground-secondary text-sm"
+                  className="w-12 text-center text-foreground-secondary text-w-sm"
                 />
                 <span className="text-dim text-w-sm">days</span>
               </div>

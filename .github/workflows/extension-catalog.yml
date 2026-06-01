@@ -19,14 +19,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v4
+      - name: Setup Node, pnpm, and dependencies
+        uses: ./.github/actions/setup-pnpm-install
         with:
-          node-version: 22
-          cache: pnpm
-
-      - run: pnpm install --frozen-lockfile
+          node-version-file: .nvmrc
+          turbo-cache: "false"
 
       - name: Generate catalog JSON
         run: pnpm tsx scripts/generate-extension-catalog.ts

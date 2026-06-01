@@ -30,24 +30,24 @@ export const LAYOUT_BLUEPRINTS: LayoutBlueprintDescriptor[] = [
     id: "oss-command-center",
     name: "Open Source Command Center",
     description:
-      "Track stars, PRs, downloads, and sponsorship at a glance. Designed for open source maintainers who need community health metrics front and center.",
+      "Track sponsorship, roadmap, analytics, and shipping activity at a glance. Designed for open source maintainers who need community health metrics front and center.",
     recipeId: "hero-focus",
     layout: getRecipeLayout("hero-focus"),
     slots: [
       {
         cellId: "hero",
-        widgetId: "github-stars",
-        purpose: "GitHub star growth & community traction",
+        widgetId: "sponsorship",
+        purpose: "Sponsorship and community traction",
       },
-      { cellId: "side-a", widgetId: "pulls", purpose: "PR activity & review queue" },
-      { cellId: "side-b", widgetId: "npm-downloads", purpose: "npm download trends" },
+      { cellId: "side-a", widgetId: "roadmap", purpose: "Roadmap activity and review queue" },
+      { cellId: "side-b", widgetId: "analytics", purpose: "Analytics trends" },
       { cellId: "foot-a", widgetId: "shipping", purpose: "Release cadence" },
       { cellId: "foot-b", widgetId: "sponsorship", purpose: "Sponsor revenue" },
-      { cellId: "foot-c", widgetId: "github-commits", purpose: "GitHub commit activity" },
+      { cellId: "foot-c", widgetId: "shipping", purpose: "Shipping activity" },
     ],
-    requiredIntegrations: ["github", "npm"],
+    requiredIntegrations: [],
     personaAffinities: ["opensource"],
-    tags: ["open-source", "github"],
+    tags: ["open-source", "community"],
   },
   {
     id: "indie-revenue-dashboard",
@@ -62,12 +62,12 @@ export const LAYOUT_BLUEPRINTS: LayoutBlueprintDescriptor[] = [
       { cellId: "cell-3", widgetId: "seo", purpose: "Search performance" },
       { cellId: "cell-4", widgetId: "shipping", purpose: "Shipping timeline & releases" },
       { cellId: "cell-5", widgetId: "observability", purpose: "Service monitoring" },
-      { cellId: "cell-6", widgetId: "pulls", purpose: "PR activity" },
-      { cellId: "cell-7", widgetId: "github-stars", purpose: "GitHub community traction" },
-      { cellId: "cell-8", widgetId: "deployments", purpose: "Deploy frequency" },
-      { cellId: "cell-9", widgetId: "vercel-domains", purpose: "Vercel domain status" },
+      { cellId: "cell-6", widgetId: "roadmap", purpose: "Roadmap activity" },
+      { cellId: "cell-7", widgetId: "sponsorship", purpose: "Community traction" },
+      { cellId: "cell-8", widgetId: "shipping", purpose: "Shipping cadence" },
+      { cellId: "cell-9", widgetId: "observability", purpose: "Service status" },
     ],
-    requiredIntegrations: ["github"],
+    requiredIntegrations: [],
     personaAffinities: ["indie", "fullstack"],
     tags: ["saas", "revenue"],
   },
@@ -81,12 +81,12 @@ export const LAYOUT_BLUEPRINTS: LayoutBlueprintDescriptor[] = [
     slots: [
       { cellId: "cell-1", widgetId: "seo", purpose: "Search rankings & CTR" },
       { cellId: "cell-2", widgetId: "analytics", purpose: "Traffic & sessions" },
-      { cellId: "cell-3", widgetId: "npm-downloads", purpose: "Content downloads" },
-      { cellId: "cell-4", widgetId: "app-reviews", purpose: "User reviews & sentiment" },
+      { cellId: "cell-3", widgetId: "analytics", purpose: "Content analytics" },
+      { cellId: "cell-4", widgetId: "observability", purpose: "Service feedback and health" },
       { cellId: "cell-5", widgetId: "bookmarks", purpose: "Bookmarks & references" },
       { cellId: "cell-6", widgetId: "shipping", purpose: "Content releases" },
-      { cellId: "cell-7", widgetId: "github-stars", purpose: "Community growth" },
-      { cellId: "cell-8", widgetId: "vercel-domains", purpose: "Vercel domain health" },
+      { cellId: "cell-7", widgetId: "sponsorship", purpose: "Community health" },
+      { cellId: "cell-8", widgetId: "observability", purpose: "Service health" },
       { cellId: "cell-9", widgetId: "observability", purpose: "Service reliability" },
     ],
     requiredIntegrations: [],
@@ -97,16 +97,16 @@ export const LAYOUT_BLUEPRINTS: LayoutBlueprintDescriptor[] = [
     id: "devops-monitor",
     name: "DevOps Monitor",
     description:
-      "Observability rail with builds, deployments, and incident tracking. Designed for platform engineers who need operational awareness.",
+      "Observability rail with service health and shipping activity. Designed for platform engineers who need operational awareness.",
     recipeId: "rail-workbench",
     layout: getRecipeLayout("rail-workbench"),
     slots: [
       { cellId: "rail", widgetId: "observability", purpose: "Service monitor overview" },
-      { cellId: "main", widgetId: "builds", purpose: "Build performance & history" },
-      { cellId: "queue", widgetId: "deployments", purpose: "Deployment queue" },
-      { cellId: "detail", widgetId: "vercel-domains", purpose: "Vercel domain & SSL status" },
+      { cellId: "main", widgetId: "observability", purpose: "Service health history" },
+      { cellId: "queue", widgetId: "shipping", purpose: "Shipping queue" },
+      { cellId: "detail", widgetId: "observability", purpose: "Service status" },
     ],
-    requiredIntegrations: ["vercel"],
+    requiredIntegrations: [],
     personaAffinities: ["devops", "backend"],
     tags: ["infrastructure", "monitoring"],
   },
@@ -118,39 +118,39 @@ export const LAYOUT_BLUEPRINTS: LayoutBlueprintDescriptor[] = [
     recipeId: "basic-3x3",
     layout: BASIC_3X3,
     slots: [
-      { cellId: "cell-1", widgetId: "app-reviews", purpose: "App Store ratings & reviews" },
-      { cellId: "cell-2", widgetId: "aso-keywords", purpose: "Keyword rankings" },
+      { cellId: "cell-1", widgetId: "observability", purpose: "App health and reviews" },
+      { cellId: "cell-2", widgetId: "seo", purpose: "Search performance" },
       { cellId: "cell-3", widgetId: "revenue", purpose: "In-app revenue" },
       { cellId: "cell-4", widgetId: "analytics", purpose: "User analytics" },
       { cellId: "cell-5", widgetId: "observability", purpose: "Crash & service monitoring" },
       { cellId: "cell-6", widgetId: "shipping", purpose: "Release history" },
-      { cellId: "cell-7", widgetId: "npm-downloads", purpose: "App downloads" },
-      { cellId: "cell-8", widgetId: "builds", purpose: "Build health" },
-      { cellId: "cell-9", widgetId: "github-stars", purpose: "Community feedback" },
+      { cellId: "cell-7", widgetId: "analytics", purpose: "App analytics" },
+      { cellId: "cell-8", widgetId: "observability", purpose: "Service health" },
+      { cellId: "cell-9", widgetId: "sponsorship", purpose: "Community health" },
     ],
     requiredIntegrations: [],
     personaAffinities: ["mobile"],
-    tags: ["mobile", "app-store"],
+    tags: ["mobile", "app"],
   },
   {
     id: "team-velocity",
     name: "Team Velocity",
     description:
-      "Roadmap progress, PR throughput, builds, and shipping cadence. A manager's view of team output and project health.",
+      "Roadmap progress, Roadmap throughput, builds, and shipping cadence. A manager's view of team output and project health.",
     recipeId: "basic-3x3",
     layout: BASIC_3X3,
     slots: [
       { cellId: "cell-1", widgetId: "roadmap", purpose: "Roadmap & milestones" },
-      { cellId: "cell-2", widgetId: "pulls", purpose: "PR throughput" },
+      { cellId: "cell-2", widgetId: "roadmap", purpose: "Roadmap throughput" },
       { cellId: "cell-3", widgetId: "shipping", purpose: "Release cadence" },
-      { cellId: "cell-4", widgetId: "github-commits", purpose: "GitHub commit activity" },
-      { cellId: "cell-5", widgetId: "builds", purpose: "Build health" },
+      { cellId: "cell-4", widgetId: "shipping", purpose: "Shipping activity" },
+      { cellId: "cell-5", widgetId: "observability", purpose: "Service health" },
       { cellId: "cell-6", widgetId: "analytics", purpose: "Product usage" },
       { cellId: "cell-7", widgetId: "seo", purpose: "Search visibility" },
       { cellId: "cell-8", widgetId: "observability", purpose: "Service health" },
-      { cellId: "cell-9", widgetId: "deployments", purpose: "Deploy frequency" },
+      { cellId: "cell-9", widgetId: "shipping", purpose: "Shipping cadence" },
     ],
-    requiredIntegrations: ["github", "vercel"],
+    requiredIntegrations: [],
     personaAffinities: ["team-lead"],
     tags: ["team", "velocity"],
   },
@@ -165,13 +165,13 @@ export const LAYOUT_BLUEPRINTS: LayoutBlueprintDescriptor[] = [
       { cellId: "cell-1", widgetId: "analytics", purpose: "Traffic & audience overview" },
       { cellId: "cell-2", widgetId: "seo", purpose: "Search performance" },
       { cellId: "cell-3", widgetId: "bookmarks", purpose: "Curated bookmarks" },
-      { cellId: "cell-4", widgetId: "app-reviews", purpose: "Audience feedback" },
+      { cellId: "cell-4", widgetId: "observability", purpose: "Audience feedback" },
       { cellId: "cell-5", widgetId: "shipping", purpose: "Content releases" },
-      { cellId: "cell-6", widgetId: "npm-downloads", purpose: "Download metrics" },
-      { cellId: "cell-7", widgetId: "github-stars", purpose: "Community traction" },
-      { cellId: "cell-8", widgetId: "github-commits", purpose: "Content updates" },
-      { cellId: "cell-9", widgetId: "pulls", purpose: "Collaboration activity" },
-      { cellId: "cell-10", widgetId: "vercel-domains", purpose: "Site health" },
+      { cellId: "cell-6", widgetId: "analytics", purpose: "Analytics metrics" },
+      { cellId: "cell-7", widgetId: "sponsorship", purpose: "Community traction" },
+      { cellId: "cell-8", widgetId: "shipping", purpose: "Shipping updates" },
+      { cellId: "cell-9", widgetId: "roadmap", purpose: "Roadmap activity" },
+      { cellId: "cell-10", widgetId: "observability", purpose: "Service health" },
       { cellId: "cell-11", widgetId: "observability", purpose: "Service monitoring" },
       { cellId: "cell-12", widgetId: "revenue", purpose: "Sponsorship & revenue" },
     ],
@@ -190,15 +190,15 @@ export const LAYOUT_BLUEPRINTS: LayoutBlueprintDescriptor[] = [
       { cellId: "cell-1", widgetId: "analytics", purpose: "Traffic & conversion" },
       { cellId: "cell-2", widgetId: "revenue", purpose: "Revenue metrics" },
       { cellId: "cell-3", widgetId: "seo", purpose: "Organic search" },
-      { cellId: "cell-4", widgetId: "github-stars", purpose: "Community growth" },
-      { cellId: "cell-5", widgetId: "npm-downloads", purpose: "Download trends" },
+      { cellId: "cell-4", widgetId: "sponsorship", purpose: "Community health" },
+      { cellId: "cell-5", widgetId: "analytics", purpose: "Analytics trends" },
       { cellId: "cell-6", widgetId: "observability", purpose: "Service reliability" },
-      { cellId: "cell-7", widgetId: "app-reviews", purpose: "User sentiment" },
+      { cellId: "cell-7", widgetId: "observability", purpose: "Service sentiment" },
       { cellId: "cell-8", widgetId: "shipping", purpose: "Release cadence" },
-      { cellId: "cell-9", widgetId: "pulls", purpose: "PR activity" },
-      { cellId: "cell-10", widgetId: "vercel-domains", purpose: "Domain health" },
-      { cellId: "cell-11", widgetId: "builds", purpose: "Build status" },
-      { cellId: "cell-12", widgetId: "github-commits", purpose: "GitHub commit activity" },
+      { cellId: "cell-9", widgetId: "roadmap", purpose: "Roadmap activity" },
+      { cellId: "cell-10", widgetId: "observability", purpose: "Domain health" },
+      { cellId: "cell-11", widgetId: "observability", purpose: "Service status" },
+      { cellId: "cell-12", widgetId: "shipping", purpose: "Shipping activity" },
     ],
     requiredIntegrations: [],
     personaAffinities: ["marketing", "data"],
@@ -232,7 +232,9 @@ export function getBlueprintsForPersonas(personas: UserProfile[]): LayoutBluepri
  * Score how well a blueprint fits the user's context.
  * Returns a value between 0 and 1.
  *
- * Weighting: persona match = 60%, integration coverage = 40%.
+ * Weighting: persona match = 60%, integration coverage = 40% when a blueprint
+ * has hard integration requirements. Provider-neutral blueprints are scored by
+ * persona only.
  */
 export function scoreBlueprintFit(
   blueprint: LayoutBlueprintDescriptor,
@@ -245,12 +247,14 @@ export function scoreBlueprintFit(
         blueprint.personaAffinities.length
       : 0;
 
+  if (blueprint.requiredIntegrations.length === 0) {
+    return personaScore;
+  }
+
   // Integration score: fraction of required integrations that are connected
   const integrationScore =
-    blueprint.requiredIntegrations.length > 0
-      ? blueprint.requiredIntegrations.filter((i) => context.connectedIntegrations.includes(i))
-          .length / blueprint.requiredIntegrations.length
-      : 1; // No requirements = fully satisfied
+    blueprint.requiredIntegrations.filter((i) => context.connectedIntegrations.includes(i)).length /
+    blueprint.requiredIntegrations.length;
 
   return personaScore * 0.6 + integrationScore * 0.4;
 }

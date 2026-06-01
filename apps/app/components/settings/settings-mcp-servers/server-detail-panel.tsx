@@ -276,17 +276,15 @@ function FormField({
     <div>
       <Label
         htmlFor={id}
-        className="mb-1.5 block font-mono text-dim text-xs uppercase tracking-wider"
+        className="mb-1.5 block font-mono text-dim text-w-xs uppercase tracking-wider"
       >
         {label}
         {Boolean(required) && <span className="ml-0.5 text-destructive">*</span>}
-        {!required && (
-          <span className="ml-1 text-dim/60 normal-case tracking-normal">(optional)</span>
-        )}
+        {!required && <span className="ml-1 text-dim normal-case tracking-normal">(optional)</span>}
       </Label>
       {children}
       {Boolean(hint) && (
-        <p className="mt-1 whitespace-pre-wrap font-mono text-dim/60 text-xs">{hint}</p>
+        <p className="mt-1 whitespace-pre-wrap font-mono text-dim text-w-xs">{hint}</p>
       )}
     </div>
   );
@@ -434,7 +432,7 @@ function TestStatusBanner({ testStatus }: { testStatus: TestStatus }) {
             {Boolean(
               testStatus.serverName || testStatus.serverVersion || testStatus.protocolVersion
             ) && (
-              <div className="mt-0.5 text-success/80 text-xs">
+              <div className="mt-0.5 text-success/80 text-w-xs">
                 {[testStatus.serverName, testStatus.serverVersion, testStatus.protocolVersion]
                   .filter(Boolean)
                   .join(" · ")}
@@ -515,7 +513,7 @@ export function ServerForm({
         <div className="flex items-center justify-between border-border border-b pb-3">
           <div>
             <div className="font-mono text-foreground text-w-base">Enabled</div>
-            <div className="font-mono text-dim text-xs">
+            <div className="font-mono text-dim text-w-xs">
               Disabled servers are stored but not used.
             </div>
           </div>
@@ -554,7 +552,7 @@ export function ServerForm({
               )}
             >
               <div className="font-mono text-w-base">streamable-http</div>
-              <div className="font-mono text-xs opacity-80">Remote HTTP endpoint</div>
+              <div className="font-mono text-w-xs opacity-80">Remote HTTP endpoint</div>
             </Button>
             <Button
               type="button"
@@ -566,7 +564,7 @@ export function ServerForm({
               )}
             >
               <div className="font-mono text-w-base">stdio</div>
-              <div className="font-mono text-xs opacity-80">Local command, typically `npx`</div>
+              <div className="font-mono text-w-xs opacity-80">Local command, typically `npx`</div>
             </Button>
           </div>
         </FormField>
@@ -682,7 +680,7 @@ export function EmptyState({ onAdd }: { onAdd: () => void }) {
       <Server className="h-8 w-8 text-secondary" />
       <div>
         <p className="font-mono text-dim text-w-base">No MCP servers configured</p>
-        <p className="mt-1 font-mono text-dim/60 text-xs">
+        <p className="mt-1 font-mono text-dim text-w-xs">
           Add a server to connect to external MCP tools
         </p>
       </div>

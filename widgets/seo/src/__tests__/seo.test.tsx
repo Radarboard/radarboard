@@ -7,9 +7,14 @@ import { seoDescriptor } from "..";
 import { SEO_TEMPLATE_CONFIG } from "../components/seo-compact";
 
 const mockUseSeo = vi.fn();
+const mockUseDemoMode = vi.fn(() => ({ isDemoMode: false }));
 
 vi.mock("../hooks/use-seo", () => ({
   useSeo: (...args: unknown[]) => mockUseSeo(...args),
+}));
+
+vi.mock("@radarboard/hooks/use-demo-mode", () => ({
+  useDemoMode: () => mockUseDemoMode(),
 }));
 
 const STALE_SEO_CONFIG = {
@@ -60,6 +65,7 @@ describe("seoDescriptor", () => {
   });
 
   beforeEach(() => {
+    mockUseDemoMode.mockReturnValue({ isDemoMode: false });
     mockUseSeo.mockReturnValue({
       data: {
         queries: [
@@ -86,6 +92,21 @@ describe("seoDescriptor", () => {
       loading: false,
       refetch: vi.fn(async () => {}),
     });
+  });
+
+  it("passes demo mode into the seo hook", async () => {
+    mockUseDemoMode.mockReturnValue({ isDemoMode: true });
+
+    render(
+      createElement(seoDescriptor.component, {
+        projectSlug: "goshuin-atlas",
+        config: seoDescriptor.defaultConfig,
+        timeRange: "today",
+      })
+    );
+
+    await screen.findByText("goshuin atlas");
+    expect(mockUseSeo).toHaveBeenCalledWith("goshuin-atlas", null, "today", true);
   });
 
   it("renders compact seo metrics and query rows from the template path", async () => {

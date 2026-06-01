@@ -39,11 +39,6 @@ const DEFAULT_ENABLED_PLUGINS = [
   "tasks",
   "notes",
   "bookmarks",
-  "expenses",
-  "status-page",
-  "rss-reader",
-  "webhook-relay",
-  "changelog",
 ];
 
 export const INITIAL_ONBOARDING_STATE: OnboardingState = {

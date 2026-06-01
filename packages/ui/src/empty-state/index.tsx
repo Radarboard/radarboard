@@ -30,7 +30,7 @@ export function EmptyState({
         <div>
           <p className="font-mono text-dim text-w-sm">{message}</p>
           {subMessage !== undefined && subMessage !== null ? (
-            <p className="mt-1 font-mono text-dim/60 text-w-sm">{subMessage}</p>
+            <p className="mt-1 font-mono text-dim text-w-sm">{subMessage}</p>
           ) : null}
           {action !== undefined && action !== null ? <div className="mt-3">{action}</div> : null}
         </div>
@@ -51,7 +51,7 @@ export function EmptyState({
       ) : null}
       <div className="mx-auto max-w-[280px] text-dim text-w-sm">{message}</div>
       {subMessage !== undefined && subMessage !== null ? (
-        <div className="mx-auto mt-1 max-w-[280px] text-dim/60 text-w-xs">{subMessage}</div>
+        <div className="mx-auto mt-1 max-w-[280px] text-dim text-w-xs">{subMessage}</div>
       ) : null}
       {action !== undefined && action !== null ? <div className="mt-4">{action}</div> : null}
     </div>

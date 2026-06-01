@@ -108,7 +108,7 @@ export function ReportsSection() {
       {selectedReport && (
         <div className="flex flex-col gap-3 p-4">
           <div className="flex items-center justify-between">
-            <h3 className="font-mono font-semibold text-sm">{selectedReport.title}</h3>
+            <h3 className="font-mono font-semibold text-w-sm">{selectedReport.title}</h3>
             <div className="flex items-center gap-2">
               <a
                 href={reportRoute(selectedReport.id)}

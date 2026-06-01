@@ -70,7 +70,7 @@ function RelaySettingsPanelForm({
         <div className="space-y-3 border border-border bg-surface px-3 py-3">
           <div className="space-y-1">
             <Label htmlFor="relay-url">Relay URL</Label>
-            <div className="text-dim/60 text-w-sm">
+            <div className="text-dim text-w-sm">
               Your deployed relay URL for inbound provider webhooks.
             </div>
           </div>
@@ -111,16 +111,16 @@ function RelaySettingsPanelForm({
               Clear
             </Button>
             {hasRelayUrl ? (
-              <span className="font-mono text-dim/60 text-w-sm">Current: {normalizedRelayUrl}</span>
+              <span className="font-mono text-dim text-w-sm">Current: {normalizedRelayUrl}</span>
             ) : (
-              <span className="font-mono text-dim/60 text-w-sm">No relay URL configured yet</span>
+              <span className="font-mono text-dim text-w-sm">No relay URL configured yet</span>
             )}
           </div>
         </div>
 
         <div className="rounded-item border border-border border-dashed bg-secondary/30 px-3 py-2">
           <div className="font-mono text-dim text-w-sm uppercase tracking-wider">Used By</div>
-          <p className="mt-2 text-dim/60 text-w-sm leading-relaxed">
+          <p className="mt-2 text-dim text-w-sm leading-relaxed">
             {serviceLabels.join(", ")} derive their exact endpoint from this base URL.
           </p>
         </div>
@@ -165,7 +165,7 @@ export function RelayUsagePanel({
           <div className="font-mono text-dim text-w-sm uppercase tracking-widest">
             Per-provider setup
           </div>
-          <p className="mt-2 text-dim/60 text-w-sm leading-relaxed">
+          <p className="mt-2 text-dim text-w-sm leading-relaxed">
             Provider-specific signing secrets, endpoint copy helpers, and setup docs remain inside
             each integration modal under Webhook Setup.
           </p>

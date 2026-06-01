@@ -103,7 +103,7 @@ function Panel({
       <div className="mb-4">
         <div className="font-mono text-dim text-w-sm uppercase tracking-widest">{title}</div>
         {description ? (
-          <div className="mt-1 font-mono text-dim/60 text-w-sm">{description}</div>
+          <div className="mt-1 font-mono text-dim text-w-sm">{description}</div>
         ) : null}
       </div>
       {children}
@@ -318,7 +318,7 @@ function TypographySection({
           <div className="font-mono text-dim text-w-sm uppercase tracking-wider">Revenue</div>
           <div className="mt-2 font-bold font-mono text-foreground text-w-xl">$12,450</div>
           <div className="mt-1 font-mono text-dim/80 text-w-sm">+12.5% from last period</div>
-          <div className="mt-3 flex items-center gap-3 font-mono text-dim/60 text-w-sm">
+          <div className="mt-3 flex items-center gap-3 font-mono text-dim text-w-sm">
             <span className="text-success">Connected</span>
           </div>
         </div>

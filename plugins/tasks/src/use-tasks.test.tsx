@@ -57,6 +57,30 @@ describe("useTasks", () => {
     expect(result.current.tasks).toHaveLength(5);
   });
 
+  it("updates demo tasks in memory without writing to storage", async () => {
+    mockIsDemoMode = true;
+    const { api } = createApi();
+
+    const { result } = renderHook(() => useTasks(api as never));
+
+    await waitFor(() => {
+      expect(result.current.loaded).toBe(true);
+    });
+
+    await act(async () => {
+      await result.current.addTask({ title: "Demo follow-up", priority: "high" });
+    });
+    await act(async () => {
+      await result.current.completeTask("generated-task");
+    });
+
+    expect(result.current.tasks.find((task) => task.id === "generated-task")).toMatchObject({
+      title: "Demo follow-up",
+      status: "done",
+    });
+    expect(api.db.set).not.toHaveBeenCalled();
+  });
+
   it("loads persisted tasks and supports task, recurrence, and pomodoro operations", async () => {
     const { api, store } = createApi({
       "tasks:list": [

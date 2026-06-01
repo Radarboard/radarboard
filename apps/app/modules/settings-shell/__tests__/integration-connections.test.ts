@@ -49,7 +49,7 @@ beforeEach(() => {
 });
 
 describe("GET /api/integration-connections", () => {
-  it("returns explicit connections plus legacy defaults synthesized from credentials", async () => {
+  it("returns explicit connections and skips legacy credentials for unregistered providers", async () => {
     mockSettingsRepo.getIntegrationConnections.mockResolvedValue([
       {
         id: "linear::workspace-a",
@@ -73,18 +73,14 @@ describe("GET /api/integration-connections", () => {
     expect(body.connections).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          id: "github::default",
-          provider: "github",
-          credentialKey: "github",
-          source: "legacy",
-          isDefault: true,
-        }),
-        expect.objectContaining({
           id: "linear::workspace-a",
           provider: "linear",
           source: "explicit",
         }),
       ])
+    );
+    expect(body.connections).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "github::default" })])
     );
     expect(body.providers).toEqual(expect.any(Array));
   });

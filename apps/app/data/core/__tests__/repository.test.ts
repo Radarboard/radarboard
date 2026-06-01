@@ -1,8 +1,7 @@
 /**
  * Tests for db/repository.ts -- the repository factory.
  *
- * The source module uses static imports for each provider implementation.
- * We mock every provider module and the config module, then verify that
+ * We mock the repository providers and the config module, then verify that
  * the correct constructor is instantiated based on the configured provider.
  */
 
@@ -14,9 +13,6 @@ vi.mock("@/lib/radarboard-config", () => ({
 
 vi.mock("@/data/cache/sqlite-cache", () => ({
   SqliteCacheRepository: vi.fn(),
-}));
-vi.mock("@radarboard/integration-github/stars", () => ({
-  createGitHubStarHistoryRepository: vi.fn(),
 }));
 vi.mock("@/data/settings/sqlite-settings", () => ({
   SqliteSettingsRepository: vi.fn(),
@@ -40,7 +36,6 @@ vi.mock("@/data/settings/planetscale-settings", () => ({
   PlanetscaleSettingsRepository: vi.fn(),
 }));
 
-import { createGitHubStarHistoryRepository } from "@radarboard/integration-github/stars";
 import { PlanetscaleCacheRepository } from "@/data/cache/planetscale-cache";
 import { SqliteCacheRepository } from "@/data/cache/sqlite-cache";
 import { SupabaseCacheRepository } from "@/data/cache/supabase-cache";
@@ -48,7 +43,6 @@ import { TursoCacheRepository } from "@/data/cache/turso-cache";
 import {
   getCacheRepo,
   getDatabaseAdapter,
-  getGitHubStarHistoryRepo,
   getSettingsRepo,
   resetRepositories,
 } from "@/data/core/repository";
@@ -61,7 +55,6 @@ import { getDatabaseConfig } from "@/lib/radarboard-config";
 beforeEach(() => {
   resetRepositories();
   vi.mocked(getDatabaseConfig).mockReset();
-  vi.mocked(createGitHubStarHistoryRepository).mockReset();
   vi.mocked(SqliteCacheRepository).mockClear();
   vi.mocked(SqliteSettingsRepository).mockClear();
   vi.mocked(SupabaseCacheRepository).mockClear();
@@ -71,9 +64,6 @@ beforeEach(() => {
   vi.mocked(PlanetscaleCacheRepository).mockClear();
   vi.mocked(PlanetscaleSettingsRepository).mockClear();
   vi.mocked(getDatabaseConfig).mockReturnValue({ provider: "sqlite" });
-  vi.mocked(createGitHubStarHistoryRepository).mockReturnValue(
-    {} as ReturnType<typeof getGitHubStarHistoryRepo>
-  );
 });
 
 describe("getCacheRepo", () => {
@@ -222,19 +212,6 @@ describe("getSettingsRepo", () => {
     vi.mocked(getDatabaseConfig).mockReturnValue({ provider: "planetscale" });
 
     expect(() => getSettingsRepo()).toThrow("PlanetScale config missing");
-  });
-});
-
-describe("getGitHubStarHistoryRepo", () => {
-  it("creates the repository through the integration-owned factory", () => {
-    vi.mocked(getDatabaseConfig).mockReturnValue({ provider: "sqlite" });
-
-    getGitHubStarHistoryRepo();
-
-    expect(createGitHubStarHistoryRepository).toHaveBeenCalledWith(
-      { provider: "sqlite" },
-      expect.objectContaining({ getDb: expect.any(Function) })
-    );
   });
 });
 

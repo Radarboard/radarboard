@@ -54,10 +54,10 @@ interface TopBarProps {
   actionsSlot?: ReactNode;
   /** Whether the dashboard is in demo mode. */
   isDemoMode?: boolean;
-  /** Callback to exit demo mode and start real setup (opens onboarding). */
-  onExitDemo?: () => void;
-  /** Callback to dismiss demo mode without onboarding. */
-  onDismissDemo?: () => void;
+  /** Callback to exit demo mode and connect real services. */
+  onConnectRealData?: () => void;
+  /** Callback to exit demo mode and restart onboarding. */
+  onStartFresh?: () => void;
 }
 
 const TIME_RANGES: { value: TimeRange; label: string }[] = [
@@ -180,8 +180,8 @@ export function TopBar({
   onApplyBlueprint,
   actionsSlot,
   isDemoMode,
-  onExitDemo,
-  onDismissDemo,
+  onConnectRealData,
+  onStartFresh,
 }: TopBarProps) {
   const hasProjectTabsSlot = Boolean(projectTabsSlot);
   const searchActionProps = getSearchActionProps(hasProjectTabsSlot);
@@ -195,7 +195,7 @@ export function TopBar({
 
   return (
     <TooltipProvider delayDuration={300}>
-      <div className="flex min-w-0 items-center gap-3 overflow-hidden px-4 py-2">
+      <div className="flex min-w-0 items-center gap-3 overflow-visible px-4 py-2">
         <div className="flex min-w-0 flex-1 items-center overflow-hidden">
           {projectTabsSlot ?? (
             <h1 className="shrink-0 font-bold font-mono text-foreground text-w-lg uppercase tracking-widest">
@@ -313,7 +313,7 @@ export function TopBar({
                 />
               ) : null}
               {isDemoMode ? (
-                <DemoBadge onConnectServices={onExitDemo} onDismiss={onDismissDemo} />
+                <DemoBadge onConnectRealData={onConnectRealData} onStartFresh={onStartFresh} />
               ) : null}
             </div>
           ) : null}
@@ -328,11 +328,11 @@ export function TopBar({
 // ---------------------------------------------------------------------------
 
 function DemoBadge({
-  onConnectServices,
-  onDismiss,
+  onConnectRealData,
+  onStartFresh,
 }: {
-  onConnectServices?: () => void;
-  onDismiss?: () => void;
+  onConnectRealData?: () => void;
+  onStartFresh?: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLFieldSetElement>(null);
@@ -376,17 +376,17 @@ function DemoBadge({
         <div className="absolute top-full right-0 z-50 mt-2 w-64 rounded-item border border-border bg-surface p-4 shadow-lg">
           <p className="font-mono text-dim text-w-sm">
             You&apos;re viewing <strong className="text-foreground-secondary">sample data</strong>.
-            Connect your services to see real metrics.
+            Move to real data when you&apos;re ready.
           </p>
           <div className="mt-3 flex flex-col gap-2">
-            {onConnectServices ? (
+            {onConnectRealData ? (
               <Button
                 type="button"
                 variant="default"
                 uppercase={false}
                 onClick={() => {
                   setOpen(false);
-                  onConnectServices();
+                  onConnectRealData();
                 }}
                 className={cn(
                   "flex items-center justify-center gap-2 rounded-item bg-accent px-3 py-1.5",
@@ -395,23 +395,29 @@ function DemoBadge({
                 )}
               >
                 <Plug className="icon-xs" />
-                Connect services
+                Connect real services
               </Button>
             ) : null}
-            {onDismiss ? (
+            {onStartFresh ? (
               <Button
                 type="button"
                 variant="ghost-link"
                 spacing="none"
                 uppercase={false}
                 onClick={() => {
+                  if (
+                    typeof window !== "undefined" &&
+                    !window.confirm("Start fresh and leave demo mode?")
+                  ) {
+                    return;
+                  }
                   setOpen(false);
-                  onDismiss();
+                  onStartFresh();
                 }}
                 className="flex items-center justify-center gap-1.5 font-mono text-dim text-w-sm uppercase tracking-widest hover:text-foreground-secondary"
               >
                 <X className="icon-xs" />
-                Dismiss demo
+                Start fresh
               </Button>
             ) : null}
           </div>

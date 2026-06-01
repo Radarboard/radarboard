@@ -51,6 +51,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDisabledPluginsState } from "@/hooks/plugins/use-disabled-plugins";
 import { usePluginConfigState } from "@/hooks/plugins/use-plugin-configs";
 import { ShortcutKeys } from "../../shortcuts/shortcut-keys";
+import { CommunityExtensionDiscovery } from "../community-discovery";
 import { InstallExtensionDialog } from "../extension-installer";
 import { PollingSourceControls } from "../polling-controls";
 import { SettingsCatalogCard } from "../settings-catalog-card";
@@ -1085,6 +1086,7 @@ export function SettingsPlugins({
     VIEW_STATE_QUERY_KEYS.settingsInstaller,
     parseAsString
   );
+  const [installerGithubUrl, setInstallerGithubUrl] = useState("");
   const installerOpen = settingsInstallerParam === "plugins";
 
   const enabledCount = plugins.length - disabledIds.size;
@@ -1125,6 +1127,11 @@ export function SettingsPlugins({
   };
   const statusColor = getStatusColor();
 
+  function openInstaller(githubUrl = "") {
+    setInstallerGithubUrl(githubUrl);
+    setSettingsInstallerParam("plugins");
+  }
+
   return (
     <>
       <SettingsPageLayout
@@ -1141,7 +1148,7 @@ export function SettingsPlugins({
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setSettingsInstallerParam("plugins")}
+                onClick={() => openInstaller()}
                 uppercase={false}
                 className="h-auto shrink-0 px-3 py-2 font-mono text-foreground-secondary text-w-sm uppercase tracking-wider hover:text-foreground"
               >
@@ -1152,27 +1159,45 @@ export function SettingsPlugins({
         }
       >
         {filtered.length === 0 ? (
-          <EmptyState
-            message={searchQuery ? "No plugins match your search." : "No plugins installed."}
-          />
+          <>
+            <EmptyState
+              message={searchQuery ? "No plugins match your search." : "No plugins installed."}
+            />
+            <CommunityExtensionDiscovery
+              type="plugin"
+              searchQuery={searchQuery}
+              onInstall={openInstaller}
+            />
+          </>
         ) : (
-          <SettingsGrid columns={3}>
-            {filtered.map((plugin) => (
-              <PluginCard
-                key={plugin.id}
-                plugin={plugin}
-                enabled={!disabledIds.has(plugin.id)}
-                onToggle={() => handleToggle(plugin.id)}
-                onClick={() => setActivePluginId(plugin.id)}
-              />
-            ))}
-          </SettingsGrid>
+          <>
+            <SettingsGrid columns={3}>
+              {filtered.map((plugin) => (
+                <PluginCard
+                  key={plugin.id}
+                  plugin={plugin}
+                  enabled={!disabledIds.has(plugin.id)}
+                  onToggle={() => handleToggle(plugin.id)}
+                  onClick={() => setActivePluginId(plugin.id)}
+                />
+              ))}
+            </SettingsGrid>
+            <CommunityExtensionDiscovery
+              type="plugin"
+              searchQuery={searchQuery}
+              onInstall={openInstaller}
+            />
+          </>
         )}
       </SettingsPageLayout>
 
       <InstallExtensionDialog
         open={installerOpen}
-        onOpenChange={(open) => setSettingsInstallerParam(open ? "plugins" : null)}
+        initialGithubUrl={installerGithubUrl}
+        onOpenChange={(open) => {
+          if (!open) setInstallerGithubUrl("");
+          setSettingsInstallerParam(open ? "plugins" : null);
+        }}
       />
 
       {activePlugin ? (

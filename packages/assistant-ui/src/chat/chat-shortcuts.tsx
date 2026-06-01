@@ -54,7 +54,7 @@ export function ChatShortcuts({ onClose }: { onClose: () => void }) {
             variant="ghost"
             size="icon-sm"
             uppercase={false}
-            className="text-[var(--color-text-muted)]/50 hover:text-[var(--color-text-muted)]"
+            className="text-[var(--color-text-muted)] hover:text-[var(--color-text-muted)]"
           >
             <XIcon size={12} />
           </Button>

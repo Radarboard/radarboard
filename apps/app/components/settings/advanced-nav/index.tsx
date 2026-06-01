@@ -58,8 +58,8 @@ export function SettingsAdvancedNav({ activeSection, onSectionChange }: Settings
   return (
     <CollapsibleListPanel>
       <div className="shrink-0 border-border border-b p-3">
-        <div className="font-mono text-dim text-xs uppercase tracking-widest">Advanced</div>
-        <div className="mt-1 text-dim/70 text-xs">
+        <div className="font-mono text-dim text-w-xs uppercase tracking-widest">Advanced</div>
+        <div className="mt-1 text-dim/70 text-w-xs">
           Infrastructure, features, database, and debug controls.
         </div>
       </div>

@@ -4,12 +4,14 @@ on:
   push:
     branches: [main]
     paths:
+      - ".github/actions/**"
       - "apps/webhook-relay/**"
       - "packages/integrations/**"
       - "packages/types/**"
       - "pnpm-lock.yaml"
   pull_request:
     paths:
+      - ".github/actions/**"
       - "apps/webhook-relay/**"
       - "packages/integrations/**"
       - "packages/types/**"
@@ -37,9 +39,10 @@ jobs:
         uses: ./.github/actions/setup-pnpm-install
         with:
           node-version-file: .nvmrc
+          turbo-cache: "true"
 
       - name: Typecheck
-        run: pnpm --filter @radarboard/apphook-relay typecheck
+        run: pnpm exec turbo run typecheck --filter=@radarboard/apphook-relay
 
       - name: Lint
         run: pnpm exec biome check apps/webhook-relay/
@@ -50,7 +53,7 @@ jobs:
           name: "Vercel - radarboard-webhook-relay: lint"
 
       - name: Test
-        run: pnpm --filter @radarboard/apphook-relay test
+        run: pnpm exec turbo run test --filter=@radarboard/apphook-relay
 
       - name: Build
-        run: pnpm --filter @radarboard/apphook-relay build
+        run: pnpm exec turbo run build --filter=@radarboard/apphook-relay

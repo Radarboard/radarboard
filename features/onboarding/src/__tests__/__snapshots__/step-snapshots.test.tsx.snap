@@ -2,10 +2,10 @@
 
 exports[`onboarding step snapshots > StepComplete — default state 1`] = `
 <div
-  class="flex flex-1 items-center justify-center px-4 py-8 sm:px-6 sm:py-10"
+  class="flex flex-1 items-center justify-center overflow-y-auto px-4 py-6 scrollbar-thin sm:px-6 sm:py-8"
 >
   <div
-    class="flex w-full max-w-md flex-col items-center text-center"
+    class="flex w-full max-w-lg flex-col items-center text-center"
   >
     <div
       class="flex h-14 w-14 items-center justify-center rounded-full border border-success/30 bg-success/10"
@@ -32,7 +32,7 @@ exports[`onboarding step snapshots > StepComplete — default state 1`] = `
       </svg>
     </div>
     <div
-      class="mt-5 flex max-w-sm flex-col items-center gap-4"
+      class="mt-5 flex max-w-md flex-col items-center gap-3"
     >
       <h2
         class="font-bold font-mono text-foreground text-w-lg uppercase tracking-widest"
@@ -46,7 +46,7 @@ exports[`onboarding step snapshots > StepComplete — default state 1`] = `
       </p>
     </div>
     <div
-      class="mt-8 w-full max-w-sm text-left"
+      class="mt-7 w-full text-left"
     >
       <p
         class="font-mono text-dim text-w-xs uppercase tracking-widest"
@@ -57,7 +57,7 @@ exports[`onboarding step snapshots > StepComplete — default state 1`] = `
         class="mt-3 space-y-2 overflow-x-hidden"
       >
         <li
-          class="flex items-start gap-3 rounded-item border border-border bg-surface px-4 py-3.5"
+          class="flex min-h-12 items-center gap-3 rounded-item border border-border bg-surface px-4 py-3"
         >
           <div
             class="flex h-8 w-8 shrink-0 items-center justify-center rounded-item border border-border bg-secondary"
@@ -81,20 +81,15 @@ exports[`onboarding step snapshots > StepComplete — default state 1`] = `
             </svg>
           </div>
           <div
-            class="min-w-0 font-mono"
+            class="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2 gap-y-1 font-mono"
           >
             <p
-              class="text-dim text-w-xs uppercase tracking-wide"
+              class="min-w-0 break-words text-foreground-secondary text-w-sm leading-6"
             >
-              Plugins
+              3 plugins
             </p>
             <p
-              class="mt-1 text-foreground-secondary text-w-sm leading-6"
-            >
-              8 plugins
-            </p>
-            <p
-              class="mt-1 text-dim text-w-xs leading-5"
+              class="min-w-0 text-dim text-w-xs leading-5"
             >
               Enabled
             </p>
@@ -103,7 +98,7 @@ exports[`onboarding step snapshots > StepComplete — default state 1`] = `
       </ul>
     </div>
     <div
-      class="mt-8 flex max-w-sm flex-col items-center gap-5"
+      class="mt-7 flex max-w-md flex-col items-center gap-5"
     >
       <p
         class="font-mono text-dim text-w-sm leading-6"
@@ -122,10 +117,10 @@ exports[`onboarding step snapshots > StepComplete — default state 1`] = `
 
 exports[`onboarding step snapshots > StepComplete — finishing state 1`] = `
 <div
-  class="flex flex-1 items-center justify-center px-4 py-8 sm:px-6 sm:py-10"
+  class="flex flex-1 items-center justify-center overflow-y-auto px-4 py-6 scrollbar-thin sm:px-6 sm:py-8"
 >
   <div
-    class="flex w-full max-w-md flex-col items-center text-center"
+    class="flex w-full max-w-lg flex-col items-center text-center"
   >
     <div
       class="flex h-14 w-14 items-center justify-center rounded-full border border-success/30 bg-success/10"
@@ -152,7 +147,7 @@ exports[`onboarding step snapshots > StepComplete — finishing state 1`] = `
       </svg>
     </div>
     <div
-      class="mt-5 flex max-w-sm flex-col items-center gap-4"
+      class="mt-5 flex max-w-md flex-col items-center gap-3"
     >
       <h2
         class="font-bold font-mono text-foreground text-w-lg uppercase tracking-widest"
@@ -166,7 +161,7 @@ exports[`onboarding step snapshots > StepComplete — finishing state 1`] = `
       </p>
     </div>
     <div
-      class="mt-8 w-full max-w-sm text-left"
+      class="mt-7 w-full text-left"
     >
       <p
         class="font-mono text-dim text-w-xs uppercase tracking-widest"
@@ -177,7 +172,7 @@ exports[`onboarding step snapshots > StepComplete — finishing state 1`] = `
         class="mt-3 space-y-2 overflow-x-hidden"
       >
         <li
-          class="flex items-start gap-3 rounded-item border border-border bg-surface px-4 py-3.5"
+          class="flex min-h-12 items-center gap-3 rounded-item border border-border bg-surface px-4 py-3"
         >
           <div
             class="flex h-8 w-8 shrink-0 items-center justify-center rounded-item border border-border bg-secondary"
@@ -201,20 +196,15 @@ exports[`onboarding step snapshots > StepComplete — finishing state 1`] = `
             </svg>
           </div>
           <div
-            class="min-w-0 font-mono"
+            class="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2 gap-y-1 font-mono"
           >
             <p
-              class="text-dim text-w-xs uppercase tracking-wide"
+              class="min-w-0 break-words text-foreground-secondary text-w-sm leading-6"
             >
-              Plugins
+              3 plugins
             </p>
             <p
-              class="mt-1 text-foreground-secondary text-w-sm leading-6"
-            >
-              8 plugins
-            </p>
-            <p
-              class="mt-1 text-dim text-w-xs leading-5"
+              class="min-w-0 text-dim text-w-xs leading-5"
             >
               Enabled
             </p>
@@ -223,7 +213,7 @@ exports[`onboarding step snapshots > StepComplete — finishing state 1`] = `
       </ul>
     </div>
     <div
-      class="mt-8 flex max-w-sm flex-col items-center gap-5"
+      class="mt-7 flex max-w-md flex-col items-center gap-5"
     >
       <p
         class="font-mono text-dim text-w-sm leading-6"
@@ -260,10 +250,10 @@ exports[`onboarding step snapshots > StepComplete — finishing state 1`] = `
 
 exports[`onboarding step snapshots > StepComplete — with profile and demo mode 1`] = `
 <div
-  class="flex flex-1 items-center justify-center px-4 py-8 sm:px-6 sm:py-10"
+  class="flex flex-1 items-center justify-center overflow-y-auto px-4 py-6 scrollbar-thin sm:px-6 sm:py-8"
 >
   <div
-    class="flex w-full max-w-md flex-col items-center text-center"
+    class="flex w-full max-w-lg flex-col items-center text-center"
   >
     <div
       class="flex h-14 w-14 items-center justify-center rounded-full border border-success/30 bg-success/10"
@@ -290,7 +280,7 @@ exports[`onboarding step snapshots > StepComplete — with profile and demo mode
       </svg>
     </div>
     <div
-      class="mt-5 flex max-w-sm flex-col items-center gap-4"
+      class="mt-5 flex max-w-md flex-col items-center gap-3"
     >
       <h2
         class="font-bold font-mono text-foreground text-w-lg uppercase tracking-widest"
@@ -304,7 +294,7 @@ exports[`onboarding step snapshots > StepComplete — with profile and demo mode
       </p>
     </div>
     <div
-      class="mt-8 w-full max-w-sm text-left"
+      class="mt-7 w-full text-left"
     >
       <p
         class="font-mono text-dim text-w-xs uppercase tracking-widest"
@@ -315,7 +305,7 @@ exports[`onboarding step snapshots > StepComplete — with profile and demo mode
         class="mt-3 space-y-2 overflow-x-hidden"
       >
         <li
-          class="flex items-start gap-3 rounded-item border border-border bg-surface px-4 py-3.5"
+          class="flex min-h-12 items-center gap-3 rounded-item border border-border bg-surface px-4 py-3"
         >
           <div
             class="flex h-8 w-8 shrink-0 items-center justify-center rounded-item border border-border bg-secondary"
@@ -344,22 +334,17 @@ exports[`onboarding step snapshots > StepComplete — with profile and demo mode
             </svg>
           </div>
           <div
-            class="min-w-0 font-mono"
+            class="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2 gap-y-1 font-mono"
           >
             <p
-              class="text-dim text-w-xs uppercase tracking-wide"
-            >
-              Profile
-            </p>
-            <p
-              class="mt-1 text-foreground-secondary text-w-sm leading-6"
+              class="min-w-0 break-words text-foreground-secondary text-w-sm leading-6"
             >
               Full-Stack Developer
             </p>
           </div>
         </li>
         <li
-          class="flex items-start gap-3 rounded-item border border-border bg-surface px-4 py-3.5"
+          class="flex min-h-12 items-center gap-3 rounded-item border border-border bg-surface px-4 py-3"
         >
           <div
             class="flex h-8 w-8 shrink-0 items-center justify-center rounded-item border border-border bg-secondary"
@@ -389,27 +374,22 @@ exports[`onboarding step snapshots > StepComplete — with profile and demo mode
             </svg>
           </div>
           <div
-            class="min-w-0 font-mono"
+            class="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2 gap-y-1 font-mono"
           >
             <p
-              class="text-dim text-w-xs uppercase tracking-wide"
-            >
-              Mode
-            </p>
-            <p
-              class="mt-1 text-foreground-secondary text-w-sm leading-6"
+              class="min-w-0 break-words text-foreground-secondary text-w-sm leading-6"
             >
               Demo mode
             </p>
             <p
-              class="mt-1 text-dim text-w-xs leading-5"
+              class="min-w-0 text-dim text-w-xs leading-5"
             >
               Viewing sample data
             </p>
           </div>
         </li>
         <li
-          class="flex items-start gap-3 rounded-item border border-border bg-surface px-4 py-3.5"
+          class="flex min-h-12 items-center gap-3 rounded-item border border-border bg-surface px-4 py-3"
         >
           <div
             class="flex h-8 w-8 shrink-0 items-center justify-center rounded-item border border-border bg-secondary"
@@ -442,27 +422,22 @@ exports[`onboarding step snapshots > StepComplete — with profile and demo mode
             </svg>
           </div>
           <div
-            class="min-w-0 font-mono"
+            class="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2 gap-y-1 font-mono"
           >
             <p
-              class="text-dim text-w-xs uppercase tracking-wide"
-            >
-              Integrations
-            </p>
-            <p
-              class="mt-1 text-foreground-secondary text-w-sm leading-6"
+              class="min-w-0 break-words text-foreground-secondary text-w-sm leading-6"
             >
               2 integrations
             </p>
             <p
-              class="mt-1 text-dim text-w-xs leading-5"
+              class="min-w-0 text-dim text-w-xs leading-5"
             >
               Selected
             </p>
           </div>
         </li>
         <li
-          class="flex items-start gap-3 rounded-item border border-border bg-surface px-4 py-3.5"
+          class="flex min-h-12 items-center gap-3 rounded-item border border-border bg-surface px-4 py-3"
         >
           <div
             class="flex h-8 w-8 shrink-0 items-center justify-center rounded-item border border-border bg-secondary"
@@ -486,27 +461,22 @@ exports[`onboarding step snapshots > StepComplete — with profile and demo mode
             </svg>
           </div>
           <div
-            class="min-w-0 font-mono"
+            class="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2 gap-y-1 font-mono"
           >
             <p
-              class="text-dim text-w-xs uppercase tracking-wide"
+              class="min-w-0 break-words text-foreground-secondary text-w-sm leading-6"
             >
-              Plugins
+              3 plugins
             </p>
             <p
-              class="mt-1 text-foreground-secondary text-w-sm leading-6"
-            >
-              8 plugins
-            </p>
-            <p
-              class="mt-1 text-dim text-w-xs leading-5"
+              class="min-w-0 text-dim text-w-xs leading-5"
             >
               Enabled
             </p>
           </div>
         </li>
         <li
-          class="flex items-start gap-3 rounded-item border border-border bg-surface px-4 py-3.5"
+          class="flex min-h-12 items-center gap-3 rounded-item border border-border bg-surface px-4 py-3"
         >
           <div
             class="flex h-8 w-8 shrink-0 items-center justify-center rounded-item border border-border bg-secondary"
@@ -555,15 +525,10 @@ exports[`onboarding step snapshots > StepComplete — with profile and demo mode
             </svg>
           </div>
           <div
-            class="min-w-0 font-mono"
+            class="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2 gap-y-1 font-mono"
           >
             <p
-              class="text-dim text-w-xs uppercase tracking-wide"
-            >
-              Layout
-            </p>
-            <p
-              class="mt-1 text-foreground-secondary text-w-sm leading-6"
+              class="min-w-0 break-words text-foreground-secondary text-w-sm leading-6"
             >
               Dashboard blueprint selected
             </p>
@@ -572,7 +537,7 @@ exports[`onboarding step snapshots > StepComplete — with profile and demo mode
       </ul>
     </div>
     <div
-      class="mt-8 flex max-w-sm flex-col items-center gap-5"
+      class="mt-7 flex max-w-md flex-col items-center gap-5"
     >
       <p
         class="font-mono text-dim text-w-sm leading-6"

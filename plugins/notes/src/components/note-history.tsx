@@ -40,7 +40,7 @@ export function NoteHistory({ snapshots, onRestore, onClose }: NoteHistoryProps)
       </div>
 
       {snapshots.length === 0 ? (
-        <div className="flex flex-1 items-center justify-center text-dim text-sm">
+        <div className="flex flex-1 items-center justify-center text-dim text-w-sm">
           No snapshots yet. Edits create snapshots automatically.
         </div>
       ) : (
@@ -89,9 +89,9 @@ export function NoteHistory({ snapshots, onRestore, onClose }: NoteHistoryProps)
                 </div>
                 <div className="scrollbar-thin flex-1 overflow-y-auto px-4 py-3">
                   {selectedSnapshot.content ? (
-                    <RichTextViewer markdown={selectedSnapshot.content} className="text-sm" />
+                    <RichTextViewer markdown={selectedSnapshot.content} className="text-w-sm" />
                   ) : (
-                    <div className="text-dim text-sm italic">Empty snapshot.</div>
+                    <div className="text-dim text-w-sm italic">Empty snapshot.</div>
                   )}
                 </div>
               </>

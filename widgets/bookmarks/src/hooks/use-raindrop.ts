@@ -11,12 +11,13 @@ import useSWR from "swr";
 
 const ROUTE = integrationRoute("raindrop", "data");
 
-export function useRaindrop(timeRange: TimeRange = "30d") {
+export function useRaindrop(timeRange: TimeRange = "30d", demoMode = false) {
   const effectiveTimezone = useEffectiveTimeZone();
-  const refreshInterval = usePollingInterval("raindrop");
+  const refreshInterval = usePollingInterval("bookmarks");
   const key = buildUrl(ROUTE, {
     range: timeRange,
     timezone: effectiveTimezone,
+    ...(demoMode ? { demo: "1" } : {}),
   });
 
   const { data, error, isLoading, mutate } = useSWR<RaindropResponse>(key, apiFetcher, {
@@ -32,10 +33,11 @@ export function useRaindrop(timeRange: TimeRange = "30d") {
         range: timeRange,
         timezone: effectiveTimezone,
         refresh: "1",
+        ...(demoMode ? { demo: "1" } : {}),
       })
     );
     await mutate(fresh, { revalidate: false });
-  }, [effectiveTimezone, mutate, timeRange]);
+  }, [effectiveTimezone, demoMode, mutate, timeRange]);
 
   return {
     data: data ?? null,

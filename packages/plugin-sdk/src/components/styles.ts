@@ -17,11 +17,11 @@ export const PLUGIN_STYLES = {
 
   /** Standard text input */
   input:
-    "w-full bg-transparent text-sm text-foreground-secondary placeholder:text-dim outline-none",
+    "w-full bg-transparent text-w-sm text-foreground-secondary placeholder:text-dim outline-none",
 
   /** Search input with icon space */
   searchInput:
-    "w-full border border-border bg-surface pl-8 pr-3 py-1.5 text-sm text-foreground-secondary outline-none focus:border-accent rounded",
+    "w-full border border-border bg-surface pl-8 pr-3 py-1.5 text-w-sm text-foreground-secondary outline-none focus:border-accent rounded",
 
   /** Section header label (FOLDERS, TAGS, etc.) */
   sectionHeader: "text-w-xs font-mono uppercase tracking-widest text-dim",
@@ -33,7 +33,7 @@ export const PLUGIN_STYLES = {
   fieldLabel: "text-w-sm text-dim",
 
   /** Detail panel field value */
-  fieldValue: "text-sm text-foreground-secondary",
+  fieldValue: "text-w-sm text-foreground-secondary",
 
   /** Metadata text (timestamps, IDs) */
   metaText: "text-w-sm font-mono text-dim",

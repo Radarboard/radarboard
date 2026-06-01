@@ -10,7 +10,7 @@ interface DemoBannerProps {
 }
 
 export function DemoBanner({ onConnectServices }: DemoBannerProps) {
-  const { isDemoMode, dismissDemo } = useDemoModeActions();
+  const { isDemoMode, connectRealData, startFresh } = useDemoModeActions();
   const [dismissed, setDismissed] = useState(false);
 
   if (!isDemoMode || dismissed) return null;
@@ -27,22 +27,26 @@ export function DemoBanner({ onConnectServices }: DemoBannerProps) {
         {onConnectServices ? (
           <Button
             variant="outline"
-            onClick={onConnectServices}
+            onClick={() => {
+              connectRealData()
+                .finally(onConnectServices)
+                .catch(() => undefined);
+            }}
             className="h-6 rounded-item px-2.5 font-mono text-w-sm uppercase tracking-widest"
           >
-            Connect services
+            Connect real services
           </Button>
         ) : null}
         <Button
           variant="ghost"
           onClick={() => {
-            dismissDemo();
+            startFresh().catch(() => undefined);
             setDismissed(true);
           }}
           className="h-6 rounded-item px-2 font-mono text-dim text-w-sm uppercase tracking-widest hover:text-foreground-secondary"
         >
           <X className="icon-sm" />
-          <span className="hidden sm:inline">Dismiss</span>
+          <span className="hidden sm:inline">Start fresh</span>
         </Button>
       </div>
     </div>

@@ -109,6 +109,36 @@ const DESCRIPTOR_ID_TO_PLATFORM_INTEGRATION_KEY = Object.fromEntries(
   ])
 ) as Record<string, keyof PlatformIntegrations>;
 
+const SERVICE_DESCRIPTION_FALLBACKS: Record<string, string> = {
+  "app-store-connect": "App reviews, ratings, TestFlight builds, and App Store performance.",
+  betterstack: "Uptime, incident, and log monitoring for product reliability.",
+  github: "Repositories, pull requests, commits, stars, issues, and release activity.",
+  "github-sponsors": "GitHub Sponsors income, sponsor counts, and supporter activity.",
+  "google-search-console": "Search clicks, impressions, CTR, rankings, and query performance.",
+  linear: "Roadmaps, issues, cycles, project progress, and team delivery signals.",
+  npm: "Package download trends, versions, and package health.",
+  "open-collective": "Open Collective balances, donations, expenses, and contributor funding.",
+  openpanel: "Product analytics: visitors, sessions, page views, and audience behavior.",
+  pagerduty: "Incidents, on-call signals, and operational response status.",
+  raindrop: "Saved bookmarks, collections, tags, and research links.",
+  resend: "Transactional email delivery, alerting, and message activity.",
+  revenuecat: "Subscription revenue, MRR, payments, and app monetization metrics.",
+  sentry: "Errors, crashes, issue volume, and application health.",
+  slack: "Team notifications, workflow messages, and alert delivery.",
+  stripe: "Payments, subscriptions, gross revenue, MRR, and customer billing.",
+  umami: "Web analytics: pageviews, visitors, top pages, and audience breakdown.",
+  vercel: "Deployments, domains, projects, build status, and hosting activity.",
+};
+
+function applyServiceDescriptionFallbacks(serviceMap: Map<string, ServiceEntry>) {
+  for (const [serviceId, description] of Object.entries(SERVICE_DESCRIPTION_FALLBACKS)) {
+    const service = serviceMap.get(serviceId);
+    if (service && !service.description) {
+      service.description = description;
+    }
+  }
+}
+
 export function collectRegistryServices(serviceMap: Map<string, ServiceEntry>) {
   for (const descriptor of INTEGRATION_REGISTRY.values()) {
     const auth = integrationAuthToWidgetAuth(descriptor.auth);
@@ -228,6 +258,7 @@ export function collectServices(): ServiceEntry[] {
 
   collectRegistryServices(serviceMap);
   mergeWidgetServices(serviceMap);
+  applyServiceDescriptionFallbacks(serviceMap);
 
   return Array.from(serviceMap.values());
 }

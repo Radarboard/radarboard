@@ -71,7 +71,7 @@ function WorkflowListItem({
     >
       <Icon className="h-3.5 w-3.5 shrink-0 text-dim" />
       <div className="min-w-0 flex-1">
-        <div className="truncate font-mono text-xs">{workflow.name}</div>
+        <div className="truncate font-mono text-w-xs">{workflow.name}</div>
         <div className="truncate text-dim text-w-xs">{triggerLabel(workflow.trigger)}</div>
       </div>
       <div
@@ -101,7 +101,7 @@ function WorkflowDetailPanel({
     <div className="flex h-full flex-col overflow-y-auto p-6">
       <div className="mb-6">
         <div className="flex items-center justify-between">
-          <h2 className="font-mono font-semibold text-sm">{workflow.name}</h2>
+          <h2 className="font-mono font-semibold text-w-sm">{workflow.name}</h2>
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
               <span className="text-dim text-w-xs">Enabled</span>

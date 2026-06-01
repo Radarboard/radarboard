@@ -263,7 +263,7 @@ function DataSourceFetchTester({ descriptor }: { descriptor: IntegrationDescript
           onChange={(e) =>
             setTesterState((current) => ({ ...current, selectedAction: e.target.value }))
           }
-          className="rounded border border-input bg-surface px-2 py-1 text-foreground text-sm"
+          className="rounded border border-input bg-surface px-2 py-1 text-foreground text-w-sm"
         >
           {dataSources.map((ds) => (
             <option key={ds.action} value={ds.action}>
@@ -311,7 +311,7 @@ function DataSourceFetchTester({ descriptor }: { descriptor: IntegrationDescript
         size="sm"
         onClick={runFetch}
         disabled={running || !selectedDs?.fetch}
-        className="font-mono text-xs"
+        className="font-mono text-w-xs"
       >
         {running ? "Running..." : "Run Fetch"}
       </Button>
@@ -355,7 +355,7 @@ export function IntegrationSandbox() {
           <h1 className="font-semibold text-3xl text-foreground tracking-tight">
             Inspect Integration Descriptors
           </h1>
-          <p className="max-w-3xl text-muted-foreground text-sm leading-relaxed">
+          <p className="max-w-3xl text-muted-foreground text-w-sm leading-relaxed">
             Browse integration auth configs, data sources, MCP tools, and test data source fetches
             with mock or real credentials.
           </p>
@@ -363,14 +363,14 @@ export function IntegrationSandbox() {
 
         {/* Controls */}
         <div className="flex flex-wrap items-center gap-4 border-border border-b pb-4">
-          <label className="text-dim text-sm" htmlFor="sandbox-integration-select">
+          <label className="text-dim text-w-sm" htmlFor="sandbox-integration-select">
             Integration:
           </label>
           <select
             id="sandbox-integration-select"
             value={selectedIntegration ?? ""}
             onChange={(e) => setSelectedIntegration(e.target.value || null)}
-            className="rounded border border-input bg-surface px-2 py-1 text-foreground text-sm"
+            className="rounded border border-input bg-surface px-2 py-1 text-foreground text-w-sm"
           >
             <option value="">Select an integration...</option>
             {integrations.map((i) => (

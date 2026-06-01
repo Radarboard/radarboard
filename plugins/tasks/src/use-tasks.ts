@@ -127,8 +127,8 @@ export function useTasks(api: PluginAPI) {
 
   const persistTasks = useCallback(
     async (updated: Task[]) => {
-      if (isDemoMode) return;
       setTasks(updated);
+      if (isDemoMode) return;
       await api.db.set(DB_KEYS.tasks, updated);
     },
     [api, isDemoMode]

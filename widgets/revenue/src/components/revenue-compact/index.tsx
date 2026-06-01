@@ -61,13 +61,14 @@ export function RevenueCompact({
   onChromeStateChange,
   onConnectService,
 }: WidgetRenderProps) {
-  const { timeRange, currency, projects } = useDashboard();
+  const { timeRange, currency, projects, preferences } = useDashboard();
   const providerIntegrationId = resolveRevenueProviderIntegrationId(projects, projectSlug);
   const { data, configured, fetchedAt, refetch, loading, error } = useRevenue(
     providerIntegrationId,
     timeRange,
     currency,
-    projectSlug
+    projectSlug,
+    preferences.demoMode === true
   );
 
   useWidgetCallbacks({

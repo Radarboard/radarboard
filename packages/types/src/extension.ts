@@ -104,6 +104,47 @@ export interface ExtensionMeta {
   requiredCapabilities?: ExtensionPermission[];
 }
 
+export type ExtensionCatalogSource = "official" | "community";
+
+export type ExtensionCatalogType = "integration" | "plugin" | "widget";
+
+export interface ExtensionCatalogProviderRef {
+  integration: string;
+  action: string;
+}
+
+export interface ExtensionCatalogItem {
+  id: string;
+  packageName?: string;
+  name: string;
+  description: string;
+  type: ExtensionCatalogType;
+  category?: string;
+  tags: string[];
+  tier: ExtensionTier;
+  source: ExtensionCatalogSource;
+  repoUrl?: string;
+  installUrl?: string;
+  packagePath?: string;
+  version?: string;
+  sdkCompatibility?: string;
+  capabilities: string[];
+  requiredIntegrations: string[];
+  providers: ExtensionCatalogProviderRef[];
+  author?: string;
+  lastUpdated?: string;
+  readmeUrl?: string;
+  installed: boolean;
+  installable: boolean;
+}
+
+export interface ExtensionCatalogResponse {
+  generatedAt: string;
+  communityCatalogUrl: string;
+  communityCatalogError?: string;
+  extensions: ExtensionCatalogItem[];
+}
+
 // ---------------------------------------------------------------------------
 // Extension config migration
 // ---------------------------------------------------------------------------

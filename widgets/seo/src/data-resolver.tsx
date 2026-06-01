@@ -1,5 +1,6 @@
 "use client";
 
+import { useDemoMode } from "@radarboard/hooks/use-demo-mode";
 import {
   type DataSourceResolverProps,
   registerTemplateDataSource,
@@ -51,7 +52,13 @@ function buildOverviewTrend(data: {
 }
 
 function SeoResolver({ projectSlug, timeRange = "30d", onState }: DataSourceResolverProps) {
-  const { data, fetchedAt, loading, error, refetch } = useSeo(projectSlug, null, timeRange);
+  const { isDemoMode } = useDemoMode();
+  const { data, fetchedAt, loading, error, refetch } = useSeo(
+    projectSlug,
+    null,
+    timeRange,
+    isDemoMode
+  );
 
   const resolvedData = useMemo(() => {
     if (!data) return data;

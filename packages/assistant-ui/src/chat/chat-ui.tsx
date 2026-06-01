@@ -110,7 +110,7 @@ export const Reasoning = ({
         type="button"
         aria-expanded={effectiveOpen}
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-fit items-center gap-2 font-bold font-mono text-dim/40 text-w-sm uppercase tracking-wider transition-colors hover:text-foreground"
+        className="flex w-fit items-center gap-2 font-bold font-mono text-dim text-w-sm uppercase tracking-wider transition-colors hover:text-foreground"
       >
         {effectiveOpen ? <ChevronDownIcon size={14} /> : <ChevronRightIcon size={14} />}
         <span>{statusLabel}</span>
@@ -190,7 +190,7 @@ export const ModelSelectorTrigger = ({
       "flex items-center gap-1.5 border border-transparent px-2.5 py-1.5 font-bold font-mono text-w-xs uppercase tracking-widest outline-none transition-all",
       active
         ? "border-accent/10 bg-accent/5 text-accent"
-        : "text-dim/60 hover:bg-muted/20 hover:text-foreground",
+        : "text-dim hover:bg-muted/20 hover:text-foreground",
       className
     )}
     {...props}
@@ -335,7 +335,7 @@ export const MessageAction = ({
 }: ComponentProps<typeof ChatTooltipButton>) => (
   <ChatTooltipButton
     className={cn(
-      "h-8 w-8 text-dim/40 transition-colors hover:bg-muted/20 hover:text-foreground",
+      "h-8 w-8 text-dim transition-colors hover:bg-muted/20 hover:text-foreground",
       className
     )}
     {...props}
@@ -365,7 +365,7 @@ export const Checkpoint = ({
     <div className="min-w-0 flex-1">
       <div className="font-bold text-foreground text-w-sm uppercase tracking-widest">{label}</div>
       {Boolean(timestamp) && (
-        <div className="mt-0.5 font-mono text-dim/40 text-w-xs lowercase">{timestamp}</div>
+        <div className="mt-0.5 font-mono text-dim text-w-xs lowercase">{timestamp}</div>
       )}
     </div>
     <ChevronRightIcon

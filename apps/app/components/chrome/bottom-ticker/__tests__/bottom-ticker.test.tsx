@@ -2,6 +2,8 @@
 import { useDashboard } from "@radarboard/hooks/use-dashboard";
 import { useRoutingConfig } from "@radarboard/hooks/use-routing-config";
 import { getPluginToken } from "@radarboard/plugin-sdk/host";
+import { PLUGIN_REGISTRY } from "@radarboard/plugin-sdk/registry";
+import type { PluginDescriptor } from "@radarboard/plugin-sdk/types";
 import type { Project } from "@radarboard/types/project";
 import { useHealth } from "@radarboard/widget-observability";
 import { useShipping } from "@radarboard/widget-shipping";
@@ -87,13 +89,32 @@ function renderTicker(projectSlug: string | null = null) {
   );
 }
 
+function createTestPlugin(id: string): PluginDescriptor {
+  const Placeholder = () => null;
+  return {
+    id,
+    name: id,
+    description: id,
+    icon: Placeholder,
+    category: "monitoring",
+    version: "0.0.0",
+    launchSurfaces: ["dock"],
+    presentation: "side-panel",
+    component: Placeholder,
+  };
+}
+
 describe("BottomTicker", () => {
   afterEach(() => {
     cleanup();
+    PLUGIN_REGISTRY.clear();
     vi.useRealTimers();
   });
 
   beforeEach(() => {
+    PLUGIN_REGISTRY.clear();
+    PLUGIN_REGISTRY.set("status-page", createTestPlugin("status-page"));
+    PLUGIN_REGISTRY.set("rss-reader", createTestPlugin("rss-reader"));
     vi.mocked(getPluginToken).mockResolvedValue("test-token");
     vi.mocked(useDashboard).mockReturnValue({
       projects: PROJECTS,
@@ -154,6 +175,17 @@ describe("BottomTicker", () => {
     await waitFor(() => {
       expect(screen.getByText("OUTAGE: Cursor API")).toBeTruthy();
     });
+  });
+
+  it("does not poll moved plugin ticker sources when plugins are not registered", async () => {
+    PLUGIN_REGISTRY.clear();
+
+    renderTicker();
+
+    await waitFor(() => {
+      expect(screen.getByText("No recent activity")).toBeTruthy();
+    });
+    expect(globalThis.fetch).not.toHaveBeenCalled();
   });
 
   it("respects the health-alert visibility setting", async () => {

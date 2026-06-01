@@ -1981,7 +1981,7 @@ function OverviewTabContent({
         </div>
 
         <div className="mb-4">
-          <div className="mb-2 font-mono text-muted-foreground text-xs uppercase tracking-wider">
+          <div className="mb-2 font-mono text-muted-foreground text-w-xs uppercase tracking-wider">
             Stage
           </div>
           <StagePicker
@@ -2060,7 +2060,7 @@ function PlatformsTabContent({
   return (
     <div className="overflow-x-hidden px-5 py-4">
       <div className="mb-3 flex items-center gap-2">
-        <span className="flex-1 font-mono text-muted-foreground text-xs uppercase tracking-wider">
+        <span className="flex-1 font-mono text-muted-foreground text-w-xs uppercase tracking-wider">
           Platforms
         </span>
         <Button

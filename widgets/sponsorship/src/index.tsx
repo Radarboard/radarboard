@@ -72,9 +72,9 @@ const sponsorshipDescriptorBase = createTemplateDescriptor(
   {
     catalogCategory: "finance",
     defaultSlot: "slot8",
-    requiredIntegrations: ["github", "open-collective"],
+    requiredIntegrations: [],
     defaultPollInterval: 300_000,
-    pollingSourceIds: ["githubSponsors", "openCollective"],
+    pollingSourceIds: ["sponsorship"],
     auth: [
       {
         id: "github",

@@ -7,34 +7,65 @@ describe("DEMO_CONFIG", () => {
       {
         "blueprintId": "indie-revenue-dashboard",
         "integrations": [
-          "github",
-          "vercel",
-          "stripe",
-          "openpanel",
-          "sentry",
+          "shipping",
         ],
         "plugins": [
           "tasks",
           "notes",
           "bookmarks",
-          "rss-reader",
-          "changelog",
-          "status-page",
         ],
         "profile": "indie",
+        "showcaseLayout": {
+          "cell-1": {
+            "fallbackWidgetId": "seo",
+            "widgetId": "seo",
+          },
+          "cell-2": {
+            "fallbackWidgetId": "analytics",
+            "widgetId": "analytics",
+          },
+          "cell-3": {
+            "fallbackWidgetId": "revenue",
+            "widgetId": "npm-downloads",
+          },
+          "cell-4": {
+            "fallbackWidgetId": "observability",
+            "widgetId": "app-reviews",
+          },
+          "cell-5": {
+            "fallbackWidgetId": "bookmarks",
+            "widgetId": "bookmarks",
+          },
+          "cell-6": {
+            "fallbackWidgetId": "shipping",
+            "widgetId": "shipping",
+          },
+          "cell-7": {
+            "fallbackWidgetId": "sponsorship",
+            "widgetId": "github-stars",
+          },
+          "cell-8": {
+            "fallbackWidgetId": "roadmap",
+            "widgetId": "vercel-domains",
+          },
+          "cell-9": {
+            "fallbackWidgetId": "observability",
+            "widgetId": "observability",
+          },
+        },
         "widgets": [
           "revenue",
-          "shipping",
-          "roadmap",
           "analytics",
           "seo",
+          "npm-downloads",
+          "app-reviews",
+          "bookmarks",
+          "shipping",
           "github-stars",
-          "pulls",
-          "github-commits",
-          "deployments",
           "vercel-domains",
           "observability",
-          "npm-downloads",
+          "roadmap",
+          "sponsorship",
         ],
       }
     `);

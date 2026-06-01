@@ -145,7 +145,7 @@ function SetupWizardStep2({
                 className="w-full"
               />
               {Boolean(field.helpText) && (
-                <p className="mt-1 font-mono text-dim/60 text-w-sm">{field.helpText}</p>
+                <p className="mt-1 font-mono text-dim text-w-sm">{field.helpText}</p>
               )}
             </div>
           ))

@@ -16,7 +16,18 @@ vi.mock("@radarboard/plugin-sdk/host", () => ({
 }));
 
 vi.mock("@radarboard/plugin-sdk/registry", () => ({
-  getAllPlugins: () => [{ id: "rss-reader" }, { id: "notes" }, { id: "tasks" }],
+  getAllPlugins: () => [
+    { id: "rss-reader" },
+    { id: "notes" },
+    { id: "tasks" },
+    { id: "bookmarks" },
+  ],
+}));
+
+let mockIsDemoMode = false;
+
+vi.mock("@radarboard/hooks/use-demo-mode", () => ({
+  useDemoMode: () => ({ isDemoMode: mockIsDemoMode }),
 }));
 
 const mockFetch = vi.fn();
@@ -32,6 +43,7 @@ function createWrapper() {
 
 describe("useDisabledPlugins", () => {
   beforeEach(() => {
+    mockIsDemoMode = false;
     vi.mocked(getPluginToken).mockResolvedValue("test-token");
     mockFetch.mockReset();
   });
@@ -113,5 +125,25 @@ describe("useDisabledPlugins", () => {
     await waitFor(() => {
       expect(result.current.has("rss-reader")).toBe(false);
     });
+  });
+
+  it("enables demo plugins without persisting plugin preferences", async () => {
+    mockIsDemoMode = true;
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ value: null }),
+    });
+
+    const wrapper = createWrapper();
+    const { result } = renderHook(() => useDisabledPlugins(), { wrapper });
+
+    await waitFor(() => {
+      expect(result.current.has("rss-reader")).toBe(true);
+    });
+
+    expect(result.current.has("tasks")).toBe(false);
+    expect(result.current.has("notes")).toBe(false);
+    expect(result.current.has("bookmarks")).toBe(false);
+    expect(mockFetch).toHaveBeenCalledTimes(1);
   });
 });

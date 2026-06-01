@@ -281,7 +281,7 @@ export function NoteEditor({
             onChange={(markdown) => handleContentChange(markdown)}
             placeholder="Start writing..."
             className="border-0 bg-transparent"
-            editorClassName="min-h-[300px] px-4 py-3 text-sm text-foreground-secondary prose prose-invert max-w-none"
+            editorClassName="min-h-[300px] px-4 py-3 text-w-sm text-foreground-secondary prose prose-invert max-w-none"
             disabled={isReadOnly}
           />
         )}
@@ -290,7 +290,7 @@ export function NoteEditor({
           <Textarea
             value={content}
             onChange={(e) => handleContentChange(e.target.value)}
-            className="h-full min-h-[300px] resize-none border-0 bg-transparent px-4 py-3 font-mono text-foreground-secondary text-sm"
+            className="h-full min-h-[300px] resize-none border-0 bg-transparent px-4 py-3 font-mono text-foreground-secondary text-w-sm"
             placeholder="Write markdown..."
             spellCheck={false}
           />
@@ -299,9 +299,9 @@ export function NoteEditor({
         {(mode === "preview" || isReadOnly) && (
           <div className="px-4 py-3">
             {content ? (
-              <RichTextViewer markdown={content} className="text-sm" />
+              <RichTextViewer markdown={content} className="text-w-sm" />
             ) : (
-              <div className="text-dim text-sm italic">No content yet.</div>
+              <div className="text-dim text-w-sm italic">No content yet.</div>
             )}
           </div>
         )}

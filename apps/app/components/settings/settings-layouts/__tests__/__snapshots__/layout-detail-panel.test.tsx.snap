@@ -31,7 +31,7 @@ exports[`LayoutDetailPanel > matches the active current-page assignment state 1`
             </span>
           </div>
           <input
-            class="flex border border-border font-mono transition-interactive file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:focus-visible:border-destructive bg-secondary text-foreground-secondary focus-visible:border-accent px-2 py-1 text-w-sm rounded-item h-9 w-full"
+            class="flex border border-border font-mono transition-interactive file:border-0 file:bg-transparent file:text-w-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:focus-visible:border-destructive bg-secondary text-foreground-secondary focus-visible:border-accent px-2 py-1 text-w-sm rounded-item h-9 w-full"
             id="layout-name-input"
             type="text"
             value="Two by Two"
@@ -40,7 +40,7 @@ exports[`LayoutDetailPanel > matches the active current-page assignment state 1`
             class="mt-3 flex flex-wrap items-center gap-2"
           >
             <button
-              class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+              class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-w-xs transition-colors hover:text-foreground-secondary"
               type="button"
             >
               <svg
@@ -71,7 +71,7 @@ exports[`LayoutDetailPanel > matches the active current-page assignment state 1`
               Duplicate
             </button>
             <button
-              class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+              class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-w-xs transition-colors hover:text-foreground-secondary"
               type="button"
             >
               <svg
@@ -97,7 +97,7 @@ exports[`LayoutDetailPanel > matches the active current-page assignment state 1`
               Reset
             </button>
             <button
-              class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-destructive/20 text-destructive hover:bg-destructive/10 uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-xs"
+              class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-destructive/20 text-destructive hover:bg-destructive/10 uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-w-xs"
               type="button"
             >
               <svg
@@ -261,21 +261,21 @@ exports[`LayoutDetailPanel > matches the active current-page assignment state 1`
                 Equalize
               </span>
               <button
-                class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+                class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-w-xs transition-colors hover:text-foreground-secondary"
                 data-state="closed"
                 type="button"
               >
                 Column Widths
               </button>
               <button
-                class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+                class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-w-xs transition-colors hover:text-foreground-secondary"
                 data-state="closed"
                 type="button"
               >
                 Row Heights
               </button>
               <button
-                class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+                class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-w-xs transition-colors hover:text-foreground-secondary"
                 data-state="closed"
                 type="button"
               >
@@ -853,7 +853,7 @@ exports[`LayoutDetailPanel > matches the destructive removal modal state 1`] = `
               </span>
             </div>
             <input
-              class="flex border border-border font-mono transition-interactive file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:focus-visible:border-destructive bg-secondary text-foreground-secondary focus-visible:border-accent px-2 py-1 text-w-sm rounded-item h-9 w-full"
+              class="flex border border-border font-mono transition-interactive file:border-0 file:bg-transparent file:text-w-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:focus-visible:border-destructive bg-secondary text-foreground-secondary focus-visible:border-accent px-2 py-1 text-w-sm rounded-item h-9 w-full"
               id="layout-name-input"
               type="text"
               value="Two by Two"
@@ -862,7 +862,7 @@ exports[`LayoutDetailPanel > matches the destructive removal modal state 1`] = `
               class="mt-3 flex flex-wrap items-center gap-2"
             >
               <button
-                class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+                class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-w-xs transition-colors hover:text-foreground-secondary"
                 type="button"
               >
                 <svg
@@ -893,7 +893,7 @@ exports[`LayoutDetailPanel > matches the destructive removal modal state 1`] = `
                 Duplicate
               </button>
               <button
-                class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+                class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-w-xs transition-colors hover:text-foreground-secondary"
                 type="button"
               >
                 <svg
@@ -919,7 +919,7 @@ exports[`LayoutDetailPanel > matches the destructive removal modal state 1`] = `
                 Reset
               </button>
               <button
-                class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-destructive/20 text-destructive hover:bg-destructive/10 uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-xs"
+                class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-destructive/20 text-destructive hover:bg-destructive/10 uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-w-xs"
                 type="button"
               >
                 <svg
@@ -1083,21 +1083,21 @@ exports[`LayoutDetailPanel > matches the destructive removal modal state 1`] = `
                   Equalize
                 </span>
                 <button
-                  class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+                  class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-w-xs transition-colors hover:text-foreground-secondary"
                   data-state="closed"
                   type="button"
                 >
                   Column Widths
                 </button>
                 <button
-                  class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+                  class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-w-xs transition-colors hover:text-foreground-secondary"
                   data-state="closed"
                   type="button"
                 >
                   Row Heights
                 </button>
                 <button
-                  class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+                  class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-w-xs transition-colors hover:text-foreground-secondary"
                   data-state="closed"
                   type="button"
                 >
@@ -1655,7 +1655,7 @@ exports[`LayoutDetailPanel > matches the destructive removal modal state 1`] = `
           class="min-w-0 flex-1 space-y-1"
         >
           <h2
-            class="font-bold font-mono text-foreground text-sm uppercase tracking-wider"
+            class="font-bold font-mono text-foreground text-w-sm uppercase tracking-wider"
             id="radix-_r_2a_"
           >
             Review Column Removal
@@ -1801,13 +1801,13 @@ exports[`LayoutDetailPanel > matches the destructive removal modal state 1`] = `
       class="flex items-center gap-2 border-border border-t px-4 py-3 justify-end"
     >
       <button
-        class="cursor-pointer px-3 py-1.5 font-mono text-muted-foreground text-xs transition-colors hover:text-foreground"
+        class="cursor-pointer px-3 py-1.5 font-mono text-muted-foreground text-w-xs transition-colors hover:text-foreground"
         type="button"
       >
         Cancel
       </button>
       <button
-        class="cursor-pointer rounded-item bg-destructive px-3 py-1.5 font-mono text-destructive-foreground text-xs transition-colors hover:bg-destructive/90"
+        class="cursor-pointer rounded-item bg-destructive px-3 py-1.5 font-mono text-destructive-foreground text-w-xs transition-colors hover:bg-destructive/90"
         type="button"
       >
         Apply change
@@ -1856,7 +1856,7 @@ exports[`LayoutDetailPanel > matches the inactive assignment warning state 1`] =
             </span>
           </div>
           <input
-            class="flex border border-border font-mono transition-interactive file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:focus-visible:border-destructive bg-secondary text-foreground-secondary focus-visible:border-accent px-2 py-1 text-w-sm rounded-item h-9 w-full"
+            class="flex border border-border font-mono transition-interactive file:border-0 file:bg-transparent file:text-w-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:focus-visible:border-destructive bg-secondary text-foreground-secondary focus-visible:border-accent px-2 py-1 text-w-sm rounded-item h-9 w-full"
             id="layout-name-input"
             type="text"
             value="Two by Two"
@@ -1865,7 +1865,7 @@ exports[`LayoutDetailPanel > matches the inactive assignment warning state 1`] =
             class="mt-3 flex flex-wrap items-center gap-2"
           >
             <button
-              class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+              class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-w-xs transition-colors hover:text-foreground-secondary"
               type="button"
             >
               <svg
@@ -1896,7 +1896,7 @@ exports[`LayoutDetailPanel > matches the inactive assignment warning state 1`] =
               Duplicate
             </button>
             <button
-              class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+              class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-w-xs transition-colors hover:text-foreground-secondary"
               type="button"
             >
               <svg
@@ -1922,7 +1922,7 @@ exports[`LayoutDetailPanel > matches the inactive assignment warning state 1`] =
               Reset
             </button>
             <button
-              class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-destructive/20 text-destructive hover:bg-destructive/10 uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-xs"
+              class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-destructive/20 text-destructive hover:bg-destructive/10 uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-w-xs"
               type="button"
             >
               <svg
@@ -2122,21 +2122,21 @@ exports[`LayoutDetailPanel > matches the inactive assignment warning state 1`] =
                 Equalize
               </span>
               <button
-                class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+                class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-w-xs transition-colors hover:text-foreground-secondary"
                 data-state="closed"
                 type="button"
               >
                 Column Widths
               </button>
               <button
-                class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+                class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-w-xs transition-colors hover:text-foreground-secondary"
                 data-state="closed"
                 type="button"
               >
                 Row Heights
               </button>
               <button
-                class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+                class="cursor-pointer justify-center whitespace-nowrap tracking-wider transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-border bg-transparent hover:bg-muted uppercase rounded-item w-auto uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-w-xs transition-colors hover:text-foreground-secondary"
                 data-state="closed"
                 type="button"
               >

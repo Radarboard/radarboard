@@ -49,24 +49,22 @@ test.describe("onboarding wizard — preview mode @onboarding", () => {
   }) => {
     await openPreviewOnboarding(page);
 
-    // Click "Start with demo data" to advance
-    await page.getByText("Start with demo data").click();
+    // Start fresh advances into the profile-driven setup flow.
+    await page.getByRole("button", { name: /^Start fresh/ }).click();
 
     // About You step visible
-    await expect(page.getByText("Select all that apply")).toBeVisible({ timeout: 10_000 });
-    await expect(page.getByText("Select all that apply")).toBeVisible();
+    await expect(page.getByText("Choose your primary role")).toBeVisible({ timeout: 10_000 });
 
     // Profile groups visible
-    await expect(page.getByText("Development", { exact: true })).toBeVisible();
-    await expect(page.getByText("Product & Business", { exact: true })).toBeVisible();
+    await expect(page.locator("div").filter({ hasText: /^Development$/ })).toBeVisible();
+    await expect(page.locator("div").filter({ hasText: /^Product & Business$/ })).toBeVisible();
 
     // Screenshot before selection
     const dialog = page.getByRole("dialog");
     await expect(dialog).toHaveScreenshot("onboarding-step2-profiles-empty.png", SCREENSHOT_OPTS);
 
-    // Select multiple profiles
+    // Select a profile
     await page.getByText("Full-Stack Developer").click();
-    await page.getByText("Indie Hacker").click();
 
     // Verify selection state (checkmarks appear)
     await expect(dialog).toHaveScreenshot(
@@ -77,7 +75,7 @@ test.describe("onboarding wizard — preview mode @onboarding", () => {
     await assertNoOnboardingErrors(consoleErrors, pageErrors);
   });
 
-  test("step 2 → step 4: profile selection pre-populates integrations", async ({
+  test("step 2 → step 4: profile selection treats provider suggestions as optional", async ({
     page,
     request,
     consoleErrors,
@@ -86,8 +84,8 @@ test.describe("onboarding wizard — preview mode @onboarding", () => {
     await openPreviewOnboarding(page);
 
     // Advance to profile step
-    await page.getByText("Start with demo data").click();
-    await expect(page.getByText("Select all that apply")).toBeVisible({ timeout: 10_000 });
+    await page.getByRole("button", { name: /^Start fresh/ }).click();
+    await expect(page.getByText("Choose your primary role")).toBeVisible({ timeout: 10_000 });
 
     // Select "Open Source Maintainer"
     await page.getByText("Open Source Maintainer").click();
@@ -98,13 +96,9 @@ test.describe("onboarding wizard — preview mode @onboarding", () => {
     // Integrations step visible
     await expect(page.getByText("Select the services you use")).toBeVisible({ timeout: 10_000 });
 
-    // GitHub should be pre-selected (it's in the Open Source profile)
     const dialog = page.getByRole("dialog");
-    const githubCard = dialog.locator("button", { hasText: "GitHub" });
-    await expect(githubCard).toBeVisible();
-
-    // "+12 more" message visible
-    await expect(page.getByText(/more integrations available/)).toBeVisible();
+    await expect(dialog.getByText("You can connect services later")).toBeVisible();
+    await expect(dialog.getByRole("button", { name: /GitHub/i })).toBeVisible();
 
     // Screenshot
     await expect(dialog).toHaveScreenshot(
@@ -119,18 +113,19 @@ test.describe("onboarding wizard — preview mode @onboarding", () => {
     await openPreviewOnboarding(page);
 
     // Navigate: Welcome → Profile → Integrations → Plugins
-    await page.getByText("Start fresh").click();
-    await page.getByRole("button", { name: "Skip" }).click(); // skip profile
-    await page.getByRole("button", { name: "Skip" }).click(); // skip integrations
+    await page.getByRole("button", { name: /^Start fresh/ }).click();
+    await page.getByText("Full-Stack Developer").click();
+    await page.getByRole("button", { name: "Continue" }).click(); // profile → integrations
+    await page.getByRole("button", { name: "Continue" }).click(); // integrations are optional
 
     // Plugins step
     await expect(page.getByText("Choose which plugins to enable")).toBeVisible({ timeout: 10_000 });
     await expect(page.getByText("Productivity")).toBeVisible();
-    await expect(page.getByText("Monitoring")).toBeVisible();
+    await expect(page.getByText("Productivity")).toBeVisible();
 
     // Plugin toggles visible
-    await expect(page.getByRole("switch", { name: "Toggle Tasks" })).toBeVisible();
-    await expect(page.getByRole("switch", { name: "Toggle Notes" })).toBeVisible();
+    await expect(page.getByLabel("Tasks")).toBeVisible();
+    await expect(page.getByLabel("Notes")).toBeVisible();
 
     // Screenshot
     const dialog = page.getByRole("dialog");
@@ -142,10 +137,11 @@ test.describe("onboarding wizard — preview mode @onboarding", () => {
   test("step 6: layout selection", async ({ page, request, consoleErrors, pageErrors }) => {
     await openPreviewOnboarding(page);
 
-    // Navigate: Welcome → skip all middle steps
-    await page.getByText("Start fresh").click();
-    await page.getByRole("button", { name: "Skip" }).click(); // profile
-    await page.getByRole("button", { name: "Skip" }).click(); // integrations
+    // Navigate: Welcome → Profile → skip Integrations/Plugins
+    await page.getByRole("button", { name: /^Start fresh/ }).click();
+    await page.getByText("Full-Stack Developer").click();
+    await page.getByRole("button", { name: "Continue" }).click(); // profile
+    await page.getByRole("button", { name: "Continue" }).click(); // integrations
     await page.getByRole("button", { name: "Skip" }).click(); // plugins
 
     // Layout step — should show blueprint/layout options
@@ -166,18 +162,12 @@ test.describe("onboarding wizard — preview mode @onboarding", () => {
   }) => {
     await openPreviewOnboarding(page);
 
-    // Navigate through all steps quickly
-    await page.getByText("Start with demo data").click(); // welcome → profile
-    await page.getByText("Indie Hacker").click();
-    await page.getByRole("button", { name: "Continue" }).click(); // profile → integrations
-    await page.getByRole("button", { name: "Continue" }).click(); // integrations → plugins
-    await page.getByRole("button", { name: "Continue" }).click(); // plugins → layout
-    await page.getByRole("button", { name: "Skip" }).click(); // layout → complete
+    // Demo mode now jumps directly to completion.
+    await page.getByRole("button", { name: /^Start with demo data/ }).click();
 
     // Complete step
     await expect(page.getByText("You're all set")).toBeVisible({ timeout: 10_000 });
     await expect(page.getByText("Demo mode")).toBeVisible();
-    await expect(page.getByText("Indie Hacker")).toBeVisible();
     await expect(page.getByRole("button", { name: "Go to Dashboard" })).toBeVisible();
 
     // Screenshot
@@ -189,7 +179,7 @@ test.describe("onboarding wizard — preview mode @onboarding", () => {
     await expect(dialog).toBeHidden({ timeout: 5_000 });
 
     // Dashboard should be visible
-    await expect(page.getByRole("heading", { name: "Radarboard" })).toBeVisible({
+    await expect(page.getByRole("navigation", { name: "Plugins" })).toBeVisible({
       timeout: 20_000,
     });
 
@@ -211,16 +201,17 @@ test.describe("onboarding wizard — navigation @onboarding", () => {
     await openPreviewOnboarding(page);
 
     // Welcome → Profile
-    await page.getByText("Start fresh").click();
-    await expect(page.getByText("Select all that apply")).toBeVisible({ timeout: 10_000 });
+    await page.getByRole("button", { name: /^Start fresh/ }).click();
+    await expect(page.getByText("Choose your primary role")).toBeVisible({ timeout: 10_000 });
 
     // Profile → Integrations
-    await page.getByRole("button", { name: "Skip" }).click();
+    await page.getByText("Full-Stack Developer").click();
+    await page.getByRole("button", { name: "Continue" }).click();
     await expect(page.getByText("Select the services you use")).toBeVisible({ timeout: 10_000 });
 
     // Back → Profile
     await page.getByRole("button", { name: "Back", exact: true }).click();
-    await expect(page.getByText("Select all that apply")).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText("Choose your primary role")).toBeVisible({ timeout: 10_000 });
 
     // Back → Welcome
     await page.getByRole("button", { name: "Back", exact: true }).click();
@@ -237,22 +228,22 @@ test.describe("onboarding wizard — navigation @onboarding", () => {
   }) => {
     await openPreviewOnboarding(page);
 
-    // Welcome → Profile → skip → Integrations → skip → Plugins → skip → Layout → skip → Complete
-    await page.getByText("Start fresh").click();
-    await page.getByRole("button", { name: "Skip" }).click();
+    // Welcome → Profile → Integrations → continue → Plugins → skip → Layout → continue → Complete
+    await page.getByRole("button", { name: /^Start fresh/ }).click();
+    await page.getByText("Full-Stack Developer").click();
+    await page.getByRole("button", { name: "Continue" }).click();
     await expect(page.getByText("Select the services you use")).toBeVisible({ timeout: 10_000 });
-    await page.getByRole("button", { name: "Skip" }).click();
+    await page.getByRole("button", { name: "Continue" }).click();
     await expect(page.getByText("Choose which plugins to enable")).toBeVisible({ timeout: 10_000 });
     await page.getByRole("button", { name: "Skip" }).click(); // plugins → layout
-    await page.getByRole("button", { name: "Skip" }).click(); // layout → complete
+    await page.getByRole("button", { name: "Continue" }).click(); // layout → complete
     await expect(page.getByText("You're all set")).toBeVisible({ timeout: 10_000 });
 
     await assertNoOnboardingErrors(consoleErrors, pageErrors);
   });
 
-  test("preview mode dialog is dismissible via close button", async ({
+  test("preview mode dialog is dismissible via Escape", async ({
     page,
-    request,
     consoleErrors,
     pageErrors,
   }) => {
@@ -260,13 +251,13 @@ test.describe("onboarding wizard — navigation @onboarding", () => {
 
     await expect(page.getByText("Welcome to Radarboard")).toBeVisible({ timeout: 15_000 });
 
-    // Close via the X button
+    // Close via Escape; the onboarding dialog has no visible header close button.
     const dialog = page.getByRole("dialog");
-    await dialog.getByRole("button", { name: "Close" }).click();
+    await page.keyboard.press("Escape");
     await expect(dialog).toBeHidden({ timeout: 5_000 });
 
     // Dashboard visible after dismissal
-    await expect(page.getByRole("heading", { name: "Radarboard" })).toBeVisible({
+    await expect(page.getByRole("navigation", { name: "Plugins" })).toBeVisible({
       timeout: 20_000,
     });
 
@@ -313,7 +304,7 @@ test.describe("onboarding wizard — settings re-run @onboarding", () => {
     await mockDashboardApis(page);
     await gotoDashboard(page);
 
-    await expect(page.getByRole("heading", { name: "Radarboard" })).toBeVisible({
+    await expect(page.getByRole("navigation", { name: "Plugins" })).toBeVisible({
       timeout: 20_000,
     });
 
@@ -338,8 +329,8 @@ test.describe("onboarding wizard — settings re-run @onboarding", () => {
     await expect(page.getByRole("navigation", { name: "Plugins" })).toBeHidden();
 
     // Database step should NOT appear — go through and verify
-    await page.getByText("Start fresh").click();
-    await expect(page.getByText("Select all that apply")).toBeVisible({ timeout: 10_000 });
+    await page.getByRole("button", { name: /^Start fresh/ }).click();
+    await expect(page.getByText("Choose your primary role")).toBeVisible({ timeout: 10_000 });
 
     await assertNoOnboardingErrors(consoleErrors, pageErrors);
   });
@@ -352,7 +343,7 @@ test.describe("onboarding wizard — settings re-run @onboarding", () => {
     await mockDashboardApis(page);
     await gotoDashboard(page);
 
-    await expect(page.getByRole("heading", { name: "Radarboard" })).toBeVisible({
+    await expect(page.getByRole("navigation", { name: "Plugins" })).toBeVisible({
       timeout: 20_000,
     });
 

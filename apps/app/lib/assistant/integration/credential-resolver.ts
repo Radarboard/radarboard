@@ -1,14 +1,54 @@
-import type { ASCConfig } from "@radarboard/integration-app-store-connect/types";
-import type { BetterStackConfig } from "@radarboard/integration-betterstack/types";
-import type { GitHubConfig } from "@radarboard/integration-github/types";
-import type { LinearConfig } from "@radarboard/integration-linear/types";
-import type { OpenCollectiveConfig } from "@radarboard/integration-open-collective/types";
-import type { OpenPanelConfig } from "@radarboard/integration-openpanel/types";
-import type { ResendConfig } from "@radarboard/integration-resend/types";
-import type { RevenueCatConfig } from "@radarboard/integration-revenuecat/types";
-import type { SentryConfig } from "@radarboard/integration-sentry/types";
-import type { VercelConfig } from "@radarboard/integration-vercel/types";
 import { getCredentialRepo } from "@/data/core/repository";
+
+interface ASCConfig {
+  keyId: string;
+  issuerId: string;
+  privateKey: string;
+}
+
+interface BetterStackConfig {
+  apiToken: string;
+}
+
+interface GitHubConfig {
+  token: string;
+}
+
+interface LinearConfig {
+  apiKey: string;
+}
+
+interface OpenCollectiveConfig {
+  apiToken: string;
+  slug: string;
+}
+
+interface OpenPanelConfig {
+  clientId: string;
+  clientSecret: string;
+  projectId: string;
+}
+
+interface ResendConfig {
+  apiKey: string;
+  fromEmail: string;
+  toEmail: string;
+}
+
+interface RevenueCatConfig {
+  apiKey: string;
+  projectId: string;
+}
+
+interface SentryConfig {
+  authToken: string;
+  orgSlug: string;
+}
+
+interface VercelConfig {
+  token: string;
+  teamId?: string;
+}
 
 /**
  * Resolve credentials from the encrypted store.

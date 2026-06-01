@@ -352,9 +352,9 @@ export function TracesSection() {
             const cost = estimateCost(t.modelId, t.promptTokens, t.completionTokens);
             return (
               <DebugRow key={t.id}>
-                <DebugCell className="text-dim/60">{relativeTime(t.createdAt)}</DebugCell>
+                <DebugCell className="text-dim">{relativeTime(t.createdAt)}</DebugCell>
                 <DebugCell className="text-foreground-secondary/80">
-                  <span className="text-dim/60">{t.providerId}/</span>
+                  <span className="text-dim">{t.providerId}/</span>
                   {t.modelId}
                 </DebugCell>
                 <DebugCell className="text-accent">{t.promptTokens.toLocaleString()}</DebugCell>
@@ -393,7 +393,7 @@ export function TracesSection() {
                           }
                           className={cn(
                             "uppercase-none h-7 w-7 p-0 transition-colors hover:bg-transparent",
-                            t.rating === 1 ? "text-success" : "text-dim/40 hover:text-success"
+                            t.rating === 1 ? "text-success" : "text-dim hover:text-success"
                           )}
                         >
                           <ThumbsUpIcon className="icon-xs" />
@@ -414,9 +414,7 @@ export function TracesSection() {
                           }
                           className={cn(
                             "uppercase-none h-7 w-7 p-0 transition-colors hover:bg-transparent",
-                            t.rating === -1
-                              ? "text-destructive"
-                              : "text-dim/40 hover:text-destructive"
+                            t.rating === -1 ? "text-destructive" : "text-dim hover:text-destructive"
                           )}
                         >
                           <ThumbsDownIcon className="icon-xs" />

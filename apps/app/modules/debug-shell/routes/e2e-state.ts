@@ -14,6 +14,8 @@ import type { WidgetLayoutConfig } from "@radarboard/types/database";
 import { BASIC_3X3 } from "@radarboard/widget-engine/layouts";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { resetDbConnectionForTests } from "@/data/core/client";
+import { SQLITE_MIGRATION_SQL } from "@/data/providers/sqlite/sqlite-migrate";
 import { errorJson } from "@/lib/api";
 import { getRadarboardConfigFilename, getSqliteFilename, isE2EMode } from "@/lib/e2e";
 import { setDatabaseConfig } from "@/lib/radarboard-config";
@@ -24,11 +26,6 @@ const PostSchema = z.object({
 
 const SQLITE_RESET_SUFFIXES = ["", "-journal", "-shm", "-wal"] as const;
 const E2E_STATE_DIR = join(process.cwd(), ".radarboard-e2e");
-
-const BASE_TABLES_SQL = [
-  "CREATE TABLE IF NOT EXISTS user_settings (id TEXT PRIMARY KEY, project_order TEXT, widget_layout TEXT, project_integrations TEXT, project_context_map TEXT, llm_config TEXT, debug_config TEXT, routing_config TEXT, workflows TEXT, feature_preferences TEXT, user_plan TEXT, license_key TEXT, integration_connections TEXT, updated_at INTEGER)",
-  "CREATE TABLE IF NOT EXISTS widget_credentials (key TEXT PRIMARY KEY, encrypted_data TEXT NOT NULL, updated_at INTEGER NOT NULL)",
-];
 
 function getE2EStatePaths() {
   const sqliteFilename = getSqliteFilename();
@@ -66,10 +63,10 @@ function createSeedWidgetLayout(scenario: "fresh" | "dashboard"): WidgetLayoutCo
     layout["cell-3"] = "seo";
     layout["cell-4"] = "shipping";
     layout["cell-5"] = "observability";
-    layout["cell-6"] = "pulls";
-    layout["cell-7"] = "github-stars";
-    layout["cell-8"] = "deployments";
-    layout["cell-9"] = "vercel-domains";
+    layout["cell-6"] = "roadmap";
+    layout["cell-7"] = "sponsorship";
+    layout["cell-8"] = "bookmarks";
+    layout["cell-9"] = "logs";
   }
 
   return {
@@ -103,9 +100,7 @@ async function createBaseTables(): Promise<void> {
     url: `file:${join(E2E_STATE_DIR, getSqliteFilename())}`,
   });
 
-  for (const statement of BASE_TABLES_SQL) {
-    await db.execute(statement);
-  }
+  await db.executeMultiple(SQLITE_MIGRATION_SQL);
 }
 
 async function seedE2ESettings(scenario: "fresh" | "dashboard"): Promise<void> {
@@ -165,6 +160,7 @@ export async function handleE2EState(request: Request) {
     }
 
     clearE2EStateFiles();
+    resetDbConnectionForTests();
 
     if (parsed.data.scenario === "dashboard") {
       setDatabaseConfig({ provider: "sqlite" });

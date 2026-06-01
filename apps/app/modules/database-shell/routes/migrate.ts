@@ -1,7 +1,3 @@
-import {
-  PLANETSCALE_GITHUB_STARS_MIGRATION_SQL,
-  SUPABASE_GITHUB_STARS_MIGRATION_SQL,
-} from "@radarboard/integration-github/stars";
 import { createLogger } from "@radarboard/logger/logger";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -67,9 +63,7 @@ const SUPABASE_CORE_SQL = [
   "CREATE INDEX IF NOT EXISTS notification_rules_project_idx ON notification_rules(project_slug)",
 ].join(";\n");
 
-const SUPABASE_SQL = [SUPABASE_CORE_SQL, SUPABASE_GITHUB_STARS_MIGRATION_SQL]
-  .filter(Boolean)
-  .join(";\n");
+const SUPABASE_SQL = SUPABASE_CORE_SQL;
 
 const PLANETSCALE_CORE_SQL = [
   "CREATE TABLE IF NOT EXISTS user_settings (id VARCHAR(255) PRIMARY KEY, project_order TEXT, widget_layout TEXT, project_integrations TEXT, integration_connections TEXT, project_context_map TEXT, llm_config TEXT, debug_config TEXT, routing_config TEXT, updated_at BIGINT)",
@@ -94,9 +88,7 @@ const PLANETSCALE_CORE_SQL = [
   "CREATE INDEX IF NOT EXISTS notification_rules_project_idx ON notification_rules(project_slug)",
 ].join(";\n");
 
-const PLANETSCALE_SQL = [PLANETSCALE_CORE_SQL, PLANETSCALE_GITHUB_STARS_MIGRATION_SQL]
-  .filter(Boolean)
-  .join(";\n");
+const PLANETSCALE_SQL = PLANETSCALE_CORE_SQL;
 
 export async function handleRunDatabaseMigrations(request: Request) {
   try {

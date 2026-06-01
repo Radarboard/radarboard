@@ -2,21 +2,157 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Radarboard</title>
     <style>
-      body {
-        background: #101010;
-        color: #e8e8e8;
-        font-family: system-ui, sans-serif;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
+      * {
+        box-sizing: border-box;
         margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        min-height: 100%;
+      }
+
+      body {
+        align-items: center;
+        background: #111312;
+        color: #f6f6f4;
+        display: flex;
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        justify-content: center;
+        min-height: 100vh;
+        overflow: hidden;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+
+      .loader {
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding: 30px 28px;
+        text-align: center;
+        width: min(244px, calc(100vw - 48px));
+      }
+
+      .mark {
+        align-items: center;
+        background: #141716;
+        border: 2px solid #f4f2ec;
+        border-radius: 14px;
+        box-shadow: 0 14px 32px rgba(0, 0, 0, 0.36);
+        display: flex;
+        height: 74px;
+        justify-content: center;
+        position: relative;
+        width: 74px;
+      }
+
+      .mark::before,
+      .mark::after {
+        background: #f4f2ec;
+        border-radius: 999px;
+        content: "";
+        display: block;
+        height: 6px;
+        left: 20px;
+        position: absolute;
+        transform-origin: left center;
+      }
+
+      .mark::before {
+        top: 27px;
+        width: 34px;
+      }
+
+      .mark::after {
+        top: 42px;
+        width: 22px;
+      }
+
+      .pulse {
+        animation: pulse 1.8s ease-in-out infinite;
+      }
+
+      .copy {
+        display: grid;
+        gap: 8px;
+      }
+
+      h1 {
+        color: #ffffff;
+        font-size: 18px;
+        font-weight: 650;
+        letter-spacing: 0;
+        line-height: 1.15;
+      }
+
+      .status {
+        align-items: center;
+        color: #d7ddd7;
+        display: inline-flex;
+        font-size: 13px;
+        font-weight: 520;
+        gap: 8px;
+        justify-content: center;
+        line-height: 1.3;
+      }
+
+      .status::before {
+        animation: spin 1s linear infinite;
+        border: 2px solid rgba(215, 221, 215, 0.24);
+        border-top-color: #d7ddd7;
+        border-radius: 50%;
+        content: "";
+        display: inline-block;
+        height: 14px;
+        width: 14px;
+      }
+
+      .hint {
+        color: rgba(215, 221, 215, 0.68);
+        font-size: 11px;
+        line-height: 1.45;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: translateY(0) scale(1);
+        }
+        50% {
+          transform: translateY(-2px) scale(1.025);
+        }
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .pulse,
+        .status::before {
+          animation: none;
+        }
       }
     </style>
   </head>
   <body>
-    <p>Starting server…</p>
+    <main class="loader" aria-live="polite">
+      <div class="mark pulse" aria-hidden="true"></div>
+      <div class="copy">
+        <h1>Starting Radarboard</h1>
+        <p class="status">Loading dashboard</p>
+        <p class="hint">This can take a few seconds in development.</p>
+      </div>
+    </main>
   </body>
 </html>

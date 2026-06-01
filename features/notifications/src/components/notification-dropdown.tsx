@@ -41,7 +41,7 @@ export function NotificationDropdown({
   return createPortal(
     <div
       data-notification-dropdown="true"
-      className="fixed z-modal overflow-hidden rounded-panel border border-border bg-surface/95 shadow-popover backdrop-blur-xl"
+      className="fixed z-modal overflow-hidden rounded-panel border border-border bg-surface shadow-popover"
       style={{
         width,
         left,

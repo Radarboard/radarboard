@@ -150,7 +150,7 @@ describe("scoreBlueprintFit", () => {
     expect(score).toBe(0);
   });
 
-  it("returns 1.0 when all personas match and all integrations connected", () => {
+  it("returns 1.0 when all personas match for a provider-neutral blueprint", () => {
     const bp = getBlueprintById("oss-command-center")!;
     const score = scoreBlueprintFit(bp, {
       personas: ["opensource"],
@@ -159,36 +159,32 @@ describe("scoreBlueprintFit", () => {
     expect(score).toBe(1.0);
   });
 
-  it("gives 0.6 weight to persona and 0.4 to integrations", () => {
+  it("ignores connected integrations for provider-neutral blueprints", () => {
     const bp = getBlueprintById("oss-command-center")!;
 
-    // Persona match only (no integrations)
     const personaOnly = scoreBlueprintFit(bp, {
       personas: ["opensource"],
       connectedIntegrations: [],
     });
-    expect(personaOnly).toBeCloseTo(0.6, 5);
+    expect(personaOnly).toBe(1);
 
-    // Integration match only (wrong persona)
     const integrationOnly = scoreBlueprintFit(bp, {
       personas: ["frontend"],
       connectedIntegrations: ["github", "npm"],
     });
-    expect(integrationOnly).toBeCloseTo(0.4, 5);
+    expect(integrationOnly).toBe(0);
   });
 
-  it("gives partial integration score for partial coverage", () => {
+  it("scores provider-neutral blueprints by persona coverage only", () => {
     const bp = getBlueprintById("oss-command-center")!;
-    // 1 of 2 integrations connected = 0.5 * 0.4 = 0.2 integration score
     const score = scoreBlueprintFit(bp, {
       personas: ["opensource"],
       connectedIntegrations: ["github"],
     });
-    // persona: 1.0 * 0.6 = 0.6, integration: 0.5 * 0.4 = 0.2 → total 0.8
-    expect(score).toBeCloseTo(0.8, 5);
+    expect(score).toBe(1);
   });
 
-  it("gives full integration score when blueprint requires none", () => {
+  it("scores blueprints with no requirements from persona fit", () => {
     const bp = getBlueprintById("seo-analytics-hub")!;
     expect(bp.requiredIntegrations).toEqual([]);
 
@@ -196,9 +192,7 @@ describe("scoreBlueprintFit", () => {
       personas: ["seo"],
       connectedIntegrations: [],
     });
-    // persona: 1/3 * 0.6 (has 3 persona affinities, seo is one)
-    // integration: 1.0 * 0.4 (no requirements = fully satisfied)
-    expect(score).toBeGreaterThan(0.5);
+    expect(score).toBeCloseTo(1 / 3, 5);
   });
 
   it("returns 0 for empty context", () => {

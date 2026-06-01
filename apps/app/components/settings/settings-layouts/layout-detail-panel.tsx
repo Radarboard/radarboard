@@ -656,7 +656,7 @@ function LayoutInfoSidebar({
             variant="outline"
             size="sm"
             onClick={onDuplicateLayout}
-            className="uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+            className="uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-w-xs transition-colors hover:text-foreground-secondary"
           >
             <Copy className="icon-xs" />
             Duplicate
@@ -666,7 +666,7 @@ function LayoutInfoSidebar({
             variant="outline"
             size="sm"
             onClick={onResetLayout}
-            className="uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+            className="uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-w-xs transition-colors hover:text-foreground-secondary"
           >
             <RotateCcw className="icon-xs" />
             Reset
@@ -677,7 +677,7 @@ function LayoutInfoSidebar({
               variant="outline-destructive"
               size="sm"
               onClick={() => onDeleteDialogOpenChange(true)}
-              className="uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-xs"
+              className="uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-w-xs"
             >
               <Trash2 className="icon-xs" />
               Delete
@@ -1370,7 +1370,7 @@ export function LayoutDetailPanel({
                       variant="outline"
                       size="sm"
                       onClick={onBalanceColumns}
-                      className="uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+                      className="uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-w-xs transition-colors hover:text-foreground-secondary"
                     >
                       Column Widths
                     </Button>
@@ -1384,7 +1384,7 @@ export function LayoutDetailPanel({
                       variant="outline"
                       size="sm"
                       onClick={onBalanceRows}
-                      className="uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+                      className="uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-w-xs transition-colors hover:text-foreground-secondary"
                     >
                       Row Heights
                     </Button>
@@ -1398,7 +1398,7 @@ export function LayoutDetailPanel({
                       variant="outline"
                       size="sm"
                       onClick={onBalanceTracks}
-                      className="uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-xs transition-colors hover:text-foreground-secondary"
+                      className="uppercase-none flex h-auto items-center gap-1 px-2 py-1 font-mono text-dim text-w-xs transition-colors hover:text-foreground-secondary"
                     >
                       All
                     </Button>

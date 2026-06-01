@@ -1,22 +1,23 @@
-/**
- * AI Action: Create a Linear issue.
- *
- * Delegates to the Linear integration client for all API calls.
- */
-
-import { createIssue, getLabels, getTeams } from "@radarboard/integration-linear/client";
-import type { CreateIssueInput, LinearConfig } from "@radarboard/integration-linear/types";
-
-export type { CreateIssueInput };
-
-export async function executeCreateLinearIssue(config: LinearConfig, input: CreateIssueInput) {
-  return createIssue(config, input);
+export interface LinearConfig {
+  apiKey: string;
 }
 
-export async function executeListLinearTeams(config: LinearConfig) {
-  return getTeams(config);
+export interface CreateIssueInput {
+  title: string;
+  description?: string;
+  teamId?: string;
+  priority?: number;
+  labelIds?: string[];
 }
 
-export async function executeListLinearLabels(config: LinearConfig) {
-  return getLabels(config);
+export async function executeCreateLinearIssue(_config: LinearConfig, _input: CreateIssueInput) {
+  return { error: "Linear issue creation requires the Linear extension." };
+}
+
+export async function executeListLinearTeams(_config: LinearConfig) {
+  return [];
+}
+
+export async function executeListLinearLabels(_config: LinearConfig) {
+  return [];
 }

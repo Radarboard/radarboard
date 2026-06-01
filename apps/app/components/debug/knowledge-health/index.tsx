@@ -154,7 +154,7 @@ function ProjectScopeButton({
         {project.projectSlug ? "Project" : "Global"}
       </div>
       <div className="mt-1 truncate text-w-base">{project.projectName}</div>
-      <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 font-mono text-dim/60 text-w-sm">
+      <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 font-mono text-dim text-w-sm">
         <span>{project.itemCount} items</span>
         <span>{project.staleCount} stale</span>
         <span>{project.knowledgeBackedRunCount} runs</span>
@@ -188,7 +188,7 @@ function PanelHeader({
 }
 
 function EmptyPanel({ message }: { message: string }) {
-  return <div className="px-3 py-4 text-dim/60 text-w-sm">{message}</div>;
+  return <div className="px-3 py-4 text-dim text-w-sm">{message}</div>;
 }
 
 function DetailStat({ label, value }: { label: string; value: string }) {
@@ -297,11 +297,11 @@ function KnowledgeDetailSection({
                     >
                       <div className="flex items-center justify-between gap-2">
                         <span className="truncate">{trace.id}</span>
-                        <span className="shrink-0 font-mono text-dim/60 text-w-sm">
+                        <span className="shrink-0 font-mono text-dim text-w-sm">
                           {formatRelativeTime(trace.createdAt)}
                         </span>
                       </div>
-                      <div className="mt-1 font-mono text-dim/60 text-w-sm">
+                      <div className="mt-1 font-mono text-dim text-w-sm">
                         {getProjectLabel(trace.projectSlug)} · next {trace.nextMode ?? "none"} ·
                         refs {trace.evidenceRefCount}
                       </div>
@@ -309,7 +309,7 @@ function KnowledgeDetailSection({
                   ))}
                 </div>
               ) : (
-                <div className="text-dim/60 text-w-sm">No linked traces in retained history.</div>
+                <div className="text-dim text-w-sm">No linked traces in retained history.</div>
               )}
             </div>
 
@@ -448,7 +448,7 @@ function ActionQueuePanel({
                 <span className="font-mono text-dim text-w-sm uppercase tracking-[0.16em]">
                   {getActionReason(item)}
                 </span>
-                <span className="font-mono text-dim/60 text-w-sm">
+                <span className="font-mono text-dim text-w-sm">
                   {formatRelativeTime(item.lastUsedAt)}
                 </span>
               </div>
@@ -513,14 +513,14 @@ function InventoryPanel({
                   </span>
                   <span className="truncate text-foreground text-w-base">{item.title}</span>
                 </div>
-                <span className="shrink-0 font-mono text-dim/60 text-w-sm">
+                <span className="shrink-0 font-mono text-dim text-w-sm">
                   {formatRelativeTime(item.lastUsedAt)}
                 </span>
               </div>
               <div className="line-clamp-2 text-muted-foreground text-w-sm leading-5">
                 {item.summary || "No summary available."}
               </div>
-              <div className="flex flex-wrap gap-x-3 gap-y-1 font-mono text-dim/60 text-w-sm">
+              <div className="flex flex-wrap gap-x-3 gap-y-1 font-mono text-dim text-w-sm">
                 <span>{getProjectLabel(item.projectSlug)}</span>
                 <span>uses {formatNullableCount(item.useCount)}</span>
                 <span>{getFeedbackLabel(item)}</span>

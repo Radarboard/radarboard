@@ -136,12 +136,12 @@
    * ─── Widget font-size tokens ─────────────────────────────────────────────
    * Simplified 6-step scale for consistent density and clear hierarchy.
    *
-   * These use cqi (container query inline units) so they adapt to the
-   * widget's actual width on the dashboard grid.
+   * These use stable readable sizes so app chrome, settings, widgets, and
+   * plugin surfaces share one dense-but-legible scale.
    *
    * Usage Guidelines:
-   * xs  (10px) -> Meta: Relative time, source pills, input labels, dense tags.
-   * sm  (11px) -> Primary: The default for list items and widget body text.
+   * xs  (12px) -> Meta: Relative time, source pills, input labels, dense tags.
+   * sm  (12px) -> Primary: The default for list items and widget body text.
    * base(13px) -> UI & Narrative: Buttons, sidebar items, modal body text.
    * lg  (16px) -> Headers: Primary titles for widgets and section headers.
    * xl  (20px) -> Headline: Primary numbers in medium widgets.
@@ -294,7 +294,7 @@
   --theme-color-muted: #1e1e1e;
   --theme-color-muted-foreground: #888888;
   --theme-color-foreground-secondary: #cccccc;
-  --theme-color-dim: #777777;
+  --theme-color-dim: #858585;
   --theme-color-accent: #5b8af5;
   --theme-color-accent-foreground: #e8e8e8;
   --theme-color-destructive: #e05555;
@@ -425,15 +425,15 @@
    * ─── Widget font tokens ──────────────────────────────────────────────────
    * Uniform font sizes across ALL widgets and chrome, scaled by --w-scale.
    *
-   * These use cqi (container query inline units) so they adapt to the
-   * widget's actual width on the dashboard grid.
+   * These are stable readable sizes. Density is controlled by --w-scale, but
+   * visible text never drops below 12px.
    */
-  --widget-font-xs: clamp(9px, 2.5cqi, 10px);
-  --widget-font-sm: clamp(10px, 3cqi, 11px);
-  --widget-font-base: clamp(12px, 3.5cqi, 13px);
-  --widget-font-lg: clamp(14px, 4cqi, 16px);
-  --widget-font-xl: clamp(18px, 5cqi, 20px);
-  --widget-font-2xl: clamp(22px, 6cqi, 24px);
+  --widget-font-xs: max(12px, calc(12px * var(--w-scale)));
+  --widget-font-sm: max(12px, calc(12px * var(--w-scale)));
+  --widget-font-base: max(13px, calc(13px * var(--w-scale)));
+  --widget-font-lg: max(16px, calc(16px * var(--w-scale)));
+  --widget-font-xl: max(20px, calc(20px * var(--w-scale)));
+  --widget-font-2xl: max(24px, calc(24px * var(--w-scale)));
 }
 
 [data-font-scale="sm"] {

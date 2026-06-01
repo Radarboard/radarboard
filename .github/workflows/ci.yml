@@ -3,6 +3,7 @@ name: CI
 on:
   pull_request:
     paths:
+      - ".github/actions/**"
       - ".github/workflows/ci.yml"
       - ".github/workflows/changesets.yml"
       - ".github/workflows/desktop-macos-release.yml"
@@ -26,6 +27,7 @@ on:
     branches:
       - main
     paths:
+      - ".github/actions/**"
       - ".github/workflows/ci.yml"
       - ".github/workflows/changesets.yml"
       - ".github/workflows/desktop-macos-release.yml"
@@ -70,6 +72,7 @@ jobs:
         uses: ./.github/actions/setup-pnpm-install
         with:
           node-version-file: .nvmrc
+          turbo-cache: "true"
 
       - name: Lint
         run: pnpm lint
@@ -119,6 +122,7 @@ jobs:
         uses: ./.github/actions/setup-pnpm-install
         with:
           node-version-file: .nvmrc
+          turbo-cache: "true"
 
       - name: Run Tests
         run: pnpm test

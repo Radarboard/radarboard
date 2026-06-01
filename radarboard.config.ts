@@ -40,36 +40,21 @@ export default {
   ],
 
   /**
-   * Integrations connect to external services (GitHub, Vercel, Sentry, etc.).
-   * Each entry is an npm package name under /integrations/.
+   * Core provider integrations.
+   *
+   * Keep this empty unless Radarboard itself must ship a connectable provider
+   * by default. Concrete SaaS/provider integrations such as GitHub, Stripe,
+   * Vercel, Sentry, Slack, and Linear live in the community extension catalog.
    */
-  integrations: [
-    "@radarboard/integration-app-store-connect",
-    "@radarboard/integration-betterstack",
-    "@radarboard/integration-github",
-    "@radarboard/integration-github-sponsors",
-    "@radarboard/integration-google-search-console",
-    "@radarboard/integration-linear",
-    "@radarboard/integration-npm",
-    "@radarboard/integration-open-collective",
-    "@radarboard/integration-openpanel",
-    "@radarboard/integration-raindrop",
-    "@radarboard/integration-resend",
-    "@radarboard/integration-revenuecat",
-    "@radarboard/integration-sentry",
-    "@radarboard/integration-slack",
-    "@radarboard/integration-stripe",
-    "@radarboard/integration-vercel",
-  ],
+  integrations: [],
 
   /**
-   * Virtual integrations — composite data sources that aggregate
-   * from multiple integrations. No descriptor, only data sources.
+   * Core virtual integrations.
+   *
+   * These packages expose provider-neutral data sources without a connectable
+   * IntegrationDescriptor, so they do not appear in the integrations list.
    */
-  virtualIntegrations: [
-    "@radarboard/integration-shipping",
-    "@radarboard/integration-astro",
-  ],
+  virtualIntegrations: ["@radarboard/integration-shipping"],
 
   /**
    * Plugins extend the dashboard with overlays, tools, and data connections.
@@ -77,13 +62,8 @@ export default {
    */
   plugins: [
     "@radarboard/plugin-tasks",
-    "@radarboard/plugin-expenses",
     "@radarboard/plugin-notes",
     "@radarboard/plugin-bookmarks",
-    "@radarboard/plugin-rss-reader",
-    "@radarboard/plugin-changelog",
-    "@radarboard/plugin-status-page",
-    "@radarboard/plugin-webhook-relay",
     "@radarboard/plugin-embeddings",
     "@radarboard/plugin-backup",
   ],
@@ -94,23 +74,13 @@ export default {
    */
   widgets: [
     "@radarboard/widget-analytics",
-    "@radarboard/widget-aso-keywords",
-    "@radarboard/widget-builds",
-    "@radarboard/widget-github-commits",
-    "@radarboard/widget-deployments",
-    "@radarboard/widget-vercel-domains",
-    "@radarboard/widget-npm-downloads",
     "@radarboard/widget-logs",
     "@radarboard/widget-observability",
-    "@radarboard/widget-projects",
-    "@radarboard/widget-pulls",
     "@radarboard/widget-bookmarks",
     "@radarboard/widget-revenue",
-    "@radarboard/widget-app-reviews",
     "@radarboard/widget-roadmap",
     "@radarboard/widget-seo",
     "@radarboard/widget-shipping",
     "@radarboard/widget-sponsorship",
-    "@radarboard/widget-github-stars",
   ],
 };

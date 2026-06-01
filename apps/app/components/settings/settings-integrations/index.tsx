@@ -11,6 +11,7 @@ import { parseAsString, useQueryState } from "nuqs";
 import { useEffect, useMemo, useState } from "react";
 import { useProjectIntegrations } from "@/hooks/projects/use-project-integrations";
 import { useIntegrationConnections } from "@/hooks/settings/use-integration-connections";
+import { CommunityExtensionDiscovery } from "../community-discovery";
 import { InstallExtensionDialog } from "../extension-installer";
 import { SettingsCategoryTabs } from "../settings-category-tabs";
 import { filterCategorySections, normalizeCategoryId } from "../settings-category-utils";
@@ -108,6 +109,7 @@ export function SettingsIntegrations({
     VIEW_STATE_QUERY_KEYS.settingsInstaller,
     parseAsString
   );
+  const [installerGithubUrl, setInstallerGithubUrl] = useState("");
   const [categoryParam, setCategoryParam] = useQueryState(
     VIEW_STATE_QUERY_KEYS.integrationCategory,
     parseAsString
@@ -231,6 +233,12 @@ export function SettingsIntegrations({
   const activeServiceConnections = activeService
     ? getServiceConnections(activeService, connections)
     : [];
+
+  function openInstaller(githubUrl = "") {
+    setInstallerGithubUrl(githubUrl);
+    setSettingsInstallerParam("integrations");
+  }
+
   return (
     <>
       <SettingsPageLayout
@@ -253,7 +261,7 @@ export function SettingsIntegrations({
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setSettingsInstallerParam("integrations")}
+                onClick={() => openInstaller()}
                 uppercase={false}
                 className="h-auto shrink-0 px-3 py-2 font-mono text-foreground-secondary text-w-sm uppercase tracking-wider hover:text-foreground"
               >
@@ -288,49 +296,67 @@ export function SettingsIntegrations({
           </SettingsCardSection>
         ) : null}
         {!integrationIntentParam && visibleCategorySections.length === 0 ? (
-          <EmptyState message="No services match your current filters." />
+          <>
+            <EmptyState message="No services match your current filters." />
+            <CommunityExtensionDiscovery
+              type="integration"
+              searchQuery={searchQuery}
+              onInstall={openInstaller}
+            />
+          </>
         ) : !integrationIntentParam ? (
-          visibleCategorySections.map((category) => {
-            const sectionServices = category.itemIds
-              .map((id) => sortedServiceMap.get(id))
-              .filter((s): s is ServiceEntry => s !== undefined);
+          <>
+            {visibleCategorySections.map((category) => {
+              const sectionServices = category.itemIds
+                .map((id) => sortedServiceMap.get(id))
+                .filter((s): s is ServiceEntry => s !== undefined);
 
-            if (sectionServices.length === 0) return null;
+              if (sectionServices.length === 0) return null;
 
-            const configuredInCategory = sectionServices.filter(
-              (s) =>
-                getServiceApiConfigured(s, connections, connectedKeys) ||
-                getServiceMcpReady(s, connections, mcpServers)
-            ).length;
+              const configuredInCategory = sectionServices.filter(
+                (s) =>
+                  getServiceApiConfigured(s, connections, connectedKeys) ||
+                  getServiceMcpReady(s, connections, mcpServers)
+              ).length;
 
-            return (
-              <SettingsCardSection
-                key={category.id}
-                title={category.label}
-                badge={
-                  configuredInCategory > 0 ? (
-                    <span className="rounded-item border border-border bg-card px-2 py-0.5 font-mono text-muted-foreground text-w-sm">
-                      {configuredInCategory} configured
-                    </span>
-                  ) : undefined
-                }
-              >
-                <ServiceGrid
-                  items={sectionServices}
-                  connections={connections}
-                  connectedKeys={connectedKeys}
-                  mcpServers={mcpServers}
-                  onSelectService={setActiveServiceId}
-                />
-              </SettingsCardSection>
-            );
-          })
+              return (
+                <SettingsCardSection
+                  key={category.id}
+                  title={category.label}
+                  badge={
+                    configuredInCategory > 0 ? (
+                      <span className="rounded-item border border-border bg-card px-2 py-0.5 font-mono text-muted-foreground text-w-sm">
+                        {configuredInCategory} configured
+                      </span>
+                    ) : undefined
+                  }
+                >
+                  <ServiceGrid
+                    items={sectionServices}
+                    connections={connections}
+                    connectedKeys={connectedKeys}
+                    mcpServers={mcpServers}
+                    onSelectService={setActiveServiceId}
+                  />
+                </SettingsCardSection>
+              );
+            })}
+            <CommunityExtensionDiscovery
+              type="integration"
+              searchQuery={searchQuery}
+              onInstall={openInstaller}
+            />
+          </>
         ) : null}
       </SettingsPageLayout>
 
       <InstallExtensionDialog
         open={installerOpen}
-        onOpenChange={(open) => setSettingsInstallerParam(open ? "integrations" : null)}
+        initialGithubUrl={installerGithubUrl}
+        onOpenChange={(open) => {
+          if (!open) setInstallerGithubUrl("");
+          setSettingsInstallerParam(open ? "integrations" : null);
+        }}
       />
       {activeService !== null && (
         <ServiceDetailModal

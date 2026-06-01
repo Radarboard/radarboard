@@ -4,6 +4,7 @@
  * SEO Performance — Compact grid view
  */
 
+import { useDemoMode } from "@radarboard/hooks/use-demo-mode";
 import { useWidgetCallbacks } from "@radarboard/widget-engine/hooks/use-widget-callbacks";
 import {
   createSummaryListRecipe,
@@ -285,6 +286,7 @@ export function SeoCompact({
   activeVariantId,
   onConnectService,
 }: WidgetRenderProps<WidgetTemplateConfig>) {
+  const { isDemoMode } = useDemoMode();
   const {
     data: seoData,
     configured,
@@ -292,13 +294,13 @@ export function SeoCompact({
     fetchedAt,
     refetch,
     error,
-  } = useSeo(projectSlug, null, timeRange);
+  } = useSeo(projectSlug, null, timeRange, isDemoMode);
 
   useWidgetCallbacks({
     widgetId,
     projectSlug,
     timeRange,
-    sourceIds: ["google-search-console"],
+    sourceIds: ["seo"],
     fetchedAt: configured ? fetchedAt : null,
     loading,
     error,

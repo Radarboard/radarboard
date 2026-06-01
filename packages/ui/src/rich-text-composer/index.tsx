@@ -128,8 +128,8 @@ function ToolbarButton({
       className={cn(
         "inline-flex h-7 w-7 items-center justify-center rounded-item border text-dim transition-colors",
         active
-          ? "border-accent/40 bg-accent/15 text-[#8db0ff]"
-          : "border-transparent hover:border-border hover:bg-surface-raised hover:text-[#d7dae0]",
+          ? "border-accent/40 bg-accent/15 text-accent"
+          : "border-transparent hover:border-border hover:bg-surface-raised hover:text-foreground",
         "disabled:cursor-not-allowed disabled:opacity-40",
         className
       )}
@@ -210,17 +210,17 @@ export const RichTextComposer = ({
       editorProps: {
         attributes: {
           class: cn(
-            "min-h-[140px] w-full px-3 py-3 text-w-base font-mono leading-relaxed text-[#d7dae0] outline-none",
+            "min-h-[140px] w-full px-3 py-3 text-w-base font-mono leading-relaxed text-foreground-secondary outline-none",
             "[&_h1]:mb-2 [&_h1]:mt-4 [&_h1]:text-w-xl [&_h1]:font-semibold",
-            "[&_h2]:mb-2 [&_h2]:mt-4 [&_h2]:text-[15px] [&_h2]:font-semibold",
+            "[&_h2]:mb-2 [&_h2]:mt-4 [&_h2]:text-w-lg [&_h2]:font-semibold",
             "[&_p]:my-2 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0",
             "[&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-5",
             "[&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-5",
-            "[&_blockquote]:my-2 [&_blockquote]:border-l-2 [&_blockquote]:border-accent/30 [&_blockquote]:pl-3 [&_blockquote]:text-[#a0a7b4]",
-            "[&_pre]:my-2 [&_pre]:rounded-item [&_pre]:border [&_pre]:border-border [&_pre]:bg-[#090909] [&_pre]:p-3 [&_pre]:whitespace-pre-wrap [&_pre]:break-words",
-            "[&_code]:rounded-item [&_code]:bg-[#171717] [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-w-base",
+            "[&_blockquote]:my-2 [&_blockquote]:border-l-2 [&_blockquote]:border-accent/30 [&_blockquote]:pl-3 [&_blockquote]:text-muted-foreground",
+            "[&_pre]:my-2 [&_pre]:rounded-item [&_pre]:border [&_pre]:border-border [&_pre]:bg-background [&_pre]:p-3 [&_pre]:whitespace-pre-wrap [&_pre]:break-words",
+            "[&_code]:rounded-item [&_code]:bg-secondary [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-w-base",
             "[&_pre_code]:bg-transparent [&_pre_code]:p-0",
-            "[&_a]:text-[#7ba4ff] [&_a]:underline [&_a]:underline-offset-2",
+            "[&_a]:text-accent [&_a]:underline [&_a]:underline-offset-2",
             editorClassName
           ),
         },
@@ -433,7 +433,7 @@ export const RichTextComposer = ({
           )}
         />
         {Boolean(showPlaceholder) && (
-          <div className="pointer-events-none absolute top-3 left-3 font-mono text-[#6f7682] text-w-base">
+          <div className="pointer-events-none absolute top-3 left-3 font-mono text-muted-foreground text-w-base">
             {placeholder}
           </div>
         )}

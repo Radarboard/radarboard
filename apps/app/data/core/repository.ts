@@ -1,9 +1,7 @@
-import { createGitHubStarHistoryRepository } from "@radarboard/integration-github/stars";
 import type {
   CacheRepository,
   CredentialRepository,
   DatabaseAdapter,
-  DatabaseConfig,
   DebugRepository,
   GitHubStarHistoryRepository,
   LlmRepository,
@@ -15,7 +13,6 @@ import { PlanetscaleCacheRepository } from "@/data/cache/planetscale-cache";
 import { SqliteCacheRepository } from "@/data/cache/sqlite-cache";
 import { SupabaseCacheRepository } from "@/data/cache/supabase-cache";
 import { TursoCacheRepository } from "@/data/cache/turso-cache";
-import { getDb } from "@/data/core/client";
 import { PlanetscaleCredentialRepository } from "@/data/credentials/planetscale-credentials";
 import { SqliteCredentialRepository } from "@/data/credentials/sqlite-credentials";
 import { SupabaseCredentialRepository } from "@/data/credentials/supabase-credentials";
@@ -35,6 +32,28 @@ import { SqliteSettingsRepository } from "@/data/settings/sqlite-settings";
 import { SupabaseSettingsRepository } from "@/data/settings/supabase-settings";
 import { TursoSettingsRepository } from "@/data/settings/turso-settings";
 import { getDatabaseConfig } from "@/lib/radarboard-config";
+
+const GITHUB_STAR_HISTORY_UNAVAILABLE =
+  "GitHub star history is provided by the GitHub community extension.";
+
+function createUnavailableGitHubStarHistoryRepository(): GitHubStarHistoryRepository {
+  const fail = async (): Promise<never> => {
+    throw new Error(GITHUB_STAR_HISTORY_UNAVAILABLE);
+  };
+
+  return {
+    listRepoKeys: async () => [],
+    getDaily: async () => [],
+    upsertDaily: fail,
+    getSyncStates: async () => [],
+    upsertSyncState: fail,
+    getStarEvents: async () => [],
+    upsertStarEvents: fail,
+    getTrackingStates: async () => [],
+    upsertTrackingState: fail,
+    clearAll: fail,
+  };
+}
 
 // Singleton instances -- lazily initialized, reset when provider changes
 let _cache: CacheRepository | null = null;
@@ -124,8 +143,7 @@ export function getGitHubStarHistoryRepo(): GitHubStarHistoryRepository {
   ensureProvider();
 
   if (!_githubStarHistory) {
-    const config = getDatabaseConfig() as DatabaseConfig;
-    _githubStarHistory = createGitHubStarHistoryRepository(config, { getDb });
+    _githubStarHistory = createUnavailableGitHubStarHistoryRepository();
   }
 
   return _githubStarHistory;

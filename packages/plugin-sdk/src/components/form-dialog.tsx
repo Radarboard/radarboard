@@ -137,7 +137,13 @@ export function FormInput({
   ref?: Ref<HTMLInputElement>;
 }) {
   return (
-    <Input ref={ref} variant="surface" size="lg" className={cn("text-sm", className)} {...props} />
+    <Input
+      ref={ref}
+      variant="surface"
+      size="lg"
+      className={cn("text-w-sm", className)}
+      {...props}
+    />
   );
 }
 
@@ -148,7 +154,7 @@ export function FormTextarea({
 }: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
     <Textarea
-      className={cn("min-h-[120px] resize-none bg-surface text-sm", className)}
+      className={cn("min-h-[120px] resize-none bg-surface text-w-sm", className)}
       {...props}
     />
   );
@@ -160,6 +166,6 @@ export function FormSelect({
   ...props
 }: Omit<React.SelectHTMLAttributes<HTMLSelectElement>, "size">) {
   return (
-    <NativeSelect variant="surface" size="lg" className={cn("text-sm", className)} {...props} />
+    <NativeSelect variant="surface" size="lg" className={cn("text-w-sm", className)} {...props} />
   );
 }

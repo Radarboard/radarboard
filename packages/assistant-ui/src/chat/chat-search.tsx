@@ -54,7 +54,7 @@ export function ChatSearch({ onClose }: { onClose: () => void }) {
     <div className="absolute inset-0 z-20 flex flex-col bg-[var(--color-surface)]">
       {/* Search input */}
       <div className="flex items-center gap-2 border-[var(--color-border)] border-b px-3 py-2">
-        <SearchIcon size={13} className="shrink-0 text-[var(--color-text-muted)]/50" />
+        <SearchIcon size={13} className="shrink-0 text-[var(--color-text-muted)]" />
         <Input
           ref={inputRef}
           type="text"
@@ -66,7 +66,7 @@ export function ChatSearch({ onClose }: { onClose: () => void }) {
           className="flex-1 font-mono text-[var(--color-text)] text-w-base placeholder:text-[var(--color-text-muted)] placeholder:opacity-40"
         />
         {Boolean(loading) && (
-          <span className="font-mono text-[var(--color-text-muted)]/50 text-w-sm">searching…</span>
+          <span className="font-mono text-[var(--color-text-muted)] text-w-sm">searching…</span>
         )}
         <Button
           type="button"
@@ -75,7 +75,7 @@ export function ChatSearch({ onClose }: { onClose: () => void }) {
           size="icon-sm"
           uppercase={false}
           aria-label="Close search"
-          className="text-[var(--color-text-muted)]/50 hover:text-[var(--color-text-muted)]"
+          className="text-[var(--color-text-muted)] hover:text-[var(--color-text-muted)]"
         >
           <XIcon size={13} />
         </Button>
@@ -89,7 +89,7 @@ export function ChatSearch({ onClose }: { onClose: () => void }) {
           </p>
         )}
         {results.length === 0 && trimmedQuery.length < 2 && (
-          <p className="px-4 py-6 text-center font-mono text-[var(--color-text-muted)]/60 text-w-sm">
+          <p className="px-4 py-6 text-center font-mono text-[var(--color-text-muted)] text-w-sm">
             Type at least 2 characters to search
           </p>
         )}
@@ -103,7 +103,7 @@ export function ChatSearch({ onClose }: { onClose: () => void }) {
             fullWidth
             className="h-auto rounded-none border-[var(--color-border)]/50 border-b px-4 py-3 text-left hover:bg-[var(--color-hover)]"
           >
-            <p className="mb-0.5 font-mono text-[var(--color-text-muted)]/60 text-w-sm">
+            <p className="mb-0.5 font-mono text-[var(--color-text-muted)] text-w-sm">
               {r.conversationTitle} · {r.role}
             </p>
             <p className="line-clamp-2 font-mono text-[var(--color-text)] text-w-base leading-relaxed">
