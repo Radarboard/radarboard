@@ -194,8 +194,10 @@
   --spacing-widget-md: 240px;
   --spacing-modal-inset: 16px;
   --spacing-modal-sm: 34rem;
+  --spacing-modal-content: 64rem;
   --spacing-modal-md: 96rem;
   --spacing-drawer-sm: 20rem;
+  --spacing-drawer-content: 24rem;
   --spacing-drawer-md: 28rem;
   --spacing-drawer-lg: 36rem;
   --spacing-modal-height-md: 80dvh;
@@ -518,6 +520,10 @@ body {
   inline-size: min(var(--spacing-modal-sm), calc(100vw - (var(--spacing-modal-inset) * 2)));
 }
 
+.rb-dialog-size-content {
+  inline-size: min(var(--spacing-modal-content), calc(100vw - (var(--spacing-modal-inset) * 2)));
+}
+
 .rb-dialog-size-md {
   inline-size: min(var(--spacing-modal-md), calc(100vw - (var(--spacing-modal-inset) * 2)));
   block-size: min(var(--spacing-modal-height-md), calc(100dvh - (var(--spacing-modal-inset) * 2)));
@@ -530,6 +536,10 @@ body {
 
 .rb-drawer-size-sm {
   inline-size: min(var(--spacing-drawer-sm), 100vw);
+}
+
+.rb-drawer-size-content {
+  inline-size: min(var(--spacing-drawer-content), 100vw);
 }
 
 .rb-drawer-size-md {

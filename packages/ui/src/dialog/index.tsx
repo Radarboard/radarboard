@@ -23,6 +23,7 @@ export type ModalContentSize = import("@radarboard/types/ui").ModalContentSize;
 
 export const DIALOG_SIZE_CLASS: Record<ModalContentSize, string> = {
   sm: "rb-dialog-size-sm",
+  content: "rb-dialog-size-content",
   md: "rb-dialog-size-md",
   lg: "rb-dialog-size-lg",
 };

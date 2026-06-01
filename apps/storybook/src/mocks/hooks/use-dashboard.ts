@@ -270,8 +270,8 @@ type DashboardContextValue = {
   getWidgetModalSize: (
     widgetId: string,
     modalId: string,
-    defaultSize: "sm" | "md" | "lg" | "xl"
-  ) => "sm" | "md" | "lg" | "xl";
+    defaultSize: "sm" | "content" | "md" | "lg" | "xl"
+  ) => "sm" | "content" | "md" | "lg" | "xl";
   updateWidgetModalSize: () => void;
   updatePreferences: () => void;
   updateAppearance: () => void;

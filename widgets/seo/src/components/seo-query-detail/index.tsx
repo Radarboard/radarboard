@@ -5,6 +5,7 @@ import {
   SendToAssistantButton,
 } from "@radarboard/assistant-ui/assistant-handoff";
 import type { DataPoint } from "@radarboard/types/dashboard";
+import type { WidgetModalSize } from "@radarboard/types/database";
 import type { SearchQuery, SeoQueryDetail as SeoQueryDetailData } from "@radarboard/types/seo";
 import {
   DetailLink,
@@ -371,6 +372,10 @@ function DetailEmptyState() {
   );
 }
 
+function hasContentWidth(size: WidgetModalSize): boolean {
+  return size === "content" || size === "md";
+}
+
 // ---------------------------------------------------------------------------
 // Main component — 2-column layout
 // ---------------------------------------------------------------------------
@@ -392,7 +397,7 @@ function SmallLayout({
   loading: boolean;
   detail: SeoQueryDetailData | null;
   diagnosis: SeoQueryDiagnosis | null;
-  modalSize: "sm" | "md" | "lg";
+  modalSize: WidgetModalSize;
 }) {
   return (
     <div className="scrollbar-thin flex min-h-0 flex-1 flex-col overflow-y-auto">
@@ -446,7 +451,7 @@ function LargeLayout({
   loading: boolean;
   detail: SeoQueryDetailData | null;
   diagnosis: SeoQueryDiagnosis | null;
-  modalSize: "sm" | "md" | "lg";
+  modalSize: WidgetModalSize;
 }) {
   const isLarge = modalSize === "lg";
   return (
@@ -660,7 +665,7 @@ function AssistantDiagnosisSection({
   query,
 }: {
   diagnosis: SeoQueryDiagnosis;
-  modalSize: "sm" | "md" | "lg";
+  modalSize: WidgetModalSize;
   projectSlug: string | null;
   query: SearchQuery;
 }) {
@@ -699,7 +704,7 @@ function AssistantDiagnosisSection({
           "grid gap-3",
           (() => {
             if (modalSize === "lg") return "grid-cols-[220px_minmax(0,1fr)_minmax(0,1fr)]";
-            if (modalSize === "md") return "grid-cols-2";
+            if (hasContentWidth(modalSize)) return "grid-cols-2";
             return "grid-cols-1";
           })()
         )}
@@ -746,7 +751,7 @@ function AssistantDiagnosisSection({
         <div
           className={cn(
             "rounded-item border border-border bg-surface p-3",
-            modalSize === "md" ? "col-span-2" : ""
+            hasContentWidth(modalSize) ? "col-span-2" : ""
           )}
         >
           <SectionLabel>Next Actions</SectionLabel>
@@ -805,7 +810,7 @@ function ChartSparklines({
   modalSize,
 }: {
   detail: SeoQueryDetailData;
-  modalSize: "sm" | "md" | "lg";
+  modalSize: WidgetModalSize;
 }) {
   return (
     <div
@@ -813,7 +818,7 @@ function ChartSparklines({
         "grid gap-2",
         (() => {
           if (modalSize === "lg") return "grid-cols-3";
-          if (modalSize === "md") return "grid-cols-2";
+          if (hasContentWidth(modalSize)) return "grid-cols-2";
           return "grid-cols-1";
         })()
       )}
@@ -856,7 +861,7 @@ function BreakdownPanel({
   query,
 }: {
   detail: SeoQueryDetailData;
-  modalSize: "sm" | "md" | "lg";
+  modalSize: WidgetModalSize;
   projectSlug: string | null;
   query: SearchQuery;
 }) {
@@ -871,18 +876,20 @@ function BreakdownPanel({
         <RankingPagesList pages={detail.pages} query={query} projectSlug={projectSlug} />
       )}
 
-      <div className={modalSize === "md" ? "grid grid-cols-2 gap-3" : "flex flex-col gap-0"}>
+      <div
+        className={hasContentWidth(modalSize) ? "grid grid-cols-2 gap-3" : "flex flex-col gap-0"}
+      >
         {detail.devices.length > 0 && (
-          <div className={modalSize === "md" ? "" : "pb-3"}>
+          <div className={hasContentWidth(modalSize) ? "" : "pb-3"}>
             <SectionLabel>Devices</SectionLabel>
             <DeviceBreakdown devices={detail.devices} />
           </div>
         )}
-        {modalSize !== "md" && detail.devices.length > 0 && detail.countries.length > 0 && (
-          <div className="border-border border-t" />
-        )}
+        {!hasContentWidth(modalSize) &&
+          detail.devices.length > 0 &&
+          detail.countries.length > 0 && <div className="border-border border-t" />}
         {detail.countries.length > 0 && (
-          <div className={modalSize === "md" ? "" : "pt-3"}>
+          <div className={hasContentWidth(modalSize) ? "" : "pt-3"}>
             <SectionLabel>Countries</SectionLabel>
             <CountryBreakdown countries={detail.countries} />
           </div>
@@ -899,7 +906,7 @@ function RightSections({
   query,
 }: {
   detail: SeoQueryDetailData;
-  modalSize: "sm" | "md" | "lg";
+  modalSize: WidgetModalSize;
   projectSlug: string | null;
   query: SearchQuery;
 }) {

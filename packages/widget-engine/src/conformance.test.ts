@@ -151,7 +151,7 @@ export function runWidgetConformance(descriptors: WidgetDescriptor[]) {
     });
 
     it("expandedSize is a valid size", () => {
-      const validSizes = new Set(["sm", "md", "lg"]);
+      const validSizes = new Set(["sm", "content", "md", "lg"]);
       for (const d of descriptors) {
         if (!d.expandedSize) continue;
         expect(

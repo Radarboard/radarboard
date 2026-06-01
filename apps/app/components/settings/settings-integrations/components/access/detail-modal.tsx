@@ -13,10 +13,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@radarboard/ui/app-dialog";
-import { Button } from "@radarboard/ui/button";
+import { Tabs, TabsList, TabsTrigger } from "@radarboard/ui/tabs";
 import { cn } from "@radarboard/utils/cn";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
-import { useCallback, useEffect, useMemo } from "react";
+import { Children, type ReactNode, useCallback, useEffect, useMemo } from "react";
 import { PollingSourceControls } from "@/components/settings/polling-controls";
 import { INTEGRATION_MODAL_TAB_META } from "@/components/settings/settings-integrations/constants";
 import type {
@@ -54,27 +54,36 @@ function IntegrationModalTabBar({
   onChange: (tab: IntegrationModalTab) => void;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-1 border-border border-b pb-3">
-      {INTEGRATION_MODAL_TAB_META.filter((tab) => tabs.includes(tab.id)).map((tab) => (
-        <Button
-          key={tab.id}
-          type="button"
-          variant={activeTab === tab.id ? "default" : "outline"}
-          onClick={() => onChange(tab.id)}
-          aria-pressed={activeTab === tab.id}
-          rounded-item="none"
-          className={cn(
-            "h-auto px-3 py-1.5 font-mono text-w-sm uppercase tracking-[0.16em] transition-colors",
-            activeTab === tab.id
-              ? "border-accent/30 bg-accent/20 text-accent"
-              : "border-border text-dim hover:text-foreground-secondary"
-          )}
-        >
-          {tab.label}
-        </Button>
-      ))}
-    </div>
+    <Tabs value={activeTab} onValueChange={(tab) => onChange(tab as IntegrationModalTab)}>
+      <TabsList
+        aria-label="Integration configuration sections"
+        className="w-full border-border border-b pb-3"
+      >
+        {INTEGRATION_MODAL_TAB_META.filter((tab) => tabs.includes(tab.id)).map((tab) => (
+          <TabsTrigger key={tab.id} value={tab.id}>
+            {tab.label}
+          </TabsTrigger>
+        ))}
+      </TabsList>
+    </Tabs>
   );
+}
+
+function IntegrationModalSectionGrid({ children, label }: { children: ReactNode; label: string }) {
+  const items = Children.toArray(children).filter(Boolean);
+
+  return (
+    <section
+      aria-label={label}
+      className={cn("grid min-w-0 gap-4", items.length > 1 ? "xl:grid-cols-2" : "max-w-2xl")}
+    >
+      {items}
+    </section>
+  );
+}
+
+function IntegrationModalSectionCard({ children }: { children: ReactNode }) {
+  return <div className="min-w-0 space-y-4">{children}</div>;
 }
 
 export function ServiceDetailModal({
@@ -111,7 +120,7 @@ export function ServiceDetailModal({
   removeConnection: (connectionId: string) => Promise<void>;
   onCredentialChange: () => void;
 }) {
-  const faviconUrl = getServiceFaviconUrl(service.credKey, 32);
+  const faviconUrl = getServiceFaviconUrl(service.homepage ?? service.auth.docsUrl, 32);
   const webhookServiceId = isWebhookService(service.credKey) ? service.credKey : null;
   const visibleTabs = useMemo(() => getVisibleIntegrationModalTabs(service), [service]);
   const [activeTabParam, setActiveTabParam] = useQueryState(
@@ -134,7 +143,7 @@ export function ServiceDetailModal({
       ),
     [defaultConnection, mcpServers, service]
   );
-  const modalSize: ModalSize = activeTab === "access" && !hasAssistantAccess ? "sm" : "md";
+  const modalSize: ModalSize = activeTab === "access" && !hasAssistantAccess ? "sm" : "content";
 
   useEffect(() => {
     if (!open) {
@@ -211,22 +220,24 @@ export function ServiceDetailModal({
             ) : null}
 
             {activeTab === "data" ? (
-              <div className="grid gap-4 xl:grid-cols-2">
-                <div className="space-y-4">
-                  <PollingSourceControls
-                    sourceIds={service.pollingSourceIds}
-                    description="Control how often Radarboard refreshes cached data from this integration."
-                    sourceHints={
-                      service.credKey === "sentry"
-                        ? {
-                            "sentry-projects":
-                              "Used by project settings when choosing Sentry projects.",
-                          }
-                        : undefined
-                    }
-                  />
-                </div>
-                <div className="space-y-4">
+              <IntegrationModalSectionGrid label="Integration data settings">
+                {service.pollingSourceIds.length > 0 ? (
+                  <IntegrationModalSectionCard>
+                    <PollingSourceControls
+                      sourceIds={service.pollingSourceIds}
+                      description="Control how often Radarboard refreshes cached data from this integration."
+                      sourceHints={
+                        service.credKey === "sentry"
+                          ? {
+                              "sentry-projects":
+                                "Used by project settings when choosing Sentry projects.",
+                            }
+                          : undefined
+                      }
+                    />
+                  </IntegrationModalSectionCard>
+                ) : null}
+                <IntegrationModalSectionCard>
                   <IntegrationRssFeedCard
                     serviceId={service.credKey}
                     defaultRssFeedUrl={service.defaultRssFeedUrl}
@@ -237,29 +248,27 @@ export function ServiceDetailModal({
                       integrationKey={service.integrationKey!}
                       defaultStatusPageUrl={service.defaultStatusPageUrl}
                     />
-                  ) : (
-                    <div aria-hidden="true" className="min-h-full" />
-                  )}
-                </div>
-              </div>
+                  ) : null}
+                </IntegrationModalSectionCard>
+              </IntegrationModalSectionGrid>
             ) : null}
 
             {activeTab === "events" ? (
-              <div className="grid gap-4 xl:grid-cols-2">
-                <div className="space-y-4">
-                  {webhookServiceId ? (
+              <IntegrationModalSectionGrid label="Integration event settings">
+                {webhookServiceId ? (
+                  <IntegrationModalSectionCard>
                     <IntegrationWebhookCard
                       serviceId={webhookServiceId}
                       relayUrl={relayUrl}
                       onManageRelay={onManageRelay}
                       onCredentialChange={onCredentialChange}
                     />
-                  ) : null}
-                </div>
-                <div className="space-y-4">
+                  </IntegrationModalSectionCard>
+                ) : null}
+                <IntegrationModalSectionCard>
                   <IntegrationNotificationsCard serviceId={service.credKey} />
-                </div>
-              </div>
+                </IntegrationModalSectionCard>
+              </IntegrationModalSectionGrid>
             ) : null}
           </div>
         </DialogBody>

@@ -8,6 +8,7 @@ import type {
 import type { NotificationEventRow, NotificationSeverity } from "@radarboard/types/notifications";
 import type { PollingSourceId } from "@radarboard/types/polling";
 import type { PlatformIntegrations } from "@radarboard/types/project";
+import type { ModalSize } from "@radarboard/types/ui";
 import type { WidgetTemplateConfig } from "@radarboard/widget-engine/templates";
 import type { GridSlot, WidgetModalSize } from "@radarboard/widget-engine/widgets/registry";
 import type { ComponentType } from "react";
@@ -56,14 +57,14 @@ export interface PluginPresentationConfig {
   /** Additional modes the user can switch to. */
   alternates?: PresentationMode[];
   /** Size hint for modal / side-panel presentations. */
-  size?: "sm" | "md" | "lg";
+  size?: ModalSize;
 }
 
 /** Resolved presentation config — always the full object form. */
 export interface ResolvedPresentationConfig {
   default: PresentationMode;
   alternates: PresentationMode[];
-  size: "sm" | "md" | "lg";
+  size: ModalSize;
 }
 
 /** Normalise the descriptor's presentation field into the full object form. */
@@ -192,7 +193,7 @@ export interface PluginDescriptor extends ExtensionMeta {
   /** How the plugin's main UI is presented when launched. */
   presentation: PresentationMode | PluginPresentationConfig;
   /** Size hint for modal / side-panel presentations (legacy — prefer `PluginPresentationConfig.size`). */
-  presentationSize?: "sm" | "md" | "lg";
+  presentationSize?: ModalSize;
 
   /** The plugin's main UI component, rendered inside the overlay. */
   component: ComponentType<PluginRenderProps>;

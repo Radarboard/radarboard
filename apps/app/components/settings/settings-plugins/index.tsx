@@ -18,6 +18,7 @@ import {
 } from "@radarboard/plugin-sdk/types";
 import { API_ROUTES, pluginDataRoute } from "@radarboard/types/api-routes";
 import { POLLING_SOURCE_REGISTRY } from "@radarboard/types/polling";
+import type { ModalSize } from "@radarboard/types/ui";
 import { VIEW_STATE_QUERY_KEYS } from "@radarboard/types/view-state";
 import {
   Dialog,
@@ -995,7 +996,7 @@ function PluginDetailModal({
     VIEW_STATE_QUERY_KEYS.settingsPluginTab,
     parseAsString
   );
-  const [modalSize, setModalSize] = useState<"sm" | "md" | "lg">("sm");
+  const [modalSize, setModalSize] = useState<ModalSize>("sm");
   const validTabs = useMemo(
     () => [
       "general",

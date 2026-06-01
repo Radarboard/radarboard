@@ -28,28 +28,32 @@ export interface ConfirmationToast {
   description?: string;
 }
 
-export const APP_DIALOG_SIZES: ModalSize[] = ["sm", "md", "lg"];
+export const APP_DIALOG_SIZES: ModalSize[] = ["sm", "content", "md", "lg"];
 
 export const APP_DIALOG_SIZE_LABELS: Record<ModalSize, string> = {
   sm: "S",
+  content: "C",
   md: "M",
   lg: "L",
 };
 
 export const APP_DIALOG_SIZE_TOOLTIPS: Record<ModalSize, string> = {
   sm: "Small",
+  content: "Content",
   md: "Medium",
   lg: "Large",
 };
 
 export const APP_DIALOG_PANEL_CLASS: Record<ModalSize, string> = {
   sm: "rb-dialog-size-sm",
+  content: "rb-dialog-size-content",
   md: "rb-dialog-size-md",
   lg: "rb-dialog-size-lg",
 };
 
 export const APP_DRAWER_PANEL_CLASS: Record<ModalSize, string> = {
   sm: "rb-drawer-size-sm",
+  content: "rb-drawer-size-content",
   md: "rb-drawer-size-md",
   lg: "rb-drawer-size-lg",
 };

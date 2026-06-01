@@ -23,10 +23,17 @@ vi.mock("nuqs", () => ({
 }));
 
 vi.mock("@radarboard/ui/app-dialog", () => ({
+  APP_DIALOG_SIZES: ["sm", "content", "md", "lg"],
   Dialog: ({ children, open }: { children: ReactNode; open: boolean }) =>
     open ? <div>{children}</div> : null,
   DialogBody: ({ children }: { children: ReactNode }) => <div>{children}</div>,
-  DialogContent: ({ children, size }: { children: ReactNode; size: "sm" | "md" | "lg" }) => (
+  DialogContent: ({
+    children,
+    size,
+  }: {
+    children: ReactNode;
+    size: "sm" | "content" | "md" | "lg";
+  }) => (
     <div data-size={size} data-testid="dialog-content">
       {children}
     </div>
@@ -41,6 +48,22 @@ vi.mock("@radarboard/ui/button", () => ({
     <button type="button" onClick={onClick}>
       {children}
     </button>
+  ),
+}));
+
+vi.mock("@radarboard/ui/tabs", () => ({
+  Tabs: ({
+    children,
+    onValueChange: _onValueChange,
+    value: _value,
+  }: {
+    children: ReactNode;
+    onValueChange?: (value: string) => void;
+    value?: string;
+  }) => <div>{children}</div>,
+  TabsList: ({ children, ...props }: { children: ReactNode }) => <div {...props}>{children}</div>,
+  TabsTrigger: ({ children, value: _value }: { children: ReactNode; value: string }) => (
+    <button type="button">{children}</button>
   ),
 }));
 
@@ -148,17 +171,41 @@ describe("ServiceDetailModal", () => {
     expect(screen.getByTestId("dialog-content")).toHaveAttribute("data-size", "sm");
   });
 
-  it.each(["data", "events"] as const)("uses a medium dialog for the %s tab", (tab) => {
+  it.each(["data", "events"] as const)("uses a content dialog for the %s tab", (tab) => {
     queryState.integrationTab = tab;
 
     renderServiceDetailModal(simpleService);
 
-    expect(screen.getByTestId("dialog-content")).toHaveAttribute("data-size", "md");
+    expect(screen.getByTestId("dialog-content")).toHaveAttribute("data-size", "content");
   });
 
-  it("uses a medium dialog when access includes assistant configuration", () => {
+  it("left-aligns a single data settings group instead of reserving an empty column", () => {
+    queryState.integrationTab = "data";
+
+    renderServiceDetailModal(simpleService);
+
+    expect(screen.getByRole("region", { name: "Integration data settings" })).toHaveClass(
+      "max-w-2xl"
+    );
+    expect(screen.getByTestId("rss-card")).toBeInTheDocument();
+    expect(screen.queryByTestId("polling-controls")).not.toBeInTheDocument();
+  });
+
+  it("left-aligns a single event settings group when there is no webhook setup", () => {
+    queryState.integrationTab = "events";
+
+    renderServiceDetailModal(simpleService);
+
+    expect(screen.getByRole("region", { name: "Integration event settings" })).toHaveClass(
+      "max-w-2xl"
+    );
+    expect(screen.getByTestId("notifications-card")).toBeInTheDocument();
+    expect(screen.queryByTestId("webhook-card")).not.toBeInTheDocument();
+  });
+
+  it("uses a content dialog when access includes assistant configuration", () => {
     renderServiceDetailModal(assistantService);
 
-    expect(screen.getByTestId("dialog-content")).toHaveAttribute("data-size", "md");
+    expect(screen.getByTestId("dialog-content")).toHaveAttribute("data-size", "content");
   });
 });

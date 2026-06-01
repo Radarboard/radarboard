@@ -12,6 +12,7 @@ export const DEFAULT_WIDGET_MODAL_SIZE: WidgetModalSize = "md";
 
 export const WIDGET_DIALOG_SIZE_CLASS: Record<WidgetModalSize, string> = {
   sm: "",
+  content: "",
   md: "",
   lg: "",
 };
@@ -19,12 +20,14 @@ export const WIDGET_DIALOG_SIZE_CLASS: Record<WidgetModalSize, string> = {
 export const WIDGET_EXPANDED_PANEL_CLASS: Record<WidgetModalSize, string> = {
   lg: "rb-dialog-size-lg flex flex-1 flex-col",
   md: "rb-dialog-size-md flex flex-col",
+  content: "rb-dialog-size-content flex flex-col",
   sm: "rb-dialog-size-sm flex flex-col",
 };
 
 export const WIDGET_EXPANDED_CONTAINER_CLASS: Record<WidgetModalSize, string> = {
   lg: "flex flex-col",
   md: "flex items-center justify-center",
+  content: "flex items-center justify-center",
   sm: "flex items-center justify-center",
 };
 
