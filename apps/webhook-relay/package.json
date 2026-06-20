@@ -17,7 +17,7 @@
     "@radarboard/types": "workspace:*",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.38.0",
-    "hono": "^4.12.23"
+    "hono": "^4.12.25"
   },
   "devDependencies": {
     "@hono/node-server": "^1.19.14",
