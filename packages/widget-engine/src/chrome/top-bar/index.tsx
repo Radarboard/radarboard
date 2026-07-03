@@ -17,6 +17,7 @@ import {
   CalendarRange,
   FlaskConical,
   LayoutTemplate,
+  PanelsTopLeft,
   PenLine,
   PenOff,
   Plug,
@@ -44,6 +45,8 @@ interface TopBarProps {
   /** Toggle layout edit mode. */
   onEditModeToggle?: () => void;
   editTooltip?: string;
+  /** Open the layout structure editor (Settings → Layouts). Shown only in edit mode. */
+  onEditStructure?: () => void;
   /** Whether the AI chat drawer is open. */
   isChatOpen?: boolean;
   /** Toggle the AI chat drawer. */
@@ -179,6 +182,7 @@ export function TopBar({
   isEditMode,
   onEditModeToggle,
   editTooltip,
+  onEditStructure,
   isChatOpen,
   onChatToggle,
   assistantTooltip,
@@ -310,14 +314,10 @@ export function TopBar({
                   tooltip={isDemoMode ? "Edit mode disabled in demo" : editTooltip}
                 />
               )}
-              {isEditMode && onApplyBlueprint ? (
-                <TopBarActionButton
-                  onClick={onApplyBlueprint}
-                  icon={<LayoutTemplate className="icon-sm" />}
-                  label="Blueprint"
-                  labelVisibility="never"
-                  ariaLabel="Apply blueprint"
-                  tooltip="Apply blueprint"
+              {isEditMode ? (
+                <EditModeActions
+                  onApplyBlueprint={onApplyBlueprint}
+                  onEditStructure={onEditStructure}
                 />
               ) : null}
               {isDemoMode ? (
@@ -328,6 +328,40 @@ export function TopBar({
         </div>
       </div>
     </TooltipProvider>
+  );
+}
+
+/** Edit-mode-only actions: apply a blueprint, or open the structure editor. */
+function EditModeActions({
+  onApplyBlueprint,
+  onEditStructure,
+}: {
+  onApplyBlueprint?: () => void;
+  onEditStructure?: () => void;
+}) {
+  return (
+    <>
+      {onApplyBlueprint ? (
+        <TopBarActionButton
+          onClick={onApplyBlueprint}
+          icon={<LayoutTemplate className="icon-sm" />}
+          label="Blueprint"
+          labelVisibility="never"
+          ariaLabel="Apply blueprint"
+          tooltip="Apply blueprint"
+        />
+      ) : null}
+      {onEditStructure ? (
+        <TopBarActionButton
+          onClick={onEditStructure}
+          icon={<PanelsTopLeft className="icon-sm" />}
+          label="Structure"
+          labelVisibility="priority"
+          ariaLabel="Edit layout structure"
+          tooltip="Edit structure — add, split, or merge columns and rows"
+        />
+      ) : null}
+    </>
   );
 }
 

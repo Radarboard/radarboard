@@ -698,7 +698,7 @@ function VariantThumbnail({
   variantConfig: Record<string, unknown>;
   projectSlug: string | null;
 }) {
-  const ref = useRef<HTMLButtonElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
   const [popupStyle, setPopupStyle] = useState<React.CSSProperties | null>(null);
 
   const showPopup = useCallback(() => {
@@ -718,18 +718,12 @@ function VariantThumbnail({
   }, []);
 
   return (
-    <Button
+    <div
       ref={ref}
-      type="button"
-      variant="ghost"
-      uppercase={false}
-      className="relative h-auto overflow-hidden rounded bg-background p-0 hover:bg-background"
+      className="relative overflow-hidden rounded-item bg-background"
       style={{ width: THUMBNAIL_W, height: THUMBNAIL_H }}
-      aria-label="Preview widget configuration"
       onMouseEnter={showPopup}
-      onFocus={showPopup}
       onMouseLeave={() => setPopupStyle(null)}
-      onBlur={() => setPopupStyle(null)}
     >
       <VariantWidgetRenderer
         descriptor={descriptor}
@@ -752,7 +746,7 @@ function VariantThumbnail({
           </div>,
           document.body
         )}
-    </Button>
+    </div>
   );
 }
 
@@ -810,29 +804,30 @@ function VariantPicker({
             unknown
           > | null;
           return (
-            <Button
-              key={variant.id}
-              type="button"
-              onClick={() => onConfigChange("activeVariant", variant.id)}
-              variant="outline"
-              uppercase={false}
-              className={cn(
-                "group relative h-auto flex-col items-center gap-1.5 p-1.5",
-                isActive ? "border-accent bg-accent/5" : "hover:border-foreground/20"
-              )}
-            >
-              {variantConfig && (
-                <VariantThumbnail
-                  descriptor={descriptor}
-                  variantConfig={variantConfig}
-                  projectSlug={activeProjectSlug}
-                />
-              )}
-              <span
-                className={cn("font-mono text-w-sm", isActive ? "text-foreground" : "text-dim")}
+            <div key={variant.id} className="group relative">
+              <Button
+                type="button"
+                onClick={() => onConfigChange("activeVariant", variant.id)}
+                variant="outline"
+                uppercase={false}
+                className={cn(
+                  "h-auto flex-col items-center gap-1.5 p-1.5",
+                  isActive ? "border-accent bg-accent/5" : "hover:border-foreground/20"
+                )}
               >
-                {variant.name}
-              </span>
+                {variantConfig && (
+                  <VariantThumbnail
+                    descriptor={descriptor}
+                    variantConfig={variantConfig}
+                    projectSlug={activeProjectSlug}
+                  />
+                )}
+                <span
+                  className={cn("font-mono text-w-sm", isActive ? "text-foreground" : "text-dim")}
+                >
+                  {variant.name}
+                </span>
+              </Button>
               {!variant.isBuiltIn && (
                 <Button
                   type="button"
@@ -848,7 +843,7 @@ function VariantPicker({
                   <X className="h-2.5 w-2.5" />
                 </Button>
               )}
-            </Button>
+            </div>
           );
         })}
         <Button

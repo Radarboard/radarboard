@@ -39,6 +39,26 @@ interface ResizeHandleProps {
 
 const MIN_PCT = 10;
 
+/**
+ * Shared visual for resize handles: a faint full-length guide line plus a
+ * clearly-visible centered grip, so the handle reads as draggable even before
+ * hover. Brightens to full accent on hover.
+ */
+function HandleVisual({ isVertical }: { isVertical: boolean }) {
+  return (
+    <div className="absolute inset-0 flex items-center justify-center">
+      <div
+        className="bg-accent/25 transition-colors group-hover:bg-accent/80"
+        style={isVertical ? { width: "2px", height: "100%" } : { height: "2px", width: "100%" }}
+      />
+      <div
+        className="absolute rounded-full bg-accent/80 shadow-sm transition-colors group-hover:bg-accent"
+        style={isVertical ? { width: "4px", height: "28px" } : { height: "4px", width: "28px" }}
+      />
+    </div>
+  );
+}
+
 function clampSizes(sizes: number[], index: number, deltaPct: number) {
   if (index < 0 || index >= sizes.length - 1) return sizes;
 
@@ -157,15 +177,7 @@ export function ResizeHandle({
       className="group"
       aria-hidden="true"
     >
-      <div className="absolute inset-0 flex items-center justify-center opacity-35 transition-interactive group-hover:opacity-100">
-        <div
-          style={
-            isVertical
-              ? { width: "1px", height: "100%", backgroundColor: "var(--color-accent)" }
-              : { height: "1px", width: "100%", backgroundColor: "var(--color-accent)" }
-          }
-        />
-      </div>
+      <HandleVisual isVertical={isVertical} />
     </div>
   );
 }
@@ -271,15 +283,7 @@ export function SegmentResizeHandle({
       className="group"
       aria-hidden="true"
     >
-      <div className="absolute inset-0 flex items-center justify-center opacity-35 transition-interactive group-hover:opacity-100">
-        <div
-          style={
-            isVertical
-              ? { width: "1px", height: "100%", backgroundColor: "var(--color-accent)" }
-              : { height: "1px", width: "100%", backgroundColor: "var(--color-accent)" }
-          }
-        />
-      </div>
+      <HandleVisual isVertical={isVertical} />
     </div>
   );
 }

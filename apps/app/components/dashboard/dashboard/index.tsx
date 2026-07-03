@@ -980,6 +980,7 @@ function DashboardSurface({
               onStartFresh={handleStartFresh}
               isEditMode={isEditMode}
               onEditModeToggle={handleEditModeToggle}
+              onEditStructure={() => handleSettingsSectionChange("layouts")}
               editTooltip={shortcutTooltips.edit}
               isChatOpen={isChatOpen}
               onChatToggle={toggleChat}
