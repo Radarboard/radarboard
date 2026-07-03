@@ -150,7 +150,7 @@ export function SettingsSidebar({
   if (collapsed && !mobileOpen) {
     return (
       <TooltipProvider delayDuration={200}>
-        <nav className="flex flex-shrink-0 flex-col border-border border-r">
+        <nav className="scrollbar-thin flex min-h-0 flex-shrink-0 flex-col overflow-y-auto border-border border-r">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -204,7 +204,7 @@ export function SettingsSidebar({
   // Expanded overlay (collapsed + open)
   if (collapsed && mobileOpen) {
     return (
-      <nav className="absolute inset-y-0 left-0 z-10 w-[200px] flex-shrink-0 border-border border-r bg-surface py-2 shadow-lg">
+      <nav className="scrollbar-thin absolute inset-y-0 left-0 z-10 w-[200px] flex-shrink-0 overflow-y-auto border-border border-r bg-surface py-2 shadow-lg">
         <div className="flex justify-end border-border border-b px-2 pb-2">
           <Button
             type="button"
@@ -257,8 +257,8 @@ export function SettingsSidebar({
 
   // Normal expanded sidebar
   return (
-    <nav className="flex w-[180px] flex-shrink-0 flex-col border-border border-r py-2">
-      <div className="flex-1">
+    <nav className="flex min-h-0 w-[180px] flex-shrink-0 flex-col border-border border-r py-2">
+      <div className="scrollbar-thin min-h-0 flex-1 overflow-y-auto">
         {filteredGroups.map((group, groupIdx) => (
           <div key={group.label || "ungrouped"}>
             {group.label && (

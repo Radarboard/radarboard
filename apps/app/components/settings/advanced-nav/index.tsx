@@ -78,7 +78,7 @@ export function SettingsAdvancedNav({ activeSection, onSectionChange }: Settings
                 variant="ghost"
                 onClick={() => onSectionChange(item.id)}
                 className={cn(
-                  "uppercase-none h-auto w-full items-start justify-start gap-3 rounded-none border-l-2 px-3 py-2 text-left transition-colors",
+                  "uppercase-none h-auto w-full items-start justify-start gap-3 whitespace-normal rounded-none border-l-2 px-3 py-2 text-left transition-colors",
                   activeSection === item.id
                     ? "border-accent bg-accent/10 text-foreground"
                     : "border-transparent text-dim hover:bg-muted hover:text-foreground-secondary"
