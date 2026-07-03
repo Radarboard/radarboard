@@ -385,72 +385,125 @@ export function OnboardingWizard({
         return;
       }
 
-      // Apply selected blueprint layout (or best-fit default when skipped).
-      // Skipped when the user restored a config backup — the imported snapshot
-      // already contains their layouts and preferences.
+      // Apply the chosen layout. A template selection (`template:<id>`) becomes an
+      // empty grid; otherwise we apply the selected blueprint, or a best-fit blueprint
+      // when the step was skipped. Skipped entirely when the user restored a config
+      // backup — the imported snapshot already contains their layouts and preferences.
       if (!state.restoredFromBackup) {
+      // Start fresh — wipe any previously seeded demo/cached data so the user
+      // gets a genuine clean slate instead of leftover demo widgets/data. This
+      // covers the case of re-running onboarding after trying demo mode.
+      setFinishProgress("Clearing previous data...");
+      try {
+        await fetch(API_ROUTES.demoWipe, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mode: "connect" }),
+        });
+      } catch {
+        // Non-critical — a stale cache will refresh on the next data fetch.
+      }
+
       setFinishProgress("Applying layout...");
       try {
-        const { LAYOUT_BLUEPRINTS, scoreBlueprintFit } = await import(
-          "@radarboard/widget-engine/blueprints/registry"
-        );
-        const { applyBlueprint } = await import("@radarboard/widget-engine/blueprints");
-        const { WIDGET_REGISTRY } = await import("@radarboard/widget-engine/widgets/registry");
-        const canPlaceWidget = (widgetId: string, scope: "all-projects" | "project") => {
-          const descriptor = WIDGET_REGISTRY.get(widgetId);
-          return descriptor?.supportedDashboardScopes?.includes(scope) ?? true;
-        };
+        // Templates are stored as `template:<recipeId>` and apply as an empty grid.
+        const templateRecipeId = state.blueprintId?.startsWith("template:")
+          ? state.blueprintId.slice("template:".length)
+          : null;
+        let templateApplied = false;
 
-        let blueprint = state.blueprintId
-          ? LAYOUT_BLUEPRINTS.find((b) => b.id === state.blueprintId)
-          : undefined;
-
-        // When no blueprint was selected (e.g. step skipped), pick the best fit
-        if (!blueprint && LAYOUT_BLUEPRINTS.length > 0) {
-          const scored = LAYOUT_BLUEPRINTS.map((b) => ({
-            blueprint: b,
-            score: scoreBlueprintFit(b, {
-              personas: state.profile ? [state.profile] : [],
-              connectedIntegrations: state.connectedIntegrations,
-              dashboardScope: "all-projects",
-              canPlaceWidget,
-            }),
-          })).sort((a, b) => b.score - a.score);
-          blueprint = scored[0]?.blueprint;
+        if (templateRecipeId) {
+          const { LAYOUT_RECIPES } = await import(
+            "@radarboard/widget-engine/layout-recipe-gallery"
+          );
+          const recipe = LAYOUT_RECIPES.find((r) => r.id === templateRecipeId);
+          if (recipe) {
+            // Fresh layout id, no widget assignments — the user fills it themselves.
+            const layout = { ...recipe.layout, id: crypto.randomUUID() };
+            newLayouts = [layout];
+            newProjectLayouts = {
+              ...currentProjectLayouts,
+              [ALL_PROJECTS_SLUG]: {
+                pages: [
+                  {
+                    name: "Overview",
+                    slug: DEFAULT_DASHBOARD_PAGE_SLUG,
+                    layoutId: layout.id,
+                    widgetLayouts: { [layout.id]: {} },
+                  },
+                ],
+              },
+            };
+            // Empty grid — clear any widget map left over from a prior
+            // demo/blueprint run so stale widgets don't repopulate the cells.
+            newPreferences.blueprintWidgetMap = {};
+            templateApplied = true;
+          }
+          // If the recipe is missing (stale id), fall through to the blueprint best-fit.
         }
 
-        if (blueprint) {
-          const result = applyBlueprint(blueprint, state.connectedIntegrations, {
-            dashboardScope: "all-projects",
-            canPlaceWidget,
-          });
-          newLayouts = [result.layout];
-
-          // Store widget assignments in the default project page
-          const resolvedLayout = resolveDashboardLayoutDefinition(newLayouts, result.layout.id);
-          const normalizedAssignments = normalizeDashboardWidgetLayout(
-            resolvedLayout,
-            result.widgetAssignments
+        if (!templateApplied) {
+          const { LAYOUT_BLUEPRINTS, scoreBlueprintFit } = await import(
+            "@radarboard/widget-engine/blueprints/registry"
           );
-          newProjectLayouts = {
-            ...currentProjectLayouts,
-            [ALL_PROJECTS_SLUG]: {
-              pages: [
-                {
-                  name: "Overview",
-                  slug: DEFAULT_DASHBOARD_PAGE_SLUG,
-                  layoutId: result.layout.id,
-                  widgetLayouts: { [result.layout.id]: normalizedAssignments },
-                },
-              ],
-            },
+          const { applyBlueprint } = await import("@radarboard/widget-engine/blueprints");
+          const { WIDGET_REGISTRY } = await import("@radarboard/widget-engine/widgets/registry");
+          const canPlaceWidget = (widgetId: string, scope: "all-projects" | "project") => {
+            const descriptor = WIDGET_REGISTRY.get(widgetId);
+            return descriptor?.supportedDashboardScopes?.includes(scope) ?? true;
           };
 
-          const widgetMap: Record<string, string> = {};
-          for (const [cellId, widgetId] of Object.entries(result.widgetAssignments)) {
-            if (widgetId) widgetMap[cellId] = widgetId;
+          let blueprint = state.blueprintId
+            ? LAYOUT_BLUEPRINTS.find((b) => b.id === state.blueprintId)
+            : undefined;
+
+          // When no blueprint was selected (e.g. step skipped), pick the best fit
+          if (!blueprint && LAYOUT_BLUEPRINTS.length > 0) {
+            const scored = LAYOUT_BLUEPRINTS.map((b) => ({
+              blueprint: b,
+              score: scoreBlueprintFit(b, {
+                personas: state.profile ? [state.profile] : [],
+                connectedIntegrations: state.connectedIntegrations,
+                dashboardScope: "all-projects",
+                canPlaceWidget,
+              }),
+            })).sort((a, b) => b.score - a.score);
+            blueprint = scored[0]?.blueprint;
           }
-          newPreferences.blueprintWidgetMap = widgetMap;
+
+          if (blueprint) {
+            const result = applyBlueprint(blueprint, state.connectedIntegrations, {
+              dashboardScope: "all-projects",
+              canPlaceWidget,
+            });
+            newLayouts = [result.layout];
+
+            // Store widget assignments in the default project page
+            const resolvedLayout = resolveDashboardLayoutDefinition(newLayouts, result.layout.id);
+            const normalizedAssignments = normalizeDashboardWidgetLayout(
+              resolvedLayout,
+              result.widgetAssignments
+            );
+            newProjectLayouts = {
+              ...currentProjectLayouts,
+              [ALL_PROJECTS_SLUG]: {
+                pages: [
+                  {
+                    name: "Overview",
+                    slug: DEFAULT_DASHBOARD_PAGE_SLUG,
+                    layoutId: result.layout.id,
+                    widgetLayouts: { [result.layout.id]: normalizedAssignments },
+                  },
+                ],
+              },
+            };
+
+            const widgetMap: Record<string, string> = {};
+            for (const [cellId, widgetId] of Object.entries(result.widgetAssignments)) {
+              if (widgetId) widgetMap[cellId] = widgetId;
+            }
+            newPreferences.blueprintWidgetMap = widgetMap;
+          }
         }
       } catch {
         // Non-critical — user can pick a layout from settings later

@@ -88,11 +88,15 @@ test.describe("onboarding flow — demo mode no auto-trigger @onboarding @demo",
 });
 
 // ---------------------------------------------------------------------------
-// Bug fix: Layout step pre-selects a blueprint
+// Layout step: defaults to Templates, with nothing pre-selected
 // ---------------------------------------------------------------------------
 
-test.describe("onboarding flow — Layout step blueprint pre-selection @onboarding", () => {
-  test("Layout step pre-selects a blueprint", async ({ page, consoleErrors, pageErrors }) => {
+test.describe("onboarding flow — Layout step defaults @onboarding", () => {
+  test("Layout step defaults to the Templates tab with nothing pre-selected", async ({
+    page,
+    consoleErrors,
+    pageErrors,
+  }) => {
     await openPreviewOnboarding(page);
 
     // Navigate: Welcome -> Profile -> Integrations (continue) -> Plugins (skip) -> Layout
@@ -105,21 +109,24 @@ test.describe("onboarding flow — Layout step blueprint pre-selection @onboardi
     // Layout step should be visible
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible({ timeout: TIMEOUT.dialog });
+    await expect(page.getByText("Dashboard Layout")).toBeVisible({ timeout: TIMEOUT.dialog });
 
-    // A blueprint card should have the selected visual indicator (ring highlight)
-    // The pre-selected blueprint gets a ring-2 ring-accent/40 class
-    const selectedBlueprint = dialog.locator("[class*='ring-2']");
-    await expect(selectedBlueprint.first()).toBeVisible({ timeout: TIMEOUT.element });
+    // The Templates tab is the default surface — a template card is shown,
+    // and the Blueprints tab remains available to switch to.
+    await expect(page.getByRole("button", { name: /Basic 3x3/i })).toBeVisible({
+      timeout: TIMEOUT.element,
+    });
+    await expect(page.getByRole("button", { name: "blueprints" })).toBeVisible();
 
-    // The action button should say "Continue" (not "Skip") because a blueprint is pre-selected
-    const continueButton = page.getByRole("button", { name: "Continue" });
-    await expect(continueButton).toBeVisible({ timeout: TIMEOUT.element });
-    await expect(continueButton).toBeEnabled();
+    // Nothing is pre-selected, so the action button reads "Skip" (not "Continue")
+    await expect(page.getByRole("button", { name: "Skip" })).toBeVisible({
+      timeout: TIMEOUT.element,
+    });
 
     await assertNoOnboardingErrors(consoleErrors, pageErrors);
   });
 
-  test("selecting a layout keeps the user on the step until Continue is clicked", async ({
+  test("selecting a template keeps the user on the step until Continue is clicked", async ({
     page,
     consoleErrors,
     pageErrors,
@@ -134,11 +141,13 @@ test.describe("onboarding flow — Layout step blueprint pre-selection @onboardi
 
     await expect(page.getByText("Dashboard Layout")).toBeVisible({ timeout: TIMEOUT.dialog });
 
-    await page.getByRole("button", { name: /growth dashboard/i }).click();
+    // Templates is the default tab — pick a template (an empty grid).
+    await page.getByRole("button", { name: /Basic 3x3/i }).click();
 
     await expect(page.getByText("Dashboard Layout")).toBeVisible({ timeout: TIMEOUT.element });
     await expect(page.getByText("You're all set")).toBeHidden();
 
+    // Selecting a layout flips the action button to "Continue".
     await page.getByRole("button", { name: "Continue" }).click();
     await expect(page.getByText("You're all set")).toBeVisible({ timeout: TIMEOUT.dialog });
 

@@ -86,6 +86,10 @@ describe("layout picker visual snapshots", () => {
       />
     );
 
+    // The layout step now defaults to the Templates tab; switch to Blueprints
+    // to snapshot the blueprint grid.
+    fireEvent.click(screen.getByRole("button", { name: "blueprints" }));
+
     expect(screen.getByText("Dashboard Layout")).toBeInTheDocument();
     expect(container).toMatchSnapshot();
   }, 30_000);
@@ -107,6 +111,8 @@ describe("layout picker visual snapshots", () => {
       />
     );
 
+    // Blueprints live behind the Blueprints tab now (Templates is the default).
+    await userEvent.click(screen.getByRole("button", { name: "blueprints" }));
     await userEvent.click(screen.getByRole("button", { name: /growth dashboard/i }));
 
     expect(onChange).toHaveBeenCalledWith({ blueprintId: "growth-dashboard" });
@@ -134,7 +140,8 @@ describe("layout picker visual snapshots", () => {
     await userEvent.click(screen.getByRole("button", { name: "templates" }));
     await userEvent.click(screen.getByRole("button", { name: /Basic 3x3/i }));
 
-    expect(onChange).toHaveBeenCalledWith({ blueprintId: "template:basic-3x3-4col" });
+    // Templates now store the native recipe id, not the column-adapted layout id.
+    expect(onChange).toHaveBeenCalledWith({ blueprintId: "template:basic-3x3" });
     expect(onNext).not.toHaveBeenCalled();
     expect(screen.getByText("Dashboard Layout")).toBeInTheDocument();
   }, 30_000);

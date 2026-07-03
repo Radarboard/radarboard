@@ -1,9 +1,11 @@
 "use client";
 
 import { API_ROUTES } from "@radarboard/types/api-routes";
-import { FlaskConical, RotateCcw, Rocket, ShieldCheck } from "lucide-react";
+import { AlertTriangle, FlaskConical, RotateCcw, Rocket, ShieldCheck } from "lucide-react";
 import { useRef, useState } from "react";
 import type { OnboardingState } from "./types";
+
+const ERASE_CONFIRM_WORD = "ERASE";
 
 interface StepWelcomeProps {
   state: OnboardingState;
@@ -19,6 +21,34 @@ export function StepWelcome({ state, onChange, onNext, hasExistingData = false, 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [restoreState, setRestoreState] = useState<"idle" | "loading" | "error">("idle");
   const [restoreError, setRestoreError] = useState<string | null>(null);
+  const [eraseState, setEraseState] = useState<"idle" | "confirming" | "erasing">("idle");
+  const [eraseConfirmText, setEraseConfirmText] = useState("");
+  const [eraseError, setEraseError] = useState<string | null>(null);
+
+  const canErase =
+    eraseConfirmText.trim().toUpperCase() === ERASE_CONFIRM_WORD && eraseState !== "erasing";
+
+  async function handleEraseAll() {
+    if (!canErase) return;
+    setEraseState("erasing");
+    setEraseError(null);
+    try {
+      const response = await fetch(API_ROUTES.factoryReset, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ confirm: ERASE_CONFIRM_WORD }),
+      });
+      if (!response.ok) {
+        const body = (await response.json().catch(() => null)) as { error?: string } | null;
+        throw new Error(body?.error ?? `Erase failed (${response.status})`);
+      }
+      // Hard reload so the app re-initializes into a clean first-run onboarding.
+      window.location.assign("/");
+    } catch (err) {
+      setEraseError(err instanceof Error ? err.message : "Failed to erase data.");
+      setEraseState("confirming");
+    }
+  }
 
   async function handleRestoreFile(file: File) {
     setRestoreState("loading");
@@ -125,10 +155,79 @@ export function StepWelcome({ state, onChange, onNext, hasExistingData = false, 
               Start fresh
             </div>
             <div className="mt-0.5 font-mono text-dim text-w-sm">
-              Set up your database and connect your services right away.
+              {hasExistingData
+                ? "Reset your dashboard and clear demo data, but keep your connected services and credentials."
+                : "Set up your database and connect your services right away."}
             </div>
           </div>
         </button>
+
+        {hasExistingData &&
+          (eraseState === "idle" ? (
+            <button
+              type="button"
+              onClick={() => {
+                setEraseConfirmText("");
+                setEraseError(null);
+                setEraseState("confirming");
+              }}
+              className="flex items-center gap-4 rounded-item border border-destructive/30 bg-destructive/5 px-5 py-4 text-left transition-colors hover:bg-destructive/10"
+            >
+              <AlertTriangle className="h-6 w-6 shrink-0 text-destructive" />
+              <div>
+                <div className="font-mono text-foreground text-w-base uppercase tracking-widest">
+                  Erase everything
+                </div>
+                <div className="mt-0.5 font-mono text-dim text-w-sm">
+                  Permanently delete all data — connections, credentials, layouts, plugins,
+                  assistant history, and settings — and start completely over.
+                </div>
+              </div>
+            </button>
+          ) : (
+            <div className="space-y-3 rounded-item border border-destructive/40 bg-destructive/5 px-5 py-4">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="h-5 w-5 shrink-0 text-destructive" />
+                <p className="font-mono text-dim text-w-sm">
+                  This permanently deletes <span className="text-foreground">all</span> data and
+                  cannot be undone. Type{" "}
+                  <span className="font-bold text-foreground">{ERASE_CONFIRM_WORD}</span> to confirm.
+                </p>
+              </div>
+              <input
+                type="text"
+                value={eraseConfirmText}
+                onChange={(e) => setEraseConfirmText(e.target.value)}
+                placeholder={ERASE_CONFIRM_WORD}
+                autoComplete="off"
+                // biome-ignore lint/a11y/noAutofocus: focus the confirm field when the destructive panel opens
+                autoFocus
+                className="w-full rounded-item border border-border bg-surface px-3 py-2 font-mono text-foreground text-w-sm outline-none focus:border-destructive"
+              />
+              {eraseError && <p className="font-mono text-destructive text-w-sm">{eraseError}</p>}
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  disabled={!canErase}
+                  onClick={() => void handleEraseAll()}
+                  className="rounded-item bg-destructive px-3 py-1.5 font-mono text-destructive-foreground text-w-sm transition-colors hover:bg-destructive/90 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {eraseState === "erasing" ? "Erasing…" : "Erase everything"}
+                </button>
+                <button
+                  type="button"
+                  disabled={eraseState === "erasing"}
+                  onClick={() => {
+                    setEraseState("idle");
+                    setEraseError(null);
+                  }}
+                  className="px-3 py-1.5 font-mono text-muted-foreground text-w-sm transition-colors hover:text-foreground disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ))}
 
         <button
           type="button"

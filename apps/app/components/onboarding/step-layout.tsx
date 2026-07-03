@@ -1,18 +1,12 @@
 "use client";
 
-import type { LayoutDefinition } from "@radarboard/types/database";
 import { Button } from "@radarboard/ui/button";
 import { cn } from "@radarboard/utils/cn";
-import {
-  LAYOUT_BLUEPRINTS,
-  type LayoutBlueprintDescriptor,
-  scoreBlueprintFit,
-} from "@radarboard/widget-engine/blueprints";
+import type { LayoutBlueprintDescriptor } from "@radarboard/widget-engine/blueprints";
 import { LAYOUT_RECIPES } from "@radarboard/widget-engine/layout-recipe-gallery";
 import { getCellRect, getLayoutDimensions } from "@radarboard/widget-engine/layouts";
-import { WIDGET_REGISTRY } from "@radarboard/widget-engine/widgets/registry";
-import { canPlaceWidgetInScope } from "@radarboard/widget-sdk/dashboard-scope";
-import { useEffect, useState } from "react";
+import { Check } from "lucide-react";
+import { useState } from "react";
 import { BlueprintGrid } from "@/components/settings/settings-layouts/blueprint-picker";
 import {
   adaptLayoutToColumns,
@@ -34,36 +28,16 @@ type LayoutTab = "blueprints" | "templates";
 export function StepLayout({ state, onChange, onNext, onBack }: StepLayoutProps) {
   const detectedCols = useDetectedColumns();
   const [columns, setColumns] = useState<ColumnCount>(detectedCols);
-  const [tab, setTab] = useState<LayoutTab>("blueprints");
-  const suggestedBlueprintId = !state.blueprintId
-    ? LAYOUT_BLUEPRINTS.map((bp) => ({
-        id: bp.id,
-        score: scoreBlueprintFit(bp, {
-          personas: state.profile ? [state.profile] : [],
-          connectedIntegrations: state.connectedIntegrations,
-          dashboardScope: "all-projects",
-          canPlaceWidget: (widgetId, scope) => {
-            const descriptor = WIDGET_REGISTRY.get(widgetId);
-            return descriptor ? canPlaceWidgetInScope(descriptor, scope) : true;
-          },
-        }),
-      })).sort((a, b) => b.score - a.score)[0]
-    : null;
-
-  // Auto-select the best-matching blueprint when the step loads.
-  useEffect(() => {
-    if (state.blueprintId) return;
-    if (suggestedBlueprintId && suggestedBlueprintId.score > 0) {
-      onChange({ blueprintId: suggestedBlueprintId.id });
-    }
-  }, [onChange, state.blueprintId, suggestedBlueprintId]);
+  const [tab, setTab] = useState<LayoutTab>("templates");
 
   const handleSelectBlueprint = (blueprint: LayoutBlueprintDescriptor) => {
     onChange({ blueprintId: blueprint.id });
   };
 
-  const handleSelectTemplate = (layout: LayoutDefinition) => {
-    onChange({ blueprintId: `template:${layout.id}` });
+  // Store the native recipe id (not the column-adapted layout id, which is
+  // mangled to `<id>-<cols>col`) so completion can resolve it from LAYOUT_RECIPES.
+  const handleSelectTemplate = (recipeId: string) => {
+    onChange({ blueprintId: `template:${recipeId}` });
   };
 
   return (
@@ -72,13 +46,14 @@ export function StepLayout({ state, onChange, onNext, onBack }: StepLayoutProps)
         Dashboard Layout
       </div>
       <p className="mb-3 font-mono text-dim text-w-sm">
-        Choose an All Projects layout. Project-only widgets can be added after you create a project.
-        Templates are empty grids you fill yourself.
+        Start from a Template — an empty All Projects grid you fill yourself — or switch to
+        Blueprints for a ready-made dashboard tailored to your setup. Project-only widgets can be
+        added after you create a project.
       </p>
 
       <div className="mb-4 flex items-center gap-4">
         <div className="flex gap-1 rounded-item bg-surface-raised p-0.5">
-          {(["blueprints", "templates"] as const).map((t) => (
+          {(["templates", "blueprints"] as const).map((t) => (
             <Button
               key={t}
               type="button"
@@ -111,7 +86,11 @@ export function StepLayout({ state, onChange, onNext, onBack }: StepLayoutProps)
             dashboardScope="all-projects"
           />
         ) : (
-          <TemplateGrid columns={columns} onSelect={handleSelectTemplate} />
+          <TemplateGrid
+            columns={columns}
+            onSelect={handleSelectTemplate}
+            selectedId={state.blueprintId}
+          />
         )}
       </div>
 
@@ -135,9 +114,12 @@ export function StepLayout({ state, onChange, onNext, onBack }: StepLayoutProps)
 function TemplateGrid({
   columns,
   onSelect,
+  selectedId,
 }: {
   columns: ColumnCount;
-  onSelect: (layout: LayoutDefinition) => void;
+  onSelect: (recipeId: string) => void;
+  /** Currently selected layout id (`template:<recipeId>`), for visual highlight. */
+  selectedId?: string | null;
 }) {
   const recipes = LAYOUT_RECIPES.filter((r) => r.id !== "content-only-stream");
 
@@ -146,6 +128,7 @@ function TemplateGrid({
       {recipes.map((recipe) => {
         const adapted = adaptLayoutToColumns(recipe.layout, columns);
         const { rowCount, colCount } = getLayoutDimensions(adapted);
+        const isSelected = selectedId === `template:${recipe.id}`;
         return (
           <Button
             key={recipe.id}
@@ -154,10 +137,12 @@ function TemplateGrid({
             spacing="none"
             uppercase={false}
             fullWidth
-            onClick={() => onSelect(adapted)}
+            aria-pressed={isSelected}
+            onClick={() => onSelect(recipe.id)}
             className={cn(
               "group flex h-auto flex-col items-stretch justify-start overflow-hidden whitespace-normal rounded-item border border-border bg-surface text-left transition-colors",
-              "hover:border-accent hover:bg-surface-raised"
+              "hover:border-accent hover:bg-surface-raised",
+              isSelected && "border-accent bg-surface-raised ring-2 ring-accent ring-inset"
             )}
           >
             <div className="w-full p-3">
@@ -169,7 +154,12 @@ function TemplateGrid({
                   return (
                     <div
                       key={cell.id}
-                      className="absolute border border-foreground/40 bg-foreground/[0.15]"
+                      className={cn(
+                        "absolute border",
+                        isSelected
+                          ? "border-accent/60 bg-accent/20"
+                          : "border-foreground/40 bg-foreground/[0.15]"
+                      )}
                       style={{
                         left: `${rect.leftPct}%`,
                         top: `${rect.topPct}%`,
@@ -186,8 +176,13 @@ function TemplateGrid({
               </div>
             </div>
             <div className="flex w-full flex-col gap-1 border-border border-t px-3 py-2.5">
-              <span className="truncate font-mono text-foreground text-w-sm">{recipe.name}</span>
-              <span className="font-mono text-dim text-w-xs">{adapted.cells.length} cells</span>
+              <span className="flex items-center gap-1.5 truncate font-mono text-foreground text-w-sm">
+                {isSelected && <Check className="h-3 w-3 shrink-0 text-accent" />}
+                {recipe.name}
+              </span>
+              <span className="font-mono text-dim text-w-xs">
+                {isSelected ? "Selected" : `${adapted.cells.length} cells`}
+              </span>
             </div>
           </Button>
         );

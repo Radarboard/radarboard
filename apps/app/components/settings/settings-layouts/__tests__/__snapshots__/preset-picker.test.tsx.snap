@@ -13,7 +13,7 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
     <p
       class="mb-3 font-mono text-dim text-w-sm"
     >
-      Choose an All Projects layout. Project-only widgets can be added after you create a project. Templates are empty grids you fill yourself.
+      Start from a Template — an empty All Projects grid you fill yourself — or switch to Blueprints for a ready-made dashboard tailored to your setup. Project-only widgets can be added after you create a project.
     </p>
     <div
       class="mb-4 flex items-center gap-4"
@@ -22,16 +22,16 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
         class="flex gap-1 rounded-item bg-surface-raised p-0.5"
       >
         <button
-          class="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted h-6 tracking-normal rounded-item w-auto rounded-item px-3 py-1.5 font-mono text-w-sm capitalize transition-colors bg-accent text-accent-foreground"
-          type="button"
-        >
-          blueprints
-        </button>
-        <button
           class="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted h-6 tracking-normal rounded-item w-auto rounded-item px-3 py-1.5 font-mono text-w-sm capitalize transition-colors text-foreground-secondary hover:text-foreground"
           type="button"
         >
           templates
+        </button>
+        <button
+          class="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted h-6 tracking-normal rounded-item w-auto rounded-item px-3 py-1.5 font-mono text-w-sm capitalize transition-colors bg-accent text-accent-foreground"
+          type="button"
+        >
+          blueprints
         </button>
       </div>
       <div
@@ -1261,7 +1261,7 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
     <p
       class="mb-3 font-mono text-dim text-w-sm"
     >
-      Choose an All Projects layout. Project-only widgets can be added after you create a project. Templates are empty grids you fill yourself.
+      Start from a Template — an empty All Projects grid you fill yourself — or switch to Blueprints for a ready-made dashboard tailored to your setup. Project-only widgets can be added after you create a project.
     </p>
     <div
       class="mb-4 flex items-center gap-4"
@@ -1270,16 +1270,16 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
         class="flex gap-1 rounded-item bg-surface-raised p-0.5"
       >
         <button
-          class="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted h-6 tracking-normal rounded-item w-auto rounded-item px-3 py-1.5 font-mono text-w-sm capitalize transition-colors text-foreground-secondary hover:text-foreground"
-          type="button"
-        >
-          blueprints
-        </button>
-        <button
           class="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted h-6 tracking-normal rounded-item w-auto rounded-item px-3 py-1.5 font-mono text-w-sm capitalize transition-colors bg-accent text-accent-foreground"
           type="button"
         >
           templates
+        </button>
+        <button
+          class="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted h-6 tracking-normal rounded-item w-auto rounded-item px-3 py-1.5 font-mono text-w-sm capitalize transition-colors text-foreground-secondary hover:text-foreground"
+          type="button"
+        >
+          blueprints
         </button>
       </div>
       <div
@@ -1326,6 +1326,7 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
         class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4"
       >
         <button
+          aria-pressed="false"
           class="cursor-pointer gap-2 font-mono transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 text-w-sm p-0 normal-case tracking-normal rounded-item w-full group flex h-auto flex-col items-stretch justify-start overflow-hidden whitespace-normal rounded-item border border-border bg-surface text-left transition-colors hover:border-accent hover:bg-surface-raised"
           type="button"
         >
@@ -1389,19 +1390,19 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
             class="flex w-full flex-col gap-1 border-border border-t px-3 py-2.5"
           >
             <span
-              class="truncate font-mono text-foreground text-w-sm"
+              class="flex items-center gap-1.5 truncate font-mono text-foreground text-w-sm"
             >
               Basic 3x3
             </span>
             <span
               class="font-mono text-dim text-w-xs"
             >
-              12
-               cells
+              12 cells
             </span>
           </div>
         </button>
         <button
+          aria-pressed="false"
           class="cursor-pointer gap-2 font-mono transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 text-w-sm p-0 normal-case tracking-normal rounded-item w-full group flex h-auto flex-col items-stretch justify-start overflow-hidden whitespace-normal rounded-item border border-border bg-surface text-left transition-colors hover:border-accent hover:bg-surface-raised"
           type="button"
         >
@@ -1453,19 +1454,19 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
             class="flex w-full flex-col gap-1 border-border border-t px-3 py-2.5"
           >
             <span
-              class="truncate font-mono text-foreground text-w-sm"
+              class="flex items-center gap-1.5 truncate font-mono text-foreground text-w-sm"
             >
               Hero Focus
             </span>
             <span
               class="font-mono text-dim text-w-xs"
             >
-              9
-               cells
+              9 cells
             </span>
           </div>
         </button>
         <button
+          aria-pressed="false"
           class="cursor-pointer gap-2 font-mono transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 text-w-sm p-0 normal-case tracking-normal rounded-item w-full group flex h-auto flex-col items-stretch justify-start overflow-hidden whitespace-normal rounded-item border border-border bg-surface text-left transition-colors hover:border-accent hover:bg-surface-raised"
           type="button"
         >
@@ -1501,19 +1502,19 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
             class="flex w-full flex-col gap-1 border-border border-t px-3 py-2.5"
           >
             <span
-              class="truncate font-mono text-foreground text-w-sm"
+              class="flex items-center gap-1.5 truncate font-mono text-foreground text-w-sm"
             >
               Rail Workbench
             </span>
             <span
               class="font-mono text-dim text-w-xs"
             >
-              5
-               cells
+              5 cells
             </span>
           </div>
         </button>
         <button
+          aria-pressed="false"
           class="cursor-pointer gap-2 font-mono transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 text-w-sm p-0 normal-case tracking-normal rounded-item w-full group flex h-auto flex-col items-stretch justify-start overflow-hidden whitespace-normal rounded-item border border-border bg-surface text-left transition-colors hover:border-accent hover:bg-surface-raised"
           type="button"
         >
@@ -1565,19 +1566,19 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
             class="flex w-full flex-col gap-1 border-border border-t px-3 py-2.5"
           >
             <span
-              class="truncate font-mono text-foreground text-w-sm"
+              class="flex items-center gap-1.5 truncate font-mono text-foreground text-w-sm"
             >
               Summary Band
             </span>
             <span
               class="font-mono text-dim text-w-xs"
             >
-              9
-               cells
+              9 cells
             </span>
           </div>
         </button>
         <button
+          aria-pressed="false"
           class="cursor-pointer gap-2 font-mono transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 text-w-sm p-0 normal-case tracking-normal rounded-item w-full group flex h-auto flex-col items-stretch justify-start overflow-hidden whitespace-normal rounded-item border border-border bg-surface text-left transition-colors hover:border-accent hover:bg-surface-raised"
           type="button"
         >
@@ -1609,19 +1610,19 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
             class="flex w-full flex-col gap-1 border-border border-t px-3 py-2.5"
           >
             <span
-              class="truncate font-mono text-foreground text-w-sm"
+              class="flex items-center gap-1.5 truncate font-mono text-foreground text-w-sm"
             >
               Summary Only
             </span>
             <span
               class="font-mono text-dim text-w-xs"
             >
-              4
-               cells
+              4 cells
             </span>
           </div>
         </button>
         <button
+          aria-pressed="false"
           class="cursor-pointer gap-2 font-mono transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 text-w-sm p-0 normal-case tracking-normal rounded-item w-full group flex h-auto flex-col items-stretch justify-start overflow-hidden whitespace-normal rounded-item border border-border bg-surface text-left transition-colors hover:border-accent hover:bg-surface-raised"
           type="button"
         >
@@ -1657,19 +1658,19 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
             class="flex w-full flex-col gap-1 border-border border-t px-3 py-2.5"
           >
             <span
-              class="truncate font-mono text-foreground text-w-sm"
+              class="flex items-center gap-1.5 truncate font-mono text-foreground text-w-sm"
             >
               Summary + List
             </span>
             <span
               class="font-mono text-dim text-w-xs"
             >
-              5
-               cells
+              5 cells
             </span>
           </div>
         </button>
         <button
+          aria-pressed="false"
           class="cursor-pointer gap-2 font-mono transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 text-w-sm p-0 normal-case tracking-normal rounded-item w-full group flex h-auto flex-col items-stretch justify-start overflow-hidden whitespace-normal rounded-item border border-border bg-surface text-left transition-colors hover:border-accent hover:bg-surface-raised"
           type="button"
         >
@@ -1693,19 +1694,19 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
             class="flex w-full flex-col gap-1 border-border border-t px-3 py-2.5"
           >
             <span
-              class="truncate font-mono text-foreground text-w-sm"
+              class="flex items-center gap-1.5 truncate font-mono text-foreground text-w-sm"
             >
               Rail + List
             </span>
             <span
               class="font-mono text-dim text-w-xs"
             >
-              2
-               cells
+              2 cells
             </span>
           </div>
         </button>
         <button
+          aria-pressed="false"
           class="cursor-pointer gap-2 font-mono transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 text-w-sm p-0 normal-case tracking-normal rounded-item w-full group flex h-auto flex-col items-stretch justify-start overflow-hidden whitespace-normal rounded-item border border-border bg-surface text-left transition-colors hover:border-accent hover:bg-surface-raised"
           type="button"
         >
@@ -1741,19 +1742,19 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
             class="flex w-full flex-col gap-1 border-border border-t px-3 py-2.5"
           >
             <span
-              class="truncate font-mono text-foreground text-w-sm"
+              class="flex items-center gap-1.5 truncate font-mono text-foreground text-w-sm"
             >
               Summary + Tabs
             </span>
             <span
               class="font-mono text-dim text-w-xs"
             >
-              5
-               cells
+              5 cells
             </span>
           </div>
         </button>
         <button
+          aria-pressed="false"
           class="cursor-pointer gap-2 font-mono transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 text-w-sm p-0 normal-case tracking-normal rounded-item w-full group flex h-auto flex-col items-stretch justify-start overflow-hidden whitespace-normal rounded-item border border-border bg-surface text-left transition-colors hover:border-accent hover:bg-surface-raised"
           type="button"
         >
@@ -1801,19 +1802,19 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
             class="flex w-full flex-col gap-1 border-border border-t px-3 py-2.5"
           >
             <span
-              class="truncate font-mono text-foreground text-w-sm"
+              class="flex items-center gap-1.5 truncate font-mono text-foreground text-w-sm"
             >
               Card Grid Library
             </span>
             <span
               class="font-mono text-dim text-w-xs"
             >
-              8
-               cells
+              8 cells
             </span>
           </div>
         </button>
         <button
+          aria-pressed="false"
           class="cursor-pointer gap-2 font-mono transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 text-w-sm p-0 normal-case tracking-normal rounded-item w-full group flex h-auto flex-col items-stretch justify-start overflow-hidden whitespace-normal rounded-item border border-border bg-surface text-left transition-colors hover:border-accent hover:bg-surface-raised"
           type="button"
         >
@@ -1877,19 +1878,19 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
             class="flex w-full flex-col gap-1 border-border border-t px-3 py-2.5"
           >
             <span
-              class="truncate font-mono text-foreground text-w-sm"
+              class="flex items-center gap-1.5 truncate font-mono text-foreground text-w-sm"
             >
               Basic 4x3
             </span>
             <span
               class="font-mono text-dim text-w-xs"
             >
-              12
-               cells
+              12 cells
             </span>
           </div>
         </button>
         <button
+          aria-pressed="false"
           class="cursor-pointer gap-2 font-mono transition-interactive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 text-w-sm p-0 normal-case tracking-normal rounded-item w-full group flex h-auto flex-col items-stretch justify-start overflow-hidden whitespace-normal rounded-item border border-border bg-surface text-left transition-colors hover:border-accent hover:bg-surface-raised"
           type="button"
         >
@@ -1969,15 +1970,14 @@ exports[`layout picker visual snapshots > matches the onboarding layout step on 
             class="flex w-full flex-col gap-1 border-border border-t px-3 py-2.5"
           >
             <span
-              class="truncate font-mono text-foreground text-w-sm"
+              class="flex items-center gap-1.5 truncate font-mono text-foreground text-w-sm"
             >
               Basic 4x4
             </span>
             <span
               class="font-mono text-dim text-w-xs"
             >
-              16
-               cells
+              16 cells
             </span>
           </div>
         </button>
