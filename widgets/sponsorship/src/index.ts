@@ -206,6 +206,7 @@ export const sponsorshipDescriptor: WidgetDescriptor<WidgetTemplateConfig> = {
   description:
     "Unified sponsorship view — sponsors, backers, and donation metrics from Open Collective and GitHub Sponsors",
   catalogCategory: "revenue",
+  supportedDashboardScopes: ["all-projects", "project"],
   capabilities: [
     {
       id: "sponsorship",

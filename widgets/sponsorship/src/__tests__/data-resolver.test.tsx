@@ -131,8 +131,8 @@ describe("sponsorship data resolver", () => {
         })
       );
     });
-    expect(useOpenCollectiveMock).toHaveBeenCalledWith("radarboard", "30d");
-    expect(useGitHubSponsorsMock).toHaveBeenCalledWith("thedaviddias", true);
+    expect(useOpenCollectiveMock).toHaveBeenCalledWith("radarboard", "30d", false);
+    expect(useGitHubSponsorsMock).toHaveBeenCalledWith("thedaviddias", true, false);
   });
 
   it("supports open-collective-only summaries and expense transactions", async () => {

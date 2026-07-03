@@ -19,28 +19,22 @@ function RoadmapResolver({ projectSlug, onState }: DataSourceResolverProps) {
     const wipCount = inProgressIssues.length;
     const blockedCount = 0; // Linear doesn't expose a "blocked" state; reserved for future use
 
-    // Pick the next upcoming release (first started project with a target date, or first project)
-    const nextRelease = projects[0] ?? null;
-    const nextReleaseItems = nextRelease
-      ? [
-          {
-            id: nextRelease.id,
-            name: nextRelease.name,
-            progressLabel: `${Math.round(nextRelease.progress * 100)}%`,
-            healthColor: (() => {
-              if (nextRelease.health === "atRisk") return "#f5c542";
-              if (nextRelease.health === "offTrack") return "#e05555";
-              return "#4ade80";
-            })(),
-            targetDateLabel: nextRelease.targetDate
-              ? (formatDate(nextRelease.targetDate, {
-                  compact: true,
-                  locale: effectiveLocale,
-                }) ?? "")
-              : "",
-          },
-        ]
-      : [];
+    const nextReleaseItems = projects.slice(0, 4).map((project) => ({
+      id: project.id,
+      name: project.name,
+      progressLabel: `${Math.round(project.progress * 100)}%`,
+      healthColor: (() => {
+        if (project.health === "atRisk") return "#f5c542";
+        if (project.health === "offTrack") return "#e05555";
+        return "#4ade80";
+      })(),
+      targetDateLabel: project.targetDate
+        ? (formatDate(project.targetDate, {
+            compact: true,
+            locale: effectiveLocale,
+          }) ?? "")
+        : "",
+    }));
 
     return {
       configured,

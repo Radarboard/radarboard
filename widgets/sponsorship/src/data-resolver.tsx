@@ -175,11 +175,17 @@ function getProviderSetupState(
 }
 
 function SponsorshipResolver({ projectSlug, onState }: DataSourceResolverProps) {
-  const { projects, timeRange } = useDashboard();
-  const openCollectiveSlug = resolveOcSlug(projects, projectSlug);
+  const { projects, timeRange, preferences } = useDashboard();
+  const isDemoMode = preferences?.demoMode === true;
+  const openCollectiveSlug =
+    resolveOcSlug(projects, projectSlug) ?? (isDemoMode ? "front-end-checklist" : null);
   const githubLogin = resolveGitHubLogin(projects, projectSlug);
-  const openCollective = useOpenCollective(openCollectiveSlug, timeRange);
-  const githubSponsors = useGitHubSponsors(githubLogin, Boolean(githubLogin));
+  const openCollective = useOpenCollective(openCollectiveSlug, timeRange, isDemoMode);
+  const githubSponsors = useGitHubSponsors(
+    githubLogin,
+    Boolean(githubLogin) || isDemoMode,
+    isDemoMode
+  );
 
   const fetchedAt = useMemo(() => {
     if (openCollective.fetchedAt && githubSponsors.fetchedAt) {
@@ -194,7 +200,7 @@ function SponsorshipResolver({ projectSlug, onState }: DataSourceResolverProps) 
   }, [openCollective.refetch, githubSponsors.refetch]);
 
   const data = useMemo(() => {
-    if (!openCollectiveSlug && !githubLogin) {
+    if (!openCollectiveSlug && !githubLogin && !isDemoMode) {
       return getProjectRequiredState(projectSlug);
     }
 
@@ -210,6 +216,7 @@ function SponsorshipResolver({ projectSlug, onState }: DataSourceResolverProps) 
     return computeSponsorshipSummary(openCollective.data, githubSponsors.data);
   }, [
     projectSlug,
+    isDemoMode,
     openCollectiveSlug,
     githubLogin,
     openCollective,
