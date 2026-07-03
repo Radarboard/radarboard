@@ -6,8 +6,17 @@
  * and onboardingCompleted=true in preferences.
  */
 
-import { createLogger } from "@radarboard/logger/logger";
 import {
+  DEFAULT_DASHBOARD_PAGE_SLUG,
+  normalizeDashboardWidgetLayout,
+} from "@radarboard/hooks/dashboard-layout";
+import { logBuffer } from "@radarboard/logger/log-buffer";
+import { createLogger } from "@radarboard/logger/logger";
+import { ALL_PROJECTS_SLUG } from "@radarboard/types/dashboard";
+import type { WidgetLayoutConfig } from "@radarboard/types/database";
+import type { LogEntry, LogLevel } from "@radarboard/types/logs";
+import {
+  DEMO_CONFIG,
   MOCK_ANALYTICS,
   MOCK_GITHUB_COMMITS,
   MOCK_GITHUB_ISSUES,
@@ -22,14 +31,82 @@ import {
   MOCK_VERCEL_DOMAINS,
   MOCK_VERCEL_PROJECTS,
 } from "@radarboard/widget-engine/demo";
+import { BASIC_3X3 } from "@radarboard/widget-engine/layouts";
+import { WIDGET_REGISTRY } from "@radarboard/widget-engine/widgets/registry";
 import { NextResponse } from "next/server";
 import { getCacheRepo, getSettingsRepo } from "@/db/repository";
 import { errorJson } from "@/lib/api";
+import { initializeWidgetDescriptors } from "@/lib/widgets-init";
 
 const log = createLogger("api/demo/seed");
 
 const DEMO_TTL = 31_536_000;
 const TIME_RANGES = ["today", "7d", "30d"] as const;
+
+const MOCK_LOG_BLUEPRINTS: Array<{
+  level: LogLevel;
+  source: string;
+  message: string;
+  projectSlug: string;
+  metadata: Record<string, unknown>;
+}> = [
+  {
+    level: "info",
+    source: "demo/cache",
+    message: "Served demo cache entry for analytics overview",
+    projectSlug: "pixel-studio",
+    metadata: { route: "/api/integrations/openpanel/data", durationMs: 42, demo: true },
+  },
+  {
+    level: "debug",
+    source: "demo/widgets",
+    message: "Resolved SEO widget data for all projects",
+    projectSlug: "pixel-studio",
+    metadata: { widgetId: "seo", rows: 12, demo: true },
+  },
+  {
+    level: "warn",
+    source: "demo/sentry",
+    message: "Grouped recurring canvas errors into release risk summary",
+    projectSlug: "pixel-studio",
+    metadata: { unresolved: 3, release: "2.4.1", demo: true },
+  },
+  {
+    level: "info",
+    source: "demo/shipping",
+    message: "Synced release activity from GitHub pull requests",
+    projectSlug: "pixel-studio",
+    metadata: { pullRequests: 8, deployments: 5, demo: true },
+  },
+  {
+    level: "debug",
+    source: "demo/bookmarks",
+    message: "Hydrated bookmark collections from Raindrop seed data",
+    projectSlug: "task-flow",
+    metadata: { saved: 248, collections: 6, demo: true },
+  },
+  {
+    level: "info",
+    source: "demo/sponsorship",
+    message: "Combined GitHub Sponsors and Open Collective totals",
+    projectSlug: "pixel-studio",
+    metadata: { sponsors: 170, currency: "USD", demo: true },
+  },
+  {
+    level: "error",
+    source: "demo/revenue",
+    message: "Webhook retry queued after stale subscription event",
+    projectSlug: "pixel-studio",
+    metadata: { provider: "revenuecat", retryInSeconds: 45, demo: true },
+  },
+  {
+    level: "info",
+    source: "demo/roadmap",
+    message: "Loaded Linear roadmap projects for 3x3 showcase",
+    projectSlug: "task-flow",
+    metadata: { projects: 4, inProgress: 5, demo: true },
+  },
+];
 
 const MOCK_APP_STORE = {
   appName: "Pixel Studio",
@@ -86,7 +163,7 @@ const MOCK_RAINDROP = {
     savedCount: 248,
     totalCollections: 6,
     totalTags: 18,
-    recentCount: 5,
+    recentCount: 8,
   },
   recent: [
     {
@@ -151,6 +228,70 @@ const MOCK_RAINDROP = {
       collectionTitle: "Release Activity",
       collectionUrl: "https://app.raindrop.io/my/3",
       raindropUrl: "https://app.raindrop.io/my/0/item/104",
+      coverUrl: null,
+    },
+    {
+      id: 105,
+      title: "Community sponsorship benchmarks",
+      excerpt: "Revenue and backer examples from open-source creator tools.",
+      link: "https://opencollective.com/",
+      domain: "opencollective.com",
+      created: "2026-05-26T11:25:00Z",
+      lastUpdate: "2026-05-26T11:25:00Z",
+      tags: ["sponsorship", "community"],
+      important: false,
+      collectionId: 2,
+      collectionTitle: "Growth",
+      collectionUrl: "https://app.raindrop.io/my/2",
+      raindropUrl: "https://app.raindrop.io/my/0/item/105",
+      coverUrl: null,
+    },
+    {
+      id: 106,
+      title: "Search console query grouping",
+      excerpt: "Organizing search terms by intent and opportunity.",
+      link: "https://developers.google.com/search/docs/monitor-debug/search-analytics",
+      domain: "developers.google.com",
+      created: "2026-05-25T15:55:00Z",
+      lastUpdate: "2026-05-25T15:55:00Z",
+      tags: ["seo", "analytics"],
+      important: false,
+      collectionId: 1,
+      collectionTitle: "Product Research",
+      collectionUrl: "https://app.raindrop.io/my/1",
+      raindropUrl: "https://app.raindrop.io/my/0/item/106",
+      coverUrl: null,
+    },
+    {
+      id: 107,
+      title: "Incident response notes for small teams",
+      excerpt: "Practical triage patterns for monitoring and customer updates.",
+      link: "https://sentry.io/resources/",
+      domain: "sentry.io",
+      created: "2026-05-24T20:05:00Z",
+      lastUpdate: "2026-05-24T20:05:00Z",
+      tags: ["observability", "support"],
+      important: true,
+      collectionId: 3,
+      collectionTitle: "Release Activity",
+      collectionUrl: "https://app.raindrop.io/my/3",
+      raindropUrl: "https://app.raindrop.io/my/0/item/107",
+      coverUrl: null,
+    },
+    {
+      id: 108,
+      title: "Subscription retention checklist",
+      excerpt: "Metrics and lifecycle moments to review before a pricing launch.",
+      link: "https://www.revenuecat.com/blog/",
+      domain: "revenuecat.com",
+      created: "2026-05-23T10:40:00Z",
+      lastUpdate: "2026-05-23T10:40:00Z",
+      tags: ["revenue", "retention"],
+      important: false,
+      collectionId: 2,
+      collectionTitle: "Growth",
+      collectionUrl: "https://app.raindrop.io/my/2",
+      raindropUrl: "https://app.raindrop.io/my/0/item/108",
       coverUrl: null,
     },
   ],
@@ -218,6 +359,30 @@ const MOCK_ROADMAP = {
       issueCountOpen: 11,
       teams: ["Growth"],
     },
+    {
+      id: "roadmap-demo-3",
+      name: "Creator sponsorship portal",
+      state: "started",
+      progress: 0.38,
+      targetDate: "2026-07-16",
+      health: "onTrack",
+      issueCountDone: 7,
+      issueCountInProgress: 3,
+      issueCountOpen: 10,
+      teams: ["Community"],
+    },
+    {
+      id: "roadmap-demo-4",
+      name: "Crash triage automation",
+      state: "started",
+      progress: 0.55,
+      targetDate: "2026-07-25",
+      health: "onTrack",
+      issueCountDone: 11,
+      issueCountInProgress: 4,
+      issueCountOpen: 9,
+      teams: ["Platform"],
+    },
   ],
   inProgressIssues: [
     {
@@ -259,6 +424,32 @@ const MOCK_ROADMAP = {
       timeInStarted: "3d",
       labels: [{ name: "launch", color: "#f5c542" }],
     },
+    {
+      id: "issue-demo-4",
+      identifier: "COM-32",
+      title: "Add sponsor tier comparison to public portal",
+      url: "https://linear.app/radarboard/issue/COM-32",
+      priority: "medium",
+      assignee: { name: "Lena Ortiz", avatarUrl: null },
+      projectName: "Creator sponsorship portal",
+      projectColor: "#9b87f5",
+      startedAt: "2026-05-27T10:45:00Z",
+      timeInStarted: "4d",
+      labels: [{ name: "sponsorship", color: "#9b87f5" }],
+    },
+    {
+      id: "issue-demo-5",
+      identifier: "PLT-207",
+      title: "Group recurring crash signatures by release channel",
+      url: "https://linear.app/radarboard/issue/PLT-207",
+      priority: "high",
+      assignee: { name: "Sam Rivera", avatarUrl: null },
+      projectName: "Crash triage automation",
+      projectColor: "#2a9d8f",
+      startedAt: "2026-05-26T08:20:00Z",
+      timeInStarted: "5d",
+      labels: [{ name: "observability", color: "#2a9d8f" }],
+    },
   ],
 };
 
@@ -290,6 +481,26 @@ const MOCK_GITHUB_SPONSORS = {
       since: "2026-04-08T00:00:00Z",
       isOneTime: false,
     },
+    {
+      login: "design-systems-lab",
+      name: "Design Systems Lab",
+      avatarUrl: "https://github.com/design-systems-lab.png",
+      url: "https://github.com/design-systems-lab",
+      type: "ORGANIZATION",
+      tier: { name: "Team", monthlyPriceInCents: 12500 },
+      since: "2026-03-18T00:00:00Z",
+      isOneTime: false,
+    },
+    {
+      login: "frontend-ops",
+      name: "Frontend Ops",
+      avatarUrl: "https://github.com/frontend-ops.png",
+      url: "https://github.com/frontend-ops",
+      type: "ORGANIZATION",
+      tier: { name: "Creator", monthlyPriceInCents: 2500 },
+      since: "2026-05-02T00:00:00Z",
+      isOneTime: false,
+    },
   ],
   tiers: [
     {
@@ -307,6 +518,14 @@ const MOCK_GITHUB_SPONSORS = {
       description: "Priority roadmap feedback for studios.",
       isOneTime: false,
       sponsorCount: 11,
+    },
+    {
+      id: "tier-demo-3",
+      name: "Team",
+      monthlyPriceInCents: 12500,
+      description: "Shared roadmap notes and release previews.",
+      isOneTime: false,
+      sponsorCount: 8,
     },
   ],
   goal: {
@@ -335,6 +554,12 @@ const MOCK_OPEN_COLLECTIVE = {
       { date: "2026-05-22", value: 21000 },
       { date: "2026-05-23", value: 26000 },
       { date: "2026-05-24", value: 32000 },
+      { date: "2026-05-25", value: 28000 },
+      { date: "2026-05-26", value: 36000 },
+      { date: "2026-05-27", value: 42000 },
+      { date: "2026-05-28", value: 39000 },
+      { date: "2026-05-29", value: 46000 },
+      { date: "2026-05-30", value: 51000 },
     ],
   },
   recentTransactions: [
@@ -359,6 +584,39 @@ const MOCK_OPEN_COLLECTIVE = {
       createdAt: "2026-05-28T17:20:00Z",
       fromAccount: { name: "Pixel Studio", slug: "pixel-studio", imageUrl: null },
       toAccount: { name: "Avery Stone", slug: "avery-stone" },
+    },
+    {
+      id: "oc-tx-demo-3",
+      type: "CREDIT",
+      amount: 25000,
+      netAmount: 23900,
+      currency: "USD",
+      description: "Team sponsorship renewal",
+      createdAt: "2026-05-26T15:10:00Z",
+      fromAccount: { name: "Design Systems Lab", slug: "design-systems-lab", imageUrl: null },
+      toAccount: { name: "Pixel Studio", slug: "pixel-studio" },
+    },
+    {
+      id: "oc-tx-demo-4",
+      type: "CREDIT",
+      amount: 7500,
+      netAmount: 7200,
+      currency: "USD",
+      description: "Creator tier contribution",
+      createdAt: "2026-05-25T13:35:00Z",
+      fromAccount: { name: "Frontend Ops", slug: "frontend-ops", imageUrl: null },
+      toAccount: { name: "Pixel Studio", slug: "pixel-studio" },
+    },
+    {
+      id: "oc-tx-demo-5",
+      type: "DEBIT",
+      amount: 18000,
+      netAmount: 18000,
+      currency: "USD",
+      description: "Community design review",
+      createdAt: "2026-05-23T18:45:00Z",
+      fromAccount: { name: "Pixel Studio", slug: "pixel-studio", imageUrl: null },
+      toAccount: { name: "Lena Ortiz", slug: "lena-ortiz" },
     },
   ],
   topMembers: [
@@ -390,6 +648,34 @@ const MOCK_OPEN_COLLECTIVE = {
         type: "INDIVIDUAL",
       },
     },
+    {
+      id: "oc-member-demo-3",
+      role: "BACKER",
+      tier: "Team",
+      totalDonated: 96000,
+      currency: "USD",
+      since: "2026-02-18T00:00:00Z",
+      account: {
+        name: "Design Systems Lab",
+        slug: "design-systems-lab",
+        imageUrl: null,
+        type: "ORGANIZATION",
+      },
+    },
+    {
+      id: "oc-member-demo-4",
+      role: "BACKER",
+      tier: "Creator",
+      totalDonated: 38000,
+      currency: "USD",
+      since: "2026-04-22T00:00:00Z",
+      account: {
+        name: "Frontend Ops",
+        slug: "frontend-ops",
+        imageUrl: null,
+        type: "ORGANIZATION",
+      },
+    },
   ],
 };
 
@@ -406,6 +692,90 @@ interface SeedEntry {
   key: string;
   route: string;
   data: unknown;
+}
+
+const ALL_PROJECTS_SHOWCASE_OVERRIDES: Record<string, string> = {
+  "cell-7": "sponsorship",
+  "cell-9": "logs",
+};
+
+function seedDemoLogs(now: number): void {
+  const existingDemoLogs = logBuffer.getEntries({ source: "demo/", limit: 1 });
+  if (existingDemoLogs.total > 0) return;
+
+  for (const [index, blueprint] of MOCK_LOG_BLUEPRINTS.entries()) {
+    const entry: LogEntry = {
+      id: `demo-log-${index + 1}`,
+      timestamp: now * 1000 - (MOCK_LOG_BLUEPRINTS.length - index) * 180_000,
+      level: blueprint.level,
+      source: blueprint.source,
+      message: blueprint.message,
+      projectSlug: blueprint.projectSlug,
+      metadata: blueprint.metadata,
+    };
+    logBuffer.push(entry);
+  }
+}
+
+function canUseAllProjectsDemoWidget(widgetId: string): boolean {
+  const descriptor = WIDGET_REGISTRY.get(widgetId);
+  if (!descriptor) return false;
+  return descriptor.supportedDashboardScopes?.includes("all-projects") ?? true;
+}
+
+function buildDemoWidgetAssignments(): Record<string, string | null> {
+  initializeWidgetDescriptors();
+
+  return normalizeDashboardWidgetLayout(
+    BASIC_3X3,
+    Object.fromEntries(
+      Object.entries(DEMO_CONFIG.showcaseLayout).map(([cellId, slot]) => {
+        const widgetId =
+          [ALL_PROJECTS_SHOWCASE_OVERRIDES[cellId], slot.widgetId, slot.fallbackWidgetId].find(
+            (candidate): candidate is string =>
+              typeof candidate === "string" && canUseAllProjectsDemoWidget(candidate)
+          ) ?? null;
+        return [cellId, widgetId];
+      })
+    )
+  );
+}
+
+function buildDemoWidgetMap(assignments: Record<string, string | null>): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(assignments).filter((entry): entry is [string, string] => entry[1] !== null)
+  );
+}
+
+function applyDemoDashboardLayout(currentLayout: WidgetLayoutConfig | null): WidgetLayoutConfig {
+  const assignments = buildDemoWidgetAssignments();
+
+  return {
+    ...currentLayout,
+    configs: currentLayout?.configs ?? {},
+    modalPrefs: currentLayout?.modalPrefs ?? {},
+    layouts: [BASIC_3X3],
+    projectLayouts: {
+      ...(currentLayout?.projectLayouts ?? {}),
+      [ALL_PROJECTS_SLUG]: {
+        pages: [
+          {
+            name: "Overview",
+            slug: DEFAULT_DASHBOARD_PAGE_SLUG,
+            layoutId: BASIC_3X3.id,
+            widgetLayouts: { [BASIC_3X3.id]: assignments },
+          },
+        ],
+      },
+    },
+    preferences: {
+      ...currentLayout?.preferences,
+      demoMode: true,
+      onboardingCompleted: true,
+      blueprintWidgetMap: buildDemoWidgetMap(assignments),
+    },
+    appearance: currentLayout?.appearance,
+  };
 }
 
 function buildStarHistoryData() {
@@ -645,7 +1015,21 @@ function buildEntries(): SeedEntry[] {
           project: { name: "task-flow", slug: "task-flow" },
         },
       ],
-      errorTrend: [],
+      errorTrend: [
+        { date: "2026-05-18", value: 6 },
+        { date: "2026-05-19", value: 4 },
+        { date: "2026-05-20", value: 7 },
+        { date: "2026-05-21", value: 5 },
+        { date: "2026-05-22", value: 3 },
+        { date: "2026-05-23", value: 4 },
+        { date: "2026-05-24", value: 2 },
+        { date: "2026-05-25", value: 5 },
+        { date: "2026-05-26", value: 3 },
+        { date: "2026-05-27", value: 4 },
+        { date: "2026-05-28", value: 2 },
+        { date: "2026-05-29", value: 3 },
+        { date: "2026-05-30", value: 1 },
+      ],
     },
   };
   for (const range of TIME_RANGES) {
@@ -732,18 +1116,10 @@ export async function handleDemoSeed() {
       })
     );
     await Promise.all(seedPromises);
+    seedDemoLogs(now);
 
     const currentLayout = await settings.getWidgetLayout();
-    const updatedLayout = {
-      ...currentLayout,
-      configs: currentLayout?.configs ?? {},
-      preferences: {
-        ...currentLayout?.preferences,
-        demoMode: true,
-        onboardingCompleted: true,
-      },
-    };
-    await settings.setWidgetLayout(updatedLayout);
+    await settings.setWidgetLayout(applyDemoDashboardLayout(currentLayout));
 
     return NextResponse.json({
       ok: true,

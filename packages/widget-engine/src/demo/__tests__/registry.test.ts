@@ -49,8 +49,8 @@ describe("DEMO_CONFIG", () => {
             "widgetId": "vercel-domains",
           },
           "cell-9": {
-            "fallbackWidgetId": "observability",
-            "widgetId": "observability",
+            "fallbackWidgetId": "logs",
+            "widgetId": "logs",
           },
         },
         "widgets": [
@@ -66,6 +66,7 @@ describe("DEMO_CONFIG", () => {
           "observability",
           "roadmap",
           "sponsorship",
+          "logs",
         ],
       }
     `);

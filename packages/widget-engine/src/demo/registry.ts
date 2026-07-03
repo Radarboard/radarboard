@@ -28,6 +28,7 @@ export const DEMO_CONFIG = {
     "observability",
     "roadmap",
     "sponsorship",
+    "logs",
   ] as const,
 
   /**
@@ -44,7 +45,7 @@ export const DEMO_CONFIG = {
     "cell-6": { widgetId: "shipping", fallbackWidgetId: "shipping" },
     "cell-7": { widgetId: "github-stars", fallbackWidgetId: "sponsorship" },
     "cell-8": { widgetId: "vercel-domains", fallbackWidgetId: "roadmap" },
-    "cell-9": { widgetId: "observability", fallbackWidgetId: "observability" },
+    "cell-9": { widgetId: "logs", fallbackWidgetId: "logs" },
   } as const,
 
   /** Blueprint applied when entering demo mode. */
