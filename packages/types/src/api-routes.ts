@@ -96,6 +96,9 @@ export const API_ROUTES = {
   databaseExport: defineApiRoute("/api/system/database/export"),
   databaseImport: defineApiRoute("/api/system/database/import"),
 
+  /** Full factory reset — erases ALL data and returns the app to first-run. */
+  factoryReset: defineApiRoute("/api/system/reset"),
+
   backup: defineApiRoute("/api/system/backup"),
   backupExport: defineApiRoute("/api/system/backup/export"),
   backupManifest: defineApiRoute("/api/system/backup/manifest"),

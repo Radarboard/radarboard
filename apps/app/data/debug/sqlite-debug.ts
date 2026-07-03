@@ -118,4 +118,10 @@ export class SqliteDebugRepository implements DebugRepository {
     await db.delete(debugEvents).where(sql`${debugEvents.occurredAt} < ${olderThan}`);
     return rows.length;
   }
+
+  async clearAll(): Promise<void> {
+    await this.ensureTables();
+    const db = getDb();
+    await db.delete(debugEvents);
+  }
 }

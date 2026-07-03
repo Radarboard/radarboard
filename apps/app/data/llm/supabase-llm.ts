@@ -379,6 +379,24 @@ export class SupabaseLlmRepository implements LlmRepository {
       headers: this.headers,
     });
   }
+
+  async clearAll(): Promise<void> {
+    // PostgREST requires a filter for DELETE; neq on the id PK matches all rows.
+    for (const table of [
+      "llm_messages",
+      "llm_conversations",
+      "llm_memory",
+      "llm_skills",
+      "llm_traces",
+      "llm_artifacts",
+      "embeddings",
+    ]) {
+      await fetch(`${this.url}/${table}?id=neq.___impossible___`, {
+        method: "DELETE",
+        headers: this.headers,
+      });
+    }
+  }
 }
 
 function supabaseSnippet(parts: string, query: string, maxLen = 120): string {

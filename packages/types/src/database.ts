@@ -743,6 +743,9 @@ export interface LlmRepository {
   upsertEmbeddings(rows: EmbeddingRow[]): Promise<void>;
   deleteEmbedding(id: string): Promise<void>;
   deleteEmbeddingsBySource(source: string, projectSlug?: string): Promise<void>;
+
+  /** Delete ALL LLM data (conversations, messages, memory, skills, traces, artifacts, embeddings). Used by factory reset. */
+  clearAll(): Promise<void>;
 }
 
 // --- Debug Event Repository ---
@@ -787,6 +790,9 @@ export interface DebugRepository {
   insertEvent(event: DebugEventRow): Promise<void>;
   listEvents(query?: DebugEventQuery): Promise<DebugEventRow[]>;
   pruneEvents(olderThan: string): Promise<number>;
+
+  /** Delete ALL debug events. Used by factory reset. */
+  clearAll(): Promise<void>;
 }
 
 // --- Plugin Data Repository ---
@@ -835,6 +841,9 @@ export interface NotificationRepository {
   getActiveSnoozes(now?: number): Promise<NotificationSnoozeRow[]>;
 
   pruneEvents(olderThan: number): Promise<number>;
+
+  /** Delete ALL notification data (events, digests, deliveries, rules, preferences, snoozes, webhooks). Used by factory reset. */
+  clearAll(): Promise<void>;
 }
 
 // --- Database Adapter ---

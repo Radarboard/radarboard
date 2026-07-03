@@ -439,6 +439,20 @@ export class PlanetscaleLlmRepository implements LlmRepository {
       await this.query("DELETE FROM embeddings WHERE source = ?", [source]);
     }
   }
+
+  async clearAll(): Promise<void> {
+    for (const table of [
+      "llm_messages",
+      "llm_conversations",
+      "llm_memory",
+      "llm_skills",
+      "llm_traces",
+      "llm_artifacts",
+      "embeddings",
+    ]) {
+      await this.query(`DELETE FROM ${table}`, []);
+    }
+  }
 }
 
 function psSnippet(parts: string, query: string, maxLen = 120): string {

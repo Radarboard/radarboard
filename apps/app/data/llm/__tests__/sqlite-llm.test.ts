@@ -238,4 +238,13 @@ describe("SqliteLlmRepository", () => {
       expect(mockDb.onConflictDoUpdate).toHaveBeenCalled();
     });
   });
+
+  describe("clearAll", () => {
+    it("deletes every LLM table (factory reset)", async () => {
+      await repo.clearAll();
+
+      // messages, conversations, memory, skills, traces, artifacts, embeddings
+      expect(mockDb.delete).toHaveBeenCalledTimes(7);
+    });
+  });
 });

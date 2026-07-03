@@ -3,6 +3,7 @@ import { API_ROUTES } from "@radarboard/types/api-routes";
 import { registerRoutes } from "@/lib/router/registry";
 import { handleGetDatabaseConfig, handleSetDatabaseConfig } from "./config";
 import { handleRunDatabaseMigrations } from "./migrate";
+import { handleFactoryReset } from "./reset";
 import { handleTestDatabase } from "./test";
 import { handleExportDatabase, handleImportDatabase } from "./transfer";
 
@@ -30,5 +31,9 @@ registerRoutes([
   {
     path: API_ROUTES.databaseImport,
     handlers: { POST: handleImportDatabase },
+  },
+  {
+    path: API_ROUTES.factoryReset,
+    handlers: { POST: handleFactoryReset },
   },
 ]);

@@ -476,6 +476,20 @@ export class TursoLlmRepository implements LlmRepository {
       await this.client.execute({ sql: "DELETE FROM embeddings WHERE source = ?", args: [source] });
     }
   }
+
+  async clearAll(): Promise<void> {
+    for (const table of [
+      "llm_messages",
+      "llm_conversations",
+      "llm_memory",
+      "llm_skills",
+      "llm_traces",
+      "llm_artifacts",
+      "embeddings",
+    ]) {
+      await this.client.execute({ sql: `DELETE FROM ${table}`, args: [] });
+    }
+  }
 }
 
 function tursoSnippet(parts: string, query: string, maxLen = 120): string {

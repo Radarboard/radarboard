@@ -450,6 +450,18 @@ export class SqliteLlmRepository implements LlmRepository {
     if (projectSlug) conditions.push(eq(embeddings.projectSlug, projectSlug));
     await db.delete(embeddings).where(and(...conditions));
   }
+
+  async clearAll(): Promise<void> {
+    await this.ensureTables();
+    const db = getDb();
+    await db.delete(llmMessages);
+    await db.delete(llmConversations);
+    await db.delete(llmMemory);
+    await db.delete(llmSkills);
+    await db.delete(llmTraces);
+    await db.delete(llmArtifacts);
+    await db.delete(embeddings);
+  }
 }
 
 // ---------------------------------------------------------------------------

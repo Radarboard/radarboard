@@ -101,6 +101,10 @@ export class TursoDebugRepository implements DebugRepository {
     });
     return count;
   }
+
+  async clearAll(): Promise<void> {
+    await this.client.execute({ sql: "DELETE FROM debug_events", args: [] });
+  }
 }
 
 function addEq(

@@ -12,6 +12,7 @@ import useSWR, { useSWRConfig } from "swr";
 import { notifyProjectGraphChanged } from "@/hooks/app/use-project-graph-invalidation";
 import { reloadSettingsFromServer } from "@/modules/settings/store/settings-store";
 import { SettingsPageLayout, SettingsPanel } from "../settings-page-layout";
+import { EraseAllDataPanel } from "./erase-data";
 
 interface DbStatus {
   provider: DatabaseProvider;
@@ -470,6 +471,8 @@ export function SettingsDatabase() {
             <p className="font-mono text-dim text-w-xs">{configImportResult}</p>
           )}
         </SettingsPanel>
+
+        <EraseAllDataPanel />
       </div>
     </SettingsPageLayout>
   );

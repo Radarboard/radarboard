@@ -93,6 +93,14 @@ export class SupabaseDebugRepository implements DebugRepository {
     });
     return rows.length;
   }
+
+  async clearAll(): Promise<void> {
+    // PostgREST requires a filter for DELETE; neq on the id PK matches all rows.
+    await fetch(`${this.url}/debug_events?id=neq.___impossible___`, {
+      method: "DELETE",
+      headers: this.headers,
+    });
+  }
 }
 
 function rowToDebugEvent(row: Record<string, unknown>): DebugEventRow {

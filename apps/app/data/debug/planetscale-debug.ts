@@ -118,6 +118,10 @@ export class PlanetscaleDebugRepository implements DebugRepository {
     await this.query(`DELETE FROM debug_events WHERE occurred_at < ?`, [olderThan]);
     return count;
   }
+
+  async clearAll(): Promise<void> {
+    await this.query(`DELETE FROM debug_events`, []);
+  }
 }
 
 function addEq(where: string[], args: unknown[], column: string, value: string | undefined) {

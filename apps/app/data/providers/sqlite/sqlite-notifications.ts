@@ -215,34 +215,39 @@ export class SqliteNotificationRepository implements NotificationRepository {
     this.initialized = true;
   }
 
+  private toEventValues(event: NewNotificationEvent) {
+    return {
+      id: event.id,
+      source: event.source,
+      sourceEventId: event.sourceEventId ?? null,
+      type: event.type,
+      severity: event.severity,
+      projectSlug: event.projectSlug ?? null,
+      title: event.title,
+      body: event.body ?? null,
+      metadata: JSON.stringify(event.metadata ?? {}),
+      occurredAt: event.occurredAt ?? nowSeconds(),
+      ingestedAt: event.ingestedAt ?? nowSeconds(),
+      batchId: event.batchId ?? null,
+    };
+  }
+
   async insertEvent(event: NewNotificationEvent): Promise<void> {
     await this.ensureTables();
-    const db = getDb();
-    const occurredAt = event.occurredAt ?? nowSeconds();
-    const ingestedAt = event.ingestedAt ?? nowSeconds();
-    await db
+    await getDb()
       .insert(notificationEvents)
-      .values({
-        id: event.id,
-        source: event.source,
-        sourceEventId: event.sourceEventId ?? null,
-        type: event.type,
-        severity: event.severity,
-        projectSlug: event.projectSlug ?? null,
-        title: event.title,
-        body: event.body ?? null,
-        metadata: JSON.stringify(event.metadata ?? {}),
-        occurredAt,
-        ingestedAt,
-        batchId: event.batchId ?? null,
-      })
+      .values(this.toEventValues(event))
       .onConflictDoNothing();
   }
 
   async insertEvents(events: NewNotificationEvent[]): Promise<void> {
-    for (const event of events) {
-      await this.insertEvent(event);
-    }
+    if (events.length === 0) return;
+    await this.ensureTables();
+    // Single batched insert instead of one round-trip per event.
+    await getDb()
+      .insert(notificationEvents)
+      .values(events.map((event) => this.toEventValues(event)))
+      .onConflictDoNothing();
   }
 
   async getEvents(query: NotificationEventQuery = {}): Promise<NotificationEventRow[]> {
@@ -707,5 +712,17 @@ export class SqliteNotificationRepository implements NotificationRepository {
     await db.delete(notificationSnoozes).where(lt(notificationSnoozes.expiresAt, nowSeconds()));
 
     return eventIds.length + digestIds.length;
+  }
+
+  async clearAll(): Promise<void> {
+    await this.ensureTables();
+    const db = getDb();
+    await db.delete(notificationDeliveries);
+    await db.delete(notificationDigests);
+    await db.delete(notificationEvents);
+    await db.delete(notificationRules);
+    await db.delete(notificationPreferences);
+    await db.delete(notificationSnoozes);
+    await db.delete(webhookEndpoints);
   }
 }
