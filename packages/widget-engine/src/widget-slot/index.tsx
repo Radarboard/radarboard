@@ -18,11 +18,14 @@ import {
 import type { WidgetChromeStatus, WidgetRenderProps } from "@radarboard/widget-sdk/widget-types";
 import { Plug, Plus } from "lucide-react";
 import type React from "react";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { WidgetCard } from "../widget-card";
 import { DEFAULT_WIDGET_MODAL_SIZE } from "../widget-modal";
 import { WidgetPickerPopover } from "../widget-picker-popover";
 import { WIDGET_REGISTRY } from "../widgets/registry";
+
+/** Stable empty-config reference so memoized config/props don't churn each render. */
+const EMPTY_WIDGET_CONFIG: Record<string, unknown> = {};
 
 async function executeManualRefresh(
   refetch: () => Promise<void>,
@@ -194,6 +197,72 @@ export function WidgetSlot({
     }
   }, [activeProjectSlug, cellId, descriptorId, slotUi.refetch]);
 
+  // Config/props are memoized here (above the early returns) so hooks stay
+  // unconditional. Stabilizing these lets a slot's own chrome-state changes
+  // (refetching, dialogs) re-render without re-rendering the widget body.
+  const instanceConfig = descriptor
+    ? (widgetConfigs[descriptor.id] ?? EMPTY_WIDGET_CONFIG)
+    : EMPTY_WIDGET_CONFIG;
+
+  const mergedConfig = useMemo(() => {
+    if (!descriptor) return EMPTY_WIDGET_CONFIG;
+    const base = resolveVariantConfig(descriptor, instanceConfig) as Record<string, unknown>;
+    return { ...base, ...extractInstanceOverrides(instanceConfig) };
+  }, [descriptor, instanceConfig]);
+
+  const effectiveTimeRange = useMemo(() => {
+    const cfg = mergedConfig as Record<string, unknown>;
+    if (cfg.ignoreTimeRange !== true) return timeRange;
+    const custom = cfg.customTimeRange;
+    if (typeof custom === "string" && custom) return custom as typeof timeRange;
+    return "7d" as const;
+  }, [mergedConfig, timeRange]);
+
+  const activeVariantId = useMemo(
+    () => (descriptor ? getActiveVariantId(descriptor, instanceConfig) : undefined),
+    [descriptor, instanceConfig]
+  );
+
+  const title = useMemo(() => {
+    if (!descriptor) return "";
+    return (
+      descriptor.getDisplayName?.({
+        projectSlug: activeProjectSlug,
+        projects,
+        config: mergedConfig,
+      }) ?? descriptor.name
+    );
+  }, [descriptor, activeProjectSlug, projects, mergedConfig]);
+
+  const sharedProps = useMemo(
+    () => ({
+      widgetId: descriptor?.id ?? "",
+      projectSlug: activeProjectSlug,
+      timeRange: effectiveTimeRange,
+      config: mergedConfig,
+      selectedDetailId,
+      onSelectedDetailIdChange,
+      onFetchedAt: handleFetchedAt,
+      onRefetch: handleRefetch,
+      onChromeStateChange: handleChromeStateChange,
+      activeVariantId,
+      onConnectService,
+    }),
+    [
+      descriptor,
+      activeProjectSlug,
+      effectiveTimeRange,
+      mergedConfig,
+      selectedDetailId,
+      onSelectedDetailIdChange,
+      handleFetchedAt,
+      handleRefetch,
+      handleChromeStateChange,
+      activeVariantId,
+      onConnectService,
+    ]
+  );
+
   if (widgetId && !rawDescriptor) {
     return (
       <div
@@ -227,43 +296,6 @@ export function WidgetSlot({
       />
     );
   }
-
-  const instanceConfig = widgetConfigs[descriptor.id] ?? {};
-  const baseConfig = resolveVariantConfig(descriptor, instanceConfig);
-  const mergedConfig = {
-    ...(baseConfig as Record<string, unknown>),
-    ...extractInstanceOverrides(instanceConfig),
-  };
-  const effectiveTimeRange = (() => {
-    const cfg = mergedConfig as Record<string, unknown>;
-    if (cfg.ignoreTimeRange !== true) return timeRange;
-    const custom = cfg.customTimeRange;
-    if (typeof custom === "string" && custom) return custom as typeof timeRange;
-    return "7d" as const;
-  })();
-
-  const title =
-    descriptor.getDisplayName?.({
-      projectSlug: activeProjectSlug,
-      projects,
-      config: mergedConfig,
-    }) ?? descriptor.name;
-
-  const activeVariantId = getActiveVariantId(descriptor, instanceConfig);
-
-  const sharedProps = {
-    widgetId: descriptor.id,
-    projectSlug: activeProjectSlug,
-    timeRange: effectiveTimeRange,
-    config: mergedConfig,
-    selectedDetailId,
-    onSelectedDetailIdChange,
-    onFetchedAt: handleFetchedAt,
-    onRefetch: handleRefetch,
-    onChromeStateChange: handleChromeStateChange,
-    activeVariantId,
-    onConnectService,
-  };
 
   return (
     <PopulatedSlot
@@ -447,6 +479,14 @@ function PopulatedSlot({
   dragAttributes: DraggableAttributes;
 }) {
   const Component = descriptor.component;
+  // Memoize the widget body element: when this slot re-renders for chrome-only
+  // reasons (refetch spinner, dialogs), the same element reference lets React
+  // skip re-rendering the widget's (often expensive) data component.
+  const widgetContent = useMemo(() => <Component {...sharedProps} />, [Component, sharedProps]);
+  const expandedContent = useMemo(
+    () => resolveExpandedContent(descriptor, sharedProps),
+    [descriptor, sharedProps]
+  );
 
   return (
     <div
@@ -469,7 +509,7 @@ function PopulatedSlot({
           chromeStatus={chromeStatus}
           onConfigure={onConfigure ? handleConfigure : undefined}
           onRemove={isEditMode ? () => setRemoveDialogOpen(true) : undefined}
-          expandedContent={resolveExpandedContent(descriptor, sharedProps)}
+          expandedContent={expandedContent}
           expandedSize={descriptor.expandedSize ?? DEFAULT_WIDGET_MODAL_SIZE}
           expandAction={descriptor.expandAction}
           isEditMode={isEditMode}
@@ -478,7 +518,7 @@ function PopulatedSlot({
           dragHandleListeners={dragListeners}
           dragHandleAttributes={dragAttributes}
         >
-          <Component {...sharedProps} />
+          {widgetContent}
         </WidgetCard>
 
         <ConfirmationDialog

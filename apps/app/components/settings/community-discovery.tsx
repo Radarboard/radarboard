@@ -126,7 +126,7 @@ export function CommunityExtensionDiscovery({
   onInstall: (installUrl: string) => void;
 }) {
   const trimmedSearchQuery = searchQuery.trim();
-  const { data, error, isLoading } = useSWR(
+  const { data, error, isLoading, mutate } = useSWR(
     trimmedSearchQuery ? API_ROUTES.extensionsCatalog : null,
     fetchCatalog,
     {
@@ -157,8 +157,19 @@ export function CommunityExtensionDiscovery({
       }
     >
       {error ? (
-        <div className="rounded-item border border-border bg-surface p-4 text-muted-foreground text-w-sm">
-          Community catalog is unavailable.
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-item border border-border bg-surface p-4 text-muted-foreground text-w-sm">
+          <span>Community catalog is unavailable.</span>
+          <Button
+            type="button"
+            variant="outline"
+            size="xs"
+            uppercase={false}
+            onClick={() => {
+              mutate().catch(() => undefined);
+            }}
+          >
+            Try again
+          </Button>
         </div>
       ) : null}
 

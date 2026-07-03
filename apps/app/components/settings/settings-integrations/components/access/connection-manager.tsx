@@ -1,12 +1,14 @@
 "use client";
 
 import type { IntegrationConnection } from "@radarboard/types/database";
+import { ConfirmationDialog } from "@radarboard/ui/app-dialog";
 import { Button } from "@radarboard/ui/button";
 import { Input } from "@radarboard/ui/input";
 import { Label } from "@radarboard/ui/label";
 import { Switch } from "@radarboard/ui/switch";
 import { cn } from "@radarboard/utils/cn";
 import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 import type { IntegrationProviderDefinition } from "@/hooks/settings/use-integration-connections";
 
 export function ProviderConnectionManagerCard({
@@ -30,7 +32,7 @@ export function ProviderConnectionManagerCard({
     connections.find((connection) => connection.id === selectedConnectionId) ?? null;
   const [draftName, setDraftName] = useState(selectedConnection?.name ?? "");
   const [savingId, setSavingId] = useState<string | null>(null);
-  const [removingId, setRemovingId] = useState<string | null>(null);
+  const [confirmRemoveOpen, setConfirmRemoveOpen] = useState(false);
 
   useEffect(() => {
     setDraftName(selectedConnection?.name ?? "");
@@ -44,6 +46,9 @@ export function ProviderConnectionManagerCard({
         ...selectedConnection,
         name: draftName.trim() || selectedConnection.name,
       });
+      toast.success("Connection saved");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Couldn't save connection");
     } finally {
       setSavingId(null);
     }
@@ -60,6 +65,8 @@ export function ProviderConnectionManagerCard({
             capability.id === capabilityId ? { ...capability, enabled } : capability
           ),
         });
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : "Couldn't update capability");
       } finally {
         setSavingId(null);
       }
@@ -72,19 +79,19 @@ export function ProviderConnectionManagerCard({
     setSavingId(selectedConnection.id);
     try {
       await onSaveConnection({ ...selectedConnection, isDefault: true });
+      toast.success("Set as default connection");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Couldn't set default connection");
     } finally {
       setSavingId(null);
     }
   }, [onSaveConnection, selectedConnection]);
 
+  // ConfirmationDialog owns the submitting state, success/error toasts, and
+  // closing on success — so this just performs the delete and lets it throw.
   const removeSelectedConnection = useCallback(async () => {
-    if (!selectedConnection || selectedConnection.source !== "explicit") return;
-    setRemovingId(selectedConnection.id);
-    try {
-      await onDeleteConnection(selectedConnection);
-    } finally {
-      setRemovingId(null);
-    }
+    if (selectedConnection?.source !== "explicit") return;
+    await onDeleteConnection(selectedConnection);
   }, [onDeleteConnection, selectedConnection]);
 
   return (
@@ -228,18 +235,33 @@ export function ProviderConnectionManagerCard({
               <Button
                 type="button"
                 variant="outline-destructive"
-                onClick={() => removeSelectedConnection()}
-                disabled={removingId === selectedConnection.id}
+                onClick={() => setConfirmRemoveOpen(true)}
                 uppercase={false}
                 size="xs"
                 className="font-mono disabled:opacity-40"
               >
-                {removingId === selectedConnection.id ? "Removing..." : "Remove"}
+                Remove
               </Button>
             ) : null}
           </div>
         </div>
       ) : null}
+
+      <ConfirmationDialog
+        open={confirmRemoveOpen}
+        onOpenChange={setConfirmRemoveOpen}
+        title="Remove connection?"
+        confirmLabel="Remove"
+        onConfirm={removeSelectedConnection}
+        successToast="Connection removed"
+        errorToast="Couldn't remove connection"
+      >
+        <p className="font-mono text-dim text-w-sm">
+          {selectedConnection
+            ? `"${selectedConnection.name}" will be removed. This can't be undone.`
+            : "This connection will be removed. This can't be undone."}
+        </p>
+      </ConfirmationDialog>
     </div>
   );
 }

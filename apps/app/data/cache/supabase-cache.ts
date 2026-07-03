@@ -101,10 +101,8 @@ export class SupabaseCacheRepository implements CacheRepository {
     }>;
     const expired = rows.filter((r) => r.fetched_at + r.ttl_seconds < now);
     if (expired.length === 0) return 0;
-    // Delete individually using the existing delete method
-    for (const row of expired) {
-      await this.delete(row.key);
-    }
+    // Delete concurrently instead of one serial round-trip at a time.
+    await Promise.all(expired.map((row) => this.delete(row.key)));
     return expired.length;
   }
 
