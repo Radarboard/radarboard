@@ -202,6 +202,19 @@ export function WidgetVisualEditorPreview({
             )}
           </div>
         </div>
+
+        {descriptor.id !== "npm-downloads" && !appliedPreviewConfig ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 p-6 text-center">
+            <LayoutTemplate className="icon-base text-dim" />
+            <p className="font-mono text-foreground-secondary text-w-sm">
+              Live preview appears here
+            </p>
+            <p className="max-w-[280px] text-muted-foreground text-w-sm">
+              Pick a layout recipe above and map your fields — this updates as you go. Connect the
+              integration to see real data.
+            </p>
+          </div>
+        ) : null}
       </div>
     </div>
   );

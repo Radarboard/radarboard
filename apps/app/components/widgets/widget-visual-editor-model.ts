@@ -1,5 +1,4 @@
 import type { WidgetTemplateConfig } from "@radarboard/widget-engine/templates";
-import { ListTree, type LucideIcon, Rows3, Sidebar } from "lucide-react";
 import {
   createTemplateSection,
   type EditableSectionType,
@@ -8,16 +7,74 @@ import {
   type TemplateSectionBucket,
 } from "@/lib/template-editor";
 
-export const RECIPE_OPTIONS: Array<{ kind: TemplateRecipeKind; label: string; icon: LucideIcon }> =
-  [
-    { kind: "summary_only", label: "Summary Only", icon: Rows3 },
-    { kind: "content_only", label: "Content Only", icon: ListTree },
-    { kind: "summary_list", label: "Summary + List", icon: Rows3 },
-    { kind: "summary_chart_list", label: "Summary + Chart + List", icon: Rows3 },
-    { kind: "rail_list", label: "Rail + List", icon: Sidebar },
-    { kind: "summary_content", label: "Summary + Content", icon: Rows3 },
-    { kind: "rail_content", label: "Rail + Content", icon: Sidebar },
-  ];
+/** A block in a recipe's visual shape, used to draw the little layout diagram. */
+export type RecipeRegion = "summary" | "list" | "chart" | "content" | "rail";
+
+export interface RecipeOption {
+  kind: TemplateRecipeKind;
+  label: string;
+  /** Plain-language description of what the layout looks like. */
+  description: string;
+  /** How the regions stack: top-to-bottom or side-by-side (rail). */
+  orientation: "stack" | "rail";
+  /** The regions that make up the layout, in order. */
+  regions: RecipeRegion[];
+  /** Marks the friendly default to nudge beginners toward. */
+  recommended?: boolean;
+}
+
+export const RECIPE_OPTIONS: RecipeOption[] = [
+  {
+    kind: "summary_list",
+    label: "Summary + List",
+    description: "A row of KPI numbers on top, then a list of items below. Great all-rounder.",
+    orientation: "stack",
+    regions: ["summary", "list"],
+    recommended: true,
+  },
+  {
+    kind: "summary_only",
+    label: "Summary Only",
+    description: "Just a row of KPI numbers — no list. Best for a few headline metrics.",
+    orientation: "stack",
+    regions: ["summary"],
+  },
+  {
+    kind: "content_only",
+    label: "Content Only",
+    description: "A single block (list, table, or chart) with no KPI row.",
+    orientation: "stack",
+    regions: ["content"],
+  },
+  {
+    kind: "summary_chart_list",
+    label: "Summary + Chart + List",
+    description: "KPIs, then a chart, then a list — a full overview in one widget.",
+    orientation: "stack",
+    regions: ["summary", "chart", "list"],
+  },
+  {
+    kind: "summary_content",
+    label: "Summary + Content",
+    description: "A KPI row on top with one content block below it.",
+    orientation: "stack",
+    regions: ["summary", "content"],
+  },
+  {
+    kind: "rail_list",
+    label: "Rail + List",
+    description: "A narrow sidebar of stats beside a list.",
+    orientation: "rail",
+    regions: ["rail", "list"],
+  },
+  {
+    kind: "rail_content",
+    label: "Rail + Content",
+    description: "A narrow sidebar of stats beside a content block.",
+    orientation: "rail",
+    regions: ["rail", "content"],
+  },
+];
 
 export const DEFAULT_SECTION_TYPES: Record<TemplateSectionBucket, EditableSectionType> = {
   summary: "kpi-row",

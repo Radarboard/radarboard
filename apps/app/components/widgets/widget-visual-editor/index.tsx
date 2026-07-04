@@ -37,6 +37,7 @@ import {
   SECTION_TYPE_OPTIONS,
 } from "../widget-visual-editor-model";
 import { WidgetVisualEditorPreview } from "../widget-visual-editor-preview";
+import { RecipeDiagram } from "../recipe-diagram";
 
 interface WidgetVisualEditorProps {
   descriptor: WidgetDescriptor;
@@ -1019,28 +1020,48 @@ function RecipeControlsSection({
   railWidth: number | undefined;
   recipeKind: TemplateRecipeKind;
 }) {
+  const activeOption = RECIPE_OPTIONS.find((option) => option.kind === recipeKind);
   return (
     <div className="space-y-3 rounded-item border border-border bg-surface-raised p-3">
-      <div className="font-mono text-dim text-w-sm uppercase tracking-wider">Layout Recipe</div>
-      <div className="flex flex-wrap items-center gap-2">
-        {RECIPE_OPTIONS.map(({ kind, label, icon: Icon }) => (
-          <Button
-            key={kind}
-            type="button"
-            variant={recipeKind === kind ? "default" : "outline"}
-            onClick={() => onUpdateRecipeLabel(kind)}
-            className={cn(
-              "uppercase-none flex h-auto items-center gap-1.5 px-3 py-2 font-mono text-w-sm transition-colors",
-              recipeKind === kind
-                ? "border-accent/30 bg-accent/20 text-accent"
-                : "border-border text-dim hover:text-foreground-secondary"
-            )}
-          >
-            <Icon className="icon-xs" />
-            {label}
-          </Button>
-        ))}
+      <div className="flex items-center justify-between gap-2">
+        <div className="font-mono text-dim text-w-sm uppercase tracking-wider">Layout Recipe</div>
+        <span className="text-dim text-w-sm">Not sure? Start with Summary + List.</span>
       </div>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+        {RECIPE_OPTIONS.map((option) => {
+          const isActive = recipeKind === option.kind;
+          return (
+            <Button
+              key={option.kind}
+              type="button"
+              variant="outline"
+              title={option.description}
+              onClick={() => onUpdateRecipeLabel(option.kind)}
+              className={cn(
+                "uppercase-none relative flex h-auto flex-col items-center gap-1.5 px-2 py-2 font-mono text-w-sm transition-colors",
+                isActive
+                  ? "border-accent/40 bg-accent/10 text-accent"
+                  : "border-border text-dim hover:border-foreground/20 hover:text-foreground-secondary"
+              )}
+            >
+              <RecipeDiagram
+                orientation={option.orientation}
+                regions={option.regions}
+                active={isActive}
+              />
+              <span className="text-center leading-tight">{option.label}</span>
+              {option.recommended ? (
+                <span className="absolute top-1 right-1 rounded-[2px] bg-accent/20 px-1 text-accent text-w-xs uppercase">
+                  ★
+                </span>
+              ) : null}
+            </Button>
+          );
+        })}
+      </div>
+      {activeOption ? (
+        <p className="text-muted-foreground text-w-sm">{activeOption.description}</p>
+      ) : null}
       {recipeKind === "rail_content" || recipeKind === "rail_list" ? (
         <div className="space-y-2 pt-1">
           <span className="font-mono text-dim text-w-sm">Rail width</span>
