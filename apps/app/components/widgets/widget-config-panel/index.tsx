@@ -718,6 +718,7 @@ function VariantThumbnail({
   }, []);
 
   return (
+    // biome-ignore lint/a11y/noStaticElementInteractions: hover-only preview thumbnail; selection and keyboard are handled by the enclosing <Button>
     <div
       ref={ref}
       className="relative overflow-hidden rounded-item bg-background"

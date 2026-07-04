@@ -251,7 +251,7 @@ export function RepoPicker({ currentRepo, onSelect }: RepoPickerProps) {
   // Debounce search input
   useEffect(() => {
     const timer = setTimeout(
-      () => setUi((current) => ({ ...current, debouncedSearch: current.search })),
+      () => setUi((current) => ({ ...current, debouncedSearch: search })),
       300
     );
     return () => clearTimeout(timer);

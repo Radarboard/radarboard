@@ -216,6 +216,16 @@
       }
     },
     {
+      "includes": ["apps/docs/**/*.css"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noImportantStyles": "off"
+          }
+        }
+      }
+    },
+    {
       "includes": ["**/*.scaffold.stories.tsx"],
       "formatter": {
         "enabled": false

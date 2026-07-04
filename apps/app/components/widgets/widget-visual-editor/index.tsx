@@ -1260,7 +1260,6 @@ function useTemplateRecipeEditor({
       editorBinding,
       onConfigReplace,
       projects,
-      recipeModel,
     ]
   );
 
