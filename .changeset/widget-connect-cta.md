@@ -1,7 +1,5 @@
 ---
 "@radarboard/widget-revenue": patch
-"@radarboard/widget-github-commits": patch
-"@radarboard/widget-pulls": patch
 "@radarboard/widget-seo": patch
 ---
 

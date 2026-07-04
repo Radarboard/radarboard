@@ -1,21 +1,6 @@
 ---
-"@radarboard/integration-app-store-connect": patch
-"@radarboard/integration-astro": patch
-"@radarboard/integration-betterstack": patch
-"@radarboard/integration-github": patch
-"@radarboard/integration-github-sponsors": patch
-"@radarboard/integration-google-search-console": patch
-"@radarboard/integration-linear": patch
-"@radarboard/integration-npm": patch
-"@radarboard/integration-open-collective": patch
-"@radarboard/integration-openpanel": patch
-"@radarboard/integration-raindrop": patch
-"@radarboard/integration-resend": patch
 "@radarboard/integration-revenuecat": patch
-"@radarboard/integration-sentry": patch
 "@radarboard/integration-shipping": patch
-"@radarboard/integration-slack": patch
-"@radarboard/integration-vercel": patch
 "@radarboard/assistant-core": patch
 "@radarboard/assistant-ui": patch
 "@radarboard/charts": patch
@@ -40,32 +25,17 @@
 "@radarboard/widget-sdk": patch
 "@radarboard/plugin-backup": patch
 "@radarboard/plugin-bookmarks": patch
-"@radarboard/plugin-changelog": patch
 "@radarboard/plugin-embeddings": patch
-"@radarboard/plugin-expenses": patch
 "@radarboard/plugin-notes": patch
-"@radarboard/plugin-rss-reader": patch
-"@radarboard/plugin-status-page": patch
 "@radarboard/plugin-tasks": patch
-"@radarboard/plugin-webhook-relay": patch
 "@radarboard/widget-analytics": patch
-"@radarboard/widget-aso-keywords": patch
-"@radarboard/widget-builds": patch
-"@radarboard/widget-github-commits": patch
-"@radarboard/widget-deployments": patch
-"@radarboard/widget-vercel-domains": patch
-"@radarboard/widget-npm-downloads": patch
 "@radarboard/widget-logs": patch
 "@radarboard/widget-observability": patch
-"@radarboard/widget-projects": patch
-"@radarboard/widget-pulls": patch
 "@radarboard/widget-revenue": patch
-"@radarboard/widget-app-reviews": patch
 "@radarboard/widget-roadmap": patch
 "@radarboard/widget-seo": patch
 "@radarboard/widget-shipping": patch
 "@radarboard/widget-sponsorship": patch
-"@radarboard/widget-github-stars": patch
 ---
 
 Roll out shared Vitest configuration across internal workspaces, add targeted test coverage, and align package manifests with the new test setup.
