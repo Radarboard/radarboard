@@ -89,7 +89,7 @@ switch between modes (e.g. side-panel ↔ fullscreen).
 |----------|------|-------------|
 | `default` | `PresentationMode` | The default mode when launched. |
 | `alternates?` | `PresentationMode[] \| undefined` | Additional modes the user can switch to. |
-| `size?` | `"sm" \| "md" \| "lg" \| undefined` | Size hint for modal / side-panel presentations. |
+| `size?` | `ModalSize \| undefined` | Size hint for modal / side-panel presentations. |
 
 **Example:**
 
@@ -109,7 +109,7 @@ Resolved presentation config — always the full object form.
 |----------|------|-------------|
 | `default` | `PresentationMode` |  |
 | `alternates` | `PresentationMode[]` |  |
-| `size` | `"sm" \| "md" \| "lg"` |  |
+| `size` | `ModalSize` |  |
 
 ### `PluginIntentHandler`
 
@@ -178,7 +178,7 @@ Extends: `ExtensionMeta`
 | `version` | `string` | Semver version string. |
 | `launchSurfaces` | `("palette" \| "topbar" \| "dock")[]` | UI surfaces where this plugin can be launched from. |
 | `presentation` | `PresentationMode \| PluginPresentationConfig` | How the plugin's main UI is presented when launched. |
-| `presentationSize?` | `"sm" \| "md" \| "lg" \| undefined` | Size hint for modal / side-panel presentations (legacy — prefer `PluginPresentationConfig.size`). |
+| `presentationSize?` | `ModalSize \| undefined` | Size hint for modal / side-panel presentations (legacy — prefer `PluginPresentationConfig.size`). |
 | `component` | `ComponentType<PluginRenderProps>` | The plugin's main UI component, rendered inside the overlay. |
 | `widgets?` | `PluginWidgetContribution[] \| undefined` | Widget(s) this plugin contributes to the dashboard grid. |
 | `mcpTools?` | `McpToolDefinition[] \| undefined` | MCP tools exposed to in-app chat and external LLMs. |
@@ -193,6 +193,7 @@ Extends: `ExtensionMeta`
 | `permissions?` | `PluginPermission[] \| undefined` | Declare which PluginAPI capabilities this plugin requires. Omitting this field grants all capabilities (backward compatible). When specified, undeclared capabilities become no-ops. |
 | `dependencies?` | `string[] \| undefined` | Plugin IDs that must be initialized before this plugin. Used to topologically sort the init order in PluginLifecycleRunner. Cycles are detected at init time and logged as errors. |
 | `services?` | `PluginServiceDefinition[] \| undefined` | Services this plugin exposes for cross-plugin RPC calls. Other plugins can call these via `api.rpc.call(pluginId, action, params)`. Params are validated with the declared Zod schema at call time. |
+| `server?` | `PluginServerDefinition \| undefined` | Optional server-side hooks and route handlers owned by this plugin. App routes look these up through PLUGIN_REGISTRY instead of importing plugin internals directly. |
 
 **Example:**
 
@@ -212,6 +213,50 @@ export const myPluginDescriptor: PluginDescriptor = {
   component: MyPluginOverlay,
 };
 ```
+
+### `PluginServerRuntime`
+
+Server services provided by the host app to plugin-owned server handlers.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `services` | `Record<string, unknown>` |  |
+
+### `PluginServerRouteInput`
+
+Input passed to a plugin-owned server route handler.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `request` | `Request` |  |
+| `body` | `Record<string, unknown>` |  |
+| `runtime` | `PluginServerRuntime` |  |
+
+### `PluginServerRouteResult`
+
+Standard response shape returned by plugin-owned server route handlers.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `status` | `number` |  |
+| `payload` | `unknown` |  |
+
+### `PluginServerRouteHandler`
+
+Plugin-owned server route handler.
+
+```ts
+type PluginServerRouteHandler = (input: PluginServerRouteInput) => Promise<PluginServerRouteResult>
+```
+
+### `PluginServerDefinition`
+
+Server-side extension points exposed by a plugin descriptor.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `configure?` | `((runtime: PluginServerRuntime) => void) \| undefined` | Called once by the host app to pass server-only services to the plugin. |
+| `routes?` | `Record<string, PluginServerRouteHandler> \| undefined` | Named route handlers delegated to by app shell routes. |
 
 ### `PluginServiceDefinition`
 

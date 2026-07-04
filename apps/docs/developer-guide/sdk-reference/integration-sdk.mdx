@@ -61,6 +61,7 @@ How an integration authenticates with its external API.
 | `type` | `"api_key" \| "oauth" \| "none"` | Auth method: "api_key" = manual token entry, "oauth" = OAuth redirect flow, "none" = no auth. |
 | `fields?` | `IntegrationAuthField[] \| undefined` | For api_key and oauth: fields to show in the credential input UI (client ID/secret for OAuth). |
 | `testEndpoint?` | `string \| undefined` | API route path to test credentials (POST with &#123; key, values &#125;). |
+| `credentialTest?` | `((values: Record<string, string>) => Promise<{ ok: boolean; error?: string; }>) \| undefined` | Optional integration-owned credential test used by the shared credentials test route. |
 | `docsUrl?` | `string \| undefined` | URL to the service's docs for obtaining credentials. |
 | `oauth?` | `IntegrationOAuthConfig \| undefined` | OAuth-specific config. Required when type === "oauth". |
 

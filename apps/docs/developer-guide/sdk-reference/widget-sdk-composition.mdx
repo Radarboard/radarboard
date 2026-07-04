@@ -195,6 +195,14 @@ Declarative model describing a widget's recipe layout and its sections per bucke
 
 ## `./data-source-registry`
 
+### `registerTemplateDataSourceId()`
+
+Register a template data source ID without importing its client resolver.
+
+```ts
+function registerTemplateDataSourceId(id: string): void
+```
+
 ### `registerTemplateDataSource()`
 
 Register a data source resolver so the template engine can fetch its data.

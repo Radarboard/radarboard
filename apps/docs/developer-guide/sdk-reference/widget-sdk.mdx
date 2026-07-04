@@ -698,6 +698,7 @@ const config: WidgetTemplateConfig = {
 | `requiredIntegrations?` | `string[] \| undefined` |  |
 | `defaultSlot?` | `GridSlot \| undefined` |  |
 | `auth?` | `WidgetAuth \| WidgetAuth[] \| undefined` |  |
+| `chrome?` | `WidgetChromeContribution \| undefined` |  |
 | `expandedSize?` | `ModalSize \| undefined` |  |
 | `defaultPollInterval?` | `number \| undefined` |  |
 | `pollingSourceIds?` | `string[] \| undefined` |  |
@@ -707,10 +708,10 @@ const config: WidgetTemplateConfig = {
 
 ### `WidgetModalSize`
 
-Size of the expanded widget overlay: "sm", "content", "md", or "lg".
+Size of the expanded widget overlay: "sm", "md", or "lg".
 
 ```ts
-type WidgetModalSize = "sm" | "content" | "md" | "lg"
+type WidgetModalSize = "sm" | "md" | "content" | "lg" | "xl"
 ```
 
 ### `GridSlot`
@@ -767,6 +768,7 @@ How a widget authenticates with its external API.
 | `id?` | `string \| undefined` | Unique service identifier (required when a widget connects to multiple services). |
 | `name?` | `string \| undefined` | Display name for this service (e.g., "Vercel", "Linear"). |
 | `description?` | `string \| undefined` | Short description of this service shown on onboarding cards. |
+| `homepage?` | `string \| undefined` | Product homepage used for service-owned brand metadata such as favicons. |
 | `type` | `"none" \| "api_key" \| "oauth"` | Auth method: "api_key" = manual token entry, "oauth" = OAuth redirect flow, "none" = no auth. |
 | `fields?` | `WidgetAuthField[] \| undefined` | For api_key and oauth: fields to show in the credential input UI (client ID/secret for OAuth). |
 | `testEndpoint?` | `string \| undefined` | API route path to test credentials (POST with &#123; key, values &#125;). |
@@ -849,6 +851,19 @@ Controls what happens when the user clicks the expand button on a widget.
 type WidgetExpandAction = { type: "expanded-view"; } | { type: "open-plugin"; pluginId: string; }
 ```
 
+### `WidgetChromeHook`
+
+```ts
+type WidgetChromeHook = (...args: any[]) => unknown
+```
+
+### `WidgetChromeContribution`
+
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `hooks?` | `Record<string, WidgetChromeHook> \| undefined` |  |
+
 ### `WidgetDescriptor`
 
 Describes a widget template in the registry.
@@ -862,6 +877,7 @@ Extends: `ExtensionMeta`
 | `description` | `string` | Short description for settings UI (Phase 2). |
 | `version?` | `string \| undefined` | Semver version string. |
 | `catalogCategory?` | `string \| undefined` | Catalog grouping used by settings/widget library surfaces. |
+| `supportedDashboardScopes?` | `("all-projects" \| "project")[] \| undefined` | Dashboard scopes where this widget can be placed. Omit to support all scopes. |
 | `capabilities?` | `WidgetCapability[] \| undefined` | Canonical or specialized capability ownership for this widget. |
 | `requiredIntegrations` | `string[]` | Integration keys that must be present on the active project for this widget to be relevant.  Empty array = always available. When "All" projects is selected, all integrations are assumed present. |
 | `defaultSlot` | `GridSlot` | Default grid slot assignment. |
@@ -871,11 +887,12 @@ Extends: `ExtensionMeta`
 | `variants?` | `WidgetVariant<TConfig>[] \| undefined` | Named layout variant presets. When defined, the config panel shows a variant picker. The variant with `isDefault: true` (or the first) is used when no activeVariant is set. Users can also duplicate variants for customization via the visual editor. |
 | `getDisplayName?` | `((context: WidgetDisplayContext<TConfig>) => string) \| undefined` | Optional dynamic display name used in runtime surfaces like headers and config dialogs. |
 | `getDisplayDescription?` | `((context: WidgetDisplayContext<TConfig>) => string) \| undefined` | Optional dynamic description used in config dialogs. |
+| `chrome?` | `WidgetChromeContribution \| undefined` | Optional app chrome data hooks exposed through the widget registry. |
 | `visualEditor?` | `WidgetVisualEditorBinding<TConfig> \| undefined` | Optional visual editor binding for structured config editing. |
 | `auth?` | `WidgetAuth \| WidgetAuth[] \| undefined` | Auth requirements. Omit for widgets that don't need external API access. |
 | `defaultPollInterval?` | `number \| undefined` | Default polling interval in milliseconds. Shown in the widget header next to the refresh button. Individual widgets can override this via their SWR refreshInterval. Omit for widgets that don't poll (e.g. static data, logs with SSE). |
 | `polling?` | `WidgetPollingConfig<TConfig> \| undefined` | Optional refresh-interval settings metadata for standard polling widgets. |
-| `expandedSize?` | `ModalSize \| undefined` | Optional size override for the expanded overlay. Omit this to use the centralized widget default size ("md"). Available sizes: "sm", "content", "md", and "lg". |
+| `expandedSize?` | `ModalSize \| undefined` | Optional size override for the expanded overlay. Omit this to use the centralized widget default size ("md"). - "lg": full viewport − 16px margin - "md": centered, 90vw max-w-7xl × 80vh - "sm": centered, 75vw max-w-3xl × 65vh |
 | `expandAction?` | `WidgetExpandAction \| undefined` | Controls what happens when the user clicks the expand button. - `&#123; type: "expanded-view" &#125;` (default): opens the in-place ExpandedPortal - `&#123; type: "open-plugin", pluginId &#125;`: navigates to the plugin overlay instead |
 
 ### `WidgetCapability`

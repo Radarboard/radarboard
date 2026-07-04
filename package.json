@@ -75,7 +75,7 @@
     "check:route-error-responses": "tsx scripts/check-route-error-responses.ts",
     "check:route-zod-boundaries": "tsx scripts/check-route-zod-boundaries.ts",
     "deps:lint": "syncpack lint",
-    "deps:fix": "syncpack fix-mismatches",
+    "deps:fix": "syncpack fix",
     "deps:format": "syncpack format",
     "secrets": "secretlint \"**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,yml,yaml,env}\"",
     "secrets:staged": "secretlint",
