@@ -29,6 +29,7 @@ export async function handleConfigExport(): Promise<NextResponse> {
       debugConfig,
       routingConfig,
       workflows,
+      userIntegrations,
       userPlan,
       licenseKey,
     ] = await Promise.all([
@@ -42,6 +43,7 @@ export async function handleConfigExport(): Promise<NextResponse> {
       repo.getDebugConfig().catch(() => null),
       repo.getRoutingConfig().catch(() => null),
       repo.getWorkflows().catch(() => ({})),
+      repo.getUserIntegrations().catch(() => [] as unknown[]),
       repo.getUserPlan().catch(() => null),
       repo.getLicenseKey().catch(() => null),
     ]);
@@ -80,6 +82,7 @@ export async function handleConfigExport(): Promise<NextResponse> {
       debugConfig,
       routingConfig,
       workflows,
+      userIntegrations,
       userPlan,
       licenseKey,
       credentialKeys,

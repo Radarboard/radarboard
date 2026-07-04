@@ -511,6 +511,16 @@ export interface SettingsRepository {
   /** Save automation workflows. */
   setWorkflows(workflows: Record<string, unknown>): Promise<void>;
 
+  /**
+   * Get persisted user-defined (no-code) REST integrations. Returns an empty
+   * array if not set. Each entry is a serializable `UserRestIntegrationConfig`
+   * (typed as `unknown[]` here to keep this package decoupled from app types).
+   */
+  getUserIntegrations(): Promise<unknown[]>;
+
+  /** Save user-defined REST integrations. */
+  setUserIntegrations(configs: unknown[]): Promise<void>;
+
   /** Get user feature preferences. Returns empty record if not set. */
   getFeaturePreferences(): Promise<FeaturePreferencesConfig>;
 

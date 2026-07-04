@@ -1,0 +1,34 @@
+{
+  "name": "@radarboard/widget-generic-rest",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./data-resolver": "./src/data-resolver.tsx"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@radarboard/widget-engine": "workspace:*",
+    "@radarboard/widget-sdk": "workspace:*",
+    "@radarboard/charts": "workspace:*",
+    "@radarboard/types": "workspace:*",
+    "@radarboard/ui": "workspace:*",
+    "@radarboard/utils": "workspace:*",
+    "@radarboard/hooks": "workspace:*",
+    "react": "catalog:",
+    "lucide-react": "catalog:",
+    "swr": "catalog:"
+  },
+  "devDependencies": {
+    "@radarboard/tsconfig": "workspace:*",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

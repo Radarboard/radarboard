@@ -149,3 +149,30 @@ describe("createHttpCredentialTest", () => {
     await expect(test({})).resolves.toEqual({ ok: false, error: "Missing apiKey" });
   });
 });
+
+describe("createRestIntegration — no-auth (scheme 'none') for public APIs", () => {
+  it("builds a 'none' descriptor with no credential fields or test", () => {
+    const d = createRestIntegration(baseConfig({ auth: { scheme: "none" } }));
+    expect(d.auth.type).toBe("none");
+    expect(d.auth.fields).toEqual([]);
+    expect(d.auth.credentialTest).toBeUndefined();
+    expect(d.auth.testEndpoint).toBeUndefined();
+  });
+
+  it("fetches WITHOUT resolving a credential or sending an Authorization header", async () => {
+    const fetchMock = vi.fn(
+      async () => new Response(JSON.stringify({ count: 7 }), { status: 200 })
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const d = createRestIntegration(baseConfig({ auth: { scheme: "none" } }));
+    const ctx = createMockDataSourceContext(); // no credentials available
+
+    const result = await d.dataSources?.[0]?.fetch(COMMON, ctx);
+    expect(result).toEqual({ total: 7 });
+    // No credential lookup happened, and no auth header was sent.
+    expect(ctx.resolvedCredentialKeys).toEqual([]);
+    const [, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+    expect((init.headers as Headers).get("Authorization")).toBeNull();
+  });
+});

@@ -11,4 +11,15 @@ export async function registerNodeFeatures() {
   } catch (_err) {
     // Non-critical
   }
+
+  // Re-register user-defined (no-code) REST integrations persisted in settings,
+  // so they're available in the registry alongside the built-in integrations.
+  try {
+    const { ensureUserIntegrationsRegistered } = await import(
+      "./lib/integrations/user-integrations-registry"
+    );
+    await ensureUserIntegrationsRegistered();
+  } catch (_err) {
+    // Non-critical — falls back to lazy registration on first data fetch.
+  }
 }

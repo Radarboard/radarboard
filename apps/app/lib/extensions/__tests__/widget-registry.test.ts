@@ -39,6 +39,7 @@ describe("Widget Registry", () => {
       "sponsorship",
       "bookmarks",
       "logs",
+      "generic-rest",
     ];
     const ids = Array.from(WIDGET_REGISTRY.keys());
     for (const widgetId of expectedIds) {

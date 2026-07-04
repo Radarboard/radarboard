@@ -19,6 +19,7 @@ const mockSettingsRepo = {
   setDebugConfig: vi.fn().mockResolvedValue(undefined),
   setRoutingConfig: vi.fn().mockResolvedValue(undefined),
   setWorkflows: vi.fn().mockResolvedValue(undefined),
+  setUserIntegrations: vi.fn().mockResolvedValue(undefined),
   setUserPlan: vi.fn().mockResolvedValue(undefined),
   setLicenseKey: vi.fn().mockResolvedValue(undefined),
 };

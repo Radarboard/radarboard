@@ -155,7 +155,9 @@ export function createRestIntegration(config: RestIntegrationConfig): Integratio
   const provider = config.provider ?? config.id;
   const scheme = config.auth.scheme ?? "bearer";
   const tokenField = resolveTokenField(config.auth);
-  const fields = config.auth.fields ?? [DEFAULT_FIELD];
+  // "none" is for public/no-auth APIs — no credential is required or requested.
+  const noAuth = scheme === "none";
+  const fields = config.auth.fields ?? (noAuth ? [] : [DEFAULT_FIELD]);
 
   const dataSources: DataSourceDescriptor[] = config.dataSources.map((spec) => ({
     action: spec.action,
@@ -164,14 +166,17 @@ export function createRestIntegration(config: RestIntegrationConfig): Integratio
     pollingSourceId: spec.pollingSourceId,
     parseParams: spec.parseParams,
     fetch: async (params: Record<string, unknown> & CommonRouteParams, ctx: DataSourceContext) => {
-      const creds = await ctx.resolveCredential(provider);
-      if (!creds) throw new Error(`Missing ${config.name} credentials`);
-      const token = creds[tokenField];
-      if (!token) throw new Error(`Missing ${config.name} ${tokenField}`);
+      let header: string | undefined;
+      if (!noAuth) {
+        const creds = await ctx.resolveCredential(provider);
+        if (!creds) throw new Error(`Missing ${config.name} credentials`);
+        const token = creds[tokenField];
+        if (!token) throw new Error(`Missing ${config.name} ${tokenField}`);
+        header = authHeader(scheme, token);
+      }
 
       const path = typeof spec.path === "function" ? spec.path(params) : spec.path;
       const url = applyQuery(joinUrl(config.baseUrl, path), spec.query?.(params));
-      const header = authHeader(scheme, token);
       const method = spec.method ?? "GET";
 
       const headers = new Headers();
@@ -204,17 +209,18 @@ export function createRestIntegration(config: RestIntegrationConfig): Integratio
       id: provider,
       provider,
       name: config.name,
-      type: "api_key",
+      type: noAuth ? "none" : "api_key",
       fields,
-      testEndpoint: config.auth.testPath ? "/api/credentials/test" : undefined,
-      credentialTest: config.auth.testPath
-        ? createHttpCredentialTest({
-            baseUrl: config.baseUrl,
-            testPath: config.auth.testPath,
-            scheme,
-            tokenField,
-          })
-        : undefined,
+      testEndpoint: noAuth || !config.auth.testPath ? undefined : "/api/credentials/test",
+      credentialTest:
+        noAuth || !config.auth.testPath
+          ? undefined
+          : createHttpCredentialTest({
+              baseUrl: config.baseUrl,
+              testPath: config.auth.testPath,
+              scheme,
+              tokenField,
+            }),
       docsUrl: config.auth.docsUrl,
     },
     dataSources,

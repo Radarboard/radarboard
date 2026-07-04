@@ -16,6 +16,7 @@ export {
   INTEGRATION_REGISTRY,
   registerDataSources,
   registerIntegration,
+  unregisterIntegration,
 } from "./registry";
 export type { DependencyStatus } from "./resolver";
 

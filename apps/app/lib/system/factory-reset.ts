@@ -106,6 +106,7 @@ export async function performFactoryReset(): Promise<FactoryResetResult> {
     await settings.setDebugConfig({});
     await settings.setRoutingConfig({ rules: [] } satisfies RoutingConfig);
     await settings.setWorkflows({});
+    await settings.setUserIntegrations([]);
     await settings.setFeaturePreferences({});
   });
 

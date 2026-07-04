@@ -19,6 +19,7 @@ const ConfigImportSchema = z.object({
   debugConfig: z.record(z.string(), z.unknown()).nullable().optional(),
   routingConfig: z.record(z.string(), z.unknown()).nullable().optional(),
   workflows: z.record(z.string(), z.unknown()).optional(),
+  userIntegrations: z.array(z.unknown()).optional(),
   userPlan: z.string().nullable().optional(),
   licenseKey: z.string().nullable().optional(),
   credentialKeys: z.array(z.string()).optional(),
@@ -28,6 +29,19 @@ const ConfigImportSchema = z.object({
 });
 
 type ConfigImport = z.infer<typeof ConfigImportSchema>;
+
+async function applyUserIntegrations(
+  repo: { setUserIntegrations: (configs: unknown[]) => Promise<void> },
+  userIntegrations: unknown[] | undefined,
+  applied: Record<string, boolean>,
+  errors: string[]
+): Promise<void> {
+  if (!userIntegrations?.length) return;
+  await repo.setUserIntegrations(userIntegrations).catch((err) => {
+    errors.push(`userIntegrations: ${err instanceof Error ? err.message : String(err)}`);
+  });
+  applied.userIntegrations = !errors.some((e) => e.startsWith("userIntegrations"));
+}
 
 /**
  * POST /api/config/import
@@ -140,6 +154,8 @@ export async function handleConfigImport(request: Request) {
       });
       applied.workflows = !errors.some((e) => e.startsWith("workflows"));
     }
+
+    await applyUserIntegrations(repo, data.userIntegrations, applied, errors);
 
     if (data.userPlan) {
       await repo.setUserPlan(data.userPlan).catch((err) => {

@@ -29,6 +29,7 @@ const mockSettingsRepo = {
   getDebugConfig: vi.fn().mockResolvedValue({ promotionEnabled: false }),
   getRoutingConfig: vi.fn().mockResolvedValue({ rules: [] }),
   getWorkflows: vi.fn().mockResolvedValue({ "wf-1": { name: "Deploy" } }),
+  getUserIntegrations: vi.fn().mockResolvedValue([{ id: "acme" }]),
   getUserPlan: vi.fn().mockResolvedValue("pro"),
   getLicenseKey: vi.fn().mockResolvedValue("LICENSE-KEY-123"),
 };

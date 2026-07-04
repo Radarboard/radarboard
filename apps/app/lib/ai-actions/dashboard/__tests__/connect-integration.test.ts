@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const getIntegration = vi.fn();
 const setCredential = vi.fn();
+const saveUserIntegration = vi.fn();
 
 vi.mock("@radarboard/integration-sdk/registry", () => ({
   getIntegration: (id: string) => getIntegration(id),
@@ -11,10 +12,13 @@ vi.mock("@/data/core/repository", () => ({
   getCredentialRepo: () => ({ setCredential }),
 }));
 
-import { executeConnectIntegration } from "../connect-integration";
+vi.mock("@/lib/integrations/user-integrations-registry", () => ({
+  saveUserIntegration: (...args: unknown[]) => saveUserIntegration(...args),
+}));
 
-// biome-ignore lint/suspicious/noExplicitAny: test descriptor stub
-function descriptor(auth: any) {
+import { executeConnectIntegration, executeCreateIntegration } from "../connect-integration";
+
+function descriptor(auth: Record<string, unknown>) {
   return { id: "acme", name: "Acme", auth };
 }
 
@@ -112,5 +116,42 @@ describe("executeConnectIntegration", () => {
     expect(res.connected).toBe(true);
     expect(res.tested).toBe(false);
     expect(setCredential).toHaveBeenCalledWith("acme", { apiKey: "k" });
+  });
+});
+
+describe("executeCreateIntegration", () => {
+  const params = {
+    id: "acme",
+    name: "Acme",
+    description: "Acme metrics",
+    category: "analytics" as const,
+    baseUrl: "https://api.acme.test",
+    dataSources: [
+      { action: "summary", description: "Summary", cacheTtlSeconds: 300, path: "/v1/summary" },
+    ],
+  };
+
+  it("maps a successful save into a created result", async () => {
+    saveUserIntegration.mockResolvedValue({
+      ok: true,
+      id: "acme",
+      updated: false,
+      dataSourceActions: ["summary"],
+    });
+    const res = await executeCreateIntegration(params);
+    expect(res).toEqual({
+      created: true,
+      id: "acme",
+      updated: false,
+      dataSourceActions: ["summary"],
+    });
+    // Auth defaults to {} when not supplied.
+    expect(saveUserIntegration).toHaveBeenCalledWith(expect.objectContaining({ auth: {} }));
+  });
+
+  it("maps a failed save into a created:false result with the error", async () => {
+    saveUserIntegration.mockResolvedValue({ ok: false, id: "acme", error: "boom" });
+    const res = await executeCreateIntegration(params);
+    expect(res).toEqual({ created: false, id: "acme", error: "boom" });
   });
 });

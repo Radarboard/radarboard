@@ -24,6 +24,7 @@ export const transpilePackages: string[] = [
   "@radarboard/widget-logs",
   "@radarboard/widget-observability",
   "@radarboard/widget-bookmarks",
+  "@radarboard/widget-generic-rest",
   "@radarboard/widget-revenue",
   "@radarboard/widget-roadmap",
   "@radarboard/widget-seo",

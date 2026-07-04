@@ -6,6 +6,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getCredentialRepo } from "@/db/repository";
 import { errorJson } from "@/lib/api";
+import { verifyHttpMcpConnection } from "@/lib/mcp/verify-http-mcp";
 import {
   formatStdioLaunchError,
   normalizeStdioCommand,
@@ -66,20 +67,6 @@ const TestBodySchema = z.preprocess(
   ])
 );
 
-function parseInitializeResponse(text: string): { json: unknown } | { error: string } {
-  let jsonText = text;
-  if (text.startsWith("data:")) {
-    const dataLine = text.split("\n").find((line) => line.startsWith("data:"));
-    if (!dataLine) return { error: "Empty SSE response from server" };
-    jsonText = dataLine.slice("data:".length).trim();
-  }
-  try {
-    return { json: JSON.parse(jsonText) };
-  } catch {
-    return { error: "Server returned non-JSON response" };
-  }
-}
-
 async function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     const timeoutId = setTimeout(() => {
@@ -100,74 +87,17 @@ async function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T
 }
 
 async function testHttpConnection(url: string, authHeader?: string) {
-  const trimmedAuthHeader = authHeader?.trim();
-  const headers = new Headers();
-  headers.set("Content-Type", "application/json");
-  headers.set("Accept", "application/json, text/event-stream");
-  if (trimmedAuthHeader) {
-    headers.set("Authorization", trimmedAuthHeader);
+  const result = await verifyHttpMcpConnection(url, authHeader, HTTP_MCP_INITIALIZE_TIMEOUT_MS);
+  if (!result.ok) {
+    log.error("MCP HTTP connection test failed", { error: result.error });
+    return errorJson(500, result.error ?? "Connection failed", { ok: false });
   }
-
-  const initializePayload = JSON.stringify({
-    jsonrpc: "2.0",
-    id: 1,
-    method: "initialize",
-    params: {
-      protocolVersion: "2024-11-05",
-      capabilities: {},
-      clientInfo: { name: "radarboard-test", version: "1.0.0" },
-    },
+  return NextResponse.json({
+    ok: true,
+    serverName: result.serverName,
+    serverVersion: result.serverVersion,
+    protocolVersion: result.protocolVersion,
   });
-
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), HTTP_MCP_INITIALIZE_TIMEOUT_MS);
-
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers,
-      body: initializePayload,
-      signal: controller.signal,
-    });
-
-    if (!response.ok) {
-      return errorJson(500, `Server returned HTTP ${response.status}`, { ok: false });
-    }
-
-    const parsed = parseInitializeResponse(await response.text());
-    if ("error" in parsed) {
-      return errorJson(500, parsed.error, { ok: false });
-    }
-
-    const result = parsed.json as {
-      result?: { serverInfo?: { name?: string; version?: string }; protocolVersion?: string };
-      error?: { message?: string };
-    };
-
-    if (result.error) {
-      return errorJson(500, result.error.message ?? "MCP server returned an error", { ok: false });
-    }
-
-    return NextResponse.json({
-      ok: true,
-      serverName: result.result?.serverInfo?.name,
-      serverVersion: result.result?.serverInfo?.version,
-      protocolVersion: result.result?.protocolVersion,
-    });
-  } catch (err) {
-    if (err instanceof Error && err.name === "AbortError") {
-      return errorJson(
-        500,
-        `Connection timed out after ${HTTP_MCP_INITIALIZE_TIMEOUT_MS / 1000}s`,
-        { ok: false }
-      );
-    }
-    const message = err instanceof Error ? err.message : "Connection failed";
-    log.error("MCP HTTP connection test failed", { error: err });
-    return errorJson(500, message, { ok: false });
-  } finally {
-    clearTimeout(timeoutId);
-  }
 }
 
 async function testStdioConnection(input: {

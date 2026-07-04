@@ -25,6 +25,7 @@ import { CircuitOpenError, withCircuitBreaker } from "@/lib/circuit-breaker";
 import { buildDataSourceContext } from "@/lib/data-source-context";
 import { emitDebugEvent } from "@/lib/debug-events";
 import { recordHealth } from "@/lib/health-tracker";
+import { ensureUserIntegrationsRegistered } from "@/lib/integrations/user-integrations-registry";
 import { emitNotificationEvents } from "@/lib/notifications";
 import { getDashboardPollingPreferences, resolvePollingTtlSeconds } from "@/lib/polling-settings";
 
@@ -336,6 +337,10 @@ async function handleRegistryIntegrationAction(
 
   const demoResponse = await serveDemoCacheByRoute(routePath, parsedDemo.forceDemoCache);
   if (demoResponse) return demoResponse;
+
+  // Ensure user-defined (no-code) integrations are registered before lookup, in
+  // case this route's module context didn't run the boot-time registration.
+  await ensureUserIntegrationsRegistered();
 
   const dataSource = findDataSource(integration, action);
   if (!dataSource) {

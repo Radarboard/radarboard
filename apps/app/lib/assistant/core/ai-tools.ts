@@ -1948,6 +1948,129 @@ export function buildDashboardTools() {
     }),
 
     // biome-ignore lint/suspicious/noExplicitAny: tool() overload strictness
+    create_rest_integration: (tool as any)({
+      description:
+        "Create a no-code REST integration from a declarative config, then register it live so its data can be fetched immediately. Use this to scaffold a new integration for any HTTPS REST API. baseUrl must be https (http is only allowed for localhost). Paths and query values support {projectSlug}, {range}, and {timeZone} placeholders. Re-using an existing user integration id updates it.",
+      inputSchema: zodSchema(
+        z.object({
+          id: z.string().describe("Kebab-case id, e.g. 'acme-analytics' (a-z, 0-9, -)"),
+          name: z.string().describe("Display name, e.g. 'Acme Analytics'"),
+          description: z.string().describe("Short description (max 120 chars)"),
+          category: z
+            .enum(["revenue", "deployment", "analytics", "monitoring", "communication"])
+            .describe("Integration category"),
+          baseUrl: z.string().describe("API base URL, e.g. 'https://api.acme.com' (https only)"),
+          icon: z
+            .enum([
+              "globe",
+              "activity",
+              "chart",
+              "bell",
+              "cloud",
+              "code",
+              "database",
+              "dollar",
+              "git",
+              "package",
+              "rocket",
+              "users",
+              "zap",
+            ])
+            .optional()
+            .describe("Icon key (defaults to 'globe')"),
+          provider: z
+            .string()
+            .optional()
+            .describe("Credential grouping key; defaults to id. Share to reuse one credential."),
+          apiDocsUrl: z.string().optional().describe("Link to the API's docs"),
+          auth: z
+            .object({
+              scheme: z
+                .enum(["bearer", "token", "basic", "none"])
+                .optional()
+                .describe(
+                  "Authorization header scheme applied with the token (defaults to 'bearer')"
+                ),
+              tokenField: z
+                .string()
+                .optional()
+                .describe("Credential field holding the secret; defaults to the first field's key"),
+              fields: z
+                .array(
+                  z.object({
+                    key: z.string(),
+                    label: z.string(),
+                    type: z.enum(["text", "password"]).default("password"),
+                    optional: z.boolean().optional(),
+                  })
+                )
+                .optional()
+                .describe("Credential fields the user must supply, e.g. [{key:'apiKey',...}]"),
+              testPath: z
+                .string()
+                .optional()
+                .describe("Path hit to validate credentials, e.g. '/me'"),
+              docsUrl: z.string().optional(),
+            })
+            .optional(),
+          dataSources: z
+            .array(
+              z.object({
+                action: z.string().describe("Action slug, e.g. 'summary'"),
+                description: z.string(),
+                cacheTtlSeconds: z.number().describe("Cache freshness window in seconds"),
+                path: z
+                  .string()
+                  .describe("Path relative to baseUrl, e.g. '/v1/projects/{projectSlug}/summary'"),
+                method: z.enum(["GET", "POST"]).optional(),
+                query: z
+                  .record(z.string(), z.string())
+                  .optional()
+                  .describe("Query params; values support placeholders"),
+              })
+            )
+            .min(1)
+            .describe("At least one data source"),
+        })
+      ),
+      execute: async (params: {
+        id: string;
+        name: string;
+        description: string;
+        category: "revenue" | "deployment" | "analytics" | "monitoring" | "communication";
+        baseUrl: string;
+        icon?: string;
+        provider?: string;
+        apiDocsUrl?: string;
+        auth?: {
+          scheme?: "bearer" | "token" | "basic" | "none";
+          tokenField?: string;
+          fields?: Array<{
+            key: string;
+            label: string;
+            type: "text" | "password";
+            optional?: boolean;
+          }>;
+          testPath?: string;
+          docsUrl?: string;
+        };
+        dataSources: Array<{
+          action: string;
+          description: string;
+          cacheTtlSeconds: number;
+          path: string;
+          method?: "GET" | "POST";
+          query?: Record<string, string>;
+        }>;
+      }) => {
+        const { executeCreateIntegration } = await import(
+          "@/lib/ai-actions/dashboard/connect-integration"
+        );
+        return executeCreateIntegration(params);
+      },
+    }),
+
+    // biome-ignore lint/suspicious/noExplicitAny: tool() overload strictness
     suggest_setup: (tool as any)({
       description:
         "Suggest the best next setup steps: widgets ready to add (their integrations are connected) and integrations worth connecting (they'd unlock widgets). Use this to guide a user through building a useful dashboard fast.",
@@ -1959,6 +2082,142 @@ export function buildDashboardTools() {
       execute: async (params: { projectSlug: string | null }) => {
         const { executeSuggestSetup } = await import("@/lib/ai-actions/dashboard/suggest-setup");
         return executeSuggestSetup(params);
+      },
+    }),
+
+    // biome-ignore lint/suspicious/noExplicitAny: tool() overload strictness
+    find_integration_options: (tool as any)({
+      description:
+        "Discover how to connect a named service (e.g. 'stripe', 'sentry'). Read-only. Returns candidates across four rungs: an existing registered integration, a known MCP server, an installable community extension, and the always-available no-code REST fallback — plus a recommended rung. Call plan_integration_setup for a concrete proposal.",
+      inputSchema: zodSchema(
+        z.object({
+          service: z.string().describe("Service name to look up, e.g. 'stripe'"),
+        })
+      ),
+      execute: async (params: { service: string }) => {
+        const { executeFindOptions } = await import("@/lib/ai-actions/integrations/find-options");
+        return executeFindOptions(params);
+      },
+    }),
+
+    // biome-ignore lint/suspicious/noExplicitAny: tool() overload strictness
+    plan_integration_setup: (tool as any)({
+      description:
+        "Plan how to set up a service end to end (the setup ladder orchestrator). Read-only. Picks the best rung and returns a human-readable proposal plus an actionSpec naming the executor tool (connect_integration / connect_mcp_server / create_rest_integration) and what the user must still provide. ALWAYS present the proposal and get the user's approval before calling the executor.",
+      inputSchema: zodSchema(
+        z.object({
+          service: z.string().describe("Service the user wants to connect, e.g. 'sentry'"),
+        })
+      ),
+      execute: async (params: { service: string }) => {
+        const { executePlanSetup } = await import("@/lib/ai-actions/integrations/plan-setup");
+        return executePlanSetup(params);
+      },
+    }),
+
+    // biome-ignore lint/suspicious/noExplicitAny: tool() overload strictness
+    connect_mcp_server: (tool as any)({
+      description:
+        "Connect an external MCP server as a data source. Confirm-gated: it opens outbound network egress, so present the server (name, url, whether it needs a token) and only call with confirmedByUser: true after the user approves. https only (http allowed for localhost); streamable-http transport only. It runs a live handshake and only saves if the server responds — a bad url/token fails instead of saving. Once connected, the server's tools become available to you on the next turn.",
+      inputSchema: zodSchema(
+        z.object({
+          name: z
+            .string()
+            .describe("Server slug: lowercase letters, numbers, - and _, e.g. 'sentry'"),
+          url: z.string().describe("streamable-http endpoint URL (https, or http on localhost)"),
+          authHeader: z
+            .string()
+            .optional()
+            .describe("Authorization header value if required, e.g. 'Bearer sk_live_...'"),
+          docsUrl: z.string().optional(),
+          enabled: z.boolean().optional().default(true),
+          confirmedByUser: z
+            .boolean()
+            .optional()
+            .default(false)
+            .describe("Set true ONLY after the user has approved connecting this server"),
+        })
+      ),
+      execute: async (params: {
+        name: string;
+        url: string;
+        authHeader?: string;
+        docsUrl?: string;
+        enabled: boolean;
+        confirmedByUser: boolean;
+      }) => {
+        const { executeConnectMcp } = await import("@/lib/ai-actions/integrations/connect-mcp");
+        return executeConnectMcp(params);
+      },
+    }),
+
+    // biome-ignore lint/suspicious/noExplicitAny: tool() overload strictness
+    show_rest_data: (tool as any)({
+      description:
+        "Render a REST integration's data on the dashboard: places the generic 'REST Data' widget and maps the integration's response fields onto KPIs and an optional list. Use after create_rest_integration/connect_integration to make its data visible. Fields are dot-paths into the JSON response (e.g. 'stats.activeUsers', 'items'). Note: one REST Data binding is active at a time.",
+      inputSchema: zodSchema(
+        z.object({
+          integrationId: z.string().describe("Integration id to display, e.g. 'acme-analytics'"),
+          action: z
+            .string()
+            .default("data")
+            .describe("Data-source action on that integration, e.g. 'summary'"),
+          metrics: z
+            .array(
+              z.object({
+                label: z.string(),
+                field: z.string().describe("Dot-path to a value, e.g. 'stats.activeUsers'"),
+                format: z
+                  .enum([
+                    "currency",
+                    "number",
+                    "percent",
+                    "date",
+                    "relative-time",
+                    "duration-seconds",
+                  ])
+                  .optional(),
+              })
+            )
+            .optional()
+            .describe("KPI metrics to show"),
+          list: z
+            .object({
+              field: z.string().describe("Dot-path to an array, e.g. 'items'"),
+              title: z.string().describe("Item field for the title"),
+              subtitle: z.string().optional(),
+              emptyMessage: z.string().optional(),
+            })
+            .optional()
+            .describe("Optional list of items"),
+          projectSlug: z.string().nullable().default(null),
+          pageSlug: z.string().default("overview"),
+          cellId: z.string().optional().describe("Target cell; omit for the first empty cell"),
+        })
+      ),
+      execute: async (params: {
+        integrationId: string;
+        action: string;
+        metrics?: Array<{
+          label: string;
+          field: string;
+          format?:
+            | "currency"
+            | "number"
+            | "percent"
+            | "date"
+            | "relative-time"
+            | "duration-seconds";
+        }>;
+        list?: { field: string; title: string; subtitle?: string; emptyMessage?: string };
+        projectSlug: string | null;
+        pageSlug: string;
+        cellId?: string;
+      }) => {
+        const { executePlaceRestWidget } = await import(
+          "@/lib/ai-actions/integrations/place-rest-widget"
+        );
+        return executePlaceRestWidget(params);
       },
     }),
   };

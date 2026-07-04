@@ -8,6 +8,7 @@
 import { analyticsDescriptor } from "@radarboard/widget-analytics";
 import { bookmarksDescriptor } from "@radarboard/widget-bookmarks";
 import { registerWidget } from "@radarboard/widget-engine/widgets/registry";
+import { genericRestDescriptor } from "@radarboard/widget-generic-rest";
 import { logsDescriptor } from "@radarboard/widget-logs";
 import { observabilityDescriptor } from "@radarboard/widget-observability";
 import { revenueDescriptor } from "@radarboard/widget-revenue";
@@ -75,6 +76,8 @@ export function initializeWidgetDescriptors() {
   registerWidgetTemplateDataSources(observabilityDescriptor);
   registerWidget(bookmarksDescriptor);
   registerWidgetTemplateDataSources(bookmarksDescriptor);
+  registerWidget(genericRestDescriptor);
+  registerWidgetTemplateDataSources(genericRestDescriptor);
   registerWidget(revenueDescriptor);
   registerWidgetTemplateDataSources(revenueDescriptor);
   registerWidget(roadmapDescriptor);
@@ -94,6 +97,7 @@ export function initializeWidgets(): Promise<void> {
     import("@radarboard/widget-analytics/data-resolver"),
     import("@radarboard/widget-observability/data-resolver"),
     import("@radarboard/widget-bookmarks/data-resolver"),
+    import("@radarboard/widget-generic-rest/data-resolver"),
     import("@radarboard/widget-revenue/data-resolver"),
     import("@radarboard/widget-roadmap/data-resolver"),
     import("@radarboard/widget-seo/data-resolver"),

@@ -11,6 +11,7 @@ export const userSettings = sqliteTable("user_settings", {
   debugConfig: text("debug_config"), // JSON: DebugConfig (promotion rules)
   routingConfig: text("routing_config"), // JSON: RoutingConfig (shared notifications + ticker rules)
   workflows: text("workflows"), // JSON: Record<string, Workflow> (persisted automation workflows)
+  userIntegrations: text("user_integrations"), // JSON: UserRestIntegrationConfig[] (no-code REST integrations)
   featurePreferences: text("feature_preferences"), // JSON: Record<string, boolean> (user feature toggles)
   userPlan: text("user_plan"), // "free" | "pro" | "enterprise" — subscription plan tier
   licenseKey: text("license_key"), // Signed JWT for offline plan validation (desktop/self-hosted)

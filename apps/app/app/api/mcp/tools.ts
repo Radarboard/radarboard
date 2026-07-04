@@ -172,9 +172,67 @@ async function handleRegisteredIntegrationTool(
   throw new Error(`Integration MCP tool ${name} has no route or execute handler`);
 }
 
+const LADDER_TOOLS = new Set([
+  "find_integration_options",
+  "plan_integration_setup",
+  "create_rest_integration",
+  "connect_mcp_server",
+  "show_rest_data",
+]);
+
+/**
+ * Integration "ladder" tools — the same discover → plan → create → visualize
+ * flow the in-app assistant uses, delegating to the exact same executors so an
+ * external MCP client can build integrations + dashboard widgets.
+ */
+async function handleLadderTool(name: string, args: Record<string, unknown>): Promise<ToolResult> {
+  switch (name) {
+    case "find_integration_options": {
+      const { executeFindOptions } = await import("@/lib/ai-actions/integrations/find-options");
+      return toResult(await executeFindOptions(args as { service: string }));
+    }
+    case "plan_integration_setup": {
+      const { executePlanSetup } = await import("@/lib/ai-actions/integrations/plan-setup");
+      return toResult(await executePlanSetup(args as { service: string }));
+    }
+    case "create_rest_integration": {
+      const { executeCreateIntegration } = await import(
+        "@/lib/ai-actions/dashboard/connect-integration"
+      );
+      return toResult(
+        await executeCreateIntegration(
+          args as unknown as Parameters<typeof executeCreateIntegration>[0]
+        )
+      );
+    }
+    case "connect_mcp_server": {
+      const { executeConnectMcp } = await import("@/lib/ai-actions/integrations/connect-mcp");
+      return toResult(
+        await executeConnectMcp(args as unknown as Parameters<typeof executeConnectMcp>[0])
+      );
+    }
+    case "show_rest_data": {
+      const { executePlaceRestWidget } = await import(
+        "@/lib/ai-actions/integrations/place-rest-widget"
+      );
+      return toResult(
+        await executePlaceRestWidget(
+          args as unknown as Parameters<typeof executePlaceRestWidget>[0]
+        )
+      );
+    }
+    default:
+      throw new Error(`Unknown ladder tool: ${name}`);
+  }
+}
+
 async function dispatchTool(name: string, args: Record<string, unknown>): Promise<ToolResult> {
   if (name.startsWith("notifications")) {
     return handleNotificationTools(name, args as Record<string, string>);
+  }
+
+  if (LADDER_TOOLS.has(name)) {
+    return handleLadderTool(name, args);
   }
 
   if (name === "debug_events") {

@@ -277,12 +277,17 @@ async function fetchCommunityCatalog(
     return { extensions };
   } catch (err) {
     const message = err instanceof Error ? err.message : "Community catalog unavailable";
-    log.warn("Failed to fetch community catalog", { error: message });
+    log.error("Failed to fetch community catalog", { error: message });
     return { extensions: [], error: message };
   }
 }
 
-export async function handleGetExtensionCatalog() {
+/**
+ * Build the merged extension catalog (official + community), deduped and sorted.
+ * Exposed as a data function so server-side callers (e.g. the assistant's
+ * integration discovery) can reuse it without an HTTP round-trip.
+ */
+export async function getExtensionCatalog(): Promise<ExtensionCatalogResponse> {
   initializeWidgetDescriptors();
 
   const officialIds = new Set<string>();
@@ -305,7 +310,7 @@ export async function handleGetExtensionCatalog() {
     byKey.set(`${extension.type}:${extension.id}`, extension);
   }
 
-  const response: ExtensionCatalogResponse = {
+  return {
     generatedAt: new Date().toISOString(),
     communityCatalogUrl: COMMUNITY_CATALOG_URL,
     communityCatalogError: community.error,
@@ -316,6 +321,8 @@ export async function handleGetExtensionCatalog() {
         left.name.localeCompare(right.name)
     ),
   };
+}
 
-  return NextResponse.json(response);
+export async function handleGetExtensionCatalog() {
+  return NextResponse.json(await getExtensionCatalog());
 }

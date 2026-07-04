@@ -15,6 +15,7 @@ import { mutate } from "swr";
 import { notifyProjectGraphChanged } from "@/hooks/app/use-project-graph-invalidation";
 import { getDefaultPlan } from "@/lib/features";
 import { isIntegrationBackedDashboardDataKey } from "@/lib/integration-data-invalidation";
+import { registerPlacedRestWidgets } from "@/lib/integrations/rest-widget-registry";
 import { queueAction } from "@/lib/offline-sync";
 import { type SettingsState, settingsStore } from "./settings-store";
 import {
@@ -122,6 +123,9 @@ export async function loadSettings(attempt = 0): Promise<void> {
     const envPlan = getDefaultPlan();
     const userPlan = envPlan !== "free" ? envPlan : (data.userPlan ?? "free");
     const merged = mergeWithDefaults(data.widgetLayout, projectIntegrations);
+    // Register per-integration REST Data widgets that are placed in the layout,
+    // so the dashboard can render them.
+    registerPlacedRestWidgets(merged.configs);
 
     settingsStore.setState((s: SettingsState) => ({
       ...s,
@@ -173,6 +177,7 @@ export async function refreshWidgetLayoutFromServer(): Promise<void> {
     };
     const projectIntegrations = data.projectIntegrations ?? {};
     const merged = mergeWithDefaults(data.widgetLayout, projectIntegrations);
+    registerPlacedRestWidgets(merged.configs);
     settingsStore.setState((s: SettingsState) => ({
       ...s,
       widgetLayout: merged,

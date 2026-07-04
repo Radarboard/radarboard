@@ -60,7 +60,7 @@ export async function runVersionedMigrations(client: Client): Promise<void> {
 }
 
 export const SQLITE_CORE_MIGRATION_SQL = [
-  "CREATE TABLE IF NOT EXISTS user_settings (id TEXT PRIMARY KEY, project_order TEXT, widget_layout TEXT, project_integrations TEXT, integration_connections TEXT, project_context_map TEXT, llm_config TEXT, debug_config TEXT, routing_config TEXT, workflows TEXT, feature_preferences TEXT, user_plan TEXT, license_key TEXT, updated_at INTEGER)",
+  "CREATE TABLE IF NOT EXISTS user_settings (id TEXT PRIMARY KEY, project_order TEXT, widget_layout TEXT, project_integrations TEXT, integration_connections TEXT, project_context_map TEXT, llm_config TEXT, debug_config TEXT, routing_config TEXT, workflows TEXT, user_integrations TEXT, feature_preferences TEXT, user_plan TEXT, license_key TEXT, updated_at INTEGER)",
   "CREATE TABLE IF NOT EXISTS api_cache (key TEXT PRIMARY KEY, route TEXT NOT NULL, data TEXT NOT NULL, fetched_at INTEGER NOT NULL, ttl_seconds INTEGER NOT NULL)",
   "CREATE INDEX IF NOT EXISTS api_cache_route_idx ON api_cache(route)",
   "CREATE TABLE IF NOT EXISTS widget_credentials (key TEXT PRIMARY KEY, encrypted_data TEXT NOT NULL, updated_at INTEGER NOT NULL)",

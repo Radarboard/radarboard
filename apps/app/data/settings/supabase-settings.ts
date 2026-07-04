@@ -278,6 +278,33 @@ export class SupabaseSettingsRepository implements SettingsRepository {
     });
   }
 
+  async getUserIntegrations(): Promise<unknown[]> {
+    const res = await fetch(`${this.url}/user_settings?id=eq.default&select=user_integrations`, {
+      headers: this.headers,
+    });
+    if (!res.ok) {
+      if (this.isMissingColumnResponseError(res.status)) return [];
+      return [];
+    }
+    const rows = (await res.json()) as Array<{ user_integrations?: string }>;
+    const raw = rows[0]?.user_integrations;
+    if (!raw) return [];
+    return JSON.parse(raw) as unknown[];
+  }
+
+  async setUserIntegrations(configs: unknown[]): Promise<void> {
+    const now = Math.floor(Date.now() / 1000);
+    await fetch(`${this.url}/user_settings`, {
+      method: "POST",
+      headers: { ...this.headers, Prefer: "resolution=merge-duplicates,return=minimal" },
+      body: JSON.stringify({
+        id: "default",
+        user_integrations: JSON.stringify(configs),
+        updated_at: now,
+      }),
+    });
+  }
+
   async getFeaturePreferences(): Promise<FeaturePreferencesConfig> {
     const res = await fetch(`${this.url}/user_settings?id=eq.default&select=feature_preferences`, {
       headers: this.headers,

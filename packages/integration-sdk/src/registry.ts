@@ -56,6 +56,23 @@ export function registerIntegration(descriptor: IntegrationDescriptor): void {
 }
 
 /**
+ * Remove an integration and its data sources from the registry.
+ *
+ * Used for live updates of user-defined integrations: re-registering an
+ * existing id is a no-op (registration is idempotent), so callers that want the
+ * new descriptor to take effect must unregister the old one first.
+ */
+export function unregisterIntegration(id: string): void {
+  const descriptor = INTEGRATION_REGISTRY.get(id);
+  INTEGRATION_REGISTRY.delete(id);
+  if (descriptor?.dataSources) {
+    for (const ds of descriptor.dataSources) {
+      DATA_SOURCE_REGISTRY.delete(dataSourceKey(id, ds.action));
+    }
+  }
+}
+
+/**
  * Register data sources for virtual integrations that don't have a full
  * IntegrationDescriptor (e.g. "shipping" aggregates Linear + GitHub + Vercel).
  */

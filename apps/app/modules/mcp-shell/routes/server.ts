@@ -6,6 +6,13 @@ import { z } from "zod";
 import { runTool } from "@/app/api/mcp/tools";
 import { getLlmRepo } from "@/db/repository";
 import { errorJson } from "@/lib/api";
+import {
+  connectMcpServerShape,
+  createRestIntegrationShape,
+  findIntegrationOptionsShape,
+  planIntegrationSetupShape,
+  showRestDataShape,
+} from "@/lib/mcp/ladder-tool-shapes";
 import { getAppUrl, verifyMcpToken } from "@/lib/mcp-oauth";
 import { buildServerPluginAPI, getResolvedPluginTools } from "@/lib/plugin-tool-bridge";
 
@@ -32,6 +39,47 @@ async function authenticate(request: Request): Promise<Response | null> {
     return errorJson(401, "invalid_token");
   }
   return null;
+}
+
+/** Minimal surface of McpServer needed to register a tool (keeps this testable). */
+type ToolRegistrar = Pick<McpServer, "tool">;
+
+/**
+ * Register the integration "ladder" tools on an MCP server so external clients
+ * can discover → plan → create → visualize integrations. Each delegates to the
+ * same executor via `runTool`. Extracted so registration is unit-testable.
+ */
+export function registerLadderTools(server: ToolRegistrar): void {
+  server.tool(
+    "find_integration_options",
+    "Discover how to connect a named service (e.g. 'stripe'). Read-only. Returns candidates across four rungs (registered integration, known MCP server, community extension, no-code REST) plus a recommended rung.",
+    findIntegrationOptionsShape,
+    async (args) => runTool("find_integration_options", args as Record<string, unknown>)
+  );
+  server.tool(
+    "plan_integration_setup",
+    "Plan how to set up a service end to end. Read-only. Returns a human-readable proposal plus an actionSpec naming the executor tool and what the user must still provide. Present the proposal and get approval before executing.",
+    planIntegrationSetupShape,
+    async (args) => runTool("plan_integration_setup", args as Record<string, unknown>)
+  );
+  server.tool(
+    "create_rest_integration",
+    "Create a no-code REST integration from a declarative config and register it live. baseUrl must be https (http only for localhost). Use auth.scheme 'none' for public APIs. Paths/query support {projectSlug}/{range}/{timeZone}.",
+    createRestIntegrationShape,
+    async (args) => runTool("create_rest_integration", args as Record<string, unknown>)
+  );
+  server.tool(
+    "connect_mcp_server",
+    "Connect an external MCP server as a data source. Opens outbound egress, so confirm with the user first and pass confirmedByUser: true. https only (http for localhost); runs a live handshake and only saves if the server responds.",
+    connectMcpServerShape,
+    async (args) => runTool("connect_mcp_server", args as Record<string, unknown>)
+  );
+  server.tool(
+    "show_rest_data",
+    "Render a REST integration's data on the dashboard: places a dedicated 'REST Data' widget and maps response fields (dot-paths) onto KPIs and an optional list. Use after create_rest_integration.",
+    showRestDataShape,
+    async (args) => runTool("show_rest_data", args as Record<string, unknown>)
+  );
 }
 
 async function buildMcpServer(): Promise<McpServer> {
@@ -249,6 +297,8 @@ async function buildMcpServer(): Promise<McpServer> {
       };
     }
   );
+
+  registerLadderTools(server);
 
   for (const entry of await getResolvedPluginTools()) {
     const api = buildServerPluginAPI(entry.pluginId);

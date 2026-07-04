@@ -214,6 +214,31 @@ export class TursoSettingsRepository implements SettingsRepository {
     });
   }
 
+  async getUserIntegrations(): Promise<unknown[]> {
+    try {
+      const result = await this.client.execute({
+        sql: "SELECT user_integrations FROM user_settings WHERE id = ?",
+        args: ["default"],
+      });
+      const row = result.rows[0];
+      if (!row?.user_integrations) return [];
+      return JSON.parse(row.user_integrations as string) as unknown[];
+    } catch (error) {
+      if (this.isMissingColumnError(error)) return [];
+      throw error;
+    }
+  }
+
+  async setUserIntegrations(configs: unknown[]): Promise<void> {
+    const now = Math.floor(Date.now() / 1000);
+    await this.client.execute({
+      sql: `INSERT INTO user_settings (id, user_integrations, updated_at)
+            VALUES (?, ?, ?)
+            ON CONFLICT(id) DO UPDATE SET user_integrations = ?, updated_at = ?`,
+      args: ["default", JSON.stringify(configs), now, JSON.stringify(configs), now],
+    });
+  }
+
   async getFeaturePreferences(): Promise<FeaturePreferencesConfig> {
     try {
       const result = await this.client.execute({

@@ -79,6 +79,7 @@
     "@radarboard/widget-analytics": "workspace:*",
     "@radarboard/widget-bookmarks": "workspace:*",
     "@radarboard/widget-engine": "workspace:*",
+    "@radarboard/widget-generic-rest": "workspace:*",
     "@radarboard/widget-logs": "workspace:*",
     "@radarboard/widget-observability": "workspace:*",
     "@radarboard/widget-revenue": "workspace:*",

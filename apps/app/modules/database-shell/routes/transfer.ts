@@ -102,6 +102,7 @@ const settingsSnapshotSchema = z.object({
   debugConfig: z.record(z.string(), z.unknown()).nullable().optional(),
   routingConfig: z.record(z.string(), z.unknown()).nullable().optional(),
   workflows: z.record(z.string(), z.unknown()).optional(),
+  userIntegrations: z.array(z.unknown()).optional(),
   userPlan: z.string().nullable().optional(),
   licenseKey: z.string().nullable().optional(),
 });
@@ -160,6 +161,7 @@ async function exportSettingsSnapshot() {
     debugConfig,
     routingConfig,
     workflows,
+    userIntegrations,
     userPlan,
     licenseKey,
   ] = await Promise.all([
@@ -173,6 +175,7 @@ async function exportSettingsSnapshot() {
     repo.getDebugConfig().catch(() => null),
     repo.getRoutingConfig().catch(() => null),
     repo.getWorkflows().catch(() => ({})),
+    repo.getUserIntegrations().catch(() => [] as unknown[]),
     repo.getUserPlan().catch(() => null),
     repo.getLicenseKey().catch(() => null),
   ]);
@@ -188,6 +191,7 @@ async function exportSettingsSnapshot() {
     debugConfig,
     routingConfig,
     workflows,
+    userIntegrations,
     userPlan,
     licenseKey,
   };
@@ -502,6 +506,33 @@ async function applyPreferenceSettings({
     });
     applyResult(applied, errors, "workflows");
   }
+
+  if (settings.userIntegrations) {
+    const userIntegrations =
+      mode === "merge" && currentSettings
+        ? mergeUserIntegrations(currentSettings.userIntegrations, settings.userIntegrations)
+        : settings.userIntegrations;
+    await settingsRepo.setUserIntegrations(userIntegrations).catch((error) => {
+      errors.push(`userIntegrations: ${error instanceof Error ? error.message : String(error)}`);
+    });
+    applyResult(applied, errors, "userIntegrations");
+  }
+}
+
+/** Merge two user-integration arrays by `id`, with incoming entries winning. */
+function mergeUserIntegrations(current: unknown[] = [], incoming: unknown[] = []): unknown[] {
+  const byId = new Map<string, unknown>();
+  const idOf = (entry: unknown): string | null => {
+    const id = (entry as { id?: unknown } | null)?.id;
+    return typeof id === "string" ? id : null;
+  };
+  const withoutId: unknown[] = [];
+  for (const entry of [...current, ...incoming]) {
+    const id = idOf(entry);
+    if (id) byId.set(id, entry);
+    else withoutId.push(entry);
+  }
+  return [...byId.values(), ...withoutId];
 }
 
 async function applyNullableSettings({

@@ -20,6 +20,7 @@ const mockSettingsRepo = {
   setDebugConfig: vi.fn(),
   setRoutingConfig: vi.fn(),
   setWorkflows: vi.fn(),
+  setUserIntegrations: vi.fn(),
   setFeaturePreferences: vi.fn(),
 };
 

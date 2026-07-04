@@ -5,6 +5,7 @@ import {
   getAllIntegrations,
   INTEGRATION_REGISTRY,
   registerIntegration,
+  unregisterIntegration,
 } from "./registry";
 import type { IntegrationDescriptor } from "./types";
 
@@ -72,5 +73,26 @@ describe("integration registry", () => {
     expect(() => registerIntegration(descriptor)).toThrowError(
       'Integration "github" has duplicate data source action "data".'
     );
+  });
+
+  it("unregisters an integration and its data sources", () => {
+    registerIntegration(buildDescriptor());
+    expect(findDataSource("github", "data")).toBeDefined();
+
+    unregisterIntegration("github");
+
+    expect(getAllIntegrations()).toEqual([]);
+    expect(findDataSource("github", "data")).toBeUndefined();
+  });
+
+  it("lets a re-registration take effect after unregistering", () => {
+    registerIntegration(buildDescriptor({ description: "First." }));
+    // Idempotent register is a no-op while the id is present.
+    registerIntegration(buildDescriptor({ description: "Second." }));
+    expect(INTEGRATION_REGISTRY.get("github")?.description).toBe("First.");
+
+    unregisterIntegration("github");
+    registerIntegration(buildDescriptor({ description: "Second." }));
+    expect(INTEGRATION_REGISTRY.get("github")?.description).toBe("Second.");
   });
 });

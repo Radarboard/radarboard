@@ -1,12 +1,17 @@
 /**
- * Assistant action: connect an api-key integration — validate required fields,
- * run the integration's credential test, then persist the credential under its
- * provider key (so all integrations sharing that provider light up).
+ * Assistant actions for the integration lifecycle:
+ * - `executeConnectIntegration` — validate + test + persist api-key credentials.
+ * - `executeCreateIntegration` — create a no-code REST integration (validate +
+ *   persist + live-register).
  *
  * OAuth integrations are intentionally deferred to the Settings UI: a tool can't
  * complete a browser redirect.
  */
 import { getIntegration } from "@radarboard/integration-sdk/registry";
+import type {
+  UserRestDataSourceConfig,
+  UserRestIntegrationConfig,
+} from "@/lib/integrations/user-rest-integration";
 
 export interface ConnectIntegrationParams {
   integrationId: string;
@@ -81,4 +86,69 @@ export async function executeConnectIntegration(
   const { getCredentialRepo } = await import("@/data/core/repository");
   await getCredentialRepo().setCredential(key, params.values);
   return { connected: true, integrationId: params.integrationId, provider: key, tested };
+}
+
+// ---------------------------------------------------------------------------
+// Create a no-code REST integration
+// ---------------------------------------------------------------------------
+
+export interface CreateIntegrationParams {
+  id: string;
+  name: string;
+  description: string;
+  category: UserRestIntegrationConfig["category"];
+  baseUrl: string;
+  icon?: string;
+  provider?: string;
+  apiDocsUrl?: string;
+  auth?: {
+    scheme?: UserRestIntegrationConfig["auth"]["scheme"];
+    tokenField?: string;
+    fields?: UserRestIntegrationConfig["auth"]["fields"];
+    testPath?: string;
+    docsUrl?: string;
+  };
+  dataSources: UserRestDataSourceConfig[];
+}
+
+export interface CreateIntegrationResult {
+  created: boolean;
+  id: string;
+  updated?: boolean;
+  dataSourceActions?: string[];
+  error?: string;
+}
+
+/**
+ * Validate, persist, and live-register a user-defined REST integration so its
+ * data sources are usable immediately (no restart).
+ */
+export async function executeCreateIntegration(
+  params: CreateIntegrationParams
+): Promise<CreateIntegrationResult> {
+  const config: UserRestIntegrationConfig = {
+    id: params.id,
+    name: params.name,
+    description: params.description,
+    category: params.category,
+    baseUrl: params.baseUrl,
+    icon: params.icon,
+    provider: params.provider,
+    apiDocsUrl: params.apiDocsUrl,
+    auth: params.auth ?? {},
+    dataSources: params.dataSources,
+  };
+
+  const { saveUserIntegration } = await import("@/lib/integrations/user-integrations-registry");
+  const result = await saveUserIntegration(config);
+
+  if (!result.ok) {
+    return { created: false, id: result.id, error: result.error };
+  }
+  return {
+    created: true,
+    id: result.id,
+    updated: result.updated,
+    dataSourceActions: result.dataSourceActions,
+  };
 }

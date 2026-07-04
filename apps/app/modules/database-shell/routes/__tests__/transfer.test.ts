@@ -55,6 +55,8 @@ const mockSettingsRepo = {
   setRoutingConfig: vi.fn().mockResolvedValue(undefined),
   getWorkflows: vi.fn().mockResolvedValue({ "wf-1": { name: "Deploy" } }),
   setWorkflows: vi.fn().mockResolvedValue(undefined),
+  getUserIntegrations: vi.fn().mockResolvedValue([]),
+  setUserIntegrations: vi.fn().mockResolvedValue(undefined),
   getUserPlan: vi.fn().mockResolvedValue("pro"),
   setUserPlan: vi.fn().mockResolvedValue(undefined),
   getLicenseKey: vi.fn().mockResolvedValue("LIC-123"),

@@ -39,6 +39,7 @@ export class SqliteSettingsRepository implements SettingsRepository {
       ["debug_config", "TEXT"],
       ["routing_config", "TEXT"],
       ["workflows", "TEXT"],
+      ["user_integrations", "TEXT"],
       ["feature_preferences", "TEXT"],
       ["user_plan", "TEXT"],
       ["license_key", "TEXT"],
@@ -318,6 +319,36 @@ export class SqliteSettingsRepository implements SettingsRepository {
         target: userSettings.id,
         set: {
           workflows: JSON.stringify(workflows),
+          updatedAt: now,
+        },
+      });
+  }
+
+  async getUserIntegrations(): Promise<unknown[]> {
+    await this.ensureColumns();
+    const db = getDb();
+    const row = await db.select().from(userSettings).where(eq(userSettings.id, SETTINGS_ID)).get();
+
+    if (!row?.userIntegrations) return [];
+    return JSON.parse(row.userIntegrations) as unknown[];
+  }
+
+  async setUserIntegrations(configs: unknown[]): Promise<void> {
+    await this.ensureColumns();
+    const db = getDb();
+    const now = Math.floor(Date.now() / 1000);
+
+    await db
+      .insert(userSettings)
+      .values({
+        id: SETTINGS_ID,
+        userIntegrations: JSON.stringify(configs),
+        updatedAt: now,
+      })
+      .onConflictDoUpdate({
+        target: userSettings.id,
+        set: {
+          userIntegrations: JSON.stringify(configs),
           updatedAt: now,
         },
       });

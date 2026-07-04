@@ -317,6 +317,18 @@ Validates uniqueness, description length, and auto-populates the data source reg
 function registerIntegration(descriptor: IntegrationDescriptor): void
 ```
 
+### `unregisterIntegration()`
+
+Remove an integration and its data sources from the registry.
+
+Used for live updates of user-defined integrations: re-registering an
+existing id is a no-op (registration is idempotent), so callers that want the
+new descriptor to take effect must unregister the old one first.
+
+```ts
+function unregisterIntegration(id: string): void
+```
+
 ### `registerDataSources()`
 
 Register data sources for virtual integrations that don't have a full
