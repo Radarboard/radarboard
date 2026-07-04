@@ -54,6 +54,14 @@ export interface IntegrationAuthField {
 export interface IntegrationAuth {
   /** Unique service identifier used as credential storage key. */
   id: string;
+  /**
+   * Optional provider grouping. When several integrations authenticate against
+   * the same external provider (e.g. multiple GitHub-backed integrations), give
+   * them a shared `provider` so one stored credential satisfies all of them.
+   * Credentials resolve by `provider ?? id`, so leaving this unset preserves the
+   * historical per-integration behavior exactly.
+   */
+  provider?: string;
   /** Display name for this service (e.g., "Vercel", "Linear"). */
   name: string;
   /** Auth method: "api_key" = manual token entry, "oauth" = OAuth redirect flow, "none" = no auth. */

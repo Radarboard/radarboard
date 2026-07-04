@@ -51,7 +51,10 @@ export async function checkDependenciesWithCredentials(
         if (descriptor?.auth.type === "none") {
           configured = true;
         } else {
-          const creds = await resolveCredential(descriptor?.auth.id ?? id);
+          // Resolve by shared provider when set, so one provider credential
+          // marks every integration under it as configured.
+          const credentialKey = descriptor?.auth.provider ?? descriptor?.auth.id ?? id;
+          const creds = await resolveCredential(credentialKey);
           configured = creds !== null && Object.keys(creds).length > 0;
         }
       }

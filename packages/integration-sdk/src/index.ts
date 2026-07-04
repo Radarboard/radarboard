@@ -25,6 +25,18 @@ export {
   checkDependenciesWithCredentials,
   getMissingDependencies,
 } from "./resolver";
+export type {
+  RestAuthConfig,
+  RestAuthScheme,
+  RestDataSourceSpec,
+  RestIntegrationConfig,
+} from "./rest-factory";
+// Declarative REST integration factory
+export {
+  authHeader,
+  createHttpCredentialTest,
+  createRestIntegration,
+} from "./rest-factory";
 export type { TrackedDataSourceContext } from "./testing";
 
 // Testing utilities

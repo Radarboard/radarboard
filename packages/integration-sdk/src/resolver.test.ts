@@ -70,4 +70,36 @@ describe("integration dependency resolver", () => {
     expect(resolveCredential).toHaveBeenCalledTimes(1);
     expect(resolveCredential).toHaveBeenCalledWith("linear-api");
   });
+
+  it("resolves shared-provider integrations from a single provider credential", async () => {
+    registerIntegration(
+      buildDescriptor({
+        id: "github-stars",
+        auth: { id: "github-stars", provider: "github", name: "GitHub", type: "api_key" },
+      })
+    );
+    registerIntegration(
+      buildDescriptor({
+        id: "github-pulls",
+        auth: { id: "github-pulls", provider: "github", name: "GitHub", type: "api_key" },
+      })
+    );
+
+    const resolveCredential = vi.fn(async (key: string) =>
+      key === "github" ? { apiKey: "ghp_shared" } : null
+    );
+
+    const result = await checkDependenciesWithCredentials(
+      ["github-stars", "github-pulls"],
+      resolveCredential
+    );
+
+    // One connected GitHub credential marks every github-provider integration configured.
+    expect(result).toEqual([
+      { integrationId: "github-stars", installed: true, configured: true },
+      { integrationId: "github-pulls", installed: true, configured: true },
+    ]);
+    expect(resolveCredential).toHaveBeenCalledWith("github");
+    expect(resolveCredential).not.toHaveBeenCalledWith("github-stars");
+  });
 });
