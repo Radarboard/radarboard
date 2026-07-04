@@ -76,6 +76,9 @@ describe("GET /api/system/config/export", () => {
     expect(body.debugConfig).toEqual({ promotionEnabled: false });
     expect(body.routingConfig).toEqual({ rules: [] });
     expect(body.workflows).toEqual({ "wf-1": { name: "Deploy" } });
+    // User-created REST integrations must ride along in the snapshot, or they are
+    // silently lost on backup/restore and device migration.
+    expect(body.userIntegrations).toEqual([{ id: "acme" }]);
     expect(body.userPlan).toBe("pro");
     expect(body.licenseKey).toBe("LICENSE-KEY-123");
   });

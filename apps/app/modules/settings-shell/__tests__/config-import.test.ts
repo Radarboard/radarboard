@@ -106,6 +106,7 @@ describe("POST /api/system/config/import", () => {
     expect(mockSettingsRepo.setDebugConfig).not.toHaveBeenCalled();
     expect(mockSettingsRepo.setRoutingConfig).not.toHaveBeenCalled();
     expect(mockSettingsRepo.setWorkflows).not.toHaveBeenCalled();
+    expect(mockSettingsRepo.setUserIntegrations).not.toHaveBeenCalled();
     expect(mockSettingsRepo.setUserPlan).not.toHaveBeenCalled();
     expect(mockSettingsRepo.setLicenseKey).not.toHaveBeenCalled();
     expect(mockPluginRepo.set).not.toHaveBeenCalled();
@@ -134,6 +135,7 @@ describe("POST /api/system/config/import", () => {
         ],
       },
       workflows: { "wf-1": { name: "Deploy" } },
+      userIntegrations: [{ id: "acme", name: "Acme" }],
       userPlan: "pro",
       licenseKey: "LIC-123",
       pluginData: {
@@ -159,6 +161,9 @@ describe("POST /api/system/config/import", () => {
     expect(mockSettingsRepo.setDebugConfig).toHaveBeenCalledWith({ promotionEnabled: true });
     expect(mockSettingsRepo.setRoutingConfig).toHaveBeenCalled();
     expect(mockSettingsRepo.setWorkflows).toHaveBeenCalledWith({ "wf-1": { name: "Deploy" } });
+    expect(mockSettingsRepo.setUserIntegrations).toHaveBeenCalledWith([
+      { id: "acme", name: "Acme" },
+    ]);
     expect(mockSettingsRepo.setUserPlan).toHaveBeenCalledWith("pro");
     expect(mockSettingsRepo.setLicenseKey).toHaveBeenCalledWith("LIC-123");
 
@@ -171,6 +176,7 @@ describe("POST /api/system/config/import", () => {
     expect(body.applied.debugConfig).toBe(true);
     expect(body.applied.routingConfig).toBe(true);
     expect(body.applied.workflows).toBe(true);
+    expect(body.applied.userIntegrations).toBe(true);
     expect(body.applied.userPlan).toBe(true);
     expect(body.applied.licenseKey).toBe(true);
     expect(body.applied.pluginData).toBe(true);
