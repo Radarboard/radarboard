@@ -57,6 +57,7 @@ How an integration authenticates with its external API.
 | Property | Type | Description |
 |----------|------|-------------|
 | `id` | `string` | Unique service identifier used as credential storage key. |
+| `provider?` | `string \| undefined` | Optional provider grouping. When several integrations authenticate against the same external provider (e.g. multiple GitHub-backed integrations), give them a shared `provider` so one stored credential satisfies all of them. Credentials resolve by `provider ?? id`, so leaving this unset preserves the historical per-integration behavior exactly. |
 | `name` | `string` | Display name for this service (e.g., "Vercel", "Linear"). |
 | `type` | `"api_key" \| "oauth" \| "none"` | Auth method: "api_key" = manual token entry, "oauth" = OAuth redirect flow, "none" = no auth. |
 | `fields?` | `IntegrationAuthField[] \| undefined` | For api_key and oauth: fields to show in the credential input UI (client ID/secret for OAuth). |
