@@ -64,6 +64,10 @@ const KNOWN_TECH_DEBT: Record<string, string> = {
     "Direct integration-slack import. Fix: use integration registry client lookup.",
   "lib/assistant/integration/credential-resolver.ts":
     "Imports type-only configs from integrations. Fix: define a generic CredentialConfig in integration-sdk.",
+  "lib/ai-actions/integrations/place-rest-widget.ts":
+    "Uses the widget-generic-rest per-integration widget factory to render REST integrations. Fix: expose the per-integration REST Data widget factory through the widget registry/SDK.",
+  "lib/integrations/rest-widget-registry.ts":
+    "Uses the widget-generic-rest per-integration widget factory to register REST Data widgets. Fix: expose the per-integration REST Data widget factory through the widget registry/SDK.",
   "lib/integrations/content/changelog-server.ts":
     "Direct integration-github and plugin-changelog imports. Fix: expose content changelog capability through descriptors.",
   "modules/database-shell/routes/migrate.ts":
