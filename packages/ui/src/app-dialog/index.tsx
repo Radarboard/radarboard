@@ -121,6 +121,12 @@ export interface ConfirmationDialogProps {
   bodyClassName?: string;
   nested?: boolean;
   hideCloseButton?: boolean;
+  /**
+   * Extra gate on the confirm button on top of the built-in submitting state.
+   * Use for high-friction flows that require in-dialog input (e.g. a
+   * type-to-confirm word) before the destructive action can run.
+   */
+  confirmDisabled?: boolean;
 }
 
 export function ConfirmationDialog({
@@ -137,6 +143,7 @@ export function ConfirmationDialog({
   bodyClassName,
   nested = false,
   hideCloseButton = false,
+  confirmDisabled = false,
 }: ConfirmationDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -178,7 +185,10 @@ export function ConfirmationDialog({
           <DialogCancelButton onClick={() => onOpenChange(false)} disabled={isSubmitting}>
             {cancelLabel}
           </DialogCancelButton>
-          <DialogDestructiveButton onClick={handleConfirm} disabled={isSubmitting}>
+          <DialogDestructiveButton
+            onClick={handleConfirm}
+            disabled={isSubmitting || confirmDisabled}
+          >
             {confirmLabel}
           </DialogDestructiveButton>
         </DialogFooter>
