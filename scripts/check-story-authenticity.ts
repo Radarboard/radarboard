@@ -8,10 +8,18 @@ const topLevelWrapperPattern =
   /render\s*:\s*(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>\s*(?:\(\s*)?<\s*(div|section|main|article)\b/gs;
 const screenTitlePattern = /title\s*:\s*["'`]Screens\//;
 
+// Never descend into dependency or build-output directories — they may contain
+// copied story files (e.g. .next/standalone/**) that are transient and would
+// otherwise crash the walk with ENOENT or flag non-source files.
+const SKIP_DIRS = new Set(["node_modules", "dist", ".turbo", "coverage"]);
+
 function walk(dir: string): string[] {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) return walk(fullPath);
+    if (entry.isDirectory()) {
+      if (SKIP_DIRS.has(entry.name) || entry.name.startsWith(".next")) return [];
+      return walk(fullPath);
+    }
     return [fullPath];
   });
 }
