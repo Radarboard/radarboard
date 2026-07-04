@@ -1950,7 +1950,7 @@ export function buildDashboardTools() {
     // biome-ignore lint/suspicious/noExplicitAny: tool() overload strictness
     create_rest_integration: (tool as any)({
       description:
-        "Create a no-code REST integration from a declarative config, then register it live so its data can be fetched immediately. Use this to scaffold a new integration for any HTTPS REST API. baseUrl must be https (http is only allowed for localhost). Paths and query values support {projectSlug}, {range}, and {timeZone} placeholders. Re-using an existing user integration id updates it.",
+        "Create a no-code REST integration from a declarative config, then register it live so its data can be fetched immediately. Use this to scaffold a new integration for any HTTPS REST API. baseUrl must be https (http is only allowed for localhost). Paths and query values support {projectSlug}, {range}, and {timeZone} placeholders. Re-using an existing user integration id updates it. For no-auth integrations (auth.scheme 'none') it also dry-runs the first data source and returns `verified` plus `sampleFields` (the real response's dot-paths) — pass those straight into show_rest_data's `field` values instead of guessing.",
       inputSchema: zodSchema(
         z.object({
           id: z.string().describe("Kebab-case id, e.g. 'acme-analytics' (a-z, 0-9, -)"),
@@ -2031,6 +2031,12 @@ export function buildDashboardTools() {
             )
             .min(1)
             .describe("At least one data source"),
+          verifyEndpoint: z
+            .boolean()
+            .optional()
+            .describe(
+              "For no-auth integrations, dry-run the first data source after creating (default true). Set false to skip the network call."
+            ),
         })
       ),
       execute: async (params: {
@@ -2062,11 +2068,42 @@ export function buildDashboardTools() {
           method?: "GET" | "POST";
           query?: Record<string, string>;
         }>;
+        verifyEndpoint?: boolean;
       }) => {
         const { executeCreateIntegration } = await import(
           "@/lib/ai-actions/dashboard/connect-integration"
         );
         return executeCreateIntegration(params);
+      },
+    }),
+
+    // biome-ignore lint/suspicious/noExplicitAny: tool() overload strictness
+    list_user_integrations: (tool as any)({
+      description:
+        "List the no-code REST integrations the user has created (id, name, category, baseUrl, and exposed data-source actions). Read-only. Use to answer 'what integrations do I have?' or to find the id to pass to remove_rest_integration.",
+      inputSchema: zodSchema(z.object({})),
+      execute: async () => {
+        const { executeListUserIntegrations } = await import(
+          "@/lib/ai-actions/dashboard/connect-integration"
+        );
+        return executeListUserIntegrations();
+      },
+    }),
+
+    // biome-ignore lint/suspicious/noExplicitAny: tool() overload strictness
+    remove_rest_integration: (tool as any)({
+      description:
+        "Delete a user-created REST integration and its dedicated 'REST Data' widget by id. Only integrations created via create_rest_integration can be removed (built-ins are refused). This is destructive — confirm with the user first. Credentials are left in place (a provider key may be shared).",
+      inputSchema: zodSchema(
+        z.object({
+          id: z.string().describe("The user integration id to remove, e.g. 'acme-analytics'"),
+        })
+      ),
+      execute: async (params: { id: string }) => {
+        const { executeRemoveIntegration } = await import(
+          "@/lib/ai-actions/dashboard/connect-integration"
+        );
+        return executeRemoveIntegration(params);
       },
     }),
 

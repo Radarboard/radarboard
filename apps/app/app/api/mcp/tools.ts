@@ -178,6 +178,8 @@ const LADDER_TOOLS = new Set([
   "create_rest_integration",
   "connect_mcp_server",
   "show_rest_data",
+  "list_user_integrations",
+  "remove_rest_integration",
 ]);
 
 /**
@@ -220,6 +222,18 @@ async function handleLadderTool(name: string, args: Record<string, unknown>): Pr
           args as unknown as Parameters<typeof executePlaceRestWidget>[0]
         )
       );
+    }
+    case "list_user_integrations": {
+      const { executeListUserIntegrations } = await import(
+        "@/lib/ai-actions/dashboard/connect-integration"
+      );
+      return toResult(await executeListUserIntegrations());
+    }
+    case "remove_rest_integration": {
+      const { executeRemoveIntegration } = await import(
+        "@/lib/ai-actions/dashboard/connect-integration"
+      );
+      return toResult(await executeRemoveIntegration(args as { id: string }));
     }
     default:
       throw new Error(`Unknown ladder tool: ${name}`);

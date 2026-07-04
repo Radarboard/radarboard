@@ -96,6 +96,16 @@ vi.mock("@/hooks/projects/use-project-integrations", () => ({
   }),
 }));
 
+vi.mock("@/hooks/settings/use-user-integrations", () => ({
+  useUserIntegrations: () => ({
+    integrations: [],
+    loading: false,
+    error: null,
+    refetch: vi.fn(),
+    remove: vi.fn(),
+  }),
+}));
+
 vi.mock("../utils", () => ({
   collectServices: () => [...serviceEntries],
   getIntegrationCategories: () => [

@@ -6,7 +6,7 @@ vi.mock("@/app/api/mcp/tools", () => ({ runTool: vi.fn().mockResolvedValue(undef
 import { registerLadderTools } from "../server";
 
 describe("registerLadderTools", () => {
-  it("registers all five ladder tools with a description, a shape, and a handler", () => {
+  it("registers all ladder tools with a description, a shape, and a handler", () => {
     const tool = vi.fn();
     registerLadderTools({ tool } as unknown as Parameters<typeof registerLadderTools>[0]);
 
@@ -17,6 +17,8 @@ describe("registerLadderTools", () => {
       "create_rest_integration",
       "connect_mcp_server",
       "show_rest_data",
+      "list_user_integrations",
+      "remove_rest_integration",
     ]);
 
     for (const [name, description, shape, handler] of tool.mock.calls) {

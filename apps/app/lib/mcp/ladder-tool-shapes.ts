@@ -89,6 +89,12 @@ export const createRestIntegrationShape = {
     )
     .min(1)
     .describe("At least one data source"),
+  verifyEndpoint: z
+    .boolean()
+    .optional()
+    .describe(
+      "For no-auth integrations, dry-run the first data source after creating (default true) and return `verified` + `sampleFields` (the response's dot-paths). Set false to skip the network call."
+    ),
 } as const;
 
 export const connectMcpServerShape = {
@@ -134,4 +140,10 @@ export const showRestDataShape = {
   projectSlug: z.string().nullable().default(null),
   pageSlug: z.string().default("overview"),
   cellId: z.string().optional().describe("Target cell; omit for the first empty cell"),
+} as const;
+
+export const listUserIntegrationsShape = {} as const;
+
+export const removeRestIntegrationShape = {
+  id: z.string().describe("The user integration id to remove, e.g. 'acme-analytics'"),
 } as const;

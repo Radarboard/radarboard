@@ -3,6 +3,7 @@ import { API_ROUTE_PATTERNS, API_ROUTES } from "@radarboard/types/api-routes";
 import { registerRoutes } from "@/lib/router/registry";
 import { handleAnalyticsAction, handleIntegrationActionPost, handleIntegrationData } from "./data";
 import { handleLemonSqueezyWebhook } from "./lemonsqueezy-webhook";
+import { handleListUserIntegrations, handleRemoveUserIntegration } from "./user-integrations";
 import { handleIntegrationWebhook } from "./webhook";
 
 type IntegrationRouteContext = {
@@ -38,5 +39,20 @@ registerRoutes([
   {
     path: API_ROUTES.lemonsqueezyWebhook,
     handlers: { POST: handleLemonSqueezyWebhook },
+  },
+  {
+    path: API_ROUTES.userIntegrations,
+    handlers: {
+      GET: handleListUserIntegrations,
+    },
+  },
+  {
+    path: API_ROUTE_PATTERNS.userIntegration,
+    handlers: {
+      DELETE: async (_request: Request, context?: unknown) => {
+        const { id } = await (context as ParamsContext<{ id: string }>).params;
+        return handleRemoveUserIntegration(id);
+      },
+    },
   },
 ]);

@@ -151,6 +151,51 @@ export async function saveUserIntegration(
   };
 }
 
+export interface RemoveUserIntegrationResult {
+  ok: boolean;
+  id: string;
+  /** True when a matching user integration existed and was removed. */
+  removed?: boolean;
+  error?: string;
+}
+
+/**
+ * Delete a user-defined REST integration: drop it from the settings store, then
+ * unregister its descriptor and dedicated widget so it disappears immediately
+ * without a restart. Only user integrations can be removed — built-in ids are
+ * refused. Credentials are intentionally left untouched (a `provider` key may be
+ * shared with other integrations).
+ */
+export async function removeUserIntegration(
+  id: string,
+  repo: SettingsRepository = getSettingsRepo()
+): Promise<RemoveUserIntegrationResult> {
+  if (!id) return { ok: false, id: "", error: "No integration id provided." };
+
+  const existing = await loadUserIntegrationConfigs(repo);
+  if (!existing.some((c) => c?.id === id)) {
+    return { ok: true, id, removed: false };
+  }
+
+  const next = existing.filter((c) => c?.id !== id);
+  try {
+    await repo.setUserIntegrations(next);
+  } catch (error) {
+    log.error("Failed to persist user integration removal", { id, error });
+    return {
+      ok: false,
+      id,
+      error: error instanceof Error ? error.message : "Failed to remove integration.",
+    };
+  }
+
+  unregisterIntegration(id);
+  const { unregisterRestWidget } = await import("./rest-widget-registry");
+  unregisterRestWidget(id);
+
+  return { ok: true, id, removed: true };
+}
+
 /** Test-only: clear the memoized registration promise. */
 export function resetUserIntegrationsRegistrationForTesting(): void {
   registerPromise = null;

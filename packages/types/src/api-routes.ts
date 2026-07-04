@@ -64,6 +64,7 @@ export function buildApiRoute(baseRoute: string, params: Record<string, QueryVal
 export const API_ROUTES = {
   settings: defineApiRoute("/api/system/settings"),
   integrationConnections: defineApiRoute("/api/system/integration-connections"),
+  userIntegrations: defineApiRoute("/api/system/user-integrations"),
 
   chat: defineApiRoute("/api/assistant/chat"),
   chatProjects: defineApiRoute("/api/assistant/chat/projects"),
@@ -189,6 +190,7 @@ export const API_ROUTES = {
 } as const;
 
 export const API_ROUTE_PATTERNS = {
+  userIntegration: defineApiRoutePattern("/api/system/user-integrations/:id"),
   integrationAction: defineApiRoutePattern("/api/integrations/:integration/:action"),
   integrationWebhook: defineApiRoutePattern("/api/integrations/:integration/webhook"),
   pluginAction: defineApiRoutePattern("/api/plugins/:plugin/:action"),
@@ -257,6 +259,10 @@ export function knowledgeHealthProjectRoute(projectSlug: string): string {
 
 export function reportRoute(reportId: string): string {
   return `/api/dev/reports/${encodePathSegment(reportId)}`;
+}
+
+export function userIntegrationRoute(id: string): string {
+  return `${API_ROUTES.userIntegrations}/${encodePathSegment(id)}`;
 }
 
 export function providerOAuthAuthorizeRoute(provider: string): string {

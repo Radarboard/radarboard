@@ -10,7 +10,9 @@ import {
   connectMcpServerShape,
   createRestIntegrationShape,
   findIntegrationOptionsShape,
+  listUserIntegrationsShape,
   planIntegrationSetupShape,
+  removeRestIntegrationShape,
   showRestDataShape,
 } from "@/lib/mcp/ladder-tool-shapes";
 import { getAppUrl, verifyMcpToken } from "@/lib/mcp-oauth";
@@ -79,6 +81,18 @@ export function registerLadderTools(server: ToolRegistrar): void {
     "Render a REST integration's data on the dashboard: places a dedicated 'REST Data' widget and maps response fields (dot-paths) onto KPIs and an optional list. Use after create_rest_integration.",
     showRestDataShape,
     async (args) => runTool("show_rest_data", args as Record<string, unknown>)
+  );
+  server.tool(
+    "list_user_integrations",
+    "List the no-code REST integrations the user has created (id, name, category, baseUrl, actions). Read-only. Use to find an id to pass to remove_rest_integration.",
+    listUserIntegrationsShape,
+    async (args) => runTool("list_user_integrations", args as Record<string, unknown>)
+  );
+  server.tool(
+    "remove_rest_integration",
+    "Delete a user-created REST integration and its dedicated widget by id. Destructive — confirm with the user first. Only user integrations (not built-ins) can be removed.",
+    removeRestIntegrationShape,
+    async (args) => runTool("remove_rest_integration", args as Record<string, unknown>)
   );
 }
 

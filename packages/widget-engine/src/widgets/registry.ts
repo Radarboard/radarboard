@@ -80,6 +80,11 @@ export function registerWidget<TConfig>(descriptor: WidgetDescriptor<TConfig>): 
   WIDGET_REGISTRY.set(descriptor.id, descriptor as WidgetDescriptor<Record<string, unknown>>);
 }
 
+/** Remove a widget from the registry. Returns true if one was removed. */
+export function unregisterWidget(id: string): boolean {
+  return WIDGET_REGISTRY.delete(id);
+}
+
 export function getWidget(id: string): WidgetDescriptor<Record<string, unknown>> | undefined {
   return WIDGET_REGISTRY.get(id) as WidgetDescriptor<Record<string, unknown>> | undefined;
 }

@@ -5,7 +5,11 @@
  * needs these descriptors registered to render placed `rest-<id>` widgets).
  */
 
-import { registerWidget, WIDGET_REGISTRY } from "@radarboard/widget-engine/widgets/registry";
+import {
+  registerWidget,
+  unregisterWidget,
+  WIDGET_REGISTRY,
+} from "@radarboard/widget-engine/widgets/registry";
 import { createRestWidgetDescriptor, restWidgetId } from "@radarboard/widget-generic-rest";
 
 /** Register the dedicated widget for one integration if absent. Returns its widget id. */
@@ -14,6 +18,13 @@ export function ensureRestWidgetRegistered(integrationId: string, name?: string)
   if (!WIDGET_REGISTRY.has(id)) {
     registerWidget(createRestWidgetDescriptor(integrationId, name));
   }
+  return id;
+}
+
+/** Remove the dedicated widget for one integration. Returns its widget id. */
+export function unregisterRestWidget(integrationId: string): string {
+  const id = restWidgetId(integrationId);
+  unregisterWidget(id);
   return id;
 }
 

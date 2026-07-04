@@ -5,6 +5,7 @@ import {
   ensureUserIntegrationsRegistered,
   loadUserIntegrationConfigs,
   registerUserIntegrations,
+  removeUserIntegration,
   resetUserIntegrationsRegistrationForTesting,
   saveUserIntegration,
 } from "../user-integrations-registry";
@@ -145,5 +146,34 @@ describe("saveUserIntegration", () => {
     expect(stored).toHaveLength(1);
     expect(stored[0]?.description).toBe("v2");
     expect(INTEGRATION_REGISTRY.get("acme")?.description).toBe("v2");
+  });
+});
+
+describe("removeUserIntegration", () => {
+  it("drops the config from settings and unregisters the descriptor", async () => {
+    const repo = statefulRepo();
+    await saveUserIntegration(validConfig(), repo);
+    expect(INTEGRATION_REGISTRY.has("acme")).toBe(true);
+
+    const res = await removeUserIntegration("acme", repo);
+    expect(res).toMatchObject({ ok: true, id: "acme", removed: true });
+    expect(repo.current()).toHaveLength(0);
+    expect(INTEGRATION_REGISTRY.has("acme")).toBe(false);
+  });
+
+  it("is a no-op (removed:false) for an unknown id and does not write", async () => {
+    const repo = statefulRepo([validConfig()]);
+    const res = await removeUserIntegration("does-not-exist", repo);
+    expect(res).toMatchObject({ ok: true, removed: false });
+    expect(repo.setUserIntegrations).not.toHaveBeenCalled();
+    // The existing integration is untouched.
+    expect(repo.current()).toHaveLength(1);
+  });
+
+  it("rejects an empty id", async () => {
+    const repo = statefulRepo();
+    const res = await removeUserIntegration("", repo);
+    expect(res.ok).toBe(false);
+    expect(repo.setUserIntegrations).not.toHaveBeenCalled();
   });
 });

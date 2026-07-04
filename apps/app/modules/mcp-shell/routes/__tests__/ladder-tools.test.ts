@@ -5,6 +5,8 @@ const executePlanSetup = vi.fn();
 const executeCreateIntegration = vi.fn();
 const executeConnectMcp = vi.fn();
 const executePlaceRestWidget = vi.fn();
+const executeListUserIntegrations = vi.fn();
+const executeRemoveIntegration = vi.fn();
 
 vi.mock("@/lib/debug-events", () => ({ emitDebugEvent: vi.fn().mockResolvedValue(undefined) }));
 vi.mock("@/lib/extensions/runtime/integrations-init", () => ({}));
@@ -22,6 +24,8 @@ vi.mock("@/lib/ai-actions/integrations/place-rest-widget", () => ({
 }));
 vi.mock("@/lib/ai-actions/dashboard/connect-integration", () => ({
   executeCreateIntegration: (a: unknown) => executeCreateIntegration(a),
+  executeListUserIntegrations: () => executeListUserIntegrations(),
+  executeRemoveIntegration: (a: unknown) => executeRemoveIntegration(a),
 }));
 
 import { runTool } from "@/app/api/mcp/tools";
@@ -73,5 +77,21 @@ describe("MCP ladder tools dispatch → executors", () => {
     const res = await runTool("show_rest_data", { integrationId: "acme" });
     expect(executePlaceRestWidget).toHaveBeenCalledWith({ integrationId: "acme" });
     expect(parsed(res)).toMatchObject({ placed: true, widgetId: "rest-acme" });
+  });
+
+  it("list_user_integrations → executeListUserIntegrations", async () => {
+    executeListUserIntegrations.mockResolvedValue({
+      integrations: [{ id: "acme", name: "Acme", category: "analytics" }],
+    });
+    const res = await runTool("list_user_integrations", {});
+    expect(executeListUserIntegrations).toHaveBeenCalled();
+    expect(parsed(res)).toMatchObject({ integrations: [{ id: "acme" }] });
+  });
+
+  it("remove_rest_integration → executeRemoveIntegration", async () => {
+    executeRemoveIntegration.mockResolvedValue({ removed: true, id: "acme" });
+    const res = await runTool("remove_rest_integration", { id: "acme" });
+    expect(executeRemoveIntegration).toHaveBeenCalledWith({ id: "acme" });
+    expect(parsed(res)).toMatchObject({ removed: true, id: "acme" });
   });
 });

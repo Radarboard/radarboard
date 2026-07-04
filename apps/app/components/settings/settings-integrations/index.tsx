@@ -24,6 +24,7 @@ import {
 import type { AdvancedSettingsSection, SettingsSection } from "../settings-sections";
 import { ServiceDetailModal } from "./components/access/detail-modal";
 import { ServiceCard } from "./components/access/service-card";
+import { CustomIntegrationsSection } from "./components/custom-integrations";
 import { RELAY_PLATFORM, SYSTEM_KEY } from "./constants";
 import type { ServiceEntry } from "./types";
 import { resolveServiceDeepLink } from "./use-deeplink";
@@ -358,6 +359,7 @@ export function SettingsIntegrations({
             />
           </>
         ) : null}
+        {!integrationIntentParam ? <CustomIntegrationsSection /> : null}
       </SettingsPageLayout>
 
       <InstallExtensionDialog

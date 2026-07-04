@@ -109,6 +109,8 @@ export interface CreateIntegrationParams {
     docsUrl?: string;
   };
   dataSources: UserRestDataSourceConfig[];
+  /** Skip the post-create dry-run fetch (only runs for no-auth integrations). */
+  verifyEndpoint?: boolean;
 }
 
 export interface CreateIntegrationResult {
@@ -116,7 +118,68 @@ export interface CreateIntegrationResult {
   id: string;
   updated?: boolean;
   dataSourceActions?: string[];
+  /** For no-auth integrations: whether the dry-run fetch of the first action succeeded. */
+  verified?: boolean;
+  /**
+   * Dot-paths of the fields in the sample response (e.g. "stats.users",
+   * "items.0.name"). Use these directly as the `field` values in show_rest_data
+   * so mappings are accurate instead of guessed.
+   */
+  sampleFields?: string[];
+  /** Why the dry-run failed, if it did (non-blocking — the integration is still created). */
+  verifyError?: string;
   error?: string;
+}
+
+/** Walk a JSON response and collect dot-paths to leaf values (bounded). */
+function collectFieldPaths(value: unknown, prefix = "", out: string[] = [], depth = 0): string[] {
+  if (out.length >= 40 || depth > 3) return out;
+  if (Array.isArray(value)) {
+    if (prefix) out.push(prefix);
+    if (value.length > 0) collectFieldPaths(value[0], `${prefix}.0`, out, depth + 1);
+    return out;
+  }
+  if (value && typeof value === "object") {
+    for (const [key, nested] of Object.entries(value)) {
+      const path = prefix ? `${prefix}.${key}` : key;
+      if (nested !== null && typeof nested === "object") {
+        collectFieldPaths(nested, path, out, depth + 1);
+      } else {
+        out.push(path);
+      }
+      if (out.length >= 40) break;
+    }
+    return out;
+  }
+  if (prefix) out.push(prefix);
+  return out;
+}
+
+/**
+ * For a no-auth integration, fetch the first data source once so we can confirm
+ * it works and hand back the real response's field paths (for accurate mapping).
+ * Non-blocking: any failure is reported but the integration stays created.
+ */
+async function dryRunNoAuthIntegration(
+  integrationId: string,
+  action: string
+): Promise<{ verified: boolean; sampleFields?: string[]; verifyError?: string }> {
+  try {
+    const { findDataSource } = await import("@radarboard/integration-sdk/registry");
+    const { buildDataSourceContext } = await import("@/lib/assistant/core/data-source-context");
+    const source = findDataSource(integrationId, action);
+    if (!source) return { verified: false, verifyError: `No data source "${action}".` };
+    const data = await source.fetch(
+      { projectSlug: null, range: "30d", timeZone: "UTC", forceRefresh: false },
+      buildDataSourceContext()
+    );
+    return { verified: true, sampleFields: collectFieldPaths(data).slice(0, 40) };
+  } catch (error) {
+    return {
+      verified: false,
+      verifyError: error instanceof Error ? error.message : "Fetch failed",
+    };
+  }
 }
 
 /**
@@ -145,10 +208,75 @@ export async function executeCreateIntegration(
   if (!result.ok) {
     return { created: false, id: result.id, error: result.error };
   }
-  return {
+
+  const base: CreateIntegrationResult = {
     created: true,
     id: result.id,
     updated: result.updated,
     dataSourceActions: result.dataSourceActions,
   };
+
+  // Only public (no-auth) integrations can be dry-run here — authed ones have no
+  // credential yet, so leave `verified` undefined for them.
+  const isNoAuth = (params.auth?.scheme ?? undefined) === "none";
+  const firstAction = params.dataSources[0]?.action;
+  if (isNoAuth && params.verifyEndpoint !== false && firstAction) {
+    return { ...base, ...(await dryRunNoAuthIntegration(result.id, firstAction)) };
+  }
+  return base;
+}
+
+// ---------------------------------------------------------------------------
+// List / remove user-defined REST integrations
+// ---------------------------------------------------------------------------
+
+export interface UserIntegrationSummary {
+  id: string;
+  name: string;
+  category: string;
+  baseUrl: string;
+  dataSourceActions: string[];
+}
+
+/** List the user-created REST integrations (id, name, and exposed actions). */
+export async function executeListUserIntegrations(): Promise<{
+  integrations: UserIntegrationSummary[];
+}> {
+  const { loadUserIntegrationConfigs } = await import(
+    "@/lib/integrations/user-integrations-registry"
+  );
+  const configs = await loadUserIntegrationConfigs();
+  const integrations = configs
+    .filter((config): config is UserRestIntegrationConfig => Boolean(config?.id))
+    .map((config) => ({
+      id: config.id,
+      name: config.name,
+      category: config.category,
+      baseUrl: config.baseUrl,
+      dataSourceActions: (config.dataSources ?? []).map((ds) => ds.action),
+    }));
+  return { integrations };
+}
+
+export interface RemoveIntegrationResult {
+  removed: boolean;
+  id: string;
+  /** True when no user integration with that id existed (nothing to remove). */
+  notFound?: boolean;
+  error?: string;
+}
+
+/**
+ * Delete a user-created REST integration and its dedicated widget. Built-in
+ * integrations cannot be removed this way (only ids in the user store match).
+ */
+export async function executeRemoveIntegration(params: {
+  id: string;
+}): Promise<RemoveIntegrationResult> {
+  const { removeUserIntegration } = await import("@/lib/integrations/user-integrations-registry");
+  const result = await removeUserIntegration(params.id);
+  if (!result.ok) {
+    return { removed: false, id: result.id, error: result.error };
+  }
+  return { removed: Boolean(result.removed), id: result.id, notFound: result.removed === false };
 }
