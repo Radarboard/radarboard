@@ -29,6 +29,7 @@ import {
   type TemplateSectionBucket,
   updateTemplateSectionBinding,
 } from "@/lib/template-editor";
+import { RecipeDiagram } from "../recipe-diagram";
 import {
   bucketLabel,
   DEFAULT_SECTION_TYPES,
@@ -37,7 +38,6 @@ import {
   SECTION_TYPE_OPTIONS,
 } from "../widget-visual-editor-model";
 import { WidgetVisualEditorPreview } from "../widget-visual-editor-preview";
-import { RecipeDiagram } from "../recipe-diagram";
 
 interface WidgetVisualEditorProps {
   descriptor: WidgetDescriptor;

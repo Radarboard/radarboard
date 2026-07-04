@@ -150,9 +150,8 @@ pre-push:
             run: pnpm turbo run typecheck
           - name: test
             run: pnpm turbo run test --affected
-          - name: knip
-            glob: "{apps,features,integrations,packages,plugins,widgets,scripts}/**/*.{ts,tsx,js,jsx,json},package.json,pnpm-lock.yaml,tsconfig*.json"
-            run: pnpm knip --no-progress
+          # knip is a whole-project dead-code/dependency audit — it can't be scoped
+          # to changed files, so it runs in CI rather than as a push gate.
           - name: extension-quality
             run: pnpm check:extensions
           - name: architecture
@@ -181,4 +180,6 @@ pre-push:
             run: pnpm check:jsdoc
           - name: react-doctor-strict
             glob: "{apps,features,packages,plugins,widgets}/**/*.{ts,tsx,js,jsx}"
-            run: pnpm react-doctor --yes --offline --fail-on warning
+            # Scope to changed files (mirrors pre-commit). Whole-repo warnings are
+            # advisory here; each commit already gates its own changed files.
+            run: pnpm react-doctor --yes --offline --diff --fail-on warning
