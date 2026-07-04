@@ -263,21 +263,9 @@ export function WidgetSlot({
     ]
   );
 
-  if (widgetId && !rawDescriptor) {
-    return (
-      <div
-        ref={setDropRef}
-        style={style}
-        className={cn(
-          "dashboard-cell flex items-center justify-center bg-[var(--widget-bg)]",
-          className
-        )}
-      >
-        <span className="font-mono text-dim text-w-base">Unknown widget: {widgetId}</span>
-      </div>
-    );
-  }
-
+  // An assigned-but-unregistered widget (removed/renamed away, or its extension
+  // isn't installed) falls through to the empty, fillable slot below rather than
+  // showing an "Unknown widget" error — the user can just pick a new widget.
   if (!descriptor) {
     return (
       <EmptySlot

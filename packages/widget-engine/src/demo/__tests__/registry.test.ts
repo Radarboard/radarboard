@@ -26,11 +26,11 @@ describe("DEMO_CONFIG", () => {
           },
           "cell-3": {
             "fallbackWidgetId": "revenue",
-            "widgetId": "npm-downloads",
+            "widgetId": "revenue",
           },
           "cell-4": {
             "fallbackWidgetId": "observability",
-            "widgetId": "app-reviews",
+            "widgetId": "observability",
           },
           "cell-5": {
             "fallbackWidgetId": "bookmarks",
@@ -42,11 +42,11 @@ describe("DEMO_CONFIG", () => {
           },
           "cell-7": {
             "fallbackWidgetId": "sponsorship",
-            "widgetId": "github-stars",
+            "widgetId": "sponsorship",
           },
           "cell-8": {
             "fallbackWidgetId": "roadmap",
-            "widgetId": "vercel-domains",
+            "widgetId": "roadmap",
           },
           "cell-9": {
             "fallbackWidgetId": "logs",
@@ -57,12 +57,8 @@ describe("DEMO_CONFIG", () => {
           "revenue",
           "analytics",
           "seo",
-          "npm-downloads",
-          "app-reviews",
           "bookmarks",
           "shipping",
-          "github-stars",
-          "vercel-domains",
           "observability",
           "roadmap",
           "sponsorship",

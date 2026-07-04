@@ -6,9 +6,7 @@ describe("widget id rename migration", () => {
     const merged = mergeWithDefaults(
       {
         configs: {
-          stars: { selectedRepos: ["openai/openai"] },
           raindrop: { filter: "recent" },
-          "review-pulse": { tab: "recent" },
         },
         projectLayouts: {
           all: {
@@ -19,11 +17,11 @@ describe("widget id rename migration", () => {
                 layoutId: "basic-3x3",
                 widgetLayouts: {
                   "basic-3x3": {
-                    "cell-1": "stars",
-                    "cell-2": "raindrop",
-                    "cell-3": "review-pulse",
-                    "cell-4": "commits",
-                    "cell-5": "domains",
+                    // raindrop -> bookmarks (rename target still registered)
+                    "cell-1": "raindrop",
+                    // removed widget id — must be left untouched, not migrated
+                    // onto another non-existent id (renders as an empty slot).
+                    "cell-2": "stars",
                   },
                 },
               },
@@ -34,16 +32,11 @@ describe("widget id rename migration", () => {
       {}
     );
 
-    expect(merged.configs["github-stars"]).toBeDefined();
     expect(merged.configs.bookmarks).toBeDefined();
-    expect(merged.configs["app-reviews"]).toBeDefined();
 
     const page = merged.projectLayouts?.all?.pages?.[0];
     const layout = page?.widgetLayouts?.["basic-3x3"];
-    expect(layout?.["cell-1"]).toBe("github-stars");
-    expect(layout?.["cell-2"]).toBe("bookmarks");
-    expect(layout?.["cell-3"]).toBe("app-reviews");
-    expect(layout?.["cell-4"]).toBe("github-commits");
-    expect(layout?.["cell-5"]).toBe("vercel-domains");
+    expect(layout?.["cell-1"]).toBe("bookmarks");
+    expect(layout?.["cell-2"]).toBe("stars");
   });
 });

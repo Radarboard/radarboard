@@ -14,17 +14,13 @@ export const DEMO_CONFIG = {
   /** Plugins enabled in demo mode. */
   plugins: ["tasks", "notes", "bookmarks"] as const,
 
-  /** Widgets that have demo data available. */
+  /** Widgets that have demo data available (must be registered widgets). */
   widgets: [
     "revenue",
     "analytics",
     "seo",
-    "npm-downloads",
-    "app-reviews",
     "bookmarks",
     "shipping",
-    "github-stars",
-    "vercel-domains",
     "observability",
     "roadmap",
     "sponsorship",
@@ -32,19 +28,19 @@ export const DEMO_CONFIG = {
   ] as const,
 
   /**
-   * Preferred demo dashboard. Provider/community widgets are used when
-   * registered; each slot has a core fallback so core-only demo mode still
-   * renders without unknown-widget placeholders.
+   * Preferred demo dashboard. Every slot references a registered widget so the
+   * demo renders without unknown-widget placeholders. `fallbackWidgetId` is kept
+   * for forward-compat if a provider/community widget later takes a slot.
    */
   showcaseLayout: {
     "cell-1": { widgetId: "seo", fallbackWidgetId: "seo" },
     "cell-2": { widgetId: "analytics", fallbackWidgetId: "analytics" },
-    "cell-3": { widgetId: "npm-downloads", fallbackWidgetId: "revenue" },
-    "cell-4": { widgetId: "app-reviews", fallbackWidgetId: "observability" },
+    "cell-3": { widgetId: "revenue", fallbackWidgetId: "revenue" },
+    "cell-4": { widgetId: "observability", fallbackWidgetId: "observability" },
     "cell-5": { widgetId: "bookmarks", fallbackWidgetId: "bookmarks" },
     "cell-6": { widgetId: "shipping", fallbackWidgetId: "shipping" },
-    "cell-7": { widgetId: "github-stars", fallbackWidgetId: "sponsorship" },
-    "cell-8": { widgetId: "vercel-domains", fallbackWidgetId: "roadmap" },
+    "cell-7": { widgetId: "sponsorship", fallbackWidgetId: "sponsorship" },
+    "cell-8": { widgetId: "roadmap", fallbackWidgetId: "roadmap" },
     "cell-9": { widgetId: "logs", fallbackWidgetId: "logs" },
   } as const,
 
