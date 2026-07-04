@@ -1805,6 +1805,161 @@ export function buildBlueprintTools() {
   };
 }
 
+/**
+ * Build dashboard write-tools — let the AI assemble the dashboard: list, add,
+ * move, remove, and configure widgets, connect api-key integrations, and
+ * suggest the next best setup steps. Changes persist server-side; the user's
+ * dashboard reflects them on next refresh.
+ */
+export function buildDashboardTools() {
+  return {
+    // biome-ignore lint/suspicious/noExplicitAny: tool() overload strictness
+    list_widgets: (tool as any)({
+      description:
+        "List all installed widgets with their IDs, what integrations they need, and which dashboard scopes they support. Call this before add_widget to choose valid widget IDs.",
+      inputSchema: zodSchema(z.object({})),
+      execute: async () => {
+        const { executeListWidgets } = await import("@/lib/ai-actions/dashboard/list-widgets");
+        return executeListWidgets();
+      },
+    }),
+
+    // biome-ignore lint/suspicious/noExplicitAny: tool() overload strictness
+    add_widget: (tool as any)({
+      description:
+        "Add a widget to the dashboard. Places it in the first empty cell of the page's layout, or in a specific cell (replacing any occupant). Use list_widgets for valid widget IDs.",
+      inputSchema: zodSchema(
+        z.object({
+          widgetId: z.string().describe("Widget ID from list_widgets, e.g. 'revenue'"),
+          projectSlug: z
+            .string()
+            .nullable()
+            .default(null)
+            .describe("Project slug, or null for the all-projects view"),
+          pageSlug: z.string().default("overview").describe("Dashboard page slug"),
+          cellId: z
+            .string()
+            .optional()
+            .describe("Target cell (e.g. 'cell-3'); omit to use the first empty cell"),
+        })
+      ),
+      execute: async (params: {
+        widgetId: string;
+        projectSlug: string | null;
+        pageSlug: string;
+        cellId?: string;
+      }) => {
+        const { executeAddWidget } = await import("@/lib/ai-actions/dashboard/add-widget");
+        return executeAddWidget(params);
+      },
+    }),
+
+    // biome-ignore lint/suspicious/noExplicitAny: tool() overload strictness
+    move_widget: (tool as any)({
+      description:
+        "Move a widget to a different cell on the same page, swapping with any occupant.",
+      inputSchema: zodSchema(
+        z.object({
+          widgetId: z.string().describe("Widget ID to move"),
+          toCellId: z.string().describe("Destination cell ID, e.g. 'cell-2'"),
+          projectSlug: z.string().nullable().default(null),
+          pageSlug: z.string().default("overview"),
+        })
+      ),
+      execute: async (params: {
+        widgetId: string;
+        toCellId: string;
+        projectSlug: string | null;
+        pageSlug: string;
+      }) => {
+        const { executeMoveWidget } = await import("@/lib/ai-actions/dashboard/add-widget");
+        return executeMoveWidget(params);
+      },
+    }),
+
+    // biome-ignore lint/suspicious/noExplicitAny: tool() overload strictness
+    remove_widget: (tool as any)({
+      description:
+        "Remove a widget from the dashboard, leaving the cell empty. Target a specific cell or the first cell holding a given widget.",
+      inputSchema: zodSchema(
+        z.object({
+          projectSlug: z.string().nullable().default(null),
+          pageSlug: z.string().default("overview"),
+          cellId: z.string().optional().describe("Cell to clear"),
+          widgetId: z.string().optional().describe("Or: remove the first cell holding this widget"),
+        })
+      ),
+      execute: async (params: {
+        projectSlug: string | null;
+        pageSlug: string;
+        cellId?: string;
+        widgetId?: string;
+      }) => {
+        const { executeRemoveWidget } = await import("@/lib/ai-actions/dashboard/remove-widget");
+        return executeRemoveWidget(params);
+      },
+    }),
+
+    // biome-ignore lint/suspicious/noExplicitAny: tool() overload strictness
+    configure_widget: (tool as any)({
+      description:
+        "Set config options for a widget (merged into its existing config, or replacing it). Config is global per widget ID.",
+      inputSchema: zodSchema(
+        z.object({
+          widgetId: z.string().describe("Widget ID to configure"),
+          config: z.record(z.string(), z.unknown()).describe("Config keys to set"),
+          mode: z.enum(["merge", "replace"]).default("merge"),
+        })
+      ),
+      execute: async (params: {
+        widgetId: string;
+        config: Record<string, unknown>;
+        mode: "merge" | "replace";
+      }) => {
+        const { executeConfigureWidget } = await import(
+          "@/lib/ai-actions/dashboard/configure-widget"
+        );
+        return executeConfigureWidget(params);
+      },
+    }),
+
+    // biome-ignore lint/suspicious/noExplicitAny: tool() overload strictness
+    connect_integration: (tool as any)({
+      description:
+        "Connect an api-key integration by testing and saving its credentials. Only works for api-key auth — OAuth integrations must be connected from Settings. The credential is shared across all integrations of the same provider.",
+      inputSchema: zodSchema(
+        z.object({
+          integrationId: z.string().describe("Integration ID, e.g. 'revenuecat'"),
+          values: z
+            .record(z.string(), z.string())
+            .describe("Credential field values, e.g. { apiKey: 'sk_...' }"),
+        })
+      ),
+      execute: async (params: { integrationId: string; values: Record<string, string> }) => {
+        const { executeConnectIntegration } = await import(
+          "@/lib/ai-actions/dashboard/connect-integration"
+        );
+        return executeConnectIntegration(params);
+      },
+    }),
+
+    // biome-ignore lint/suspicious/noExplicitAny: tool() overload strictness
+    suggest_setup: (tool as any)({
+      description:
+        "Suggest the best next setup steps: widgets ready to add (their integrations are connected) and integrations worth connecting (they'd unlock widgets). Use this to guide a user through building a useful dashboard fast.",
+      inputSchema: zodSchema(
+        z.object({
+          projectSlug: z.string().nullable().default(null),
+        })
+      ),
+      execute: async (params: { projectSlug: string | null }) => {
+        const { executeSuggestSetup } = await import("@/lib/ai-actions/dashboard/suggest-setup");
+        return executeSuggestSetup(params);
+      },
+    }),
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------

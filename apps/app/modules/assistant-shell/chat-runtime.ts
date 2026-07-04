@@ -31,6 +31,7 @@ import {
   buildAiTools,
   buildArtifactTools,
   buildBlueprintTools,
+  buildDashboardTools,
   buildMemoryTools,
   buildSelfTools,
 } from "@/lib/ai-tools";
@@ -183,7 +184,8 @@ export async function buildChatRuntime(params: {
 
   const selfTools = buildSelfTools();
   const blueprintTools = buildBlueprintTools();
-  const combinedActionTools = { ...actionTools, ...blueprintTools };
+  const dashboardTools = buildDashboardTools();
+  const combinedActionTools = { ...actionTools, ...blueprintTools, ...dashboardTools };
   const toolOriginMap = coreBuildToolOriginMap({
     aiTools,
     actionTools: combinedActionTools,
