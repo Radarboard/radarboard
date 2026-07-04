@@ -1850,7 +1850,8 @@ export function buildDashboardTools() {
         cellId?: string;
       }) => {
         const { executeAddWidget } = await import("@/lib/ai-actions/dashboard/add-widget");
-        return executeAddWidget(params);
+        const result = await executeAddWidget(params);
+        return result.added ? { ...result, dashboardChanged: true } : result;
       },
     }),
 
@@ -1873,7 +1874,8 @@ export function buildDashboardTools() {
         pageSlug: string;
       }) => {
         const { executeMoveWidget } = await import("@/lib/ai-actions/dashboard/add-widget");
-        return executeMoveWidget(params);
+        const result = await executeMoveWidget(params);
+        return result.moved ? { ...result, dashboardChanged: true } : result;
       },
     }),
 
@@ -1896,7 +1898,8 @@ export function buildDashboardTools() {
         widgetId?: string;
       }) => {
         const { executeRemoveWidget } = await import("@/lib/ai-actions/dashboard/remove-widget");
-        return executeRemoveWidget(params);
+        const result = await executeRemoveWidget(params);
+        return result.removed ? { ...result, dashboardChanged: true } : result;
       },
     }),
 
@@ -1919,7 +1922,8 @@ export function buildDashboardTools() {
         const { executeConfigureWidget } = await import(
           "@/lib/ai-actions/dashboard/configure-widget"
         );
-        return executeConfigureWidget(params);
+        const result = await executeConfigureWidget(params);
+        return result.configured ? { ...result, dashboardChanged: true } : result;
       },
     }),
 

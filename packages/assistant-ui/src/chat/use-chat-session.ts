@@ -125,7 +125,28 @@ export function useChatSession(
     setMessages: sdkSetMessages,
     resumeStream: sdkResumeStream,
     clearError: sdkClearError,
-  } = useChat({ transport, messages: seedMessages, messageMetadataSchema });
+  } = useChat({
+    transport,
+    messages: seedMessages,
+    messageMetadataSchema,
+    // When a tool reports it changed the dashboard, tell the app to refresh the
+    // layout live (the app listens for this event and reloads without a flash).
+    onFinish: ({ message }) => {
+      if (typeof window === "undefined") return;
+      const parts = (message?.parts ?? []) as Array<{ type?: string; output?: unknown }>;
+      const changedDashboard = parts.some((p) => {
+        const isToolPart =
+          typeof p?.type === "string" && (p.type.startsWith("tool-") || p.type === "dynamic-tool");
+        return (
+          isToolPart &&
+          (p.output as { dashboardChanged?: boolean } | undefined)?.dashboardChanged === true
+        );
+      });
+      if (changedDashboard) {
+        window.dispatchEvent(new CustomEvent("radarboard:dashboard-changed"));
+      }
+    },
+  });
 
   // Sync useChat's internal message state with the store's loadedMessages.
   //

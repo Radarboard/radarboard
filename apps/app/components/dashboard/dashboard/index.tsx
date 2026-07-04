@@ -89,6 +89,7 @@ import { NotificationCenter } from "@/modules/provider-shell/notification-center
 import { PluginSidebar } from "@/modules/provider-shell/plugin-dock";
 import { PluginLauncher } from "@/modules/provider-shell/plugin-launcher";
 import { PluginOverlay } from "@/modules/provider-shell/plugin-overlay";
+import { refreshWidgetLayoutFromServer } from "@/modules/settings/store/settings-store";
 import { BottomTicker } from "../../chrome/bottom-ticker";
 import { KPIStrip } from "../../chrome/kpi-strip";
 import {
@@ -1655,6 +1656,16 @@ function DashboardContent({
       window.removeEventListener("radarboard:demo-data-ready", revalidateDemoData);
     };
   }, [isDemoMode, revalidateDemoData]);
+
+  // The assistant can mutate the dashboard server-side (add/move/remove/configure
+  // widgets); refresh the layout in place so those changes appear live.
+  useEffect(() => {
+    const onDashboardChanged = () => {
+      refreshWidgetLayoutFromServer().catch(() => undefined);
+    };
+    window.addEventListener("radarboard:dashboard-changed", onDashboardChanged);
+    return () => window.removeEventListener("radarboard:dashboard-changed", onDashboardChanged);
+  }, []);
 
   // Onboarding auto-trigger is handled by DashboardWithSearchParams via
   // the hasConfig check + setupDismissed flag. No secondary trigger needed

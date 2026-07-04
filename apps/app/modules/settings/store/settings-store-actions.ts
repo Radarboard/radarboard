@@ -157,6 +157,32 @@ export async function reloadSettingsFromServer(): Promise<void> {
   await loadSettings();
 }
 
+/**
+ * Refresh the widget layout (and project integrations) from the server WITHOUT
+ * toggling `isLoading`, so the dashboard updates in place with no skeleton flash.
+ * Used when the AI assistant mutates the dashboard server-side and the client
+ * needs to reflect it live. Best-effort: failures are ignored.
+ */
+export async function refreshWidgetLayoutFromServer(): Promise<void> {
+  try {
+    const res = await fetch(API_ROUTES.settings);
+    if (!res.ok) return;
+    const data = (await res.json()) as {
+      widgetLayout: WidgetLayoutConfig | null;
+      projectIntegrations: ProjectIntegrationsMap;
+    };
+    const projectIntegrations = data.projectIntegrations ?? {};
+    const merged = mergeWithDefaults(data.widgetLayout, projectIntegrations);
+    settingsStore.setState((s: SettingsState) => ({
+      ...s,
+      widgetLayout: merged,
+      projectIntegrations,
+    }));
+  } catch {
+    // Best-effort; the next manual interaction or reload will catch up.
+  }
+}
+
 export function updateProjectOrder(newOrder: string[]): void {
   const previous = settingsStore.state.projectOrder;
   settingsStore.setState((s: SettingsState) => ({ ...s, projectOrder: newOrder }));

@@ -19,6 +19,7 @@ import type { WidgetLayoutConfig } from "@radarboard/types/database";
 import { Store } from "@tanstack/react-store";
 import {
   loadSettings,
+  refreshWidgetLayoutFromServer,
   reloadSettingsFromServer,
   resetSettingsStoreForTesting,
   updateFeaturePreference,
@@ -64,6 +65,7 @@ export {
   createDefaultWidgetLayoutConfig,
   loadSettings,
   mergeWithDefaults,
+  refreshWidgetLayoutFromServer,
   reloadSettingsFromServer,
   resetSettingsStoreForTesting,
   updateFeaturePreference,
