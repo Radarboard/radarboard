@@ -149,6 +149,22 @@ function readJson(filePath: string): VersionedJson {
 
 function writeJson(filePath: string, value: VersionedJson) {
   writeFileSync(filePath, `${JSON.stringify(value, null, 2)}\n`);
+  // JSON.stringify expands short arrays across multiple lines, which biome
+  // reformats inline — leaving the file failing the pre-push biome check.
+  // Normalize with biome so the release commit is clean out of the box.
+  formatWithBiome(filePath);
+}
+
+function formatWithBiome(filePath: string) {
+  try {
+    execFileSync("pnpm", ["exec", "biome", "format", "--write", filePath], {
+      cwd: rootDir,
+      stdio: "ignore",
+    });
+  } catch {
+    // Best effort: if biome is unavailable the file is still valid JSON, and the
+    // pre-push biome check would surface any remaining formatting drift.
+  }
 }
 
 function replaceCargoVersion(contents: string, nextVersion: string): string {
