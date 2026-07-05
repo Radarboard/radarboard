@@ -6,6 +6,7 @@ import { cn } from "@radarboard/utils/cn";
 import type { WidgetAuth } from "@radarboard/widget-engine/widgets/registry";
 import { ExternalLink, Loader2 } from "lucide-react";
 import { useCallback, useState } from "react";
+import { toast } from "sonner";
 import { handleExternalLinkClick } from "@/lib/system/ui/external-url";
 import { CredentialFields } from "../credential-fields";
 
@@ -58,28 +59,40 @@ export function ServiceCredentialCard({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ key: credKey, values }),
       });
-      if (res.ok) {
-        onCredentialChange();
-        setValues({});
+      if (!res.ok) {
+        const body = (await res.json().catch(() => ({}))) as { error?: string };
+        throw new Error(body.error ?? `Save failed (${res.status})`);
       }
+      onCredentialChange();
+      setValues({});
+      toast.success("Credentials saved");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Couldn't save credentials");
     } finally {
       setSaving(false);
     }
   }, [credKey, values, onCredentialChange]);
 
   const handleDisconnect = useCallback(async () => {
-    const res = await fetch(API_ROUTES.credentials, {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ key: credKey }),
-    });
-    if (res.ok) {
+    try {
+      const res = await fetch(API_ROUTES.credentials, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key: credKey }),
+      });
+      if (!res.ok) {
+        const body = (await res.json().catch(() => ({}))) as { error?: string };
+        throw new Error(body.error ?? `Disconnect failed (${res.status})`);
+      }
       // Pre-populate fields with previous values so user can easily reconnect
       const data = (await res.json()) as { previousValues?: Record<string, string> };
       if (data.previousValues) {
         setValues(data.previousValues);
       }
       onCredentialChange();
+      toast.success("Disconnected");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Couldn't disconnect");
     }
   }, [credKey, onCredentialChange]);
 

@@ -14,6 +14,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { toast } from "sonner";
 import { normalizeOAuthOrigin } from "@/lib/auth/oauth-redirect";
 import { isTauri } from "@/lib/platform";
 import { handleExternalLinkClick, openExternalUrl } from "@/lib/system/ui/external-url";
@@ -465,11 +466,16 @@ export function OAuthServiceCard({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ key: credKey, values }),
       });
-      if (res.ok) {
-        setHasOAuthToken(false);
-        setClientCredsSaved(true);
-        onCredentialChange();
+      if (!res.ok) {
+        const body = (await res.json().catch(() => ({}))) as { error?: string };
+        throw new Error(body.error ?? `Save failed (${res.status})`);
       }
+      setHasOAuthToken(false);
+      setClientCredsSaved(true);
+      onCredentialChange();
+      toast.success("Client credentials saved");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Couldn't save client credentials");
     } finally {
       setSaving(false);
     }

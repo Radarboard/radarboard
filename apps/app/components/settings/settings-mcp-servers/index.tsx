@@ -3,6 +3,7 @@
 import { useMcpServers } from "@radarboard/hooks/use-mcp-servers";
 import type { McpServerConfig } from "@radarboard/types/mcp-server";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import {
   buildConnectionTestPayload,
   buildServerPayload,
@@ -86,6 +87,9 @@ export function SettingsMcpServers() {
         if (selectedName === name) {
           setUiState((current) => ({ ...current, panelMode: { type: "idle" } }));
         }
+        toast.success(`Removed ${name}`);
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : `Couldn't remove ${name}`);
       } finally {
         setUiState((current) => ({ ...current, deletingName: null }));
       }
