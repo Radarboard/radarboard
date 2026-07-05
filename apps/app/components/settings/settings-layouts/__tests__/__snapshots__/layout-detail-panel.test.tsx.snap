@@ -1696,106 +1696,110 @@ exports[`LayoutDetailPanel > matches the destructive removal modal state 1`] = `
     <div
       class="px-4 py-3"
     >
-      <div
-        class="space-y-4"
+      <fieldset
+        class="contents"
       >
-        <p
-          class="font-mono text-muted-foreground text-w-sm leading-relaxed"
-          id="radix-_r_2b_"
-        >
-          Removing 
-          column
-           
-          2
-           from
-           
-          <span
-            class="text-foreground"
-          >
-            Two by Two
-          </span>
-           will update the grid from
-           
-          2
-          ×
-          2
-           to 
-          1
-          ×
-          2
-           before the change is applied.
-        </p>
         <div
-          class="flex flex-wrap gap-2"
+          class="space-y-4"
         >
-          <span
-            class="inline-flex items-center rounded-item font-mono uppercase tracking-wider transition-interactive whitespace-nowrap border border-border bg-secondary text-foreground-secondary px-1.5 py-0.5 text-w-sm"
+          <p
+            class="font-mono text-muted-foreground text-w-sm leading-relaxed"
+            id="radix-_r_2b_"
           >
+            Removing 
+            column
+             
             2
-             cells removed
-          </span>
-          <span
-            class="inline-flex items-center rounded-item font-mono uppercase tracking-wider transition-interactive whitespace-nowrap border border-border bg-secondary text-foreground-secondary px-1.5 py-0.5 text-w-sm"
-          >
+             from
+             
+            <span
+              class="text-foreground"
+            >
+              Two by Two
+            </span>
+             will update the grid from
+             
             2
-             kept or remapped
-          </span>
-          <span
-            class="inline-flex items-center rounded-item font-mono uppercase tracking-wider transition-interactive whitespace-nowrap border border-border bg-secondary text-foreground-secondary px-1.5 py-0.5 text-w-sm"
+            ×
+            2
+             to 
+            1
+            ×
+            2
+             before the change is applied.
+          </p>
+          <div
+            class="flex flex-wrap gap-2"
           >
-            0
-             dropped
-          </span>
-        </div>
-        <div
-          class="space-y-3 rounded-item border border-border bg-surface p-3"
-        >
-          <div>
-            <p
-              class="font-mono text-dim text-w-xs uppercase tracking-widest"
+            <span
+              class="inline-flex items-center rounded-item font-mono uppercase tracking-wider transition-interactive whitespace-nowrap border border-border bg-secondary text-foreground-secondary px-1.5 py-0.5 text-w-sm"
             >
-              Assignment Preview
-            </p>
-            <p
-              class="mt-1 font-mono text-dim text-w-sm"
+              2
+               cells removed
+            </span>
+            <span
+              class="inline-flex items-center rounded-item font-mono uppercase tracking-wider transition-interactive whitespace-nowrap border border-border bg-secondary text-foreground-secondary px-1.5 py-0.5 text-w-sm"
             >
-              This review reflects 
-              All Projects / Overview
-              , because this layout is currently assigned there.
-            </p>
+              2
+               kept or remapped
+            </span>
+            <span
+              class="inline-flex items-center rounded-item font-mono uppercase tracking-wider transition-interactive whitespace-nowrap border border-border bg-secondary text-foreground-secondary px-1.5 py-0.5 text-w-sm"
+            >
+              0
+               dropped
+            </span>
           </div>
           <div
-            class="space-y-2 font-mono text-w-sm"
+            class="space-y-3 rounded-item border border-border bg-surface p-3"
           >
             <div>
               <p
+                class="font-mono text-dim text-w-xs uppercase tracking-widest"
+              >
+                Assignment Preview
+              </p>
+              <p
+                class="mt-1 font-mono text-dim text-w-sm"
+              >
+                This review reflects 
+                All Projects / Overview
+                , because this layout is currently assigned there.
+              </p>
+            </div>
+            <div
+              class="space-y-2 font-mono text-w-sm"
+            >
+              <div>
+                <p
+                  class="text-dim"
+                >
+                  Kept or remapped
+                </p>
+                <div
+                  class="mt-1 flex flex-wrap gap-1.5"
+                >
+                  <span
+                    class="inline-flex items-center rounded-item font-mono uppercase tracking-wider transition-interactive whitespace-nowrap border border-border bg-secondary text-foreground-secondary px-1.5 py-0.5 text-w-sm"
+                  >
+                    Analytics
+                  </span>
+                  <span
+                    class="inline-flex items-center rounded-item font-mono uppercase tracking-wider transition-interactive whitespace-nowrap border border-border bg-secondary text-foreground-secondary px-1.5 py-0.5 text-w-sm"
+                  >
+                    Revenue
+                  </span>
+                </div>
+              </div>
+              <p
                 class="text-dim"
               >
-                Kept or remapped
+                No assigned widgets would be dropped from this assignment target.
               </p>
-              <div
-                class="mt-1 flex flex-wrap gap-1.5"
-              >
-                <span
-                  class="inline-flex items-center rounded-item font-mono uppercase tracking-wider transition-interactive whitespace-nowrap border border-border bg-secondary text-foreground-secondary px-1.5 py-0.5 text-w-sm"
-                >
-                  Analytics
-                </span>
-                <span
-                  class="inline-flex items-center rounded-item font-mono uppercase tracking-wider transition-interactive whitespace-nowrap border border-border bg-secondary text-foreground-secondary px-1.5 py-0.5 text-w-sm"
-                >
-                  Revenue
-                </span>
-              </div>
             </div>
-            <p
-              class="text-dim"
-            >
-              No assigned widgets would be dropped from this assignment target.
-            </p>
           </div>
         </div>
-      </div>
+      </fieldset>
     </div>
     <div
       class="flex items-center gap-2 border-border border-t px-4 py-3 justify-end"
