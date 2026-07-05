@@ -486,6 +486,23 @@ if [ "$(uname)" = "Darwin" ]; then
       -o "$RUNTIME_ROOT/accessory.node" \
       "$SCRIPT_DIR/mac-accessory.c"; then
     echo "[build-sidecar] Compiled accessory.node into runtime (Dock-tile suppression)"
+    # Apple notarization scans INSIDE the runtime archive, so accessory.node must
+    # carry a valid Developer ID signature (the clang linker-signed/ad-hoc one is
+    # rejected). Only the signed release build needs this — gate on the release
+    # workflow's APPLE_SIGNING_ENABLED so local dev builds stay untouched (they
+    # keep the ad-hoc signature and aren't notarized).
+    if [ "${APPLE_SIGNING_ENABLED:-}" = "true" ]; then
+      ACCESSORY_SIGN_ID="${APPLE_SIGNING_IDENTITY:-}"
+      if [ -z "$ACCESSORY_SIGN_ID" ]; then
+        ACCESSORY_SIGN_ID="$(security find-identity -v -p codesigning 2>/dev/null | grep 'Developer ID Application' | head -n1 | awk -F '"' '{print $2}')"
+      fi
+      if [ -n "$ACCESSORY_SIGN_ID" ] && codesign --force --options runtime --timestamp \
+          --sign "$ACCESSORY_SIGN_ID" "$RUNTIME_ROOT/accessory.node"; then
+        echo "[build-sidecar] Signed accessory.node with Developer ID for notarization"
+      else
+        echo "[build-sidecar] WARNING: could not sign accessory.node — notarization may reject it"
+      fi
+    fi
   else
     echo "[build-sidecar] WARNING: accessory.node compile failed — sidecar Dock tile will remain"
   fi
