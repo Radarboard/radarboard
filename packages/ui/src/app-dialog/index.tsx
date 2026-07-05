@@ -180,7 +180,14 @@ export function ConfirmationDialog({
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        <DialogBody className={bodyClassName}>{children}</DialogBody>
+        {/* Disable body form controls while the destructive action runs so the
+            user can't edit a type-to-confirm field mid-submit. `contents` keeps
+            the fieldset out of the layout; `disabled` still cascades to controls. */}
+        <DialogBody className={bodyClassName}>
+          <fieldset disabled={isSubmitting} className="contents">
+            {children}
+          </fieldset>
+        </DialogBody>
         <DialogFooter className="justify-end">
           <DialogCancelButton onClick={() => onOpenChange(false)} disabled={isSubmitting}>
             {cancelLabel}
