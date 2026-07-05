@@ -336,6 +336,28 @@ function extractRuntime() {
 
 extractRuntime();
 
+// Hide this bare-Node sidecar from the macOS Dock. A spawned Tauri sidecar
+// registers with LaunchServices as a regular app and gets its own
+// "radarboard-helper" dock tile (tauri-apps/tauri#14014). accessory.node flips
+// this process to a UIElement (accessory) app. It ships INSIDE the runtime
+// archive (not as a loose Mach-O in the bundle) so release notarization is
+// unaffected — same as the other native .node modules. Best effort: never fatal.
+if (process.platform === "darwin") {
+  try {
+    const { createRequire } = await import("node:module");
+    const { setAccessoryPolicy } = createRequire(import.meta.url)(
+      join(runtimeDir, "accessory.node")
+    );
+    // node may register with LaunchServices at init or later when native deps
+    // (e.g. sharp) load, so re-apply across the first few seconds.
+    setAccessoryPolicy();
+    setTimeout(setAccessoryPolicy, 1500).unref();
+    setTimeout(setAccessoryPolicy, 4000).unref();
+  } catch (err) {
+    process.stderr.write(`[sidecar] could not hide dock tile: ${err}\n`);
+  }
+}
+
 const serverDir = join(runtimeDir, "apps", "app");
 const serverJs = join(serverDir, "server.js");
 
@@ -450,10 +472,30 @@ else
   echo "[build-sidecar] Skipping native resource signing on non-macOS host"
 fi
 
+# macOS: compile the accessory-policy N-API addon INTO the runtime tree so it
+# ships inside standalone-runtime.tar.gz (archived, like sharp/libsql) instead
+# of as a loose Mach-O in the bundle — a loose one would fail release
+# notarization since Tauri doesn't re-sign it. Built with clang against the
+# bundled node's headers (no node-gyp). Best effort: never fail the build.
+if [ "$(uname)" = "Darwin" ]; then
+  NODE_PREFIX="$(dirname "$(dirname "$(realpath "$(command -v node)")")")"
+  if clang -shared -fPIC \
+      -I"$NODE_PREFIX/include/node" \
+      -undefined dynamic_lookup \
+      -framework ApplicationServices \
+      -o "$RUNTIME_ROOT/accessory.node" \
+      "$SCRIPT_DIR/mac-accessory.c"; then
+    echo "[build-sidecar] Compiled accessory.node into runtime (Dock-tile suppression)"
+  else
+    echo "[build-sidecar] WARNING: accessory.node compile failed — sidecar Dock tile will remain"
+  fi
+fi
+
 echo "[build-sidecar] Archiving standalone runtime..."
 COPYFILE_DISABLE=1 tar -czf "$RUNTIME_ARCHIVE" -C "$RUNTIME_ROOT" .
 RUNTIME_ARCHIVE_ID="$(shasum -a 256 "$RUNTIME_ARCHIVE" | awk '{print $1}')"
 write_launcher "$RUNTIME_ARCHIVE_ID"
+
 rm -rf "$RUNTIME_ROOT"
 
 echo "[build-sidecar] Resources: $(du -sh "$RESOURCES" | cut -f1)"
