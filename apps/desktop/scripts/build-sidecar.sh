@@ -248,6 +248,20 @@ const resourceRoot = process.env.TAURI_RESOURCE_DIR || join(__dirname, "..");
 const archivePath = join(resourceRoot, "__RUNTIME_ARCHIVE_NAME__");
 const archiveId = "__RUNTIME_ARCHIVE_ID__";
 
+// Self-terminate if the parent (the Tauri desktop app) dies. macOS has no
+// PR_SET_PDEATHSIG, so a bare Node sidecar would otherwise linger as an orphan
+// — holding its port and a stray dock tile — until the next launch's reaper
+// cleans it up. The app kills us on a clean quit; this covers crashes, Force
+// Quit, and the app bundle being replaced while running.
+const parentPid = process.ppid;
+setInterval(() => {
+  // When the parent exits, we're reparented (ppid changes, typically to 1).
+  if (process.ppid !== parentPid) {
+    process.stderr.write("[sidecar] Parent process exited — shutting down\n");
+    process.exit(0);
+  }
+}, 1000).unref();
+
 async function getPort() {
   return new Promise((resolve, reject) => {
     const srv = createServer();
