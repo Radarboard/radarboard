@@ -23,7 +23,7 @@
     "@hono/node-server": "^1.19.14",
     "@radarboard/tsconfig": "workspace:*",
     "@types/node": "catalog:",
-    "esbuild": "^0.28.0",
+    "esbuild": "^0.28.1",
     "tsx": "^4.22.3",
     "typescript": "catalog:",
     "vitest": "catalog:"
