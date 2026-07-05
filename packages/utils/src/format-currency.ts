@@ -25,11 +25,15 @@ export function formatCurrency(
       .join("")
       .trim();
 
-    if (value >= 1_000_000) {
-      return `${symbol}${(value / 1_000_000).toFixed(1)}M`;
+    // Threshold on magnitude so negatives compact too, and place the sign before
+    // the symbol (e.g. -$5.0K) to match Intl's non-compact formatting.
+    const magnitude = Math.abs(value);
+    const sign = value < 0 ? "-" : "";
+    if (magnitude >= 1_000_000) {
+      return `${sign}${symbol}${(magnitude / 1_000_000).toFixed(1)}M`;
     }
-    if (value >= 1_000) {
-      return `${symbol}${(value / 1_000).toFixed(1)}K`;
+    if (magnitude >= 1_000) {
+      return `${sign}${symbol}${(magnitude / 1_000).toFixed(1)}K`;
     }
   }
 

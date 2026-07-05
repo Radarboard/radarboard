@@ -18,6 +18,17 @@ describe("format helpers", () => {
     expect(formatNumber(2_500_000, { compact: true })).toBe("2.5M");
   });
 
+  it("compacts negative values (magnitude threshold, sign preserved)", () => {
+    // Regression: previously negatives fell through to non-compact formatting.
+    expect(formatNumber(-1_200_000, { compact: true })).toBe("-1.2M");
+    expect(formatNumber(-5_000, { compact: true })).toBe("-5.0K");
+    // Sign goes before the currency symbol, matching Intl's non-compact output.
+    expect(formatCurrency(-5_000, "USD", { compact: true })).toBe("-$5.0K");
+    expect(formatCurrency(-2_500_000, "USD", { compact: true })).toBe("-$2.5M");
+    // Sub-thousand magnitudes still use the full formatter.
+    expect(formatNumber(-500, { compact: true })).toBe("-500");
+  });
+
   it("formats percentages, percentage change, time ago strings, and tailwind-aware class merges", () => {
     expect(formatPercent(12.345, 2)).toBe("+12.35%");
     expect(calculateChange(120, 100)).toBe(20);
