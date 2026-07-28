@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@libsql/client": "^0.17.3",
-    "next": "^16.2.6",
+    "next": "^16.2.11",
     "react": "catalog:",
     "react-dom": "catalog:"
   },

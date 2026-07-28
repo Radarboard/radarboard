@@ -17,7 +17,7 @@
     "@radarboard/emails": "workspace:*",
     "@radarboard/product": "workspace:*",
     "geist": "^1.7.1",
-    "next": "^16.2.6",
+    "next": "^16.2.11",
     "react": "catalog:",
     "react-dom": "catalog:",
     "resend": "^6.12.4",
